@@ -4,6 +4,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+datasource db {
+  provider = "postgresql"
+}
+
 // ─── Lobby / Session ─────────────────────────────────────────────────────────
 
 /// A live game session identified by a 4-digit PIN

@@ -21,6 +21,18 @@ function getPusher(): Pusher {
 
 export const sessionChannel = (pin: string) => `session-${pin}`;
 
+// ─── Shared card shape sent over the wire ─────────────────────────────────────
+
+/** Minimal card data forwarded to players via Pusher so they don't need the full deck */
+export type WireCard = {
+  id: string;
+  type: "trivia" | "charades" | "action" | "dare";
+  title: string;
+  description: string;
+  points: number;
+  emoji: string;
+};
+
 // ─── Event payloads ──────────────────────────────────────────────────────────
 
 export type PlayerJoinedPayload = {
@@ -50,7 +62,6 @@ export type VoteCastPayload = {
   teamId: string | null;
   teamName: string | null;
   cardIndex: number;
-  // answer is hidden until reveal; we only show "voted"
 };
 
 export type VotesRevealedPayload = {
@@ -68,10 +79,12 @@ export type VotesRevealedPayload = {
 
 export type NextCardPayload = {
   cardIndex: number;
+  card: WireCard; // ← card content piggybacked so players don't need the deck
 };
 
 export type GameStartedPayload = {
   cardIndex: number;
+  card: WireCard; // ← first card sent with the start signal
 };
 
 export type GameFinishedPayload = {

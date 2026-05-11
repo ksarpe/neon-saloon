@@ -1,32 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { Tv, Smartphone, Loader2, ChevronRight, Zap } from "lucide-react";
+import { motion } from "framer-motion";
+import { Tv, Smartphone, ChevronRight, Zap } from "lucide-react";
 
 export default function Home() {
   const router = useRouter();
-  const [creating, setCreating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleHostGame = async () => {
-    setCreating(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/sessions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ hostName: "Host" }),
-      });
-      if (!res.ok) throw new Error("Failed to create session");
-      const { pin } = await res.json();
-      router.push(`/host/${pin}`);
-    } catch {
-      setError("Could not create a game. Try again!");
-      setCreating(false);
-    }
-  };
 
   return (
     <main className="relative w-full h-dvh overflow-hidden flex flex-col items-center justify-center px-6 bg-saloon-dark">
@@ -82,17 +61,14 @@ export default function Home() {
           {/* Host */}
           <motion.button
             id="host-game-btn"
-            disabled={creating}
             whileTap={{ scale: 0.97 }}
-            onClick={handleHostGame}
-            className="flex items-center gap-4 p-5 rounded-2xl border-2 text-left disabled:opacity-50"
+            onClick={() => router.push("/host")}
+            className="flex items-center gap-4 p-5 rounded-2xl border-2 text-left"
             style={{ borderColor: "var(--sheriff-gold)", backgroundColor: "rgba(255,215,0,0.07)" }}
           >
             <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
               style={{ backgroundColor: "rgba(255,215,0,0.15)" }}>
-              {creating
-                ? <Loader2 size={22} className="animate-spin" style={{ color: "var(--sheriff-gold)" }} />
-                : <Tv size={22} style={{ color: "var(--sheriff-gold)" }} />}
+              <Tv size={22} style={{ color: "var(--sheriff-gold)" }} />
             </div>
             <div className="flex-1">
               <p className="font-bold text-base" style={{ color: "var(--sheriff-gold)" }}>
@@ -129,10 +105,7 @@ export default function Home() {
           </motion.button>
         </motion.div>
 
-        {error && (
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            className="text-red-400 text-sm">{error}</motion.p>
-        )}
+
 
         <motion.p
           className="text-[10px] text-text-muted opacity-40"

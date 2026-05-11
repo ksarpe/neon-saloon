@@ -42,6 +42,7 @@ type HostPhase = "lobby" | "active" | "reveal" | "finished";
 interface HostScreenProps {
   pin: string;
   initialCards: GameCard[];
+  gameMode?: string;
 }
 
 // ─── Lobby view ───────────────────────────────────────────────────────────────
@@ -376,7 +377,7 @@ function ActiveCardView({
 
 // ─── Main HostScreen ──────────────────────────────────────────────────────────
 
-export default function HostScreen({ pin, initialCards }: HostScreenProps) {
+export default function HostScreen({ pin, initialCards, gameMode = "classic" }: HostScreenProps) {
   const [phase, setPhase] = useState<HostPhase>("lobby");
   const [players, setPlayers] = useState<LivePlayer[]>([]);
   const [cardIndex, setCardIndex] = useState(0);
@@ -424,13 +425,15 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
   // ── Host actions ───────────────────────────────────────────────────────────
 
   const handleStart = useCallback(async () => {
+    const firstCard = initialCards[0];
+    if (!firstCard) return;
     await fetch(`/api/sessions/${pin}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "start" }),
+      body: JSON.stringify({ action: "start", card: firstCard }),
     });
     setPhase("active");
-  }, [pin]);
+  }, [pin, initialCards]);
 
   const handleReveal = useCallback(async () => {
     // In a real app, load actual votes from DB; for now, pass the cast list as stubs
@@ -454,21 +457,22 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
       await fetch(`/api/sessions/${pin}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "finish" }),
+        body: JSON.stringify({ action: "finish", scores }),
       });
       setPhase("finished");
       return;
     }
+    const nextCard = initialCards[next];
     await fetch(`/api/sessions/${pin}/next-card`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cardIndex: next }),
+      body: JSON.stringify({ cardIndex: next, card: nextCard }),
     });
     setCardIndex(next);
     setCurrentVotes([]);
     setIsRevealed(false);
     setRevealedVotes([]);
-  }, [pin, cardIndex, initialCards.length]);
+  }, [pin, cardIndex, initialCards, scores]);
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
