@@ -23,12 +23,12 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Neon Saloon 🤠 – Bachelorette Party Game",
+  title: "Neon Saloon – Bachelorette Party Game",
   description:
     "The wildest bachelorette party card game in the West. Kahoot-style trivia, charades & dares — powered by neon lights and pure chaos.",
   keywords: ["bachelorette party", "party game", "card game", "bridal shower", "kahoot"],
   openGraph: {
-    title: "Neon Saloon 🤠",
+    title: "Neon Saloon",
     description: "The wildest bachelorette party card game in the West.",
     type: "website",
   },

@@ -12,6 +12,7 @@ export interface GameCard {
   description: string;
   points: number;
   emoji: string;
+  answer?: string;
 }
 
 export interface Participant {
@@ -62,14 +63,14 @@ export interface GameState {
 
 const DEFAULT_CARDS: Omit<GameCard, "id">[] = [
   // Trivia cards
-  { type: "trivia", title: "Bride Trivia", description: "Where did the bride and groom have their first date?", points: 2, emoji: "🤠" },
-  { type: "trivia", title: "Bride Trivia", description: "What is the bride's all-time favourite movie?", points: 1, emoji: "🎬" },
-  { type: "trivia", title: "Bride Trivia", description: "What's the groom's middle name?", points: 2, emoji: "💍" },
-  { type: "trivia", title: "Bride Trivia", description: "What song will they dance to at the wedding?", points: 3, emoji: "🎵" },
-  { type: "trivia", title: "Bride Trivia", description: "How many months have they been together?", points: 1, emoji: "🗓️" },
-  { type: "trivia", title: "Bride Trivia", description: "What is the bride's guilty-pleasure TV show?", points: 2, emoji: "📺" },
-  { type: "trivia", title: "Bride Trivia", description: "What city does the bride dream of visiting for the honeymoon?", points: 2, emoji: "✈️" },
-  { type: "trivia", title: "Bride Trivia", description: "What is the bride's cocktail of choice?", points: 1, emoji: "🍹" },
+  { type: "trivia", title: "Bride Trivia", description: "Where did the bride and groom have their first date?", points: 2, emoji: "🤠", answer: "At the local pub!" },
+  { type: "trivia", title: "Bride Trivia", description: "What is the bride's all-time favourite movie?", points: 1, emoji: "🎬", answer: "Mamma Mia!" },
+  { type: "trivia", title: "Bride Trivia", description: "What's the groom's middle name?", points: 2, emoji: "💍", answer: "James" },
+  { type: "trivia", title: "Bride Trivia", description: "What song will they dance to at the wedding?", points: 3, emoji: "🎵", answer: "Perfect by Ed Sheeran" },
+  { type: "trivia", title: "Bride Trivia", description: "How many months have they been together?", points: 1, emoji: "🗓️", answer: "42 months" },
+  { type: "trivia", title: "Bride Trivia", description: "What is the bride's guilty-pleasure TV show?", points: 2, emoji: "📺", answer: "The Bachelor" },
+  { type: "trivia", title: "Bride Trivia", description: "What city does the bride dream of visiting for the honeymoon?", points: 2, emoji: "✈️", answer: "Maldives" },
+  { type: "trivia", title: "Bride Trivia", description: "What is the bride's cocktail of choice?", points: 1, emoji: "🍹", answer: "Margarita" },
 
   // Charades cards
   { type: "charades", title: "Saloon Charades", description: "Act out the bride walking down the aisle — without smiling!", points: 2, emoji: "🎭" },

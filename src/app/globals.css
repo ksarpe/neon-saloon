@@ -23,7 +23,7 @@
 }
 
 /* ─── Tailwind Theme Extension ──────────────────────────────────────────── */
-@theme inline {
+@theme {
   --color-saloon-dark: var(--saloon-dark);
   --color-saloon-surface: var(--saloon-surface);
   --color-saloon-card: var(--saloon-card);
@@ -32,24 +32,17 @@
   --color-sheriff-gold: var(--sheriff-gold);
   --color-text-primary: var(--text-primary);
   --color-text-muted: var(--text-muted);
-  --font-bebas: "Bebas Neue", cursive;
-  --font-sans: "Inter", sans-serif;
-  --font-display: "Playfair Display", serif;
+  --font-bebas: var(--font-bebas);
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
 }
 
 /* ─── Reset & Base ──────────────────────────────────────────────────────── */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+
 
 html,
 body {
   height: 100%;
-  overflow: hidden;
   touch-action: manipulation;
 }
 
@@ -59,6 +52,11 @@ body {
   font-family: "Inter", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Mobile-only hard overflow lock (games use h-dvh) */
+@media (max-width: 767px) {
+  html, body { overflow: hidden; }
 }
 
 /* ─── Neon Glow Utilities ──────────────────────────────────────────────── */
