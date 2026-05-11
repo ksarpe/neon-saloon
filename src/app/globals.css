@@ -1,26 +1,234 @@
 @import "tailwindcss";
 
+/* ─── Google Fonts ──────────────────────────────────────────────────────── */
+
+/* ─── CSS Custom Properties ─────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --saloon-dark: #0d0a0b;
+  --saloon-surface: #1a1218;
+  --saloon-card: #221a1f;
+  --saloon-border: #3d2a35;
+  --neon-pink: #ff10f0;
+  --neon-pink-dim: rgba(255, 16, 240, 0.15);
+  --neon-pink-glow: rgba(255, 16, 240, 0.4);
+  --sheriff-gold: #ffd700;
+  --sheriff-gold-dim: rgba(255, 215, 0, 0.15);
+  --sheriff-gold-glow: rgba(255, 215, 0, 0.4);
+  --text-primary: #f5e6f0;
+  --text-muted: #9a7a8a;
+  --card-trivia: #1e0e2a;
+  --card-charades: #0e1e2a;
+  --card-action: #1e1a0e;
+  --card-dare: #2a0e0e;
 }
 
+/* ─── Tailwind Theme Extension ──────────────────────────────────────────── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-saloon-dark: var(--saloon-dark);
+  --color-saloon-surface: var(--saloon-surface);
+  --color-saloon-card: var(--saloon-card);
+  --color-saloon-border: var(--saloon-border);
+  --color-neon-pink: var(--neon-pink);
+  --color-sheriff-gold: var(--sheriff-gold);
+  --color-text-primary: var(--text-primary);
+  --color-text-muted: var(--text-muted);
+  --font-bebas: "Bebas Neue", cursive;
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Playfair Display", serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── Reset & Base ──────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  touch-action: manipulation;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--saloon-dark);
+  color: var(--text-primary);
+  font-family: "Inter", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Neon Glow Utilities ──────────────────────────────────────────────── */
+.glow-pink {
+  text-shadow: 0 0 10px var(--neon-pink), 0 0 30px var(--neon-pink-glow),
+    0 0 60px var(--neon-pink-dim);
+}
+
+.glow-gold {
+  text-shadow: 0 0 10px var(--sheriff-gold), 0 0 30px var(--sheriff-gold-glow),
+    0 0 60px var(--sheriff-gold-dim);
+}
+
+.box-glow-pink {
+  box-shadow: 0 0 15px var(--neon-pink-glow), 0 0 40px var(--neon-pink-dim),
+    inset 0 0 15px rgba(255, 16, 240, 0.05);
+}
+
+.box-glow-gold {
+  box-shadow: 0 0 15px var(--sheriff-gold-glow), 0 0 40px var(--sheriff-gold-dim),
+    inset 0 0 15px rgba(255, 215, 0, 0.05);
+}
+
+/* ─── Card type backgrounds ─────────────────────────────────────────────── */
+.card-trivia {
+  background: radial-gradient(ellipse at top left, #2a1040 0%, var(--card-trivia) 60%);
+  border-color: rgba(138, 43, 226, 0.5);
+}
+
+.card-charades {
+  background: radial-gradient(ellipse at top left, #0e2040 0%, var(--card-charades) 60%);
+  border-color: rgba(30, 144, 255, 0.5);
+}
+
+.card-action {
+  background: radial-gradient(ellipse at top left, #2a2000 0%, var(--card-action) 60%);
+  border-color: rgba(255, 165, 0, 0.5);
+}
+
+.card-dare {
+  background: radial-gradient(ellipse at top left, #3a0a0a 0%, var(--card-dare) 60%);
+  border-color: rgba(255, 16, 240, 0.6);
+}
+
+/* ─── Scrollable content areas ──────────────────────────────────────────── */
+.scrollable {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scrollable::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollable::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollable::-webkit-scrollbar-thumb {
+  background: var(--saloon-border);
+  border-radius: 2px;
+}
+
+/* ─── Animated background grain ────────────────────────────────────────── */
+@keyframes grain {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(-2%, -3%);
+  }
+  20% {
+    transform: translate(3%, 2%);
+  }
+  30% {
+    transform: translate(-1%, 4%);
+  }
+  40% {
+    transform: translate(4%, -2%);
+  }
+  50% {
+    transform: translate(-3%, 1%);
+  }
+  60% {
+    transform: translate(2%, 3%);
+  }
+  70% {
+    transform: translate(-4%, -1%);
+  }
+  80% {
+    transform: translate(1%, -4%);
+  }
+  90% {
+    transform: translate(-2%, 2%);
+  }
+}
+
+.noise-overlay::before {
+  content: "";
+  position: fixed;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.035;
+  animation: grain 8s steps(10) infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── Shimmer animation ─────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    var(--sheriff-gold) 0%,
+    #fff8dc 40%,
+    var(--sheriff-gold) 60%,
+    #b8860b 100%
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}
+
+/* ─── Pulse border animation ────────────────────────────────────────────── */
+@keyframes pulse-border {
+  0%,
+  100% {
+    box-shadow: 0 0 10px var(--neon-pink-glow), 0 0 20px var(--neon-pink-dim);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--neon-pink-glow), 0 0 50px var(--neon-pink-dim),
+      0 0 80px rgba(255, 16, 240, 0.1);
+  }
+}
+
+.pulse-pink {
+  animation: pulse-border 2.5s ease-in-out infinite;
+}
+
+/* ─── 3D Card Flip Perspective ──────────────────────────────────────────── */
+.perspective-container {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+.card-inner {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-face {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.card-back {
+  transform: rotateY(180deg);
 }
