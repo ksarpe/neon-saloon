@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useGameSocket } from "@/hooks/useGameSocket";
 import PlayerGameScreen from "@/components/PlayerGameScreen";
+import { useBackButton } from "@/lib/back-button-context";
 import type {
   TeamCreatedPayload,
   WireCard,
@@ -95,7 +96,7 @@ function PinInput({
 }: {
   value: string;
   onChange: (v: string) => void;
-  onSubmit: () => void;
+  onSubmit: (pin: string) => void;
   loading: boolean;
   error: string | null;
 }) {
@@ -106,11 +107,11 @@ function PinInput({
           className="text-6xl tracking-widest shimmer-text mt-1"
           style={{ fontFamily: "'Bebas Neue',cursive" }}
         >
-          NEON SALOON
+          last rodeo andżeliki
         </h1>
         <p className="text-text-muted text-sm">Wpisz PIN aby dołączyć do gry</p>
       </div>
-      <div className="flex gap-3">
+      <div className="flex gap-2">
         {[0, 1, 2, 3].map((i) => (
           <motion.div
             key={i}
@@ -123,7 +124,7 @@ function PinInput({
               scale: i === value.length ? 1.08 : 1,
             }}
             transition={{ duration: 0.15 }}
-            className="w-16 h-20 rounded-xl border-2 flex items-center justify-center text-3xl font-bold"
+            className="w-16 h-20 rounded-xl border-2 flex items-center justify-center text-2xl font-bold"
             style={{ backgroundColor: "var(--saloon-surface)" }}
           >
             {value[i] ? (
@@ -140,8 +141,8 @@ function PinInput({
           </motion.div>
         ))}
       </div>
-      <div className="grid grid-cols-3 gap-3 w-full max-w-[240px]">
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9, null, 0, "⌫"].map((k, i) => (
+      <div className="grid grid-cols-3 gap-2 w-full max-w-[240px]">
+        {[1,2,3, 4,5,6, 7,8,9, null,0,"⌫"].map((k, i) => (
           <motion.button
             key={i}
             whileTap={{ scale: 0.92 }}
@@ -155,10 +156,12 @@ function PinInput({
               if (value.length < 4) {
                 const n = value + String(k);
                 onChange(n);
-                if (n.length === 4) setTimeout(onSubmit, 100);
+                if (n.length === 4) setTimeout(() => onSubmit(n), 100);
               }
             }}
-            className={`h-14 rounded-xl text-xl font-bold flex items-center justify-center ${k === null ? "invisible" : "bg-saloon-surface border border-saloon-border text-text-primary"}`}
+            className={`h-12 rounded-xl text-base font-bold flex items-center justify-center bg-saloon-surface border border-saloon-border text-text-primary ${
+              k === null ? "invisible" : ""
+            }`}
           >
             {k}
           </motion.button>
@@ -169,8 +172,8 @@ function PinInput({
         id="pin-continue-btn"
         disabled={value.length < 4 || loading}
         whileTap={{ scale: 0.97 }}
-        onClick={onSubmit}
-        className="w-full max-w-[240px] py-4 rounded-2xl font-bold text-white flex items-center justify-center gap-2 disabled:opacity-30"
+        onClick={() => onSubmit(value)}
+        className="w-full max-w-[240px] py-3 rounded-2xl font-bold text-white flex items-center justify-center gap-2 disabled:opacity-30"
         style={{
           background: "linear-gradient(135deg,var(--neon-pink),#c800c8)",
           boxShadow: "0 4px 30px rgba(255,16,240,0.4)",
@@ -188,14 +191,20 @@ function PinInput({
 
 // ─── Name input ──────────────────────────────────────────────────────────────
 
+const AVATAR_LIST = ["🤠", "💃", "🌸", "✨", "🍾", "🎀", "👑", "🦋", "🌺", "🎉"];
+
 function NameInput({
   value,
   onChange,
+  avatar,
+  onAvatarChange,
   onSubmit,
   onBack,
 }: {
   value: string;
   onChange: (v: string) => void;
+  avatar: string | null;
+  onAvatarChange: (v: string) => void;
   onSubmit: () => void;
   onBack: () => void;
 }) {
@@ -219,13 +228,38 @@ function NameInput({
           Jak masz na imię kowboju?
         </h2>
       </div>
+
+      {/* Avatar picker */}
+      <div className="w-full max-w-xs">
+        <p className="text-[10px] uppercase tracking-widest font-semibold mb-2 text-center" style={{ color: "var(--text-muted)" }}>
+          Wybierz awatar
+        </p>
+        <div className="grid grid-cols-5 gap-2">
+          {AVATAR_LIST.map((emoji) => (
+            <motion.button
+              key={emoji}
+              whileTap={{ scale: 0.88 }}
+              onClick={() => onAvatarChange(emoji)}
+              className="h-12 rounded-xl text-2xl flex items-center justify-center border-2 transition-colors"
+              style={{
+                borderColor: avatar === emoji ? "var(--neon-pink)" : "var(--saloon-border)",
+                backgroundColor: avatar === emoji ? "rgba(255,16,240,0.15)" : "var(--saloon-surface)",
+                boxShadow: avatar === emoji ? "0 0 12px rgba(255,16,240,0.3)" : "none",
+              }}
+            >
+              {emoji}
+            </motion.button>
+          ))}
+        </div>
+      </div>
+
       <div className="flex gap-2 w-full max-w-xs">
         <input
           id="player-name-input"
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && value.trim() && onSubmit()}
+          onKeyDown={(e) => e.key === "Enter" && value.trim() && avatar && onSubmit()}
           maxLength={20}
           autoFocus
           placeholder={placeholder}
@@ -261,7 +295,7 @@ function NameInput({
         </motion.button>
         <motion.button
           id="name-continue-btn"
-          disabled={!value.trim()}
+          disabled={!value.trim() || !avatar}
           whileTap={{ scale: 0.97 }}
           onClick={onSubmit}
           className="flex-1 py-3 rounded-xl font-bold text-white flex items-center justify-center gap-2 disabled:opacity-30"
@@ -403,17 +437,17 @@ function TeamPicker({
             color: "var(--neon-pink)",
           }}
         >
-          Pick Your Posse
+          Wybierz swoją bandę
         </h2>
       </div>
       <div className="flex flex-col gap-2 w-full max-w-xs">
         <p className="text-[10px] uppercase tracking-widest text-text-muted font-semibold">
-          Live teams
+          Obecne bandy
         </p>
         <AnimatePresence>
           {teams.length === 0 && (
             <p className="text-text-muted text-xs text-center py-3 opacity-60">
-              No teams yet 🤠
+              Nie ma jeszcze żadnej bandy
             </p>
           )}
           {teams.map((t) => (
@@ -437,17 +471,17 @@ function TeamPicker({
                   {t.teamName}
                 </p>
                 <p className="text-[10px] text-text-muted">
-                  {t.memberCount} member{t.memberCount !== 1 ? "s" : ""}
+                  {t.memberCount} kowbojka{t.memberCount !== 1 ? "s" : ""}
                 </p>
               </div>
-              <span className="text-xs text-text-muted">Join →</span>
+              <span className="text-xs text-text-muted">Dołącz →</span>
             </motion.button>
           ))}
         </AnimatePresence>
       </div>
       <div className="flex flex-col gap-2 w-full max-w-xs">
         <p className="text-[10px] uppercase tracking-widest text-text-muted font-semibold">
-          Create new team
+          Stwórz nową bandę
         </p>
         <div className="flex gap-2">
           <input
@@ -459,7 +493,7 @@ function TeamPicker({
               e.key === "Enter" && newTeamName.trim() && onCreateTeam()
             }
             maxLength={20}
-            placeholder="Team name…"
+            placeholder="Nazwa bandy…"
             className="flex-1 bg-saloon-surface border border-saloon-border rounded-xl px-3 py-3 text-sm text-text-primary placeholder:text-text-muted focus:outline-none"
           />
           <motion.button
@@ -525,7 +559,7 @@ function WaitingState({
             color: "var(--sheriff-gold)",
           }}
         >
-          Zaczynamy!
+  Siodła w dłoń i otwieramy rodeo!
         </h2>
         <p className="text-text-muted text-sm mt-1">
           Witaj,{" "}
@@ -550,7 +584,7 @@ function WaitingState({
           ))}
         </div>
         <p className="text-text-muted text-sm font-medium">
-          Czekaj aż host zacznie grę.
+          Czekaj aż szeryf zacznie grę.
         </p>
         <p className="text-[10px] text-text-muted opacity-50">
           Ekran zaktualizuje się automatycznie
@@ -566,6 +600,7 @@ export default function JoinGameForm() {
   const [step, setStep] = useState<Step>("pin");
   const [pin, setPin] = useState("");
   const [playerName, setPlayerName] = useState("");
+  const [avatar, setAvatar] = useState<string | null>(null);
   const [newTeamName, setNewTeamName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -576,6 +611,12 @@ export default function JoinGameForm() {
   const [gameStartData, setGameStartData] = useState<GameStartedPayload | null>(
     null,
   );
+
+  const { setHidden: setBackHidden } = useBackButton();
+
+  useEffect(() => {
+    setBackHidden(step === "waiting" || step === "playing");
+  }, [step, setBackHidden]);
 
   // Subscribe to channel as soon as we have a PIN and are in team or waiting step
   const shouldSubscribe =
@@ -609,19 +650,25 @@ export default function JoinGameForm() {
 
   // ── Step handlers ──────────────────────────────────────────────────────────
 
-  const handlePinSubmit = useCallback(async () => {
+  const handlePinSubmit = useCallback(async (submittedPin: string) => {
+    setPin(submittedPin);
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/sessions/${pin}`);
-      if (!res.ok) throw new Error();
+      const res = await fetch(`/api/sessions/${submittedPin}`);
+      if (!res.ok) throw new Error("not_found");
+      const data = await res.json();
+      if (data.status === "active" || data.status === "finished") {
+        setError("Ta gra już trwa. Nie możesz teraz dołączyć.");
+        return;
+      }
       setStep("name");
     } catch {
-      setError("That PIN doesn't exist. Try again!");
+      setError("Nie znaleziono salonu. Sprawdź kod i spróbuj ponownie.");
     } finally {
       setLoading(false);
     }
-  }, [pin]);
+  }, []);
 
   const doJoin = useCallback(
     async (teamId: string | null, teamName: string | null) => {
@@ -631,7 +678,7 @@ export default function JoinGameForm() {
         const res = await fetch(`/api/sessions/${pin}/join`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ playerName, teamId, newTeamName: teamName }),
+          body: JSON.stringify({ playerName, avatar, teamId, newTeamName: teamName }),
         });
         if (!res.ok) throw new Error();
         const data = await res.json();
@@ -648,7 +695,7 @@ export default function JoinGameForm() {
         setLoading(false);
       }
     },
-    [pin, playerName],
+    [pin, playerName, avatar],
   );
 
   // ── Playing: hand off to PlayerGameScreen ─────────────────────────────────
@@ -671,7 +718,7 @@ export default function JoinGameForm() {
   // ── Join / waiting flow ───────────────────────────────────────────────────
 
   return (
-    <div className="w-full h-dvh flex flex-col items-center justify-center px-6 bg-saloon-dark overflow-hidden">
+    <div className="w-full h-dvh flex flex-col items-center justify-center px-6 overflow-hidden">
       {/* Ambient glows */}
       <div aria-hidden className="pointer-events-none fixed inset-0">
         <div
@@ -724,6 +771,8 @@ export default function JoinGameForm() {
               <NameInput
                 value={playerName}
                 onChange={setPlayerName}
+                avatar={avatar}
+                onAvatarChange={setAvatar}
                 onSubmit={() => setStep("mode")}
                 onBack={() => setStep("pin")}
               />

@@ -2,17 +2,17 @@
 
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Tv, Smartphone, ChevronRight, Zap } from "lucide-react";
+import { Tv, Smartphone, ChevronRight, LogIn } from "lucide-react";
 
 export default function Home() {
   const router = useRouter();
 
   return (
-    <main className="relative w-full h-dvh overflow-hidden flex flex-col items-center justify-center px-6 bg-saloon-dark">
+    <main className="relative w-full h-dvh overflow-hidden flex flex-col items-center justify-center px-6">
       {/* Ambient glows */}
-      <div aria-hidden className="pointer-events-none fixed inset-0">
+      <div aria-hidden className="pointer-events-none fixed inset-0 z-[2]">
         <div
-          className="absolute top-[-25%] left-[-15%] w-[65vw] h-[65vw] rounded-full opacity-[0.08]"
+          className="absolute top-[-25%] left-[-15%] w-[65vw] h-[65vw] rounded-full opacity-[0.15]"
           style={{
             background:
               "radial-gradient(circle,var(--neon-pink) 0%,transparent 70%)",
@@ -20,7 +20,7 @@ export default function Home() {
           }}
         />
         <div
-          className="absolute bottom-[-25%] right-[-15%] w-[65vw] h-[65vw] rounded-full opacity-[0.08]"
+          className="absolute bottom-[-25%] right-[-15%] w-[65vw] h-[65vw] rounded-full opacity-[0.15]"
           style={{
             background:
               "radial-gradient(circle,var(--sheriff-gold) 0%,transparent 70%)",
@@ -29,7 +29,7 @@ export default function Home() {
         />
       </div>
 
-      <div className="relative z-10 flex flex-col items-center gap-10 w-full max-w-lg text-center">
+      <div className="relative z-[10] flex flex-col items-center gap-10 w-full max-w-lg text-center">
         {/* Hero */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -40,11 +40,8 @@ export default function Home() {
             className="text-6xl sm:text-8xl tracking-widest shimmer-text leading-none"
             style={{ fontFamily: "var(--font-bebas), 'Bebas Neue', cursive" }}
           >
-            NEON SALOON
+            Last rodeo Andżeliki
           </h1>
-          <p className="mt-3 text-text-muted text-sm uppercase tracking-widest">
-            dzikie Gry na wieczory panieńskie.
-          </p>
         </motion.div>
 
         {/* Action buttons */}
@@ -63,7 +60,7 @@ export default function Home() {
             className="relative cursor-pointer overflow-hidden group flex items-center gap-4 p-5 rounded-2xl border-2 text-left"
             style={{
               borderColor: "var(--sheriff-gold)",
-              backgroundColor: "rgba(255,215,0,0.07)",
+              backgroundColor: "rgba(255,215,0,0.12)",
             }}
           >
             {/* 2. Element światła: jest z lewej strony (-left-full), pochylony (skew-x) i na hover przejeżdża w prawo (group-hover:left-full) */}
@@ -81,13 +78,20 @@ export default function Home() {
                 className="font-bold text-base transition-colors"
                 style={{ color: "var(--sheriff-gold)" }}
               >
-                Chcę być organizatorem.
+                Chcę być szeryfem.
               </p>
-              <p className="text-text-muted text-xs mt-0.5">
+              <p
+                className="text-xs mt-0.5"
+                style={{ color: "rgba(255,220,180,0.6)" }}
+              >
                 Wyświetl na dużym ekranie / TV
               </p>
             </div>
-            <ChevronRight size={16} className="relative z-10 text-text-muted" />
+            <ChevronRight
+              size={16}
+              className="relative z-10"
+              style={{ color: "rgba(255,220,180,0.5)" }}
+            />
           </motion.button>
 
           {/* Join */}
@@ -118,30 +122,54 @@ export default function Home() {
                 className="font-bold text-base"
                 style={{ color: "var(--neon-pink)" }}
               >
-                Dołącz do gry.
+                Dołącz do rozgrywki kowbojko.
               </p>
-              <p className="text-text-muted text-xs mt-0.5">
-                Wpisz PIN na telefonie.
+              <p
+                className="text-xs mt-0.5"
+                style={{ color: "rgba(255,220,180,0.6)" }}
+              >
+                Wpisz kod szeryfa na telefonie.
               </p>
             </div>
-            <ChevronRight size={16} className="relative z-10 text-text-muted" />
+            <ChevronRight
+              size={16}
+              className="relative z-10"
+              style={{ color: "rgba(255,220,180,0.5)" }}
+            />
           </motion.button>
         </motion.div>
 
-        <motion.p
-          className="text-[10px] text-text-muted opacity-40"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.4 }}
-          transition={{ delay: 0.8 }}
-        >
-          <Zap
-            size={9}
-            className="inline mr-1"
-            style={{ color: "var(--neon-pink)" }}
-          />
-          Neon Saloon v1.0• AKN Software 2026
-        </motion.p>
       </div>
+
+      {/* Top-right login button */}
+      <motion.button
+        className="fixed top-4 right-4 z-[20] flex items-center gap-2 px-4 py-2 rounded-xl border text-xs font-semibold cursor-pointer transition-colors duration-200"
+        style={{
+          borderColor: "rgba(255,220,180,0.25)",
+          backgroundColor: "rgba(10,4,20,0.55)",
+          color: "rgba(255,220,180,0.85)",
+          backdropFilter: "blur(8px)",
+        }}
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          opacity: { duration: 0.4, delay: 0.5 },
+          y: { duration: 0.4, delay: 0.5 },
+          default: { duration: 0 },
+        }}
+        whileHover={{
+          backgroundColor: "rgba(255,215,0,0.12)",
+          borderColor: "rgba(255,215,0,0.55)",
+          color: "rgba(255,235,150,1)",
+          boxShadow: "0 0 14px rgba(255,215,0,0.18), 0 0 4px rgba(255,215,0,0.12)",
+          scale: 1.03,
+        }}
+        whileTap={{ scale: 0.96 }}
+      >
+        <LogIn size={13} />
+        Zaloguj się
+      </motion.button>
+
     </main>
   );
 }

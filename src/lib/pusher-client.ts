@@ -1,8 +1,5 @@
 import PusherJs from "pusher-js";
 
-// ─── Singleton ───────────────────────────────────────────────────────────────
-// Only initialised in the browser; safe to import anywhere.
-
 let pusherClientInstance: PusherJs | null = null;
 
 export function getPusherClient(): PusherJs {
@@ -11,13 +8,10 @@ export function getPusherClient(): PusherJs {
   }
 
   if (!pusherClientInstance) {
-    pusherClientInstance = new PusherJs(
-      process.env.NEXT_PUBLIC_PUSHER_KEY!,
-      {
-        cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER ?? "eu",
-        enabledTransports: ["ws", "wss"],
-      }
-    );
+    pusherClientInstance = new PusherJs(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
+      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER ?? "eu",
+      enabledTransports: ["ws", "wss"],
+    });
   }
 
   return pusherClientInstance;

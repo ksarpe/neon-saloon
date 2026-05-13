@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback } from "react";
 import { getPusherClient } from "@/lib/pusher-client";
-import { sessionChannel } from "@/lib/pusher-server";
+import { sessionChannel } from "@/lib/pusher-shared";
 import type {
   PlayerJoinedPayload,
   TeamCreatedPayload,
@@ -44,11 +44,27 @@ export function useGameSocket(pin: string | null, handlers: GameSocketHandlers) 
     if (!pin) return;
 
     const pusher = getPusherClient();
+
+    pusher.connection.bind("connected", () =>
+      console.log("[Pusher] connected")
+    );
+    pusher.connection.bind("error", (err: unknown) =>
+      console.error("[Pusher] connection error", err)
+    );
+
     const channel = pusher.subscribe(sessionChannel(pin));
 
-    channel.bind("player-joined", (data: PlayerJoinedPayload) =>
-      handlersRef.current.onPlayerJoined?.(data)
+    channel.bind("pusher:subscription_succeeded", () =>
+      console.log(`[Pusher] subscribed to ${sessionChannel(pin)}`)
     );
+    channel.bind("pusher:subscription_error", (err: unknown) =>
+      console.error(`[Pusher] subscription error`, err)
+    );
+
+    channel.bind("player-joined", (data: PlayerJoinedPayload) => {
+      console.log("[Pusher] player-joined", data);
+      handlersRef.current.onPlayerJoined?.(data);
+    });
     channel.bind("team-created", (data: TeamCreatedPayload) =>
       handlersRef.current.onTeamCreated?.(data)
     );

@@ -1,7 +1,7 @@
 import JoinGameForm from "@/components/JoinGameForm";
 
 export const metadata = {
-  title: "Join Game – Neon Saloon 🤠",
+  title: "Join Game – last rodeo andżeliki 🤠",
   description: "Enter your PIN and join the wildest bachelorette party game.",
 };
 

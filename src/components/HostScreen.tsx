@@ -1,9 +1,21 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Eye, ChevronRight, Star, Users, Zap } from "lucide-react";
+import {
+  Play,
+  Eye,
+  ChevronRight,
+  Star,
+  Users,
+  Zap,
+  Check,
+  Menu,
+  X,
+  Flag,
+} from "lucide-react";
 import { useGameSocket } from "@/hooks/useGameSocket";
+import { GameCardStack } from "@/components/SharedCard";
 import type {
   PlayerJoinedPayload,
   VoteCastPayload,
@@ -33,6 +45,7 @@ interface ScoreEntry {
   teamId: string;
   teamName: string;
   score: number;
+  playerName: string;
 }
 type HostPhase = "lobby" | "active" | "reveal" | "finished";
 interface HostScreenProps {
@@ -43,186 +56,11 @@ interface HostScreenProps {
 
 const ACCENT: Record<string, string> = {
   trivia: "#8b2be2",
+  QUIZ: "#8b2be2",
   charades: "#1e90ff",
   action: "#f59e0b",
   dare: "#ff10f0",
 };
-
-// ─── Card Stack — centre-screen "deck" ─────────────────────────────────────────
-
-function CardStack({
-  card,
-  cardsLeft,
-  isFlipped,
-  isRevealed,
-  onFlip,
-}: {
-  card: GameCard;
-  cardsLeft: number;
-  isFlipped: boolean;
-  isRevealed: boolean;
-  onFlip: () => void;
-}) {
-  const accent = ACCENT[card.type] ?? "var(--neon-pink)";
-
-  // Shadow cards underneath (max 3)
-  const shadows = Math.min(cardsLeft - 1, 3);
-
-  return (
-    <div className="flex flex-col items-center gap-6">
-      {/* Perspective wrapper */}
-      <div
-        className="relative flex items-center justify-center"
-        style={{ perspective: "1200px", width: 340, height: 220 }}
-      >
-        {/* Stack shadow cards */}
-        {Array.from({ length: shadows }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-2xl border-2"
-            style={{
-              width: 320,
-              height: 200,
-              borderColor: "var(--saloon-border)",
-              backgroundColor: "var(--saloon-card)",
-              transform: `translateY(${(i + 1) * -6}px) rotate(${(i % 2 === 0 ? 1 : -1) * (i + 1) * 1.5}deg)`,
-              zIndex: shadows - i,
-              opacity: 1 - i * 0.15,
-            }}
-          >
-            {/* Card back pattern */}
-            <div className="w-full h-full rounded-2xl flex items-center justify-center overflow-hidden">
-              <div
-                className="w-[90%] h-[90%] rounded-xl border-2 flex items-center justify-center"
-                style={{
-                  borderColor: "var(--saloon-border)",
-                  backgroundImage:
-                    "repeating-linear-gradient(45deg, rgba(255,16,240,0.03) 0px, rgba(255,16,240,0.03) 2px, transparent 2px, transparent 10px)",
-                }}
-              >
-                <span className="text-4xl opacity-20">🤠</span>
-              </div>
-            </div>
-          </div>
-        ))}
-
-        {/* Active card — 3D flip */}
-        <motion.div
-          className="absolute cursor-pointer"
-          style={{
-            zIndex: 10,
-            width: 320,
-            height: 200,
-            transformStyle: "preserve-3d",
-          }}
-          animate={{
-            rotateY: isRevealed ? 360 : isFlipped ? 180 : 0,
-            rotate: isFlipped || isRevealed ? -6 : 0,
-            x: isFlipped || isRevealed ? 24 : 0,
-            y: isFlipped || isRevealed ? 10 : 0,
-          }}
-          transition={{ type: "spring", stiffness: 180, damping: 22 }}
-          onClick={!isFlipped ? onFlip : undefined}
-          whileHover={
-            !isFlipped ? { y: -8, boxShadow: `0 20px 60px ${accent}40` } : {}
-          }
-        >
-          {/* Card BACK (visible before flip or when revealed at 360deg) */}
-          <div
-            className="absolute inset-0 rounded-2xl border-2 overflow-hidden flex items-center justify-center"
-            style={{
-              borderColor: isRevealed
-                ? "var(--sheriff-gold)"
-                : "var(--neon-pink)",
-              backgroundColor: "var(--saloon-card)",
-              backfaceVisibility: "hidden",
-              boxShadow: isRevealed
-                ? `0 0 40px rgba(255,215,0,0.3)`
-                : `0 0 40px rgba(255,16,240,0.3)`,
-            }}
-          >
-            {!isRevealed ? (
-              <div
-                className="w-[88%] h-[88%] rounded-xl border-2 flex flex-col items-center justify-center gap-3"
-                style={{
-                  borderColor: "rgba(255,16,240,0.3)",
-                  backgroundImage:
-                    "repeating-linear-gradient(45deg, rgba(255,16,240,0.04) 0px, rgba(255,16,240,0.04) 2px, transparent 2px, transparent 10px)",
-                }}
-              >
-                <span className="text-5xl">🤠</span>
-                <p
-                  className="text-xs uppercase tracking-widest font-bold"
-                  style={{ color: "var(--neon-pink)" }}
-                >
-                  Tap to reveal
-                </p>
-              </div>
-            ) : (
-              <div
-                className="w-[88%] h-[88%] rounded-xl border-2 flex flex-col items-center justify-center gap-3 p-4 text-center"
-                style={{
-                  borderColor: "rgba(255,215,0,0.3)",
-                  backgroundImage:
-                    "repeating-linear-gradient(45deg, rgba(255,215,0,0.04) 0px, rgba(255,215,0,0.04) 2px, transparent 2px, transparent 10px)",
-                }}
-              >
-                <span className="text-3xl">🎉</span>
-                <p className="text-base font-bold text-text-primary leading-snug">
-                  {card.answer ? card.answer : "Time's Up!"}
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Card FRONT (visible after flip) */}
-          <div
-            className="absolute inset-0 rounded-2xl border-2 overflow-hidden flex flex-col"
-            style={{
-              borderColor: accent,
-              backgroundColor: "var(--saloon-card)",
-              backfaceVisibility: "hidden",
-              transform: "rotateY(180deg)",
-              boxShadow: `0 0 40px ${accent}40`,
-            }}
-          >
-            <div
-              className="h-1.5"
-              style={{
-                background: `linear-gradient(90deg,${accent},${accent}60)`,
-              }}
-            />
-            <div className="flex-1 flex flex-col items-center justify-center gap-3 p-5 text-center">
-              <span
-                className="px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest border"
-                style={{
-                  color: accent,
-                  borderColor: `${accent}60`,
-                  backgroundColor: `${accent}18`,
-                }}
-              >
-                {card.type} · {card.points} pts
-              </span>
-              <p className="text-lg font-bold text-text-primary leading-snug">
-                {card.description}
-              </p>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-
-      {!isFlipped && (
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-text-muted text-sm animate-pulse"
-        >
-          Click the card to reveal it 👆
-        </motion.p>
-      )}
-    </div>
-  );
-}
 
 // ─── Active game view ──────────────────────────────────────────────────────────
 
@@ -230,7 +68,7 @@ function ActiveCardView({
   card,
   cardIndex,
   totalCards,
-  totalPlayers,
+  players,
   votes,
   onReveal,
   onNext,
@@ -241,7 +79,7 @@ function ActiveCardView({
   card: GameCard;
   cardIndex: number;
   totalCards: number;
-  totalPlayers: number;
+  players: LivePlayer[];
   votes: VoteCastPayload[];
   onReveal: () => void;
   onNext: () => void;
@@ -250,28 +88,12 @@ function ActiveCardView({
   scores: ScoreEntry[];
 }) {
   const [isFlipped, setIsFlipped] = useState(false);
-  const accent = ACCENT[card.type] ?? "var(--neon-pink)";
-  const progress = totalPlayers > 0 ? votes.length / totalPlayers : 0;
-
   const handleFlip = useCallback(() => setIsFlipped(true), []);
-  // Reset flip when card changes
-  const cardKey = card.id;
 
   return (
     <div className="flex flex-col justify-center items-center gap-6 w-full max-w-2xl mx-auto">
-      {/* Progress pill */}
-      <div className="flex items-center gap-3 text-xs text-text-muted">
-        <span className="px-3 py-1 rounded-full bg-saloon-surface border border-saloon-border font-semibold">
-          Card {cardIndex + 1} / {totalCards}
-        </span>
-        <span className="opacity-50">·</span>
-        <span>
-          {votes.length} / {totalPlayers} voted
-        </span>
-      </div>
-
       {/* Card stack — centred */}
-      <CardStack
+      <GameCardStack
         card={card}
         cardsLeft={totalCards - cardIndex}
         isFlipped={isFlipped}
@@ -279,42 +101,49 @@ function ActiveCardView({
         onFlip={handleFlip}
       />
 
-      {/* Vote progress bar */}
-      <div className="w-full max-w-sm">
-        <div className="w-full h-2 rounded-full bg-saloon-surface overflow-hidden border border-saloon-border">
-          <motion.div
-            className="h-full rounded-full"
-            style={{
-              background: `linear-gradient(90deg,${accent},${accent}80)`,
-            }}
-            animate={{ width: `${progress * 100}%` }}
-            transition={{ duration: 0.4 }}
-          />
-        </div>
-        <div className="flex flex-wrap gap-2 justify-center mt-3">
-          <AnimatePresence>
-            {votes.map((v) => (
-              <motion.span
-                key={v.playerId}
-                initial={{ opacity: 0, scale: 0.7 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-semibold"
-                style={{
-                  borderColor: "rgba(255,215,0,0.35)",
-                  backgroundColor: "rgba(255,215,0,0.07)",
-                  color: "var(--sheriff-gold)",
+      {/* Avatar vote grid */}
+      <div className="flex flex-wrap gap-3 justify-center max-w-sm">
+        {players.map((p) => {
+          const hasVoted = votes.some((v) => v.playerId === p.playerId);
+          return (
+            <div
+              key={p.playerId}
+              className="relative flex flex-col items-center gap-1"
+            >
+              <motion.div
+                animate={{
+                  borderColor: hasVoted
+                    ? "var(--neon-pink)"
+                    : "var(--saloon-border)",
+                  backgroundColor: hasVoted
+                    ? "rgba(255,16,240,0.12)"
+                    : "rgba(255,220,180,0.07)",
                 }}
+                transition={{ duration: 0.3 }}
+                className="w-12 h-12 rounded-full border-2 flex items-center justify-center text-2xl"
               >
-                <Star
-                  size={9}
-                  fill="var(--sheriff-gold)"
-                  style={{ color: "var(--sheriff-gold)" }}
-                />
-                {v.teamName ?? v.playerName}
-              </motion.span>
-            ))}
-          </AnimatePresence>
-        </div>
+                {p.avatar}
+              </motion.div>
+              <AnimatePresence>
+                {hasVoted && (
+                  <motion.div
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                    className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center"
+                    style={{
+                      backgroundColor: "var(--neon-pink)",
+                      boxShadow: "0 0 8px rgba(255,16,240,0.7)",
+                    }}
+                  >
+                    <Check size={11} color="white" strokeWidth={3} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          );
+        })}
       </div>
 
       {/* Revealed results */}
@@ -325,7 +154,7 @@ function ActiveCardView({
           className="w-full max-w-sm flex flex-col gap-2"
         >
           <p className="text-center text-xs uppercase tracking-widest text-text-muted font-semibold">
-            🎉 Results
+            Wyniki
           </p>
           {revealedVotes.map((v, i) => (
             <motion.div
@@ -346,10 +175,27 @@ function ActiveCardView({
                 className="text-xs font-bold px-2 py-0.5 rounded-full"
                 style={{
                   backgroundColor:
-                    v.answerIndex >= -1
-                      ? "rgba(16,185,129,0.15)"
-                      : "rgba(239,68,68,0.15)",
-                  color: v.answerIndex >= -1 ? "#10b981" : "#ef4444",
+                    v.answerIndex >= 0
+                      ? isRevealed &&
+                        card.options?.[v.answerIndex] === card.answer
+                        ? "rgba(16,185,129,0.15)"
+                        : isRevealed
+                          ? "rgba(239,68,68,0.15)"
+                          : "rgba(255,16,240,0.15)"
+                      : v.answerIndex === -1
+                        ? "rgba(16,185,129,0.15)"
+                        : "rgba(239,68,68,0.15)",
+                  color:
+                    v.answerIndex >= 0
+                      ? isRevealed &&
+                        card.options?.[v.answerIndex] === card.answer
+                        ? "#10b981"
+                        : isRevealed
+                          ? "#ef4444"
+                          : "var(--neon-pink)"
+                      : v.answerIndex === -1
+                        ? "#10b981"
+                        : "#ef4444",
                 }}
               >
                 {v.answerText}
@@ -358,6 +204,14 @@ function ActiveCardView({
           ))}
           {scores.length > 0 && (
             <div className="mt-1 pt-3 border-t border-saloon-border flex flex-col gap-1.5">
+              <p className="text-[10px] uppercase tracking-widest text-text-muted font-bold flex items-center gap-1.5 mb-1">
+                <Star
+                  size={10}
+                  fill="var(--sheriff-gold)"
+                  style={{ color: "var(--sheriff-gold)" }}
+                />{" "}
+                Ranking
+              </p>
               {[...scores]
                 .sort((a, b) => b.score - a.score)
                 .map((s, i) => (
@@ -365,20 +219,20 @@ function ActiveCardView({
                     key={s.teamId}
                     className="flex items-center gap-2 text-sm"
                   >
-                    <span className="w-5 text-center text-text-muted font-bold">
+                    <span className="w-4 text-center font-bold text-text-muted text-[10px]">
                       {i + 1}
                     </span>
-                    <span className="flex-1 font-semibold text-text-primary">
-                      {s.teamName}
+                    <span className="flex-1 font-semibold text-text-primary text-xs truncate">
+                      {s.teamName ?? s.playerName}
                     </span>
                     <div className="flex items-center gap-1">
                       <Star
-                        size={11}
+                        size={10}
                         fill="var(--sheriff-gold)"
                         style={{ color: "var(--sheriff-gold)" }}
                       />
                       <span
-                        className="font-bold"
+                        className="font-bold text-xs"
                         style={{ color: "var(--sheriff-gold)" }}
                       >
                         {s.score}
@@ -398,16 +252,28 @@ function ActiveCardView({
             id="reveal-votes-btn"
             whileTap={{ scale: 0.97 }}
             onClick={onReveal}
-            disabled={!isFlipped}
-            className="flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-white disabled:opacity-30"
+            disabled={!isFlipped || votes.length < players.length}
+            className="relative overflow-hidden group flex items-center gap-2 px-8 py-4 rounded-2xl font-bold border-2 disabled:opacity-30 flex-col"
             style={{
-              background: "linear-gradient(135deg,var(--sheriff-gold),#b8860b)",
+              borderColor: "var(--sheriff-gold)",
+              backgroundColor: "rgba(249,74,255,0.08)",
+              color: "var(--sheriff-gold)",
               fontFamily: "'Bebas Neue',cursive",
-              letterSpacing: "0.1em",
+              letterSpacing: "0.12em",
               fontSize: "1.1rem",
+              boxShadow: "0 0 20px rgba(249,74,255,0.2)",
             }}
           >
-            <Eye size={18} /> Reveal Answers
+            <span className="relative z-10">Pokaż odpowiedź kowboju</span>
+            {isFlipped && votes.length < players.length && (
+              <span
+                className="text-[10px] tracking-widest font-semibold opacity-70 normal-case"
+                style={{ fontFamily: "inherit", letterSpacing: "0.05em" }}
+              >
+                czeka na {players.length - votes.length}{" "}
+                {players.length - votes.length === 1 ? "głos" : "głosy"}
+              </span>
+            )}
           </motion.button>
         ) : (
           <motion.button
@@ -422,7 +288,7 @@ function ActiveCardView({
               fontSize: "1.1rem",
             }}
           >
-            Next Card <ChevronRight size={18} />
+            Kolejna dzika karta <ChevronRight size={18} />
           </motion.button>
         )}
       </div>
@@ -448,14 +314,14 @@ function LobbyView({
           className="text-6xl sm:text-8xl tracking-widest shimmer-text mt-2"
           style={{ fontFamily: "'Bebas Neue',cursive" }}
         >
-          NEON SALOON
+          last rodeo andżeliki
         </h1>
       </div>
 
       {/* PIN */}
       <div className="flex flex-col items-center gap-3">
         <p className="text-xs uppercase tracking-widest font-semibold text-text-muted">
-          PIN gry
+          KOD SZERYFA
         </p>
         <div className="flex gap-3">
           {pin.split("").map((d, i) => (
@@ -479,7 +345,7 @@ function LobbyView({
         <p className="text-text-muted text-xs">
           Gracze wchodzą na{" "}
           <span className="text-text-primary font-bold">
-            neon-saloon.app/join
+            lastrodeoandzeliki.pl/join
           </span>
         </p>
       </div>
@@ -518,7 +384,7 @@ function LobbyView({
               >
                 <span className="text-lg">{p.avatar}</span>
                 <div>
-                  <p className="text-sm font-bold text-text-primary leading-none">
+                  <p className="text-sm font-bold text-text-primary leading-snug">
                     {p.playerName}
                   </p>
                   {p.teamName && (
@@ -535,7 +401,7 @@ function LobbyView({
           </AnimatePresence>
           {players.length === 0 && (
             <p className="text-text-muted text-sm opacity-50">
-              Oczekuję na graczy...
+              Oczekuję na kowbojki ...
             </p>
           )}
         </div>
@@ -574,8 +440,88 @@ export default function HostScreen({
   const [isRevealed, setIsRevealed] = useState(false);
   const [revealedVotes, setRevealedVotes] = useState<VoteRecord[]>([]);
   const [scores, setScores] = useState<ScoreEntry[]>([]);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [menuOpen]);
 
   const currentCard = initialCards[cardIndex];
+
+  // Pre-populate state from Redis on mount (handles refresh + Pusher timing gaps).
+  useEffect(() => {
+    fetch(`/api/sessions/${pin}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!data) return;
+        if (data.players?.length) setPlayers(data.players);
+        if (data.status === "active") setPhase("active");
+        if (data.status === "finished") setPhase("finished");
+        if (typeof data.cardIndex === "number") setCardIndex(data.cardIndex);
+      })
+      .catch(() => {});
+  }, [pin]);
+
+  // Poll Redis every 3s while in lobby — fallback for missed Pusher events.
+  useEffect(() => {
+    if (phase !== "lobby") return;
+    const id = setInterval(() => {
+      fetch(`/api/sessions/${pin}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          if (!data?.players) return;
+          setPlayers((prev) => {
+            const existing = new Set(prev.map((p) => p.playerId));
+            const merged = [
+              ...prev,
+              ...data.players.filter(
+                (p: { playerId: string }) => !existing.has(p.playerId),
+              ),
+            ];
+            return merged.length !== prev.length ? merged : prev;
+          });
+        })
+        .catch(() => {});
+    }, 3000);
+    return () => clearInterval(id);
+  }, [phase, pin]);
+
+  // Poll Redis every 3s during active phase — fallback for missed vote-cast events.
+  useEffect(() => {
+    if (phase !== "active" && phase !== "reveal") return;
+    const id = setInterval(() => {
+      fetch(`/api/sessions/${pin}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          if (!data?.votes) return;
+          setCardIndex((ci) => {
+            const votesForCard = (
+              data.votes as Array<{ playerId: string; cardIndex: number }>
+            ).filter((v) => v.cardIndex === ci);
+            setCurrentVotes((prev) => {
+              const existing = new Set(prev.map((v) => v.playerId));
+              const incoming = votesForCard.filter(
+                (v) => !existing.has(v.playerId),
+              );
+              return incoming.length
+                ? ([...prev, ...incoming] as typeof prev)
+                : prev;
+            });
+            return ci; // don't change cardIndex
+          });
+        })
+        .catch(() => {});
+    }, 3000);
+    return () => clearInterval(id);
+  }, [phase, pin]);
 
   useGameSocket(pin, {
     onPlayerJoined: useCallback((d: PlayerJoinedPayload) => {
@@ -615,19 +561,58 @@ export default function HostScreen({
   }, [pin, initialCards]);
 
   const handleReveal = useCallback(async () => {
-    const votes: VoteRecord[] = currentVotes.map((v) => ({
-      ...v,
-      answerIndex: -1,
-      answerText: "✅ Answered",
-    }));
+    const card = initialCards[cardIndex];
+    const votes: VoteRecord[] = currentVotes.map((v) => ({ ...v }));
+
+    // Calculate new scores
+    let updatedScores = [...scores];
+    if (card.type === "QUIZ" && card.answer) {
+      votes.forEach((v) => {
+        const isCorrect = card.options?.[v.answerIndex] === card.answer;
+        if (isCorrect) {
+          const id = v.teamId || v.playerId;
+          const name = v.teamName || v.playerName;
+          const teamIdx = updatedScores.findIndex((s) => s.teamId === id);
+          if (teamIdx > -1) {
+            updatedScores[teamIdx] = {
+              ...updatedScores[teamIdx],
+              score: updatedScores[teamIdx].score + 1,
+            };
+          } else {
+            updatedScores.push({
+              teamId: id,
+              teamName: name,
+              score: 1,
+              playerName: v.playerName,
+            });
+          }
+        }
+      });
+    }
+
     await fetch(`/api/sessions/${pin}/reveal`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cardIndex, votes, scores }),
+      body: JSON.stringify({ cardIndex, votes, scores: updatedScores }),
     });
     setIsRevealed(true);
     setRevealedVotes(votes);
-  }, [pin, cardIndex, currentVotes, scores]);
+    setScores(updatedScores);
+  }, [pin, cardIndex, currentVotes, scores, initialCards]);
+
+  const handleForceFinish = useCallback(async () => {
+    setMenuOpen(false);
+    setPhase("finished");
+    try {
+      await fetch(`/api/sessions/${pin}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "finish", scores }),
+      });
+    } catch (err) {
+      console.error("[handleForceFinish]", err);
+    }
+  }, [pin, scores]);
 
   const handleNextCard = useCallback(async () => {
     const next = cardIndex + 1;
@@ -652,7 +637,7 @@ export default function HostScreen({
   }, [pin, cardIndex, initialCards, scores]);
 
   return (
-    <div className="w-full min-h-dvh flex flex-col bg-saloon-dark">
+    <div className="w-full min-h-dvh flex flex-col">
       {/* Ambient glows */}
       <div aria-hidden className="pointer-events-none fixed inset-0">
         <div
@@ -674,15 +659,49 @@ export default function HostScreen({
       </div>
 
       {/* Header */}
-      <div className="relative z-10 shrink-0 border-b border-saloon-border bg-saloon-dark/50 backdrop-blur-md">
-        <div className="max-w-5xl mx-auto flex items-center justify-between px-6 py-4">
+      <div
+        className="relative z-20 shrink-0 border-b"
+        style={{ borderColor: "rgba(255,220,180,0.1)" }}
+      >
+        <div className="max-w-5xl mx-auto grid grid-cols-3 items-center px-6 py-4">
           <div className="flex items-center gap-2">
             <Zap size={14} style={{ color: "var(--neon-pink)" }} />
             <span className="text-xs uppercase tracking-widest font-semibold text-text-muted">
               PIN: <span className="text-text-primary">{pin}</span>
             </span>
           </div>
-          <div className="flex items-center gap-3">
+
+          {/* Centre — card type + counter during game */}
+          <div className="flex justify-center items-center gap-2">
+            {(phase === "active" || phase === "reveal") && currentCard && (
+              <>
+                <span
+                  className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border"
+                  style={{
+                    color: ACCENT[currentCard.type] ?? "var(--neon-pink)",
+                    borderColor: `${ACCENT[currentCard.type] ?? "var(--neon-pink)"}55`,
+                    backgroundColor: `${ACCENT[currentCard.type] ?? "var(--neon-pink)"}15`,
+                  }}
+                >
+                  {currentCard.type}
+                </span>
+                <span className="text-xs font-semibold text-text-muted tabular-nums">
+                  {cardIndex + 1} / {initialCards.length}
+                </span>
+              </>
+            )}
+          </div>
+
+          <div className="flex justify-end items-center gap-3">
+            {/* Vote count */}
+            {(phase === "active" || phase === "reveal") && (
+              <span className="text-xs font-semibold text-text-muted tabular-nums">
+                <span className="text-text-primary">{currentVotes.length}</span>
+                {" / "}
+                <span className="text-text-primary">{players.length}</span>
+                {" głosów"}
+              </span>
+            )}
             <div className="flex items-center gap-2">
               <span
                 className="w-2 h-2 rounded-full animate-pulse"
@@ -691,6 +710,62 @@ export default function HostScreen({
               <span className="text-xs text-text-muted font-bold tracking-tighter">
                 LIVE
               </span>
+            </div>
+
+            {/* Hamburger menu */}
+            <div ref={menuRef} className="relative">
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setMenuOpen((o) => !o)}
+                className="w-8 h-8 flex items-center justify-center rounded-lg border"
+                style={{
+                  borderColor: "rgba(255,220,180,0.18)",
+                  backgroundColor: "rgba(255,220,180,0.05)",
+                  color: "rgba(255,220,180,0.65)",
+                }}
+              >
+                {menuOpen ? <X size={15} /> : <Menu size={15} />}
+              </motion.button>
+
+              <AnimatePresence>
+                {menuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.92, y: -6 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.92, y: -6 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 top-10 z-[100] min-w-[180px] rounded-2xl border p-1.5 shadow-xl"
+                    style={{
+                      borderColor: "rgba(255,220,180,0.15)",
+                      backgroundColor: "rgba(13,8,24,0.95)",
+                      backdropFilter: "blur(16px)",
+                    }}
+                  >
+                    {phase !== "finished" ? (
+                      <button
+                        onClick={handleForceFinish}
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-left transition-colors"
+                        style={{ color: "#ef4444" }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.backgroundColor =
+                            "rgba(239,68,68,0.1)")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.backgroundColor =
+                            "transparent")
+                        }
+                      >
+                        <Flag size={14} />
+                        Zakończ grę
+                      </button>
+                    ) : (
+                      <p className="px-4 py-3 text-xs text-text-muted">
+                        Gra zakończona
+                      </p>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </div>
@@ -726,7 +801,7 @@ export default function HostScreen({
                   card={currentCard}
                   cardIndex={cardIndex}
                   totalCards={initialCards.length}
-                  totalPlayers={players.length}
+                  players={players}
                   votes={currentVotes}
                   onReveal={handleReveal}
                   onNext={handleNextCard}
@@ -746,7 +821,6 @@ export default function HostScreen({
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <span className="text-6xl">🏆</span>
                 <h2
                   className="text-5xl sm:text-7xl shimmer-text"
                   style={{ fontFamily: "'Bebas Neue',cursive" }}
@@ -786,6 +860,23 @@ export default function HostScreen({
                       </motion.div>
                     ))}
                 </div>
+                <motion.a
+                  href="/"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="mt-2 flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-white"
+                  style={{
+                    background:
+                      "linear-gradient(135deg,var(--neon-pink),#c800c8)",
+                    fontFamily: "'Bebas Neue',cursive",
+                    letterSpacing: "0.12em",
+                    fontSize: "1.1rem",
+                    boxShadow: "0 4px 32px rgba(255,16,240,0.4)",
+                  }}
+                >
+                  Wróć do menu głównego
+                </motion.a>
               </motion.div>
             )}
           </AnimatePresence>

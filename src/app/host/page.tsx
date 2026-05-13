@@ -3,16 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import {
-  Tv,
-  Loader2,
-  ChevronRight,
-  Zap,
-  Layers,
-  Sword,
-  Dices,
-  MessageSquare,
-} from "lucide-react";
+import { Tv, Loader2, ChevronRight, Dices, MessageSquare } from "lucide-react";
 import { useEffect } from "react";
 
 const FUNNY_NAMES = [
@@ -55,17 +46,6 @@ const FUNNY_NAMES = [
 
 const GAME_MODES = [
   {
-    id: "classic",
-    emoji: "🃏",
-    label: "Klasyczna Gra Karciana",
-    description:
-      "Odkrywajcie karty i wykonujcie zadania. Przesunięcie w prawo = sukces, w lewo = kara.",
-    icon: Layers,
-    color: "var(--sheriff-gold)",
-    border: "rgba(255,215,0,0.5)",
-    bg: "rgba(255,215,0,0.07)",
-  },
-  {
     id: "trivia",
     emoji: "🧠",
     label: "Quiz o Pannie Młodej",
@@ -77,22 +57,21 @@ const GAME_MODES = [
     bg: "rgba(255,16,240,0.07)",
   },
   {
-    id: "dares",
-    emoji: "🌶️",
-    label: "Pikantne Wyzwania",
-    description:
-      "Tylko odważne wyzwania i akcje. Najdziksza opcja — gracie na własne ryzyko.",
-    icon: Sword,
-    color: "#f59e0b",
-    border: "rgba(245,158,11,0.5)",
-    bg: "rgba(245,158,11,0.07)",
+    id: "test",
+    emoji: "🔥",
+    label: "Test DEVA",
+    description: "Testowy tryb gry.",
+    icon: MessageSquare,
+    color: "var(--neon-pink)",
+    border: "rgba(255,16,240,0.5)",
+    bg: "rgba(255,16,240,0.07)",
   },
 ];
 
 export default function HostSetupPage() {
   const router = useRouter();
   const [hostName, setHostName] = useState("");
-  const [selectedMode, setSelectedMode] = useState("classic");
+  const [selectedMode, setSelectedMode] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [placeholder, setPlaceholder] = useState("np. Szeryf Alicja");
@@ -104,7 +83,7 @@ export default function HostSetupPage() {
   }, []);
 
   const handleCreate = async () => {
-    if (!hostName.trim()) return;
+    if (!hostName.trim() || !selectedMode) return;
     setCreating(true);
     setError(null);
     try {
@@ -127,7 +106,7 @@ export default function HostSetupPage() {
   };
 
   return (
-    <div className="w-full min-h-dvh flex flex-col items-center justify-center p-6 bg-saloon-dark overflow-y-auto">
+    <div className="w-full min-h-dvh flex flex-col items-center justify-center p-6 overflow-y-auto">
       {/* Ambient glows */}
       <div aria-hidden className="pointer-events-none fixed inset-0">
         <div
@@ -174,7 +153,7 @@ export default function HostSetupPage() {
           transition={{ delay: 0.1 }}
         >
           <label className="block text-xs uppercase tracking-widest text-text-muted font-semibold mb-2">
-            Twoja nazwa
+            Nazwa kowboja
           </label>
           <div className="flex gap-2">
             <input
@@ -198,7 +177,8 @@ export default function HostSetupPage() {
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => {
-                const randomName = FUNNY_NAMES[Math.floor(Math.random() * FUNNY_NAMES.length)];
+                const randomName =
+                  FUNNY_NAMES[Math.floor(Math.random() * FUNNY_NAMES.length)];
                 setHostName(randomName);
               }}
               className="px-4 rounded-xl border-2 flex items-center justify-center bg-saloon-surface transition-colors"
@@ -217,7 +197,7 @@ export default function HostSetupPage() {
           transition={{ delay: 0.2 }}
         >
           <label className="block text-xs uppercase tracking-widest text-text-muted font-semibold mb-3">
-            Game mode
+            Tryb
           </label>
           <div className="flex flex-col gap-3">
             {GAME_MODES.map((mode) => {
@@ -292,7 +272,7 @@ export default function HostSetupPage() {
         >
           <motion.button
             id="create-lobby-btn"
-            disabled={!hostName.trim() || creating}
+            disabled={!hostName.trim() || !selectedMode || creating}
             whileTap={{ scale: 0.97 }}
             onClick={handleCreate}
             className="w-full py-4 rounded-2xl font-bold text-white flex items-center justify-center gap-3 disabled:opacity-30"
@@ -310,7 +290,7 @@ export default function HostSetupPage() {
                 Tworze salon...
               </>
             ) : (
-              <>Otwórz salon</>
+              <>Otwórz salon na dzikim zachodzie</>
             )}
           </motion.button>
           {error && (
@@ -323,15 +303,6 @@ export default function HostSetupPage() {
             </motion.p>
           )}
         </motion.div>
-
-        <p className="text-center text-[10px] text-text-muted opacity-40 pb-4">
-          <Zap
-            size={9}
-            className="inline mr-1"
-            style={{ color: "var(--neon-pink)" }}
-          />
-          Neon Saloon © 2026
-        </p>
       </div>
     </div>
   );

@@ -3,16 +3,16 @@ import { devtools } from "zustand/middleware";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
-export type CardType = "trivia" | "charades" | "action" | "dare";
+export type CardType = "QUIZ" | "TEST";
 
 export interface GameCard {
   id: string;
   type: CardType;
   title: string;
   description: string;
-  points: number;
   emoji: string;
   answer?: string;
+  options?: string[]; // Added for A, B, C, D support
 }
 
 export interface Participant {
@@ -62,43 +62,197 @@ export interface GameState {
 // ─── Default card deck ───────────────────────────────────────────────────────
 
 const DEFAULT_CARDS: Omit<GameCard, "id">[] = [
-  // Trivia cards
-  { type: "trivia", title: "Bride Trivia", description: "Where did the bride and groom have their first date?", points: 2, emoji: "🤠", answer: "At the local pub!" },
-  { type: "trivia", title: "Bride Trivia", description: "What is the bride's all-time favourite movie?", points: 1, emoji: "🎬", answer: "Mamma Mia!" },
-  { type: "trivia", title: "Bride Trivia", description: "What's the groom's middle name?", points: 2, emoji: "💍", answer: "James" },
-  { type: "trivia", title: "Bride Trivia", description: "What song will they dance to at the wedding?", points: 3, emoji: "🎵", answer: "Perfect by Ed Sheeran" },
-  { type: "trivia", title: "Bride Trivia", description: "How many months have they been together?", points: 1, emoji: "🗓️", answer: "42 months" },
-  { type: "trivia", title: "Bride Trivia", description: "What is the bride's guilty-pleasure TV show?", points: 2, emoji: "📺", answer: "The Bachelor" },
-  { type: "trivia", title: "Bride Trivia", description: "What city does the bride dream of visiting for the honeymoon?", points: 2, emoji: "✈️", answer: "Maldives" },
-  { type: "trivia", title: "Bride Trivia", description: "What is the bride's cocktail of choice?", points: 1, emoji: "🍹", answer: "Margarita" },
-
-  // Charades cards
-  { type: "charades", title: "Saloon Charades", description: "Act out the bride walking down the aisle — without smiling!", points: 2, emoji: "🎭" },
-  { type: "charades", title: "Saloon Charades", description: "Mime the groom proposing — on one knee, the full drama!", points: 2, emoji: "💏" },
-  { type: "charades", title: "Saloon Charades", description: "Charades: You're a tumbleweed rolling through a Wild West town.", points: 1, emoji: "🌵" },
-  { type: "charades", title: "Saloon Charades", description: "Act out the bride getting ready on the wedding morning — hair, makeup, the works!", points: 3, emoji: "💄" },
-  { type: "charades", title: "Saloon Charades", description: "Mime the first dance going catastrophically wrong.", points: 2, emoji: "🕺" },
-  { type: "charades", title: "Saloon Charades", description: "Charades: Bride-to-be deciding between two wedding dress options.", points: 2, emoji: "👗" },
-
-  // Action / Dare cards
-  { type: "action", title: "Cowgirl Dare", description: "Do your best cowboy swagger across the room. Yeehaw! 🤠", points: 1, emoji: "🤠" },
-  { type: "action", title: "Cowgirl Dare", description: "Call the bride by the wrong name 3 times in a row without laughing.", points: 2, emoji: "😂" },
-  { type: "action", title: "Cowgirl Dare", description: "Take a shot — or a sip — and share your most embarrassing story about the bride.", points: 3, emoji: "🥃" },
-  { type: "action", title: "Cowgirl Dare", description: "Serenade the group with the bride's favourite song — at least one full verse!", points: 3, emoji: "🎤" },
-  { type: "action", title: "Cowgirl Dare", description: "Let the group give you a wedding-themed makeover for 60 seconds.", points: 2, emoji: "💅" },
-  { type: "action", title: "Cowgirl Dare", description: "Do 10 lasso spins with an imaginary rope, full commitment only.", points: 1, emoji: "🌀" },
-  { type: "action", title: "Cowgirl Dare", description: "Write a 3-line poem about the bride. Read it aloud with feeling!", points: 3, emoji: "📝" },
-  { type: "action", title: "Cowgirl Dare", description: "Everyone gives you a nickname. You must use it for the next 5 minutes.", points: 2, emoji: "🏷️" },
-
-  // Dare (spicy!)
-  { type: "dare", title: "Spicy Dare 🌶️", description: "Tell the group who in the room would survive a zombie apocalypse first — and why.", points: 2, emoji: "🧟" },
-  { type: "dare", title: "Spicy Dare 🌶️", description: "Reveal your most unpopular opinion about weddings. No taking it back!", points: 3, emoji: "🌶️" },
-  { type: "dare", title: "Spicy Dare 🌶️", description: "Read out the last text you sent — no secrets in the Saloon!", points: 3, emoji: "📱" },
-  { type: "dare", title: "Spicy Dare 🌶️", description: "FaceTime or text someone RIGHT NOW and say 'I've been thinking about you.'", points: 4, emoji: "❤️‍🔥" },
-  { type: "dare", title: "Spicy Dare 🌶️", description: "Tell the group a secret you've kept from the bride. Tonight is confession night!", points: 4, emoji: "🤫" },
+  {
+    type: "QUIZ",
+    title: "Quiz o Pannie Młodej",
+    description: "Jak miała na imię jej pierwsza miłość?",
+    emoji: "💔",
+    answer: "Adam",
+    options: ["Tomek", "Marcin", "Adam", "Robert"],
+  },
+  {
+    type: "QUIZ",
+    title: "Quiz o Pannie Młodej",
+    description: "Jaki jest dokładny rozmiar stopy Panny Młodej?",
+    emoji: "👠",
+    answer: "37",
+    options: ["36", "36,5", "37", "38"],
+  },
+  {
+    type: "QUIZ",
+    title: "Quiz o Pannie Młodej",
+    description: "Co najczęściej zamawia do jedzenia?",
+    emoji: "🍕",
+    answer: "Sushi",
+    options: ["Sushi", "Shoarma", "Burger", "Pizza"],
+  },
+  {
+    type: "QUIZ",
+    title: "Quiz o Pannie Młodej",
+    description: "Co robi, kiedy jest mocno zestresowana?",
+    emoji: "😤",
+    answer: "Wyżywa się na Marcinie",
+    options: [
+      "Płacze",
+      "Obgryza paznokcie",
+      "Wyżywa się na Marcinie",
+      "Idzie na zakupy",
+    ],
+  },
+  {
+    type: "QUIZ",
+    title: "Quiz o Pannie Młodej",
+    description: "O czym marzyła jako mała dziewczynka?",
+    emoji: "💭",
+    answer: "O byciu rolnikiem",
+    options: [
+      "O byciu rolnikiem",
+      "O byciu żoną męża",
+      "O byciu bizneswoman",
+      "O własnym salonie beauty",
+    ],
+  },
+  {
+    type: "QUIZ",
+    title: "Quiz o Pannie Młodej",
+    description: "Gdzie miał miejsce ich pierwszy pocałunek?",
+    emoji: "💋",
+    answer: "Wrocław, mieszkanie",
+    options: [
+      "Bełchatów, spacer",
+      "Wrocław, klub",
+      "Wrocław, mieszkanie",
+      "Bełchatów, wesele",
+    ],
+  },
+  {
+    type: "QUIZ",
+    title: "Quiz o Pannie Młodej",
+    description:
+      "Co na samym początku najbardziej nie pasowało jej w Marcinie?",
+    emoji: "🚩",
+    answer: "Ubiór",
+    options: ["Miejsce zamieszkania", "Praca", "Ubiór", "Wzrost"],
+  },
+  {
+    type: "QUIZ",
+    title: "Quiz o Pannie Młodej",
+    description: "Najbardziej żenująca sytuacja z przyszłym mężem to...?",
+    emoji: "🙈",
+    answer: "Lunatykowanie podczas pierwszej nocy u Marcina",
+    options: [
+      "Seks na weselu Magdy",
+      "Obrzyganie płaszcza",
+      "Lunatykowanie podczas pierwszej nocy u Marcina",
+      "Pierd podczas minetki",
+    ],
+  },
+  {
+    type: "QUIZ",
+    title: "Quiz o Pannie Młodej",
+    description: "Ile osób pocałowała na imprezie w jedną noc? (Rekord)",
+    emoji: "👅",
+    answer: "3",
+    options: ["1", "2", "3", "4"],
+  },
+  {
+    type: "QUIZ",
+    title: "Quiz o Pannie Młodej",
+    description: "Jej ulubiona pozycja seksualna to?",
+    emoji: "🌶️",
+    answer: "Odwrócony kowboj",
+    options: ["Na pieska", "69", "Na misjonarza", "Odwrócony kowboj"],
+  },
+  {
+    type: "QUIZ",
+    title: "Quiz o Pannie Młodej",
+    description: "Czy zdarzyło jej się potajemnie sprawdzać telefon Marcina?",
+    emoji: "📱",
+    answer: "Tak",
+    options: ["Tak", "Nie"],
+  },
+  {
+    type: "QUIZ",
+    title: "Quiz o Pannie Młodej",
+    description: "Jakie imię by wybrała, gdyby miała mieć córkę?",
+    emoji: "👧",
+    answer: "Liliana",
+    options: ["Aurelia", "Liliana", "Zofia", "Oliwia"],
+  },
+  {
+    type: "QUIZ",
+    title: "Quiz o Pannie Młodej",
+    description: "Jakie imię by wybrała, gdyby miała mieć syna?",
+    emoji: "👦",
+    answer: "Ignacy",
+    options: ["Franek", "Staś", "Ignacy", "Antoś"],
+  },
+  {
+    type: "QUIZ",
+    title: "Quiz o Pannie Młodej",
+    description: "Czego za żadne skarby świata nie chciałaby na swoim weselu?",
+    emoji: "🛑",
+    answer: "Pijanych dram i awantur",
+    options: [
+      "By ktoś założył białą sukienkę",
+      "Pijanych dram i awantur",
+      "Żenujących zabaw z podtekstem",
+      "Krzyczenia „Gorzko, gorzko” co 5 minut",
+    ],
+  },
+  {
+    type: "QUIZ",
+    title: "Quiz o Pannie Młodej",
+    description: "Jakie było jej największe kłamstwo w tym związku?",
+    emoji: "🤥",
+    answer: "Mam naturalne usta",
+    options: [
+      "Jestem dziewicą",
+      "Mam naturalne usta",
+      "Nie palę papierosów",
+      "Nie stalkowałam twojej byłej",
+    ],
+  },
+  {
+    type: "QUIZ",
+    title: "Quiz o Pannie Młodej",
+    description: "Jaka była najbardziej pikantna wiadomość, którą mu wysłała?",
+    emoji: "🔥",
+    answer: "Całe nagie foto",
+    options: [
+      "Gołe zdjęcie cyców",
+      "Całe nagie foto",
+      "Tekst: „Mam na ciebie ochotę”",
+      "Tekst: „Przyjedź, natychmiast”",
+    ],
+  },
+  {
+    type: "QUIZ",
+    title: "Quiz o Pannie Młodej",
+    description: "O co ta dwójka najczęściej się kłóci?",
+    emoji: "🥊",
+    answer: "O sprzątanie",
+    options: ["O sprzątanie", "O granie Marcina", "O zazdrość", "O brak czasu"],
+  },
+  {
+    type: "TEST",
+    title: "Testowe pytania",
+    description: "Jakie warzywo Pani Młoda najbardziej lubi?",
+    emoji: "🌶️",
+    answer: "Brokuł",
+    options: ["Marchew", "Brokuł", "Papryka", "Cebula"],
+  },
+  {
+    type: "TEST",
+    title: "Testowe pytania",
+    description: "Czy zdarzyło jej się potajemnie sprawdzać telefon Marcina?",
+    emoji: "📱",
+    answer: "Tak",
+    options: ["Tak", "Nie"],
+  },
 ];
 
-const shuffleArray = <T,>(arr: T[]): T[] => {
+const shuffleArray = <T>(arr: T[]): T[] => {
   const copy = [...arr];
   for (let i = copy.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -108,10 +262,34 @@ const shuffleArray = <T,>(arr: T[]): T[] => {
 };
 
 const buildDeck = (): GameCard[] =>
-  shuffleArray(DEFAULT_CARDS.map((c, i) => ({ ...c, id: `card-${i}-${Date.now()}` })));
+  shuffleArray(
+    DEFAULT_CARDS.map((c, i) => ({ ...c, id: `card-${i}-${Date.now()}` })),
+  );
 
-const AVATAR_EMOJIS = ["🤠", "💃", "🎉", "🌸", "🦋", "🌺", "✨", "🍾", "🎀", "👑"];
-const PLAYER_COLORS = ["#FF10F0", "#FFD700", "#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7", "#DDA0DD", "#98D8C8", "#F7DC6F"];
+const AVATAR_EMOJIS = [
+  "🤠",
+  "💃",
+  "🎉",
+  "🌸",
+  "🦋",
+  "🌺",
+  "✨",
+  "🍾",
+  "🎀",
+  "👑",
+];
+const PLAYER_COLORS = [
+  "#FF10F0",
+  "#FFD700",
+  "#FF6B6B",
+  "#4ECDC4",
+  "#45B7D1",
+  "#96CEB4",
+  "#FFEAA7",
+  "#DDA0DD",
+  "#98D8C8",
+  "#F7DC6F",
+];
 
 // ─── Store ───────────────────────────────────────────────────────────────────
 
@@ -157,7 +335,7 @@ export const useGameStore = create<GameState>()(
       incrementScore: (participantId, amount = 1) =>
         set((state) => ({
           participants: state.participants.map((p) =>
-            p.id === participantId ? { ...p, score: p.score + amount } : p
+            p.id === participantId ? { ...p, score: p.score + amount } : p,
           ),
         })),
 
@@ -166,7 +344,7 @@ export const useGameStore = create<GameState>()(
           participants: state.participants.map((p) =>
             p.id === participantId
               ? { ...p, score: Math.max(0, p.score - amount) }
-              : p
+              : p,
           ),
         })),
 
@@ -178,12 +356,19 @@ export const useGameStore = create<GameState>()(
       flipCard: () => set({ isCardFlipped: true }),
 
       nextCard: (swipeDirection) => {
-        const { currentCardIndex, deck, currentParticipantIndex, participants, isCardFlipped } = get();
+        const {
+          currentCardIndex,
+          deck,
+          currentParticipantIndex,
+          participants,
+          isCardFlipped,
+        } = get();
 
         if (!isCardFlipped) return; // Must flip before swiping
 
         const nextIndex = (currentCardIndex + 1) % deck.length;
-        const nextParticipantIndex = (currentParticipantIndex + 1) % Math.max(participants.length, 1);
+        const nextParticipantIndex =
+          (currentParticipantIndex + 1) % Math.max(participants.length, 1);
 
         set({
           currentCardIndex: nextIndex,
@@ -195,7 +380,8 @@ export const useGameStore = create<GameState>()(
 
       nextTurn: () => {
         const { currentParticipantIndex, participants } = get();
-        const nextIndex = (currentParticipantIndex + 1) % Math.max(participants.length, 1);
+        const nextIndex =
+          (currentParticipantIndex + 1) % Math.max(participants.length, 1);
         set({ currentParticipantIndex: nextIndex });
       },
 
@@ -210,6 +396,6 @@ export const useGameStore = create<GameState>()(
           lastSwipeDirection: null,
         }),
     }),
-    { name: "NeonSaloonStore" }
-  )
+    { name: "NeonSaloonStore" },
+  ),
 );

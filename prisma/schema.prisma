@@ -1,4 +1,4 @@
-// Neon Saloon - Prisma 7 Schema (no datasource block)
+// last rodeo andżeliki - Prisma 7 Schema (no datasource block)
 
 generator client {
   provider = "prisma-client-js"

@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  useRef,
-  useState,
-  useCallback,
-  useEffect,
-} from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import {
   motion,
   useMotionValue,
@@ -16,7 +11,10 @@ import {
 import type { GameCard } from "@/lib/store";
 import { useGameStore } from "@/lib/store";
 import ReactCanvasConfetti from "react-canvas-confetti";
-import type { TCanvasConfettiInstance, TOnInitComponentFn } from "react-canvas-confetti/dist/types";
+import type {
+  TCanvasConfettiInstance,
+  TOnInitComponentFn,
+} from "react-canvas-confetti/dist/types";
 import { CheckCircle, XCircle, RotateCcw } from "lucide-react";
 
 // ─── Card type config ────────────────────────────────────────────────────────
@@ -32,37 +30,21 @@ const CARD_CONFIG: Record<
     stripeColor: string;
   }
 > = {
-  trivia: {
-    label: "🤠 Bride Trivia",
+  QUIZ: {
+    label: "🧠 Quiz o Pannie Młodej",
     bgClass: "card-trivia",
     accentColor: "#8b2be2",
     labelColor: "#c084fc",
     badgeBg: "rgba(139,43,226,0.2)",
     stripeColor: "#7c3aed",
   },
-  charades: {
-    label: "🎭 Charades",
-    bgClass: "card-charades",
-    accentColor: "#1e90ff",
-    labelColor: "#60a5fa",
-    badgeBg: "rgba(30,144,255,0.2)",
-    stripeColor: "#2563eb",
-  },
-  action: {
-    label: "🤠 Cowgirl Dare",
-    bgClass: "card-action",
-    accentColor: "#f59e0b",
-    labelColor: "#fbbf24",
-    badgeBg: "rgba(245,158,11,0.2)",
-    stripeColor: "#d97706",
-  },
-  dare: {
-    label: "🌶️ Spicy Dare",
-    bgClass: "card-dare",
-    accentColor: "#ff10f0",
-    labelColor: "#f9a8d4",
-    badgeBg: "rgba(255,16,240,0.2)",
-    stripeColor: "#db2777",
+  TEST: {
+    label: "Testowe pytania",
+    bgClass: "card-trivia",
+    accentColor: "#8b2be2",
+    labelColor: "#c084fc",
+    badgeBg: "rgba(139,43,226,0.2)",
+    stripeColor: "#7c3aed",
   },
 };
 
@@ -70,31 +52,18 @@ const CARD_CONFIG: Record<
 
 function CardBackFace() {
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl overflow-hidden card-face"
+    <div
+      className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl overflow-hidden card-face"
       style={{ backfaceVisibility: "hidden" }}
     >
-      {/* Felt texture */}
-      <div className="absolute inset-0 bg-saloon-card" />
+      {/* Felt texture replaced with image */}
       <div
-        className="absolute inset-0 opacity-20"
+        className="absolute inset-0 bg-saloon-card"
         style={{
-          backgroundImage: `repeating-linear-gradient(
-            45deg,
-            transparent,
-            transparent 8px,
-            rgba(255,215,0,0.08) 8px,
-            rgba(255,215,0,0.08) 9px
-          )`,
+          backgroundImage: "url('/bg/card1.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
-      />
-      {/* Border */}
-      <div
-        className="absolute inset-0 rounded-2xl border-2"
-        style={{ borderColor: "var(--sheriff-gold)", opacity: 0.5 }}
-      />
-      <div
-        className="absolute inset-3 rounded-xl border"
-        style={{ borderColor: "var(--sheriff-gold)", opacity: 0.3 }}
       />
 
       {/* Center emblem */}
@@ -109,7 +78,7 @@ function CardBackFace() {
             className="font-bebas text-3xl tracking-[0.25em] shimmer-text"
             style={{ fontFamily: "'Bebas Neue', cursive" }}
           >
-            NEON SALOON
+            last rodeo andżeliki
           </span>
           <p className="text-[10px] text-text-muted uppercase tracking-widest">
             Tap to reveal your fate
@@ -144,44 +113,30 @@ function CardFrontFace({ card }: { card: GameCard }) {
   return (
     <div
       className={`absolute inset-0 flex flex-col rounded-2xl overflow-hidden card-face ${cfg.bgClass}`}
-      style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+      style={{
+        backfaceVisibility: "hidden",
+        transform: "rotateY(180deg)",
+        backgroundImage: "url('/bg/card1.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        borderColor: "transparent",
+      }}
     >
-      {/* Top accent stripe */}
-      <div
-        className="h-1.5 w-full shrink-0"
-        style={{ background: `linear-gradient(90deg, ${cfg.stripeColor}, ${cfg.accentColor})` }}
-      />
+      {/* Top accent stripe removed */}
 
       {/* Type badge */}
       <div className="px-5 pt-4 pb-2">
         <span
           className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full border"
           style={{
-            color: cfg.labelColor,
-            borderColor: `${cfg.accentColor}60`,
-            backgroundColor: cfg.badgeBg,
+            color: "white",
+            borderColor: "rgba(255,255,255,0.3)",
+            backgroundColor: "rgba(0,0,0,0.3)",
           }}
         >
           {cfg.label}
         </span>
       </div>
-
-      {/* Points badge top-right */}
-      <div className="absolute top-4 right-4">
-        <div
-          className="flex flex-col items-center justify-center w-11 h-11 rounded-full border-2 font-bold"
-          style={{
-            borderColor: "var(--sheriff-gold)",
-            color: "var(--sheriff-gold)",
-            backgroundColor: "rgba(255,215,0,0.1)",
-            boxShadow: "0 0 12px rgba(255,215,0,0.3)",
-          }}
-        >
-          <span className="text-sm leading-none">{card.points}</span>
-          <span className="text-[8px] leading-none opacity-70">pts</span>
-        </div>
-      </div>
-
       {/* Card description */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-4 text-center">
         <motion.p
@@ -209,7 +164,9 @@ function CardFrontFace({ card }: { card: GameCard }) {
       {/* Bottom accent stripe */}
       <div
         className="h-1 w-full shrink-0"
-        style={{ background: `linear-gradient(90deg, ${cfg.accentColor}, ${cfg.stripeColor})` }}
+        style={{
+          background: `linear-gradient(90deg, ${cfg.accentColor}, ${cfg.stripeColor})`,
+        }}
       />
     </div>
   );
@@ -223,8 +180,14 @@ function StackedShadowCards({ count = 2 }: { count?: number }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="absolute inset-0 rounded-2xl bg-saloon-surface border border-saloon-border"
+          className="absolute rounded-2xl border-none"
           style={{
+            width: 300 - i * 10,
+            height: 190 - i * 5,
+            backgroundImage: "url('/bg/card1.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundColor: "var(--saloon-surface)",
             transform: `translateY(${(i + 1) * 6}px) scale(${1 - (i + 1) * 0.025})`,
             opacity: 0.6 - i * 0.2,
             zIndex: -(i + 1),
@@ -332,7 +295,11 @@ export default function CardDeck({ onSuccess, onFail }: CardDeckProps) {
 
   // Derived transforms
   const rotate = useTransform(x, [-200, 0, 200], [-18, 0, 18]);
-  const cardOpacity = useTransform(x, [-250, -150, 0, 150, 250], [0, 1, 1, 1, 0]);
+  const cardOpacity = useTransform(
+    x,
+    [-250, -150, 0, 150, 250],
+    [0, 1, 1, 1, 0],
+  );
 
   // Success/fail overlay state
   const [swipeDir, setSwipeDir] = useState<"left" | "right" | "none">("none");
@@ -361,7 +328,11 @@ export default function CardDeck({ onSuccess, onFail }: CardDeckProps) {
     async (_: unknown, info: { offset: { x: number; y: number } }) => {
       if (!isCardFlipped) {
         // If not flipped, bounce back
-        await controls.start({ x: 0, y: 0, transition: { type: "spring", stiffness: 400, damping: 25 } });
+        await controls.start({
+          x: 0,
+          y: 0,
+          transition: { type: "spring", stiffness: 400, damping: 25 },
+        });
         return;
       }
 
@@ -372,7 +343,7 @@ export default function CardDeck({ onSuccess, onFail }: CardDeckProps) {
         // SUCCESS — swipe right
         setSwipeDir("right");
         if (currentPlayer) {
-          incrementScore(currentPlayer.id, card.points);
+          incrementScore(currentPlayer.id, 1);
         }
         await controls.start({
           x: 400,
@@ -402,7 +373,17 @@ export default function CardDeck({ onSuccess, onFail }: CardDeckProps) {
         });
       }
     },
-    [isCardFlipped, controls, card, currentPlayer, incrementScore, nextCard, fire, onSuccess, onFail]
+    [
+      isCardFlipped,
+      controls,
+      card,
+      currentPlayer,
+      incrementScore,
+      nextCard,
+      fire,
+      onSuccess,
+      onFail,
+    ],
   );
 
   // Live swipe direction feedback
@@ -413,7 +394,7 @@ export default function CardDeck({ onSuccess, onFail }: CardDeckProps) {
       else if (info.offset.x < -60) setSwipeDir("left");
       else setSwipeDir("none");
     },
-    [isCardFlipped]
+    [isCardFlipped],
   );
 
   if (!card) {
@@ -507,16 +488,18 @@ export default function CardDeck({ onSuccess, onFail }: CardDeckProps) {
               transition={{ duration: 0.65, ease: [0.4, 0, 0.2, 1] }}
             >
               {/* Card Back */}
-              <div
-                className="absolute inset-0 rounded-2xl border-2"
-                style={{
-                  backfaceVisibility: "hidden",
-                  WebkitBackfaceVisibility: "hidden",
-                  borderColor: "var(--sheriff-gold)",
-                  boxShadow: "0 8px 40px rgba(0,0,0,0.6), 0 0 20px rgba(255,215,0,0.2)",
-                }}
-              >
-                <CardBackFace />
+              <div className="w-full h-full rounded-2xl flex items-center justify-center overflow-hidden">
+                <div
+                  className="w-[90%] h-[90%] rounded-xl border-none flex items-center justify-center"
+                  style={{
+                    backgroundImage: "url('/bg/card1.png')",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    opacity: 0.3,
+                  }}
+                >
+                  <CardBackFace />
+                </div>
               </div>
 
               {/* Card Front */}
@@ -552,7 +535,11 @@ export default function CardDeck({ onSuccess, onFail }: CardDeckProps) {
               id="fail-btn"
               whileTap={{ scale: 0.95 }}
               onClick={async () => {
-                await controls.start({ x: -400, opacity: 0, transition: { duration: 0.35 } });
+                await controls.start({
+                  x: -400,
+                  opacity: 0,
+                  transition: { duration: 0.35 },
+                });
                 nextCard("left");
                 onFail();
               }}
@@ -566,7 +553,11 @@ export default function CardDeck({ onSuccess, onFail }: CardDeckProps) {
               id="skip-btn"
               whileTap={{ scale: 0.95 }}
               onClick={async () => {
-                await controls.start({ y: -300, opacity: 0, transition: { duration: 0.3 } });
+                await controls.start({
+                  y: -300,
+                  opacity: 0,
+                  transition: { duration: 0.3 },
+                });
                 nextCard("left");
               }}
               className="flex items-center gap-2 px-4 py-3 rounded-xl border border-saloon-border bg-saloon-surface text-text-muted text-sm font-semibold"
@@ -579,8 +570,13 @@ export default function CardDeck({ onSuccess, onFail }: CardDeckProps) {
               id="success-btn"
               whileTap={{ scale: 0.95 }}
               onClick={async () => {
-                if (currentPlayer) incrementScore(currentPlayer.id, card.points);
-                await controls.start({ x: 400, opacity: 0, transition: { duration: 0.35 } });
+                if (currentPlayer)
+                  incrementScore(currentPlayer.id, 1);
+                await controls.start({
+                  x: 400,
+                  opacity: 0,
+                  transition: { duration: 0.35 },
+                });
                 fire();
                 nextCard("right");
                 onSuccess();

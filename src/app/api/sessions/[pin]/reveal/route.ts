@@ -22,7 +22,7 @@ export async function POST(request: Request, { params }: RouteContext) {
         answerIndex: number;
         answerText: string;
       }>;
-      scores: Array<{ teamId: string; teamName: string; score: number }>;
+      scores: Array<{ teamId: string; teamName: string; score: number; playerName: string }>;
     };
 
     await triggerSessionEvent(pin, {
@@ -33,6 +33,9 @@ export async function POST(request: Request, { params }: RouteContext) {
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error(`[POST /api/sessions/${pin}/reveal]`, err);
-    return NextResponse.json({ error: "Failed to reveal votes" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to reveal votes" },
+      { status: 500 },
+    );
   }
 }

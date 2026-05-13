@@ -1,4 +1,7 @@
 import Pusher from "pusher";
+import { sessionChannel } from "./pusher-shared";
+
+export { sessionChannel };
 
 // ─── Singleton ───────────────────────────────────────────────────────────────
 
@@ -17,20 +20,16 @@ function getPusher(): Pusher {
   return pusherInstance;
 }
 
-// ─── Channel naming ──────────────────────────────────────────────────────────
-
-export const sessionChannel = (pin: string) => `session-${pin}`;
-
 // ─── Shared card shape sent over the wire ─────────────────────────────────────
 
 /** Minimal card data forwarded to players via Pusher so they don't need the full deck */
 export type WireCard = {
   id: string;
-  type: "trivia" | "charades" | "action" | "dare";
+  type: "QUIZ" | "TEST"
   title: string;
   description: string;
-  points: number;
   emoji: string;
+  options?: string[]; // Added for A, B, C, D support
 };
 
 // ─── Event payloads ──────────────────────────────────────────────────────────
@@ -62,6 +61,8 @@ export type VoteCastPayload = {
   teamId: string | null;
   teamName: string | null;
   cardIndex: number;
+  answerIndex: number;
+  answerText: string;
 };
 
 export type VotesRevealedPayload = {
@@ -74,7 +75,7 @@ export type VotesRevealedPayload = {
     answerIndex: number;
     answerText: string;
   }>;
-  scores: Array<{ teamId: string; teamName: string; score: number }>;
+  scores: Array<{ teamId: string; teamName: string; score: number; playerName: string }>;
 };
 
 export type NextCardPayload = {

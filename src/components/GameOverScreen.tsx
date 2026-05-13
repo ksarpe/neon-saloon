@@ -30,7 +30,12 @@ function PodiumCard({
         <motion.span
           className="text-4xl select-none"
           animate={isWinner ? { rotate: [0, -10, 10, -8, 8, 0] } : {}}
-          transition={{ duration: 2, delay: delay + 0.8, repeat: Infinity, repeatDelay: 4 }}
+          transition={{
+            duration: 2,
+            delay: delay + 0.8,
+            repeat: Infinity,
+            repeatDelay: 4,
+          }}
         >
           {participant.avatar}
         </motion.span>
@@ -58,7 +63,10 @@ function PodiumCard({
           fill="var(--sheriff-gold)"
           style={{ color: "var(--sheriff-gold)" }}
         />
-        <span className="text-sm font-bold" style={{ color: "var(--sheriff-gold)" }}>
+        <span
+          className="text-sm font-bold"
+          style={{ color: "var(--sheriff-gold)" }}
+        >
           {participant.score}
         </span>
       </div>
@@ -99,7 +107,7 @@ export default function GameOverScreen() {
   // Sort by score descending
   const ranked = useMemo(
     () => [...participants].sort((a, b) => b.score - a.score),
-    [participants]
+    [participants],
   );
 
   const [first, second, third, ...rest] = ranked;
@@ -178,7 +186,10 @@ export default function GameOverScreen() {
               {i + 1}
             </span>
             <span className="text-xl select-none">{p.avatar}</span>
-            <span className="flex-1 text-sm font-semibold" style={{ color: p.color }}>
+            <span
+              className="flex-1 text-sm font-semibold"
+              style={{ color: p.color }}
+            >
               {p.name}
             </span>
             <div className="flex items-center gap-1">
@@ -187,7 +198,10 @@ export default function GameOverScreen() {
                 fill="var(--sheriff-gold)"
                 style={{ color: "var(--sheriff-gold)" }}
               />
-              <span className="text-sm font-bold" style={{ color: "var(--sheriff-gold)" }}>
+              <span
+                className="text-sm font-bold"
+                style={{ color: "var(--sheriff-gold)" }}
+              >
                 {p.score}
               </span>
               <span className="text-[10px] text-text-muted ml-0.5">pts</span>
@@ -233,7 +247,7 @@ export default function GameOverScreen() {
       </div>
 
       <p className="text-center text-[10px] text-text-muted opacity-40 mt-6 pb-4">
-        🌵 Neon Saloon • The wildest night in the West
+        🌵 last rodeo andżeliki • The wildest night in the West
       </p>
     </div>
   );

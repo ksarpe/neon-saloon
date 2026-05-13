@@ -1,13 +1,22 @@
 import { NextResponse } from "next/server";
-import { triggerSessionEvent } from "@/lib/pusher-server";
-
-// ─── POST /api/sessions ───────────────────────────────────────────────────────
-// Body: { hostName?: string }
-// Creates a new GameSession with a random 4-digit PIN.
-// Returns: { pin, sessionId }
+import { redis, saveSession, sessionKey } from "@/lib/redis";
 
 function generatePin(): string {
-  return String(Math.floor(1000 + Math.random() * 9000));
+  const chars = "0123456789";
+  let pin = "";
+  for (let i = 0; i < 4; i++) {
+    pin += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return pin;
+}
+
+async function generateUniquePin(): Promise<string> {
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const pin = generatePin();
+    const exists = await redis.exists(sessionKey(pin));
+    if (!exists) return pin;
+  }
+  throw new Error("Could not generate a unique PIN");
 }
 
 export async function POST(request: Request) {
@@ -15,24 +24,25 @@ export async function POST(request: Request) {
     const body = await request.json().catch(() => ({}));
     const hostName: string = body.hostName ?? "Host";
 
-    // NOTE: Prisma client is deliberately omitted here because the project
-    // does not yet have a datasource configured. Replace the mock with
-    // `await prisma.gameSession.create(...)` once DATABASE_URL is set.
-    const pin = generatePin();
-    const sessionId = `session_${Date.now()}`;
+    const pin = await generateUniquePin();
 
-    // ── Prisma (uncomment once DATABASE_URL is configured) ─────────────────
-    // const { PrismaClient } = await import("@prisma/client");
-    // const prisma = new PrismaClient();
-    // const session = await prisma.gameSession.create({
-    //   data: { pin, hostName },
-    // });
-    // const sessionId = session.id;
-    // ─────────────────────────────────────────────────────────────────────────
+    await saveSession({
+      pin,
+      hostName,
+      status: "waiting",
+      createdAt: Date.now(),
+      players: [],
+      teams: [],
+      cardIndex: 0,
+      votes: [],
+    });
 
-    return NextResponse.json({ pin, sessionId }, { status: 201 });
+    return NextResponse.json({ pin }, { status: 201 });
   } catch (err) {
     console.error("[POST /api/sessions]", err);
-    return NextResponse.json({ error: "Failed to create session" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create session" },
+      { status: 500 },
+    );
   }
 }

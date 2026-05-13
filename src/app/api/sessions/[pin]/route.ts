@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getSession, updateSession } from "@/lib/redis";
 import { triggerSessionEvent } from "@/lib/pusher-server";
 import type { WireCard } from "@/lib/pusher-server";
 
@@ -6,8 +7,19 @@ type RouteContext = { params: Promise<{ pin: string }> };
 
 export async function GET(_req: Request, { params }: RouteContext) {
   const { pin } = await params;
+
+  const session = await getSession(pin);
+  if (!session) {
+    return NextResponse.json({ error: "Session not found" }, { status: 404 });
+  }
+
   return NextResponse.json({
-    pin, status: "WAITING", teams: [], players: [], currentCardIndex: 0,
+    pin: session.pin,
+    status: session.status,
+    players: session.players,
+    teams: session.teams,
+    cardIndex: session.cardIndex,
+    votes: session.votes ?? [],
   });
 }
 
@@ -17,17 +29,25 @@ export async function POST(request: Request, { params }: RouteContext) {
     const body = await request.json();
     const { action, card } = body as { action: string; card?: WireCard };
 
+    const session = await getSession(pin);
+    if (!session) {
+      return NextResponse.json({ error: "Session not found" }, { status: 404 });
+    }
+
     if (action === "start" && card) {
+      await updateSession(pin, { status: "active", cardIndex: 0 });
       await triggerSessionEvent(pin, {
         event: "game-started",
         data: { cardIndex: 0, card },
       });
     } else if (action === "finish") {
+      await updateSession(pin, { status: "finished" });
       await triggerSessionEvent(pin, {
         event: "game-finished",
         data: { scores: body.scores ?? [] },
       });
     }
+
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error(`[POST /api/sessions/${pin}]`, err);

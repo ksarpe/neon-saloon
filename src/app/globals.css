@@ -4,22 +4,22 @@
 
 /* ─── CSS Custom Properties ─────────────────────────────────────────────── */
 :root {
-  --saloon-dark: #0d0a0b;
-  --saloon-surface: #1a1218;
-  --saloon-card: #221a1f;
-  --saloon-border: #3d2a35;
-  --neon-pink: #ff10f0;
-  --neon-pink-dim: rgba(255, 16, 240, 0.15);
-  --neon-pink-glow: rgba(255, 16, 240, 0.4);
-  --sheriff-gold: #ffd700;
-  --sheriff-gold-dim: rgba(255, 215, 0, 0.15);
-  --sheriff-gold-glow: rgba(255, 215, 0, 0.4);
-  --text-primary: #f5e6f0;
-  --text-muted: #9a7a8a;
+  --saloon-dark: #0d0818;
+  --saloon-surface: rgba(255, 220, 180, 0.07);
+  --saloon-card: #1a0f2a;
+  --saloon-border: rgba(255, 220, 180, 0.18);
+  --neon-pink: #dd54a2;
+  --neon-pink-dim: rgba(255, 45, 164, 0.15);
+  --neon-pink-glow: rgba(226, 67, 157, 0.4);
+  --sheriff-gold: #f94aff;
+  --sheriff-gold-dim: rgba(40, 30, 95, 0.15);
+  --sheriff-gold-glow: rgba(152, 151, 241, 0.4);
+  --text-primary: #f0dfc0;
+  --text-muted: rgba(220, 185, 140, 0.65);
   --card-trivia: #1e0e2a;
-  --card-charades: #0e1e2a;
-  --card-action: #1e1a0e;
-  --card-dare: #2a0e0e;
+  --card-charades: #eeabc7;
+  --card-action: #f38ff3;
+  --card-dare: #f090f3;
 }
 
 /* ─── Tailwind Theme Extension ──────────────────────────────────────────── */
@@ -48,6 +48,10 @@ body {
 
 body {
   background-color: var(--saloon-dark);
+  /* Subtle Cow Print Pattern */
+  background-image: 
+    url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 50 Q 80 20 120 50 T 180 80 Q 220 120 180 180 T 100 220 Q 50 250 20 180 T 50 50' fill='%23ff2da4' fill-opacity='0.03'/%3E%3Cpath d='M300 250 Q 340 220 380 250 T 400 320 Q 380 380 320 400 T 250 350 Q 220 300 300 250' fill='%23ff2da4' fill-opacity='0.02'/%3E%3Cpath d='M150 300 Q 180 280 210 300 T 250 350 Q 220 400 180 380 T 150 300' fill='%23ff2da4' fill-opacity='0.025'/%3E%3Cpath d='M350 50 Q 370 30 390 50 T 400 90 Q 380 120 350 110 T 350 50' fill='%23ff2da4' fill-opacity='0.02'/%3E%3Cpath d='M50 350 Q 70 330 90 350 T 100 390 Q 80 420 50 410 T 50 350' fill='%23ff2da4' fill-opacity='0.015'/%3E%3C/svg%3E");
+  background-attachment: fixed;
   color: var(--text-primary);
   font-family: "Inter", sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -65,20 +69,13 @@ body {
     0 0 60px var(--neon-pink-dim);
 }
 
-.glow-gold {
-  text-shadow: 0 0 10px var(--sheriff-gold), 0 0 30px var(--sheriff-gold-glow),
-    0 0 60px var(--sheriff-gold-dim);
-}
 
 .box-glow-pink {
   box-shadow: 0 0 15px var(--neon-pink-glow), 0 0 40px var(--neon-pink-dim),
     inset 0 0 15px rgba(255, 16, 240, 0.05);
 }
 
-.box-glow-gold {
-  box-shadow: 0 0 15px var(--sheriff-gold-glow), 0 0 40px var(--sheriff-gold-dim),
-    inset 0 0 15px rgba(255, 215, 0, 0.05);
-}
+
 
 /* ─── Card type backgrounds ─────────────────────────────────────────────── */
 .card-trivia {
@@ -99,6 +96,15 @@ body {
 .card-dare {
   background: radial-gradient(ellipse at top left, #3a0a0a 0%, var(--card-dare) 60%);
   border-color: rgba(255, 16, 240, 0.6);
+}
+
+/* ─── Page slide transition wrapper (hides scrollbar during animation) ─── */
+.page-slide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.page-slide::-webkit-scrollbar {
+  display: none;
 }
 
 /* ─── Scrollable content areas ──────────────────────────────────────────── */
@@ -183,15 +189,16 @@ body {
   background: linear-gradient(
     90deg,
     var(--sheriff-gold) 0%,
-    #fff8dc 40%,
-    var(--sheriff-gold) 60%,
-    #b8860b 100%
+    #4134b9 35%,
+    var(--sheriff-gold) 50%,
+    #818df1 65%,
+    var(--sheriff-gold) 100%
   );
-  background-size: 200% auto;
+  background-size: 300% auto;
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: shimmer 3s linear infinite;
+  animation: shimmer 8s linear infinite;
 }
 
 /* ─── Pulse border animation ────────────────────────────────────────────── */

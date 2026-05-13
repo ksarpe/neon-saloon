@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
+import { getSession, saveSession } from "@/lib/redis";
 import { triggerSessionEvent } from "@/lib/pusher-server";
 
 type RouteContext = { params: Promise<{ pin: string }> };
-
-// ─── POST /api/sessions/[pin]/vote ──────────────────────────────────────────
-// Body: { playerId, playerName, teamId?, teamName?, cardIndex, answerIndex, answerText }
 
 export async function POST(request: Request, { params }: RouteContext) {
   const { pin } = await params;
@@ -26,25 +24,29 @@ export async function POST(request: Request, { params }: RouteContext) {
       return NextResponse.json({ error: "playerId and cardIndex required" }, { status: 400 });
     }
 
-    // ── Prisma (uncomment once DATABASE_URL is set) ────────────────────────
-    // const vote = await prisma.vote.upsert({
-    //   where: { sessionId_playerId_cardIndex: { sessionId, playerId, cardIndex } },
-    //   create: { sessionId, playerId, teamId, cardIndex, answerIndex, answerText },
-    //   update: { answerIndex, answerText },
-    // });
-    // ──────────────────────────────────────────────────────────────────────
+    const vote = {
+      playerId,
+      playerName,
+      teamId: teamId ?? null,
+      teamName: teamName ?? null,
+      cardIndex,
+      answerIndex,
+      answerText,
+    };
 
-    // Broadcast "someone voted" (answer hidden until reveal)
-    await triggerSessionEvent(pin, {
-      event: "vote-cast",
-      data: {
-        playerId,
-        playerName,
-        teamId: teamId ?? null,
-        teamName: teamName ?? null,
-        cardIndex,
-      },
-    });
+    // Persist vote to Redis (upsert by playerId+cardIndex)
+    const session = await getSession(pin);
+    if (session) {
+      const existing = session.votes ?? [];
+      const others = existing.filter(
+        (v) => !(v.playerId === playerId && v.cardIndex === cardIndex),
+      );
+      session.votes = [...others, vote];
+      await saveSession(session);
+    }
+
+    // Broadcast via Pusher (fast path — Redis is the fallback)
+    await triggerSessionEvent(pin, { event: "vote-cast", data: vote });
 
     return NextResponse.json({ ok: true });
   } catch (err) {

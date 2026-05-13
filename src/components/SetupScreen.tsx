@@ -21,8 +21,14 @@ const GAME_MODE_OPTIONS = [
 ];
 
 export default function SetupScreen() {
-  const { gameMode, participants, setGameMode, addParticipant, removeParticipant, setGamePhase } =
-    useGameStore();
+  const {
+    gameMode,
+    participants,
+    setGameMode,
+    addParticipant,
+    removeParticipant,
+    setGamePhase,
+  } = useGameStore();
   const [inputValue, setInputValue] = useState("");
 
   const handleAdd = () => {
@@ -50,7 +56,12 @@ export default function SetupScreen() {
         <motion.div
           className="text-6xl mb-2 select-none"
           animate={{ rotate: [0, -8, 8, -5, 5, 0] }}
-          transition={{ duration: 2, delay: 0.8, repeat: Infinity, repeatDelay: 5 }}
+          transition={{
+            duration: 2,
+            delay: 0.8,
+            repeat: Infinity,
+            repeatDelay: 5,
+          }}
         >
           🤠
         </motion.div>
@@ -58,7 +69,7 @@ export default function SetupScreen() {
           className="font-bebas text-5xl sm:text-7xl tracking-widest shimmer-text leading-none"
           style={{ fontFamily: "'Bebas Neue', cursive" }}
         >
-          NEON SALOON
+          last rodeo andżeliki
         </h1>
         <p className="mt-2 text-text-muted text-sm tracking-wider uppercase font-medium">
           The Wildest Bachelorette Game in the West
@@ -88,33 +99,39 @@ export default function SetupScreen() {
             Game Mode
           </label>
           <div className="grid grid-cols-2 gap-3">
-            {GAME_MODE_OPTIONS.map(({ value, label, icon: Icon, description }) => {
-              const isActive = gameMode === value;
-              return (
-                <motion.button
-                  key={value}
-                  id={`mode-${value}`}
-                  onClick={() => setGameMode(value)}
-                  whileTap={{ scale: 0.97 }}
-                  className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-300 ${
-                    isActive
-                      ? "border-neon-pink bg-neon-pink-dim text-text-primary box-glow-pink"
-                      : "border-saloon-border bg-saloon-surface text-text-muted hover:border-saloon-border/80"
-                  }`}
-                  style={isActive ? { borderColor: "var(--neon-pink)" } : {}}
-                >
-                  <Icon
-                    size={22}
-                    className={isActive ? "text-neon-pink" : "text-text-muted"}
-                    style={isActive ? { color: "var(--neon-pink)" } : {}}
-                  />
-                  <span className="font-bold text-sm tracking-wide">{label}</span>
-                  <span className="text-[10px] text-center leading-tight opacity-70">
-                    {description}
-                  </span>
-                </motion.button>
-              );
-            })}
+            {GAME_MODE_OPTIONS.map(
+              ({ value, label, icon: Icon, description }) => {
+                const isActive = gameMode === value;
+                return (
+                  <motion.button
+                    key={value}
+                    id={`mode-${value}`}
+                    onClick={() => setGameMode(value)}
+                    whileTap={{ scale: 0.97 }}
+                    className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-300 ${
+                      isActive
+                        ? "border-neon-pink bg-neon-pink-dim text-text-primary box-glow-pink"
+                        : "border-saloon-border bg-saloon-surface text-text-muted hover:border-saloon-border/80"
+                    }`}
+                    style={isActive ? { borderColor: "var(--neon-pink)" } : {}}
+                  >
+                    <Icon
+                      size={22}
+                      className={
+                        isActive ? "text-neon-pink" : "text-text-muted"
+                      }
+                      style={isActive ? { color: "var(--neon-pink)" } : {}}
+                    />
+                    <span className="font-bold text-sm tracking-wide">
+                      {label}
+                    </span>
+                    <span className="text-[10px] text-center leading-tight opacity-70">
+                      {description}
+                    </span>
+                  </motion.button>
+                );
+              },
+            )}
           </div>
         </motion.section>
 
@@ -126,7 +143,8 @@ export default function SetupScreen() {
         >
           <div className="flex items-center justify-between mb-3">
             <label className="text-xs uppercase tracking-widest text-text-muted font-semibold">
-              {gameMode === "teams" ? "Teams" : "Players"} ({participants.length}/10)
+              {gameMode === "teams" ? "Teams" : "Players"} (
+              {participants.length}/10)
             </label>
             {participants.length < 2 && (
               <span className="text-[10px] text-amber-400 font-medium">
@@ -146,7 +164,9 @@ export default function SetupScreen() {
               maxLength={20}
               placeholder={`${gameMode === "teams" ? "Team" : "Player"} name…`}
               className="flex-1 bg-saloon-surface border border-saloon-border rounded-xl px-4 py-3 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-neon-pink transition-colors"
-              style={{ "--tw-ring-color": "var(--neon-pink)" } as React.CSSProperties}
+              style={
+                { "--tw-ring-color": "var(--neon-pink)" } as React.CSSProperties
+              }
               disabled={participants.length >= 10}
             />
             <motion.button
@@ -228,14 +248,20 @@ export default function SetupScreen() {
             }}
           >
             <Play size={20} />
-            <span style={{ fontFamily: "'Bebas Neue', cursive", letterSpacing: "0.15em", fontSize: "1.25rem" }}>
+            <span
+              style={{
+                fontFamily: "'Bebas Neue', cursive",
+                letterSpacing: "0.15em",
+                fontSize: "1.25rem",
+              }}
+            >
               Ride into the Saloon
             </span>
           </motion.button>
         </motion.div>
 
         <p className="text-center text-[10px] text-text-muted pb-6 opacity-50">
-          🌵 Neon Saloon • Not responsible for chaos
+          🌵 last rodeo andżeliki • Not responsible for chaos
         </p>
       </div>
     </div>

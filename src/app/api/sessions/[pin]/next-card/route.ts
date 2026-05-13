@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { updateSession } from "@/lib/redis";
 import { triggerSessionEvent } from "@/lib/pusher-server";
 import type { WireCard } from "@/lib/pusher-server";
 
@@ -10,10 +11,13 @@ export async function POST(request: Request, { params }: RouteContext) {
     const body = await request.json();
     const { cardIndex, card } = body as { cardIndex: number; card: WireCard };
 
+    await updateSession(pin, { cardIndex });
+
     await triggerSessionEvent(pin, {
       event: "next-card",
       data: { cardIndex, card },
     });
+
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error(`[POST /api/sessions/${pin}/next-card]`, err);

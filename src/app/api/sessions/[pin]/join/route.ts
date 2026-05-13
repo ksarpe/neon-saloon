@@ -1,11 +1,8 @@
 import { NextResponse } from "next/server";
+import { getSession, saveSession } from "@/lib/redis";
 import { triggerSessionEvent } from "@/lib/pusher-server";
 
 type RouteContext = { params: Promise<{ pin: string }> };
-
-// ─── POST /api/sessions/[pin]/join ────────────────────────────────────────────
-// Body: { playerName, teamId?, newTeamName? }
-// Joins an existing session as a player, optionally into a team.
 
 const PLAYER_AVATARS = ["🤠", "💃", "🌸", "✨", "🍾", "🎀", "👑", "🦋", "🌺", "🎉"];
 
@@ -14,8 +11,9 @@ export async function POST(request: Request, { params }: RouteContext) {
 
   try {
     const body = await request.json();
-    const { playerName, teamId, newTeamName } = body as {
+    const { playerName, avatar: chosenAvatar, teamId, newTeamName } = body as {
       playerName: string;
+      avatar?: string;
       teamId?: string;
       newTeamName?: string;
     };
@@ -24,33 +22,48 @@ export async function POST(request: Request, { params }: RouteContext) {
       return NextResponse.json({ error: "playerName is required" }, { status: 400 });
     }
 
-    // ── Mock IDs (replace with real Prisma calls once DB is configured) ───
+    const session = await getSession(pin);
+    if (!session) {
+      return NextResponse.json({ error: "Session not found" }, { status: 404 });
+    }
+    if (session.status === "active") {
+      return NextResponse.json({ error: "Game already started" }, { status: 423 });
+    }
+    if (session.status === "finished") {
+      return NextResponse.json({ error: "Game already finished" }, { status: 410 });
+    }
+
     const playerId = `player_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
-    const resolvedTeamId = teamId ?? (newTeamName ? `team_${Date.now()}` : null);
-    const avatar = PLAYER_AVATARS[Math.floor(Math.random() * PLAYER_AVATARS.length)];
+    const avatar = chosenAvatar ?? PLAYER_AVATARS[Math.floor(Math.random() * PLAYER_AVATARS.length)];
 
-    // ── Prisma (uncomment once DATABASE_URL is set) ────────────────────────
-    // import { PrismaClient } from "@prisma/client";
-    // const prisma = new PrismaClient();
-    // const session = await prisma.gameSession.findUnique({ where: { pin } });
-    // if (!session) return NextResponse.json({ error: "Session not found" }, { status: 404 });
-    //
-    // let resolvedTeam: Team | null = null;
-    // if (newTeamName) {
-    //   resolvedTeam = await prisma.team.create({
-    //     data: { name: newTeamName, sessionId: session.id },
-    //   });
-    //   await triggerSessionEvent(pin, { event: "team-created", data: { ... } });
-    // } else if (teamId) {
-    //   resolvedTeam = await prisma.team.findUnique({ where: { id: teamId } });
-    // }
-    //
-    // const player = await prisma.player.create({
-    //   data: { name: playerName, sessionId: session.id, teamId: resolvedTeam?.id, avatar },
-    // });
-    // ──────────────────────────────────────────────────────────────────────
+    // Resolve team
+    let resolvedTeamId = teamId ?? null;
+    let resolvedTeamName = newTeamName ?? null;
 
-    // Broadcast new player to host screen + all other clients
+    if (newTeamName && !teamId) {
+      resolvedTeamId = `team_${Date.now()}`;
+      const newTeam = {
+        teamId: resolvedTeamId,
+        teamName: newTeamName,
+        color: "#FF10F0",
+        emoji: "🤠",
+      };
+      session.teams = [...session.teams, newTeam];
+
+      await triggerSessionEvent(pin, {
+        event: "team-created",
+        data: newTeam,
+      });
+    }
+
+    // Add player
+    session.players = [
+      ...session.players,
+      { playerId, playerName: playerName.trim(), avatar, teamId: resolvedTeamId, teamName: resolvedTeamName },
+    ];
+
+    await saveSession(session);
+
     await triggerSessionEvent(pin, {
       event: "player-joined",
       data: {
@@ -58,27 +71,11 @@ export async function POST(request: Request, { params }: RouteContext) {
         playerName: playerName.trim(),
         avatar,
         teamId: resolvedTeamId,
-        teamName: newTeamName ?? null,
+        teamName: resolvedTeamName,
       },
     });
 
-    // If a new team was created, fire that event too
-    if (newTeamName && resolvedTeamId) {
-      await triggerSessionEvent(pin, {
-        event: "team-created",
-        data: {
-          teamId: resolvedTeamId,
-          teamName: newTeamName,
-          color: "#FF10F0",
-          emoji: "🤠",
-        },
-      });
-    }
-
-    return NextResponse.json(
-      { playerId, teamId: resolvedTeamId, avatar },
-      { status: 200 }
-    );
+    return NextResponse.json({ playerId, teamId: resolvedTeamId, avatar }, { status: 200 });
   } catch (err) {
     console.error(`[POST /api/sessions/${pin}/join]`, err);
     return NextResponse.json({ error: "Failed to join session" }, { status: 500 });

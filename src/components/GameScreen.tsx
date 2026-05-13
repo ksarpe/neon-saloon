@@ -65,7 +65,7 @@ export default function GameScreen() {
             className="font-bebas text-xl tracking-widest shimmer-text"
             style={{ fontFamily: "'Bebas Neue', cursive" }}
           >
-            NEON SALOON
+            last rodeo andżeliki
           </span>
         </motion.div>
 
@@ -111,7 +111,10 @@ export default function GameScreen() {
       {/* ── Divider ────────────────────────────────── */}
       <div
         className="h-px w-full shrink-0 opacity-30"
-        style={{ background: "linear-gradient(90deg, transparent, var(--saloon-border), transparent)" }}
+        style={{
+          background:
+            "linear-gradient(90deg, transparent, var(--saloon-border), transparent)",
+        }}
       />
 
       {/* ── Card Deck ──────────────────────────────── */}
@@ -123,7 +126,7 @@ export default function GameScreen() {
       <div className="relative z-10 shrink-0 px-4 pb-4 pt-2 flex items-center justify-center gap-2">
         <Zap size={10} style={{ color: "var(--neon-pink)" }} />
         <span className="text-[9px] text-text-muted uppercase tracking-widest opacity-50">
-          Neon Saloon • Wild West Edition
+          last rodeo andżeliki • Wild West Edition
         </span>
         <Zap size={10} style={{ color: "var(--neon-pink)" }} />
       </div>
