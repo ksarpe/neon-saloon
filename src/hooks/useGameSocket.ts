@@ -5,6 +5,7 @@ import { getPusherClient } from "@/lib/pusher-client";
 import { sessionChannel } from "@/lib/pusher-shared";
 import type {
   PlayerJoinedPayload,
+  PlayerLeftPayload,
   TeamCreatedPayload,
   TeamUpdatedPayload,
   VoteCastPayload,
@@ -12,12 +13,16 @@ import type {
   NextCardPayload,
   GameStartedPayload,
   GameFinishedPayload,
+  HighLowRoundStartPayload,
+  HighLowNumberSubmittedPayload,
+  HighLowRoundResultPayload,
 } from "@/lib/pusher-server";
 
 // ─── Event handler map ──────────────────────────────────────────────────────
 
 export interface GameSocketHandlers {
   onPlayerJoined?: (data: PlayerJoinedPayload) => void;
+  onPlayerLeft?: (data: PlayerLeftPayload) => void;
   onTeamCreated?: (data: TeamCreatedPayload) => void;
   onTeamUpdated?: (data: TeamUpdatedPayload) => void;
   onVoteCast?: (data: VoteCastPayload) => void;
@@ -25,6 +30,9 @@ export interface GameSocketHandlers {
   onNextCard?: (data: NextCardPayload) => void;
   onGameStarted?: (data: GameStartedPayload) => void;
   onGameFinished?: (data: GameFinishedPayload) => void;
+  onHighLowRoundStart?: (data: HighLowRoundStartPayload) => void;
+  onHighLowNumberSubmitted?: (data: HighLowNumberSubmittedPayload) => void;
+  onHighLowRoundResult?: (data: HighLowRoundResultPayload) => void;
 }
 
 // ─── Hook ───────────────────────────────────────────────────────────────────
@@ -65,6 +73,9 @@ export function useGameSocket(pin: string | null, handlers: GameSocketHandlers) 
       console.log("[Pusher] player-joined", data);
       handlersRef.current.onPlayerJoined?.(data);
     });
+    channel.bind("player-left", (data: PlayerLeftPayload) =>
+      handlersRef.current.onPlayerLeft?.(data)
+    );
     channel.bind("team-created", (data: TeamCreatedPayload) =>
       handlersRef.current.onTeamCreated?.(data)
     );
@@ -85,6 +96,15 @@ export function useGameSocket(pin: string | null, handlers: GameSocketHandlers) 
     );
     channel.bind("game-finished", (data: GameFinishedPayload) =>
       handlersRef.current.onGameFinished?.(data)
+    );
+    channel.bind("highlow-round-start", (data: HighLowRoundStartPayload) =>
+      handlersRef.current.onHighLowRoundStart?.(data)
+    );
+    channel.bind("highlow-number-submitted", (data: HighLowNumberSubmittedPayload) =>
+      handlersRef.current.onHighLowNumberSubmitted?.(data)
+    );
+    channel.bind("highlow-round-result", (data: HighLowRoundResultPayload) =>
+      handlersRef.current.onHighLowRoundResult?.(data)
     );
 
     return () => {

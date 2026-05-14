@@ -3,14 +3,14 @@ import { devtools } from "zustand/middleware";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
-export type CardType = "QUIZ" | "TEST";
+export type CardType = "QUIZ" | "NEVER";
 
 export interface GameCard {
   id: string;
   type: CardType;
   title: string;
   description: string;
-  emoji: string;
+  emoji?: string;
   answer?: string;
   options?: string[]; // Added for A, B, C, D support
 }
@@ -235,20 +235,64 @@ const DEFAULT_CARDS: Omit<GameCard, "id">[] = [
     options: ["O sprzątanie", "O granie Marcina", "O zazdrość", "O brak czasu"],
   },
   {
-    type: "TEST",
-    title: "Testowe pytania",
-    description: "Jakie warzywo Pani Młoda najbardziej lubi?",
-    emoji: "🌶️",
-    answer: "Brokuł",
-    options: ["Marchew", "Brokuł", "Papryka", "Cebula"],
+    type: "NEVER",
+    title: "Nigdy przenigdy",
+    description: "Nigdy przenigdy nie urwałam się z domu przez okno.",
+    emoji: "🪟",
   },
   {
-    type: "TEST",
-    title: "Testowe pytania",
-    description: "Czy zdarzyło jej się potajemnie sprawdzać telefon Marcina?",
-    emoji: "📱",
-    answer: "Tak",
-    options: ["Tak", "Nie"],
+    type: "NEVER",
+    title: "Nigdy przenigdy",
+    description: "Nigdy przenigdy nie wysłałam wiadomości do byłego po alkoholu.",
+    emoji: "📲",
+  },
+  {
+    type: "NEVER",
+    title: "Nigdy przenigdy",
+    description: "Nigdy przenigdy nie tańczyłam na barze lub stole.",
+    emoji: "💃",
+  },
+  {
+    type: "NEVER",
+    title: "Nigdy przenigdy",
+    description: "Nigdy przenigdy nie pocałowałam kogoś z obecnych na imprezie.",
+    emoji: "💋",
+  },
+  {
+    type: "NEVER",
+    title: "Nigdy przenigdy",
+    description: "Nigdy przenigdy nie podglądałam profilu byłego po rozstaniu.",
+    emoji: "👀",
+  },
+  {
+    type: "NEVER",
+    title: "Nigdy przenigdy",
+    description: "Nigdy przenigdy nie kłamałam na temat swojego wieku.",
+    emoji: "🎂",
+  },
+  {
+    type: "NEVER",
+    title: "Nigdy przenigdy",
+    description: "Nigdy przenigdy nie płakałam po alkoholu bez powodu.",
+    emoji: "😭",
+  },
+  {
+    type: "NEVER",
+    title: "Nigdy przenigdy",
+    description: "Nigdy przenigdy nie udawałam choroby, żeby nie iść do pracy.",
+    emoji: "🤒",
+  },
+  {
+    type: "NEVER",
+    title: "Nigdy przenigdy",
+    description: "Nigdy przenigdy nie rozmawiałam z byłym przez zamkniętą toaletę.",
+    emoji: "🚽",
+  },
+  {
+    type: "NEVER",
+    title: "Nigdy przenigdy",
+    description: "Nigdy przenigdy nie zrobiłam czegoś, czego się wstydzę, na imprezie.",
+    emoji: "🙈",
   },
 ];
 

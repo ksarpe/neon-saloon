@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 const ACCENT: Record<string, string> = {
   trivia: "#8b2be2",
   QUIZ: "#8b2be2",
+  NEVER: "#FFD700",
   charades: "#1e90ff",
   action: "#f59e0b",
   dare: "#ff10f0",

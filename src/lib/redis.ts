@@ -34,6 +34,15 @@ export type SessionVote = {
   answerText: string;
 };
 
+export type HighLowSessionData = {
+  questionIndex: number;
+  guessingTeamId: string;
+  votingTeamId: string;
+  guessingCaptainId: string;
+  votingCaptainId: string;
+  currentNumber?: string;
+};
+
 export type SessionData = {
   pin: string;
   hostName: string;
@@ -43,6 +52,8 @@ export type SessionData = {
   teams: SessionTeam[];
   cardIndex: number;
   votes: SessionVote[];
+  gameMode?: string;
+  highlowData?: HighLowSessionData;
 };
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────

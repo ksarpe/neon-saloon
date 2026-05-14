@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   User,
@@ -14,11 +14,13 @@ import {
 } from "lucide-react";
 import { useGameSocket } from "@/hooks/useGameSocket";
 import PlayerGameScreen from "@/components/PlayerGameScreen";
+import PlayerHighLowScreen from "@/components/PlayerHighLowScreen";
 import { useBackButton } from "@/lib/back-button-context";
 import type {
   TeamCreatedPayload,
   WireCard,
   GameStartedPayload,
+  HighLowRoundStartPayload,
 } from "@/lib/pusher-server";
 import { useEffect } from "react";
 
@@ -173,7 +175,7 @@ function PinInput({
         disabled={value.length < 4 || loading}
         whileTap={{ scale: 0.97 }}
         onClick={() => onSubmit(value)}
-        className="w-full max-w-[240px] py-3 rounded-2xl font-bold text-white flex items-center justify-center gap-2 disabled:opacity-30"
+        className="w-full max-w-[240px] py-3 rounded-2xl text-white flex items-center justify-center gap-2 disabled:opacity-30"
         style={{
           background: "linear-gradient(135deg,var(--neon-pink),#c800c8)",
           boxShadow: "0 4px 30px rgba(255,16,240,0.4)",
@@ -417,6 +419,7 @@ function TeamPicker({
   onCreateTeam,
   onBack,
   loading,
+  hideCreate,
 }: {
   teams: LiveTeam[];
   newTeamName: string;
@@ -425,6 +428,7 @@ function TeamPicker({
   onCreateTeam: () => void;
   onBack: () => void;
   loading: boolean;
+  hideCreate?: boolean;
 }) {
   return (
     <div className="flex flex-col items-center gap-5 w-full">
@@ -479,42 +483,44 @@ function TeamPicker({
           ))}
         </AnimatePresence>
       </div>
-      <div className="flex flex-col gap-2 w-full max-w-xs">
-        <p className="text-[10px] uppercase tracking-widest text-text-muted font-semibold">
-          Stwórz nową bandę
-        </p>
-        <div className="flex gap-2">
-          <input
-            id="new-team-name-input"
-            type="text"
-            value={newTeamName}
-            onChange={(e) => onNewTeamNameChange(e.target.value)}
-            onKeyDown={(e) =>
-              e.key === "Enter" && newTeamName.trim() && onCreateTeam()
-            }
-            maxLength={20}
-            placeholder="Nazwa bandy…"
-            className="flex-1 bg-saloon-surface border border-saloon-border rounded-xl px-3 py-3 text-sm text-text-primary placeholder:text-text-muted focus:outline-none"
-          />
-          <motion.button
-            id="create-team-btn"
-            disabled={!newTeamName.trim() || loading}
-            whileTap={{ scale: 0.93 }}
-            onClick={onCreateTeam}
-            className="w-12 h-12 flex items-center justify-center rounded-xl border border-neon-pink bg-neon-pink-dim disabled:opacity-30"
-          >
-            {loading ? (
-              <Loader2
-                size={16}
-                className="animate-spin"
-                style={{ color: "var(--neon-pink)" }}
-              />
-            ) : (
-              <UserPlus size={16} style={{ color: "var(--neon-pink)" }} />
-            )}
-          </motion.button>
+      {!hideCreate && (
+        <div className="flex flex-col gap-2 w-full max-w-xs">
+          <p className="text-[10px] uppercase tracking-widest text-text-muted font-semibold">
+            Stwórz nową bandę
+          </p>
+          <div className="flex gap-2">
+            <input
+              id="new-team-name-input"
+              type="text"
+              value={newTeamName}
+              onChange={(e) => onNewTeamNameChange(e.target.value)}
+              onKeyDown={(e) =>
+                e.key === "Enter" && newTeamName.trim() && onCreateTeam()
+              }
+              maxLength={20}
+              placeholder="Nazwa bandy…"
+              className="flex-1 bg-saloon-surface border border-saloon-border rounded-xl px-3 py-3 text-sm text-text-primary placeholder:text-text-muted focus:outline-none"
+            />
+            <motion.button
+              id="create-team-btn"
+              disabled={!newTeamName.trim() || loading}
+              whileTap={{ scale: 0.93 }}
+              onClick={onCreateTeam}
+              className="w-12 h-12 flex items-center justify-center rounded-xl border border-neon-pink bg-neon-pink-dim disabled:opacity-30"
+            >
+              {loading ? (
+                <Loader2
+                  size={16}
+                  className="animate-spin"
+                  style={{ color: "var(--neon-pink)" }}
+                />
+              ) : (
+                <UserPlus size={16} style={{ color: "var(--neon-pink)" }} />
+              )}
+            </motion.button>
+          </div>
         </div>
-      </div>
+      )}
       <button
         onClick={onBack}
         className="flex items-center gap-1.5 text-text-muted text-sm"
@@ -606,17 +612,63 @@ export default function JoinGameForm() {
   const [error, setError] = useState<string | null>(null);
   const [liveTeams, setLiveTeams] = useState<LiveTeam[]>([]);
   const [playerInfo, setPlayerInfo] = useState<PlayerInfo | null>(null);
+  const [gameMode, setGameMode] = useState<string>("trivia");
 
-  // When game starts, we store the initial card so PlayerGameScreen can render
+  // Regular game start data (quiz/never/categories)
   const [gameStartData, setGameStartData] = useState<GameStartedPayload | null>(
     null,
   );
+  // HighLow first round data
+  const [hlRoundData, setHlRoundData] = useState<HighLowRoundStartPayload | null>(null);
 
   const { setHidden: setBackHidden } = useBackButton();
 
   useEffect(() => {
     setBackHidden(step === "waiting" || step === "playing");
   }, [step, setBackHidden]);
+
+  // Track pin+playerId in refs so the unload handler can read current values
+  const pinRef = useRef(pin);
+  const playerIdRef = useRef<string | null>(null);
+  useEffect(() => { pinRef.current = pin; }, [pin]);
+  useEffect(() => {
+    playerIdRef.current = playerInfo?.playerId ?? null;
+  }, [playerInfo]);
+
+  useEffect(() => {
+    function leave() {
+      const pid = playerIdRef.current;
+      const p = pinRef.current;
+      if (!pid || !p) return;
+      navigator.sendBeacon(
+        `/api/sessions/${p}/leave`,
+        new Blob([JSON.stringify({ playerId: pid })], { type: "application/json" })
+      );
+    }
+    window.addEventListener("beforeunload", leave);
+    return () => {
+      window.removeEventListener("beforeunload", leave);
+      leave(); // also fires when component unmounts (navigation away)
+    };
+  }, []);
+
+  useEffect(() => {
+    if (step !== "team" || !pin) return;
+    fetch(`/api/sessions/${pin}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data.teams)) {
+          setLiveTeams(data.teams.map((t: { teamId: string; teamName: string; color: string; emoji: string }) => ({
+            teamId: t.teamId,
+            teamName: t.teamName,
+            color: t.color,
+            emoji: t.emoji,
+            memberCount: 0,
+          })));
+        }
+      })
+      .catch(() => {});
+  }, [step, pin]);
 
   // Subscribe to channel as soon as we have a PIN and are in team or waiting step
   const shouldSubscribe =
@@ -646,6 +698,12 @@ export default function JoinGameForm() {
       setGameStartData(d);
       setStep("playing");
     }, []),
+
+    // HighLow game start
+    onHighLowRoundStart: useCallback((d: HighLowRoundStartPayload) => {
+      setHlRoundData(d);
+      setStep("playing");
+    }, []),
   });
 
   // ── Step handlers ──────────────────────────────────────────────────────────
@@ -662,6 +720,7 @@ export default function JoinGameForm() {
         setError("Ta gra już trwa. Nie możesz teraz dołączyć.");
         return;
       }
+      setGameMode(data.gameMode ?? "trivia");
       setStep("name");
     } catch {
       setError("Nie znaleziono salonu. Sprawdź kod i spróbuj ponownie.");
@@ -698,21 +757,38 @@ export default function JoinGameForm() {
     [pin, playerName, avatar],
   );
 
-  // ── Playing: hand off to PlayerGameScreen ─────────────────────────────────
+  // ── Playing: hand off to the appropriate game screen ─────────────────────
 
-  if (step === "playing" && gameStartData && playerInfo) {
-    return (
-      <PlayerGameScreen
-        pin={pin}
-        playerId={playerInfo.playerId}
-        playerName={playerName}
-        teamId={playerInfo.teamId}
-        teamName={playerInfo.teamName}
-        avatar={playerInfo.avatar}
-        initialCard={gameStartData.card}
-        initialCardIndex={gameStartData.cardIndex}
-      />
-    );
+  if (step === "playing" && playerInfo) {
+    // HighLow mode
+    if (gameMode === "highlow") {
+      return (
+        <PlayerHighLowScreen
+          pin={pin}
+          playerId={playerInfo.playerId}
+          playerName={playerName}
+          teamId={playerInfo.teamId}
+          teamName={playerInfo.teamName}
+          avatar={playerInfo.avatar}
+          initialRoundData={hlRoundData}
+        />
+      );
+    }
+    // Regular quiz/never/categories mode
+    if (gameStartData) {
+      return (
+        <PlayerGameScreen
+          pin={pin}
+          playerId={playerInfo.playerId}
+          playerName={playerName}
+          teamId={playerInfo.teamId}
+          teamName={playerInfo.teamName}
+          avatar={playerInfo.avatar}
+          initialCard={gameStartData.card}
+          initialCardIndex={gameStartData.cardIndex}
+        />
+      );
+    }
   }
 
   // ── Join / waiting flow ───────────────────────────────────────────────────
@@ -773,7 +849,7 @@ export default function JoinGameForm() {
                 onChange={setPlayerName}
                 avatar={avatar}
                 onAvatarChange={setAvatar}
-                onSubmit={() => setStep("mode")}
+                onSubmit={() => setStep(gameMode === "highlow" ? "team" : "mode")}
                 onBack={() => setStep("pin")}
               />
             </motion.div>
@@ -809,8 +885,9 @@ export default function JoinGameForm() {
                 onNewTeamNameChange={setNewTeamName}
                 onJoinTeam={(id, name) => doJoin(id, name)}
                 onCreateTeam={() => doJoin(null, newTeamName.trim())}
-                onBack={() => setStep("mode")}
+                onBack={() => setStep(gameMode === "highlow" ? "name" : "mode")}
                 loading={loading}
+                hideCreate={gameMode === "highlow"}
               />
             </motion.div>
           )}

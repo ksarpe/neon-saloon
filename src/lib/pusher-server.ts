@@ -25,7 +25,7 @@ function getPusher(): Pusher {
 /** Minimal card data forwarded to players via Pusher so they don't need the full deck */
 export type WireCard = {
   id: string;
-  type: "QUIZ" | "TEST"
+  type: "QUIZ" | "TEST" | "NEVER"
   title: string;
   description: string;
   emoji: string;
@@ -65,8 +65,23 @@ export type VoteCastPayload = {
   answerText: string;
 };
 
+export type ScoreEntry = {
+  playerId: string;
+  playerName: string;
+  score: number;
+  playerTeamId?: string;
+  playerTeamName?: string;
+};
+
+export type TeamScoreEntry = {
+  teamId: string;
+  teamName: string;
+  score: number;
+};
+
 export type VotesRevealedPayload = {
   cardIndex: number;
+  correctAnswer?: string; // undefined for NEVER cards (no scoring)
   votes: Array<{
     playerId: string;
     playerName: string;
@@ -75,32 +90,71 @@ export type VotesRevealedPayload = {
     answerIndex: number;
     answerText: string;
   }>;
-  scores: Array<{ teamId: string; teamName: string; score: number; playerName: string }>;
+  scores: ScoreEntry[];
+  teamScores: TeamScoreEntry[];
 };
 
 export type NextCardPayload = {
   cardIndex: number;
-  card: WireCard; // ← card content piggybacked so players don't need the deck
+  card: WireCard;
 };
 
 export type GameStartedPayload = {
   cardIndex: number;
-  card: WireCard; // ← first card sent with the start signal
+  card: WireCard;
 };
 
 export type GameFinishedPayload = {
-  scores: Array<{ teamId: string; teamName: string; score: number }>;
+  scores: ScoreEntry[];
+  teamScores: TeamScoreEntry[];
+};
+
+export type PlayerLeftPayload = {
+  playerId: string;
+};
+
+// ─── High-Low event payloads ─────────────────────────────────────────────────
+
+export type HighLowRoundStartPayload = {
+  roundIndex: number;
+  questionText: string;
+  questionUnit: string;
+  guessingTeamId: string;
+  guessingTeamName: string;
+  votingTeamId: string;
+  votingTeamName: string;
+  guessingCaptainId: string;
+  votingCaptainId: string;
+};
+
+export type HighLowNumberSubmittedPayload = {
+  number: string;
+};
+
+export type HighLowRoundResultPayload = {
+  correctAnswer: number;
+  unit: string;
+  guessingTeamGuess: number;
+  correctVote: "mniej" | "wiecej";
+  captainVote: "mniej" | "wiecej";
+  winningTeamId: string;
+  winningTeamName: string;
+  scores: ScoreEntry[];
 };
 
 export type SessionEvent =
   | { event: "player-joined"; data: PlayerJoinedPayload }
+  | { event: "player-left"; data: PlayerLeftPayload }
   | { event: "team-created"; data: TeamCreatedPayload }
   | { event: "team-updated"; data: TeamUpdatedPayload }
   | { event: "vote-cast"; data: VoteCastPayload }
   | { event: "votes-revealed"; data: VotesRevealedPayload }
   | { event: "next-card"; data: NextCardPayload }
   | { event: "game-started"; data: GameStartedPayload }
-  | { event: "game-finished"; data: GameFinishedPayload };
+  | { event: "game-finished"; data: GameFinishedPayload }
+  | { event: "highlow-round-start"; data: HighLowRoundStartPayload }
+  | { event: "highlow-number-submitted"; data: HighLowNumberSubmittedPayload }
+  | { event: "highlow-round-result"; data: HighLowRoundResultPayload };
 
 // ─── Trigger helper ──────────────────────────────────────────────────────────
 

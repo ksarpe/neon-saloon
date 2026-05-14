@@ -1,5 +1,3 @@
-// last rodeo andżeliki - Prisma 7 Schema (no datasource block)
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,120 +6,62 @@ datasource db {
   provider = "postgresql"
 }
 
-// ─── Lobby / Session ─────────────────────────────────────────────────────────
+// ─── Auth ─────────────────────────────────────────────────────────────────────
 
-/// A live game session identified by a 4-digit PIN
-model GameSession {
-  id        String        @id @default(cuid())
-  pin       String        @unique // e.g. "7342"
-  status    SessionStatus @default(WAITING)
-  hostName  String        @default("Host")
-
-  currentCardIndex Int @default(0)
-  cardRevealedAt   DateTime?
-
-  teams   Team[]
-  players Player[]
-  votes   Vote[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-enum SessionStatus {
-  WAITING  // Lobby - players joining
-  ACTIVE   // Game in progress
-  REVEAL   // Votes being shown
-  FINISHED // Game over
-}
-
-// ─── Team ────────────────────────────────────────────────────────────────────
-
-/// A team within a session (a solo player is treated as a team-of-one)
-model Team {
-  id    String @id @default(cuid())
-  name  String
-  color String @default("#FF10F0")
-  score Int    @default(0)
-  emoji String @default("🤠")
-
-  session   GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  sessionId String
-
-  players Player[]
-  votes   Vote[]
-
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([sessionId, name])
-}
+  // ─── Premium ──────────────────────────────────────────────────
+  isPremium Boolean @default(false)
 
-// ─── Player ──────────────────────────────────────────────────────────────────
+  // ─── Stripe ───────────────────────────────────────────────────
+  /// Stripe Customer ID (cus_…) — ustawiany przy pierwszej płatności
+  stripeCustomerId String? @unique
 
-/// An individual player within a session
-model Player {
-  id     String @id @default(cuid())
-  name   String
-  avatar String @default("🤠")
+  /// ID aktywnej subskrypcji (sub_…)
+  stripeSubscriptionId String? @unique
 
-  session   GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  sessionId String
+  /// ID cennika/planu (price_…) – który plan wykupił
+  stripePriceId String?
 
-  team   Team?   @relation(fields: [teamId], references: [id], onDelete: SetNull)
-  teamId String?
+  /// Koniec bieżącego okresu rozliczeniowego — do sprawdzenia ważności dostępu
+  stripeCurrentPeriodEnd DateTime?
 
-  votes Vote[]
+  /// Status subskrypcji od Stripe: "active" | "trialing" | "past_due" | "canceled" | "unpaid"
+  stripeSubscriptionStatus String?
 
-  joinedAt DateTime @default(now())
-
-  @@unique([sessionId, name])
-}
-
-// ─── Vote ─────────────────────────────────────────────────────────────────────
-
-/// A single player's answer/vote for one card/question
-model Vote {
-  id          String @id @default(cuid())
-  cardIndex   Int
-  answerIndex Int    // 0-3 for MCQ, -1 for "completed", -2 for "failed"
-  answerText  String @default("")
-
-  session   GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  sessionId String
-
-  player   Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
-  playerId String
-
-  team   Team?   @relation(fields: [teamId], references: [id], onDelete: SetNull)
-  teamId String?
-
-  castAt DateTime @default(now())
-
-  @@unique([sessionId, playerId, cardIndex])
+  // ─── Relations ────────────────────────────────────────────────
+  neverQuestions NeverQuestion[]
+  quizQuestions  QuizQuestion[]
 }
 
 // ─── Content ─────────────────────────────────────────────────────────────────
 
-/// A trivia question (can be linked to a session as custom content)
-model Question {
-  id         String   @id @default(cuid())
-  text       String
-  answer     String
-  options    String[] // array of 2-4 answer choices
-  category   String   @default("bride-trivia")
-  difficulty Int      @default(1)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+/// Własne pytania "Nigdy przenigdy" dodane przez użytkownika
+model NeverQuestion {
+  id   String @id @default(cuid())
+  text String
+
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+
+  createdAt DateTime @default(now())
 }
 
-/// A physical/social challenge card
-model Challenge {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  type        String   // 'action' | 'charades' | 'dare'
-  points      Int      @default(1)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+/// Własne pytania quizowe z poprawną odpowiedzią i opcjami wielokrotnego wyboru
+model QuizQuestion {
+  id      String   @id @default(cuid())
+  text    String
+  answer  String
+  options String[]
+
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+
+  createdAt DateTime @default(now())
 }

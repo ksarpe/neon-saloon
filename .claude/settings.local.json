@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx prisma *)",
+      "Bash(npm install *)",
+      "Bash(node -e \"const {PrismaPg} = require\\('./node_modules/@prisma/adapter-pg'\\); console.log\\(PrismaPg.toString\\(\\).slice\\(0,300\\)\\)\")",
+      "Bash(npx tsc *)",
+      "Bash(Remove-Item \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\\\\app\\\\api\\\\questions\\\\[id]\\\\route.ts\" -Force)",
+      "Bash(Remove-Item \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\\\\app\\\\api\\\\questions\\\\[id]\" -Force -ErrorAction SilentlyContinue)",
+      "Bash(Get-ChildItem -Path \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\\\\app\\\\graj\\\\host\" -Recurse -File)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(xargs grep -l \"Bebas Neue\")",
+      "Bash(Get-ChildItem -Path \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\" -Recurse -File)",
+      "Bash(Select-Object -First 20)",
+      "Bash(Format-List FullName)"
+    ]
+  }
+}

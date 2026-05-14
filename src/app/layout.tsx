@@ -3,6 +3,8 @@ import { Bebas_Neue, Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import PageTransition from "@/components/PageTransition";
 import { BackButtonProvider } from "@/lib/back-button-context";
+import { Providers } from "@/components/Providers";
+import { BackgroundMusic } from "@/components/BackgroundMusic";
 import { Zap } from "lucide-react";
 
 const bebasNeue = Bebas_Neue({
@@ -77,9 +79,12 @@ export default function RootLayout({
           className="pointer-events-none fixed inset-0 z-[1]"
           style={{ background: "rgba(10,4,20,0.70)" }}
         />
-        <BackButtonProvider>
-          <PageTransition>{children}</PageTransition>
-        </BackButtonProvider>
+        <Providers>
+          <BackButtonProvider>
+            <PageTransition>{children}</PageTransition>
+          </BackButtonProvider>
+          <BackgroundMusic />
+        </Providers>
 
         {/* Global footer */}
         <footer

@@ -20,6 +20,8 @@ export async function GET(_req: Request, { params }: RouteContext) {
     teams: session.teams,
     cardIndex: session.cardIndex,
     votes: session.votes ?? [],
+    gameMode: session.gameMode ?? "classic",
+    highlowData: session.highlowData ?? null,
   });
 }
 
@@ -44,7 +46,7 @@ export async function POST(request: Request, { params }: RouteContext) {
       await updateSession(pin, { status: "finished" });
       await triggerSessionEvent(pin, {
         event: "game-finished",
-        data: { scores: body.scores ?? [] },
+        data: { scores: body.scores ?? [], teamScores: body.teamScores ?? [] },
       });
     }
 

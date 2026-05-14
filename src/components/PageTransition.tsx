@@ -12,9 +12,20 @@ export default function PageTransition({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { hidden: backHidden } = useBackButton();
-  const isHome = pathname === "/";
-  const isActiveGame = /^\/(host|join)\/.+/.test(pathname);
+  const { hidden: backHidden, onBack } = useBackButton();
+  const isHome = pathname === "/" || pathname === "/graj";
+
+  function getBackHref(): string {
+    if (pathname.startsWith("/graj/")) return "/graj";
+    if (pathname === "/panel") return "/graj";
+    if (pathname === "/login") return "/";
+    return "/";
+  }
+
+  const handleBack = () => {
+    if (onBack) onBack();
+    else router.push(getBackHref());
+  };
 
   return (
     <>
@@ -31,13 +42,13 @@ export default function PageTransition({
         </motion.div>
       </AnimatePresence>
 
-      {!isHome && !isActiveGame && !backHidden && (
+      {!isHome && !backHidden && (
         <motion.button
           key={`back-${pathname}`}
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.2 }}
-          onClick={() => router.back()}
+          onClick={handleBack}
           className="fixed top-2 left-4 z-50 flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold cursor-pointer"
           style={{
             borderColor: "rgba(255,220,180,0.2)",

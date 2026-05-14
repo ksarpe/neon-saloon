@@ -38,13 +38,13 @@ const CARD_CONFIG: Record<
     badgeBg: "rgba(139,43,226,0.2)",
     stripeColor: "#7c3aed",
   },
-  TEST: {
-    label: "Testowe pytania",
-    bgClass: "card-trivia",
-    accentColor: "#8b2be2",
-    labelColor: "#c084fc",
-    badgeBg: "rgba(139,43,226,0.2)",
-    stripeColor: "#7c3aed",
+  NEVER: {
+    label: "Never have I ever",
+    bgClass: "card-never",
+    accentColor: "#e22bc0",
+    labelColor: "#fc84f3",
+    badgeBg: "rgba(226,43,192,0.2)",
+    stripeColor: "#c02bc4",
   },
 };
 
@@ -570,8 +570,7 @@ export default function CardDeck({ onSuccess, onFail }: CardDeckProps) {
               id="success-btn"
               whileTap={{ scale: 0.95 }}
               onClick={async () => {
-                if (currentPlayer)
-                  incrementScore(currentPlayer.id, 1);
+                if (currentPlayer) incrementScore(currentPlayer.id, 1);
                 await controls.start({
                   x: 400,
                   opacity: 0,

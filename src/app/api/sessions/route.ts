@@ -23,6 +23,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
     const hostName: string = body.hostName ?? "Host";
+    const gameMode: string = body.gameMode ?? "classic";
 
     const pin = await generateUniquePin();
 
@@ -35,6 +36,7 @@ export async function POST(request: Request) {
       teams: [],
       cardIndex: 0,
       votes: [],
+      gameMode,
     });
 
     return NextResponse.json({ pin }, { status: 201 });

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useEffect, useRef } from "react";
+import { useBackButton } from "@/lib/back-button-context";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Play,
@@ -16,8 +17,10 @@ import {
 } from "lucide-react";
 import { useGameSocket } from "@/hooks/useGameSocket";
 import { GameCardStack } from "@/components/SharedCard";
+import { GameSummary } from "@/components/GameSummary";
 import type {
   PlayerJoinedPayload,
+  PlayerLeftPayload,
   VoteCastPayload,
   VotesRevealedPayload,
   NextCardPayload,
@@ -42,10 +45,27 @@ interface VoteRecord {
   answerText: string;
 }
 interface ScoreEntry {
+  playerId: string;
+  playerName: string;
+  score: number;
+  playerTeamId?: string;
+  playerTeamName?: string;
+}
+interface TeamScoreEntry {
   teamId: string;
   teamName: string;
   score: number;
-  playerName: string;
+}
+
+function computeTeamScores(scores: ScoreEntry[]): TeamScoreEntry[] {
+  const map = new Map<string, TeamScoreEntry>();
+  scores.forEach((s) => {
+    if (!s.playerTeamId || !s.playerTeamName) return;
+    const existing = map.get(s.playerTeamId);
+    if (existing) existing.score += s.score;
+    else map.set(s.playerTeamId, { teamId: s.playerTeamId, teamName: s.playerTeamName, score: s.score });
+  });
+  return Array.from(map.values());
 }
 type HostPhase = "lobby" | "active" | "reveal" | "finished";
 interface HostScreenProps {
@@ -57,6 +77,7 @@ interface HostScreenProps {
 const ACCENT: Record<string, string> = {
   trivia: "#8b2be2",
   QUIZ: "#8b2be2",
+  NEVER: "#FFD700",
   charades: "#1e90ff",
   action: "#f59e0b",
   dare: "#ff10f0",
@@ -75,6 +96,7 @@ function ActiveCardView({
   isRevealed,
   revealedVotes,
   scores,
+  isNever,
 }: {
   card: GameCard;
   cardIndex: number;
@@ -86,6 +108,7 @@ function ActiveCardView({
   isRevealed: boolean;
   revealedVotes: VoteRecord[];
   scores: ScoreEntry[];
+  isNever?: boolean;
 }) {
   const [isFlipped, setIsFlipped] = useState(false);
   const handleFlip = useCallback(() => setIsFlipped(true), []);
@@ -101,50 +124,52 @@ function ActiveCardView({
         onFlip={handleFlip}
       />
 
-      {/* Avatar vote grid */}
-      <div className="flex flex-wrap gap-3 justify-center max-w-sm">
-        {players.map((p) => {
-          const hasVoted = votes.some((v) => v.playerId === p.playerId);
-          return (
-            <div
-              key={p.playerId}
-              className="relative flex flex-col items-center gap-1"
-            >
-              <motion.div
-                animate={{
-                  borderColor: hasVoted
-                    ? "var(--neon-pink)"
-                    : "var(--saloon-border)",
-                  backgroundColor: hasVoted
-                    ? "rgba(255,16,240,0.12)"
-                    : "rgba(255,220,180,0.07)",
-                }}
-                transition={{ duration: 0.3 }}
-                className="w-12 h-12 rounded-full border-2 flex items-center justify-center text-2xl"
+      {/* Avatar vote grid — hidden in never mode */}
+      {!isNever && (
+        <div className="flex flex-wrap gap-3 justify-center max-w-sm">
+          {players.map((p) => {
+            const hasVoted = votes.some((v) => v.playerId === p.playerId);
+            return (
+              <div
+                key={p.playerId}
+                className="relative flex flex-col items-center gap-1"
               >
-                {p.avatar}
-              </motion.div>
-              <AnimatePresence>
-                {hasVoted && (
-                  <motion.div
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                    className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center"
-                    style={{
-                      backgroundColor: "var(--neon-pink)",
-                      boxShadow: "0 0 8px rgba(255,16,240,0.7)",
-                    }}
-                  >
-                    <Check size={11} color="white" strokeWidth={3} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          );
-        })}
-      </div>
+                <motion.div
+                  animate={{
+                    borderColor: hasVoted
+                      ? "var(--neon-pink)"
+                      : "var(--saloon-border)",
+                    backgroundColor: hasVoted
+                      ? "rgba(255,16,240,0.12)"
+                      : "rgba(255,220,180,0.07)",
+                  }}
+                  transition={{ duration: 0.3 }}
+                  className="w-12 h-12 rounded-full border-2 flex items-center justify-center text-2xl"
+                >
+                  {p.avatar}
+                </motion.div>
+                <AnimatePresence>
+                  {hasVoted && (
+                    <motion.div
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                      className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center"
+                      style={{
+                        backgroundColor: "var(--neon-pink)",
+                        boxShadow: "0 0 8px rgba(255,16,240,0.7)",
+                      }}
+                    >
+                      <Check size={11} color="white" strokeWidth={3} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Revealed results */}
       {isRevealed && (
@@ -216,14 +241,14 @@ function ActiveCardView({
                 .sort((a, b) => b.score - a.score)
                 .map((s, i) => (
                   <div
-                    key={s.teamId}
+                    key={s.playerId}
                     className="flex items-center gap-2 text-sm"
                   >
                     <span className="w-4 text-center font-bold text-text-muted text-[10px]">
                       {i + 1}
                     </span>
                     <span className="flex-1 font-semibold text-text-primary text-xs truncate">
-                      {s.teamName ?? s.playerName}
+                      {s.playerName}
                     </span>
                     <div className="flex items-center gap-1">
                       <Star
@@ -247,7 +272,23 @@ function ActiveCardView({
 
       {/* Host controls */}
       <div className="flex gap-3">
-        {!isRevealed ? (
+        {isNever ? (
+          <motion.button
+            id="next-card-btn"
+            whileTap={{ scale: 0.97 }}
+            onClick={onNext}
+            disabled={!isFlipped}
+            className="flex items-center gap-2 px-8 py-4 rounded-2xl text-white disabled:opacity-30"
+            style={{
+              background: "linear-gradient(135deg,var(--neon-pink),#c800c8)",
+              fontFamily: "'Bebas Neue',cursive",
+              letterSpacing: "0.1em",
+              fontSize: "1.1rem",
+            }}
+          >
+            Kolejna dzika karta <ChevronRight size={18} />
+          </motion.button>
+        ) : !isRevealed ? (
           <motion.button
             id="reveal-votes-btn"
             whileTap={{ scale: 0.97 }}
@@ -280,7 +321,7 @@ function ActiveCardView({
             id="next-card-btn"
             whileTap={{ scale: 0.97 }}
             onClick={onNext}
-            className="flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-white"
+            className="flex items-center gap-2 px-8 py-4 rounded-2xl text-white"
             style={{
               background: "linear-gradient(135deg,var(--neon-pink),#c800c8)",
               fontFamily: "'Bebas Neue',cursive",
@@ -412,11 +453,12 @@ function LobbyView({
         disabled={players.length < 1}
         whileTap={{ scale: 0.97 }}
         onClick={onStart}
-        className="flex items-center gap-3 px-10 py-5 rounded-2xl font-bold text-white text-xl disabled:opacity-30"
+        className="flex items-center gap-3 px-10 py-5 rounded-2xl text-white disabled:opacity-30"
         style={{
           background: "linear-gradient(135deg,var(--neon-pink),#c800c8)",
           boxShadow: "0 4px 40px rgba(255,16,240,0.5)",
           fontFamily: "'Bebas Neue',cursive",
+          fontSize: "1.15rem",
           letterSpacing: "0.15em",
         }}
       >
@@ -433,6 +475,12 @@ export default function HostScreen({
   initialCards,
   gameMode = "classic",
 }: HostScreenProps) {
+  const { setHidden: setBackHidden } = useBackButton();
+  useEffect(() => {
+    setBackHidden(true);
+    return () => setBackHidden(false);
+  }, [setBackHidden]);
+
   const [phase, setPhase] = useState<HostPhase>("lobby");
   const [players, setPlayers] = useState<LivePlayer[]>([]);
   const [cardIndex, setCardIndex] = useState(0);
@@ -440,6 +488,7 @@ export default function HostScreen({
   const [isRevealed, setIsRevealed] = useState(false);
   const [revealedVotes, setRevealedVotes] = useState<VoteRecord[]>([]);
   const [scores, setScores] = useState<ScoreEntry[]>([]);
+  const [teamScores, setTeamScores] = useState<TeamScoreEntry[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -478,16 +527,7 @@ export default function HostScreen({
         .then((r) => (r.ok ? r.json() : null))
         .then((data) => {
           if (!data?.players) return;
-          setPlayers((prev) => {
-            const existing = new Set(prev.map((p) => p.playerId));
-            const merged = [
-              ...prev,
-              ...data.players.filter(
-                (p: { playerId: string }) => !existing.has(p.playerId),
-              ),
-            ];
-            return merged.length !== prev.length ? merged : prev;
-          });
+          setPlayers(data.players);
         })
         .catch(() => {});
     }, 3000);
@@ -529,6 +569,9 @@ export default function HostScreen({
         p.some((x) => x.playerId === d.playerId) ? p : [...p, d],
       );
     }, []),
+    onPlayerLeft: useCallback((d: PlayerLeftPayload) => {
+      setPlayers((p) => p.filter((x) => x.playerId !== d.playerId));
+    }, []),
     onVoteCast: useCallback((d: VoteCastPayload) => {
       setCurrentVotes((p) =>
         p.some((x) => x.playerId === d.playerId) ? p : [...p, d],
@@ -537,6 +580,7 @@ export default function HostScreen({
     onVotesRevealed: useCallback((d: VotesRevealedPayload) => {
       setRevealedVotes(d.votes);
       setScores(d.scores);
+      setTeamScores(d.teamScores ?? []);
       setIsRevealed(true);
     }, []),
     onNextCard: useCallback((d: NextCardPayload) => {
@@ -564,40 +608,38 @@ export default function HostScreen({
     const card = initialCards[cardIndex];
     const votes: VoteRecord[] = currentVotes.map((v) => ({ ...v }));
 
-    // Calculate new scores
+    // Individual player scores (always per-player, never grouped by team)
     let updatedScores = [...scores];
     if (card.type === "QUIZ" && card.answer) {
       votes.forEach((v) => {
         const isCorrect = card.options?.[v.answerIndex] === card.answer;
-        if (isCorrect) {
-          const id = v.teamId || v.playerId;
-          const name = v.teamName || v.playerName;
-          const teamIdx = updatedScores.findIndex((s) => s.teamId === id);
-          if (teamIdx > -1) {
-            updatedScores[teamIdx] = {
-              ...updatedScores[teamIdx],
-              score: updatedScores[teamIdx].score + 1,
-            };
-          } else {
-            updatedScores.push({
-              teamId: id,
-              teamName: name,
-              score: 1,
-              playerName: v.playerName,
-            });
-          }
+        if (!isCorrect) return;
+        const idx = updatedScores.findIndex((s) => s.playerId === v.playerId);
+        if (idx > -1) {
+          updatedScores[idx] = { ...updatedScores[idx], score: updatedScores[idx].score + 1 };
+        } else {
+          updatedScores.push({
+            playerId: v.playerId,
+            playerName: v.playerName,
+            score: 1,
+            playerTeamId: v.teamId ?? undefined,
+            playerTeamName: v.teamName ?? undefined,
+          });
         }
       });
     }
 
+    const updatedTeamScores = computeTeamScores(updatedScores);
+
     await fetch(`/api/sessions/${pin}/reveal`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cardIndex, votes, scores: updatedScores }),
+      body: JSON.stringify({ cardIndex, correctAnswer: card.answer, votes, scores: updatedScores, teamScores: updatedTeamScores }),
     });
     setIsRevealed(true);
     setRevealedVotes(votes);
     setScores(updatedScores);
+    setTeamScores(updatedTeamScores);
   }, [pin, cardIndex, currentVotes, scores, initialCards]);
 
   const handleForceFinish = useCallback(async () => {
@@ -607,12 +649,12 @@ export default function HostScreen({
       await fetch(`/api/sessions/${pin}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "finish", scores }),
+        body: JSON.stringify({ action: "finish", scores, teamScores }),
       });
     } catch (err) {
       console.error("[handleForceFinish]", err);
     }
-  }, [pin, scores]);
+  }, [pin, scores, teamScores]);
 
   const handleNextCard = useCallback(async () => {
     const next = cardIndex + 1;
@@ -620,7 +662,7 @@ export default function HostScreen({
       await fetch(`/api/sessions/${pin}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "finish", scores }),
+        body: JSON.stringify({ action: "finish", scores, teamScores }),
       });
       setPhase("finished");
       return;
@@ -634,7 +676,7 @@ export default function HostScreen({
     setCurrentVotes([]);
     setIsRevealed(false);
     setRevealedVotes([]);
-  }, [pin, cardIndex, initialCards, scores]);
+  }, [pin, cardIndex, initialCards, scores, teamScores]);
 
   return (
     <div className="w-full min-h-dvh flex flex-col">
@@ -693,8 +735,8 @@ export default function HostScreen({
           </div>
 
           <div className="flex justify-end items-center gap-3">
-            {/* Vote count */}
-            {(phase === "active" || phase === "reveal") && (
+            {/* Vote count — hidden in never mode */}
+            {(phase === "active" || phase === "reveal") && gameMode !== "never" && (
               <span className="text-xs font-semibold text-text-muted tabular-nums">
                 <span className="text-text-primary">{currentVotes.length}</span>
                 {" / "}
@@ -808,6 +850,7 @@ export default function HostScreen({
                   isRevealed={isRevealed}
                   revealedVotes={revealedVotes}
                   scores={scores}
+                  isNever={gameMode === "never"}
                 />
               </motion.div>
             )}
@@ -815,68 +858,24 @@ export default function HostScreen({
             {phase === "finished" && (
               <motion.div
                 key="finished"
-                className="flex flex-col items-center gap-6 text-center w-full max-w-md mx-auto"
+                className="w-full"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <h2
-                  className="text-5xl sm:text-7xl shimmer-text"
-                  style={{ fontFamily: "'Bebas Neue',cursive" }}
-                >
-                  Game Over, Cowgirls!
-                </h2>
-                <div className="flex flex-col gap-3 w-full">
-                  {[...scores]
-                    .sort((a, b) => b.score - a.score)
-                    .map((s, i) => (
-                      <motion.div
-                        key={s.teamId}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.08 }}
-                        className="flex items-center gap-3 p-4 rounded-xl border border-saloon-border bg-saloon-surface"
-                      >
-                        <span className="text-xl">
-                          {["🥇", "🥈", "🥉"][i] ?? "🎖️"}
-                        </span>
-                        <span className="flex-1 font-bold text-text-primary">
-                          {s.teamName}
-                        </span>
-                        <div className="flex items-center gap-1">
-                          <Star
-                            size={13}
-                            fill="var(--sheriff-gold)"
-                            style={{ color: "var(--sheriff-gold)" }}
-                          />
-                          <span
-                            className="font-bold"
-                            style={{ color: "var(--sheriff-gold)" }}
-                          >
-                            {s.score}
-                          </span>
-                        </div>
-                      </motion.div>
-                    ))}
-                </div>
-                <motion.a
-                  href="/"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                  className="mt-2 flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-white"
-                  style={{
-                    background:
-                      "linear-gradient(135deg,var(--neon-pink),#c800c8)",
-                    fontFamily: "'Bebas Neue',cursive",
-                    letterSpacing: "0.12em",
-                    fontSize: "1.1rem",
-                    boxShadow: "0 4px 32px rgba(255,16,240,0.4)",
-                  }}
-                >
-                  Wróć do menu głównego
-                </motion.a>
+                <GameSummary
+                  scores={scores.map((s) => ({
+                    id: s.playerId,
+                    name: s.playerName,
+                    score: s.score,
+                  }))}
+                  teamScores={teamScores.length > 0 ? teamScores.map((t) => ({
+                    id: t.teamId,
+                    name: t.teamName,
+                    score: t.score,
+                  })) : undefined}
+                />
               </motion.div>
             )}
           </AnimatePresence>

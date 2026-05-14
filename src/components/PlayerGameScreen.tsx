@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star } from "lucide-react";
 import { GameCardStack } from "@/components/SharedCard";
+import { GameSummary } from "@/components/GameSummary";
 import { useGameSocket } from "@/hooks/useGameSocket";
 import type {
   WireCard,
@@ -24,31 +25,37 @@ function RevealView({ data }: { data: VotesRevealedPayload }) {
       <p className="text-center text-xs uppercase tracking-widest text-text-muted font-semibold">
         OTO WYNIKI
       </p>
-      {data.votes.map((v, i) => (
-        <motion.div
-          key={v.playerId}
-          initial={{ opacity: 0, x: -12 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: i * 0.06 }}
-          className="flex items-center gap-3 p-3 rounded-xl border border-saloon-border bg-saloon-surface"
-        >
-          <span className="flex-1 font-semibold text-sm text-text-primary">
-            {v.teamName ?? v.playerName}
-          </span>
-          <span
-            className="text-xs font-bold px-2 py-0.5 rounded-full"
-            style={{
-              backgroundColor:
-                v.answerIndex >= -1
-                  ? "rgba(16,185,129,0.15)"
-                  : "rgba(239,68,68,0.15)",
-              color: v.answerIndex >= -1 ? "#10b981" : "#ef4444",
-            }}
+      {data.votes.map((v, i) => {
+        const hasCorrectAnswer = !!data.correctAnswer;
+        const isCorrect = hasCorrectAnswer && v.answerText === data.correctAnswer;
+        const isWrong = hasCorrectAnswer && !isCorrect;
+        return (
+          <motion.div
+            key={v.playerId}
+            initial={{ opacity: 0, x: -12 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.06 }}
+            className="flex items-center gap-3 p-3 rounded-xl border border-saloon-border bg-saloon-surface"
           >
-            {v.answerText}
-          </span>
-        </motion.div>
-      ))}
+            <span className="flex-1 font-semibold text-sm text-text-primary">
+              {v.teamName ?? v.playerName}
+            </span>
+            <span
+              className="text-xs font-bold px-2 py-0.5 rounded-full"
+              style={{
+                backgroundColor: isCorrect
+                  ? "rgba(16,185,129,0.15)"
+                  : isWrong
+                    ? "rgba(239,68,68,0.15)"
+                    : "rgba(255,220,180,0.1)",
+                color: isCorrect ? "#10b981" : isWrong ? "#ef4444" : "rgba(255,220,180,0.7)",
+              }}
+            >
+              {v.answerText}
+            </span>
+          </motion.div>
+        );
+      })}
       {data.scores.length > 0 && (
         <div className="mt-4 pt-4 border-t-2 border-saloon-border flex flex-col gap-3">
           <p className="text-xs uppercase tracking-[0.2em] text-text-muted font-bold flex items-center justify-center gap-2">
@@ -69,14 +76,14 @@ function RevealView({ data }: { data: VotesRevealedPayload }) {
               .sort((a, b) => b.score - a.score)
               .map((s, i) => (
                 <div
-                  key={s.teamId}
+                  key={s.playerId}
                   className="flex items-center gap-3 p-3 rounded-xl bg-saloon-card border border-saloon-border shadow-lg"
                 >
                   <span className="w-6 text-center font-black text-neon-pink">
                     {i + 1}.
                   </span>
                   <span className="flex-1 font-bold text-sm text-text-primary">
-                    {s.teamName}
+                    {s.playerName}
                   </span>
                   <div className="flex items-center gap-1 bg-black/30 px-2 py-1 rounded-lg">
                     <Star
@@ -107,61 +114,18 @@ function RevealView({ data }: { data: VotesRevealedPayload }) {
 
 function GameOverView({ data }: { data: GameFinishedPayload }) {
   return (
-    <div className="flex flex-col items-center gap-5 text-center w-full max-w-sm mx-auto">
-      <h2
-        className="text-5xl tracking-widest shimmer-text"
-        style={{ fontFamily: "'Bebas Neue',cursive" }}
-      >
-        Game Over, Cowgirls!
-      </h2>
-      <div className="flex flex-col gap-2 w-full">
-        {[...data.scores]
-          .sort((a, b) => b.score - a.score)
-          .map((s, i) => (
-            <motion.div
-              key={s.teamId}
-              initial={{ opacity: 0, x: -12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.08 }}
-              className="flex items-center gap-3 p-3 rounded-xl border border-saloon-border bg-saloon-surface"
-            >
-              <span className="text-lg">{["🥇", "🥈", "🥉"][i] ?? "🎖️"}</span>
-              <span className="flex-1 font-bold text-sm text-text-primary">
-                {s.teamName}
-              </span>
-              <div className="flex items-center gap-1">
-                <Star
-                  size={11}
-                  fill="var(--sheriff-gold)"
-                  style={{ color: "var(--sheriff-gold)" }}
-                />
-                <span
-                  className="font-bold text-sm"
-                  style={{ color: "var(--sheriff-gold)" }}
-                >
-                  {s.score}
-                </span>
-              </div>
-            </motion.div>
-          ))}
-      </div>
-      <motion.a
-        href="/"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.4 }}
-        className="mt-2 flex items-center justify-center gap-2 px-8 py-4 rounded-2xl font-bold text-white w-full"
-        style={{
-          background: "linear-gradient(135deg,var(--neon-pink),#c800c8)",
-          fontFamily: "'Bebas Neue',cursive",
-          letterSpacing: "0.12em",
-          fontSize: "1.1rem",
-          boxShadow: "0 4px 32px rgba(255,16,240,0.4)",
-        }}
-      >
-        Wróć do menu głównego
-      </motion.a>
-    </div>
+    <GameSummary
+      scores={data.scores.map((s) => ({
+        id: s.playerId,
+        name: s.playerName,
+        score: s.score,
+      }))}
+      teamScores={
+        data.teamScores?.length
+          ? data.teamScores.map((t) => ({ id: t.teamId, name: t.teamName, score: t.score }))
+          : undefined
+      }
+    />
   );
 }
 
@@ -315,9 +279,9 @@ export default function PlayerGameScreen({
                   onFlip={() => setIsFlipped(true)}
                 />
 
-                {/* Action buttons — only show after reveal */}
+                {/* Action buttons — only show after reveal, hidden for NEVER cards */}
                 <AnimatePresence>
-                  {isFlipped && (
+                  {isFlipped && currentCard.type !== "NEVER" && (
                     <motion.div
                       key="btns"
                       initial={{ opacity: 0, y: 12 }}
@@ -388,6 +352,16 @@ export default function PlayerGameScreen({
                         </div>
                       )}
                     </motion.div>
+                  )}
+                  {isFlipped && currentCard.type === "NEVER" && (
+                    <motion.p
+                      key="never-hint"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-center text-xs text-text-muted animate-pulse"
+                    >
+                      Czekaj aż szeryf przejdzie dalej…
+                    </motion.p>
                   )}
                 </AnimatePresence>
               </motion.div>
