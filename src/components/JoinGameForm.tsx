@@ -2,67 +2,21 @@
 
 import { useState, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  User,
-  Users,
-  UserPlus,
-  ChevronRight,
-  Loader2,
-  CheckCircle,
-  ArrowLeft,
-  Dices,
-} from 'lucide-react'
+import { User, Users, UserPlus, ChevronRight, Loader2, ArrowLeft, Dices } from 'lucide-react'
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
 import { ensureAnonymousSession } from '@/lib/appwrite/client'
 import PlayerGameScreen from '@/components/PlayerGameScreen'
-import PlayerHighLowScreen from '@/components/PlayerHighLowScreen'
+import PlayerHighLowScreen from '@/components/HighLow/PlayerHighLowScreen'
 import { useBackButton } from '@/lib/back-button-context'
 import type {
   PlayerJoinedPayload,
   TeamCreatedPayload,
-  WireCard,
+  TeamUpdatedPayload,
   GameStartedPayload,
   HighLowRoundStartPayload,
-} from '@/lib/pusher-server'
+} from '@/lib/game-types'
 import { useEffect } from 'react'
-
-const FUNNY_NAMES = [
-  'Dzika Landryna',
-  'Szeryfowa Aneta',
-  'Różowa Pantera',
-  'Kowbojka Kasia',
-  'Pijana Pszczółka',
-  'Gwiazda Szeryfa',
-  'Neonowa Klacz',
-  'Złota Ostroga',
-  'Buntowniczka',
-  'Saloonowa Królowa',
-  'Whiskey Lady',
-  'Galopująca Gazela',
-  'Szalona Ruda',
-  'Ostra Tequila',
-  'Złota Gwiazda',
-  'Różowy Dynamit',
-  'Galopująca Panna',
-  'Królowa Parkietu',
-  'Wieczorowa Dama',
-  'Błyszcząca Ostroga',
-  'Neonowa Amazonka',
-  'Gorąca Czekolada',
-  'Słodka Zemsta',
-  'Karmazynowa Dama',
-  'Diamentowa Przełęcz',
-  'Srebrna Podkowa',
-  'Błękitna Laguna',
-  'Śpiewająca Syrena',
-  'Tańcząca z Wilkami',
-  'Wielka Błękitna',
-  'Słońce Teksasu',
-  'Dzika Orchidea',
-  'Perłowa Dama',
-  'Rubinowa Róża',
-  'Szmaragdowa Dolina',
-]
+import { FUNNY_NAMES } from '@/lib/games/data'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -107,13 +61,7 @@ function PinInput({
   return (
     <div className="flex flex-col items-center gap-6">
       <div className="text-center">
-        <h1
-          className="shimmer-text mt-1 text-6xl tracking-widest"
-          style={{ fontFamily: "'Bebas Neue',cursive" }}
-        >
-          last rodeo andżeliki
-        </h1>
-        <p className="text-text-muted text-sm">Wpisz PIN aby dołączyć do gry</p>
+        <p className="text-text-muted text-lg">Wpisz PIN aby dołączyć do gry</p>
       </div>
       <div className="flex gap-2">
         {[0, 1, 2, 3].map((i) => (
@@ -660,7 +608,7 @@ export default function JoinGameForm() {
       []
     ),
     onTeamUpdated: useCallback(
-      (d: import('@/lib/pusher-server').TeamUpdatedPayload) =>
+      (d: TeamUpdatedPayload) =>
         setLiveTeams((p) =>
           p.map((t) => (t.teamId === d.teamId ? { ...t, memberCount: d.memberCount } : t))
         ),
@@ -711,13 +659,10 @@ export default function JoinGameForm() {
       try {
         // Bootstrap Appwrite anonymous session before joining so the Realtime
         // subscription is ready as soon as we transition to the waiting step.
-        // Runs in parallel with the join POST — both are fast, and the session
-        // is idempotent (subsequent calls return immediately if already active).
-        if (process.env.NEXT_PUBLIC_USE_APPWRITE_REALTIME === 'true') {
-          await ensureAnonymousSession().catch((err) =>
-            console.warn('[Appwrite] anon session bootstrap failed:', err)
-          )
-        }
+        // Idempotent — subsequent calls return immediately if already active.
+        await ensureAnonymousSession().catch((err) =>
+          console.warn('[Appwrite] anon session bootstrap failed:', err)
+        )
 
         const res = await fetch(`/api/sessions/${pin}/join`, {
           method: 'POST',

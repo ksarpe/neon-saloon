@@ -1,71 +1,82 @@
-import { NextResponse } from "next/server";
-import { getSession, saveSession } from "@/lib/sessions";
-import { triggerGameEvent as triggerSessionEvent } from "@/lib/realtime";
+import { NextResponse } from 'next/server'
+import { getSession, saveSession } from '@/lib/appwrite/sessions'
+import { triggerGameEvent as triggerSessionEvent } from '@/lib/appwrite/realtime'
 
-type RouteContext = { params: Promise<{ pin: string }> };
+type RouteContext = { params: Promise<{ pin: string }> }
 
-const PLAYER_AVATARS = ["🤠", "💃", "🌸", "✨", "🍾", "🎀", "👑", "🦋", "🌺", "🎉"];
+const PLAYER_AVATARS = ['🤠', '💃', '🌸', '✨', '🍾', '🎀', '👑', '🦋', '🌺', '🎉']
 
 export async function POST(request: Request, { params }: RouteContext) {
-  const { pin } = await params;
+  const { pin } = await params
 
   try {
-    const body = await request.json();
-    const { playerName, avatar: chosenAvatar, teamId, newTeamName } = body as {
-      playerName: string;
-      avatar?: string;
-      teamId?: string;
-      newTeamName?: string;
-    };
+    const body = await request.json()
+    const {
+      playerName,
+      avatar: chosenAvatar,
+      teamId,
+      newTeamName,
+    } = body as {
+      playerName: string
+      avatar?: string
+      teamId?: string
+      newTeamName?: string
+    }
 
     if (!playerName?.trim()) {
-      return NextResponse.json({ error: "playerName is required" }, { status: 400 });
+      return NextResponse.json({ error: 'playerName is required' }, { status: 400 })
     }
 
-    const session = await getSession(pin);
+    const session = await getSession(pin)
     if (!session) {
-      return NextResponse.json({ error: "Session not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Session not found' }, { status: 404 })
     }
-    if (session.status === "active") {
-      return NextResponse.json({ error: "Game already started" }, { status: 423 });
+    if (session.status === 'active') {
+      return NextResponse.json({ error: 'Game already started' }, { status: 423 })
     }
-    if (session.status === "finished") {
-      return NextResponse.json({ error: "Game already finished" }, { status: 410 });
+    if (session.status === 'finished') {
+      return NextResponse.json({ error: 'Game already finished' }, { status: 410 })
     }
 
-    const playerId = `player_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
-    const avatar = chosenAvatar ?? PLAYER_AVATARS[Math.floor(Math.random() * PLAYER_AVATARS.length)];
+    const playerId = `player_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`
+    const avatar = chosenAvatar ?? PLAYER_AVATARS[Math.floor(Math.random() * PLAYER_AVATARS.length)]
 
     // Resolve team
-    let resolvedTeamId = teamId ?? null;
-    let resolvedTeamName = newTeamName ?? null;
+    let resolvedTeamId = teamId ?? null
+    let resolvedTeamName = newTeamName ?? null
 
     if (newTeamName && !teamId) {
-      resolvedTeamId = `team_${Date.now()}`;
+      resolvedTeamId = `team_${Date.now()}`
       const newTeam = {
         teamId: resolvedTeamId,
         teamName: newTeamName,
-        color: "#FF10F0",
-        emoji: "🤠",
-      };
-      session.teams = [...session.teams, newTeam];
+        color: '#FF10F0',
+        emoji: '🤠',
+      }
+      session.teams = [...session.teams, newTeam]
 
       await triggerSessionEvent(pin, {
-        event: "team-created",
+        event: 'team-created',
         data: newTeam,
-      });
+      })
     }
 
     // Add player
     session.players = [
       ...session.players,
-      { playerId, playerName: playerName.trim(), avatar, teamId: resolvedTeamId, teamName: resolvedTeamName },
-    ];
+      {
+        playerId,
+        playerName: playerName.trim(),
+        avatar,
+        teamId: resolvedTeamId,
+        teamName: resolvedTeamName,
+      },
+    ]
 
-    await saveSession(session);
+    await saveSession(session)
 
     await triggerSessionEvent(pin, {
-      event: "player-joined",
+      event: 'player-joined',
       data: {
         playerId,
         playerName: playerName.trim(),
@@ -73,21 +84,21 @@ export async function POST(request: Request, { params }: RouteContext) {
         teamId: resolvedTeamId,
         teamName: resolvedTeamName,
       },
-    });
+    })
 
     if (resolvedTeamId) {
       const memberCount = session.players.filter(
-        (p: { teamId: string | null }) => p.teamId === resolvedTeamId,
-      ).length;
+        (p: { teamId: string | null }) => p.teamId === resolvedTeamId
+      ).length
       await triggerSessionEvent(pin, {
-        event: "team-updated",
-        data: { teamId: resolvedTeamId, teamName: resolvedTeamName ?? "", memberCount },
-      });
+        event: 'team-updated',
+        data: { teamId: resolvedTeamId, teamName: resolvedTeamName ?? '', memberCount },
+      })
     }
 
-    return NextResponse.json({ playerId, teamId: resolvedTeamId, avatar }, { status: 200 });
+    return NextResponse.json({ playerId, teamId: resolvedTeamId, avatar }, { status: 200 })
   } catch (err) {
-    console.error(`[POST /api/sessions/${pin}/join]`, err);
-    return NextResponse.json({ error: "Failed to join session" }, { status: 500 });
+    console.error(`[POST /api/sessions/${pin}/join]`, err)
+    return NextResponse.json({ error: 'Failed to join session' }, { status: 500 })
   }
 }

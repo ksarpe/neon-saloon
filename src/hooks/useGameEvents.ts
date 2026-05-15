@@ -7,7 +7,7 @@ import {
   getTablesDB,
   ensureAnonymousSession,
 } from "@/lib/appwrite/client";
-import type { GameSocketHandlers } from "./useGameSocket";
+import type { GameSocketHandlers } from "@/lib/game-types";
 
 // ─── Per-row Realtime channel ───────────────────────────────────────────────
 // Subscribes to ONLY the current game's `game-sessions` row. Server appends

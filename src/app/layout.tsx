@@ -96,7 +96,7 @@ export default function RootLayout({
         >
           <Zap size={10} style={{ color: "var(--neon-pink)" }} />
           <span
-            className="text-[11px] tracking-wide pointer-events-auto"
+            className="text-[11px] tracking-wide pointer-events-auto flex items-center gap-2 flex-wrap justify-center"
             style={{ color: "rgba(255,220,180,0.4)" }}
           >
             Last Rodeo{" "}
@@ -108,6 +108,22 @@ export default function RootLayout({
               style={{ color: "rgba(255,220,180,0.4)" }}
             >
               AKN Software
+            </a>
+            {" · "}
+            <a
+              href="/regulamin"
+              className="hover:underline"
+              style={{ color: "rgba(255,220,180,0.4)" }}
+            >
+              Regulamin
+            </a>
+            {" · "}
+            <a
+              href="/polityka-prywatnosci"
+              className="hover:underline"
+              style={{ color: "rgba(255,220,180,0.4)" }}
+            >
+              Polityka prywatności
             </a>
           </span>
         </footer>

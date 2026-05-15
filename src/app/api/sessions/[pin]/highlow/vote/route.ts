@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
-import { getSession } from '@/lib/sessions'
-import { triggerGameEvent as triggerSessionEvent } from '@/lib/realtime'
+import { getSession } from '@/lib/appwrite/sessions'
+import { triggerGameEvent as triggerSessionEvent } from '@/lib/appwrite/realtime'
 import { HIGHLOW_QUESTIONS } from '@/lib/games/highlow'
-import type { ScoreEntry } from '@/lib/pusher-server'
+import type { ScoreEntry } from '@/lib/game-types'
 
 type RouteContext = { params: Promise<{ pin: string }> }
 

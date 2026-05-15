@@ -2,14 +2,14 @@
 
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import HostScreen from '@/components/HostScreen'
-import HostHighLowScreen from '@/components/HostHighLowScreen'
-import { useGameStore } from '@/lib/store'
+import HostHighLowScreen from '@/components/HighLow/HostHighLowScreen'
+import { buildDeck } from '@/lib/store'
 import { useMemo, useEffect, useState } from 'react'
 import type { GameCard } from '@/lib/store'
 import { motion } from 'framer-motion'
 import { Loader2 } from 'lucide-react'
 import { QUESTION_CATEGORIES } from '@/lib/games/categories'
-import type { SessionTeam } from '@/lib/redis'
+import type { SessionTeam } from '@/lib/appwrite/sessions'
 import { useBackButton } from '@/lib/back-button-context'
 
 type NeverSource = 'app' | 'own' | 'all'
@@ -341,7 +341,7 @@ export default function HostPage() {
   const router = useRouter()
   const mode = searchParams.get('mode') ?? 'classic'
 
-  const fullDeck = useGameStore((s) => s.deck)
+  const fullDeck = useMemo(() => buildDeck(), [])
 
   const [customCards, setCustomCards] = useState<GameCard[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)

@@ -1,190 +1,136 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
-import {
-  Loader2,
-  Dices,
-  Settings,
-  Brain,
-  Heart,
-  BookOpen,
-  TrendingUp,
-} from "lucide-react";
-import Link from "next/link";
-import { useEffect } from "react";
-
-const FUNNY_NAMES = [
-  "Dzika Landryna",
-  "Szeryfowa Aneta",
-  "Różowa Pantera",
-  "Kowbojka Kasia",
-  "Pijana Pszczółka",
-  "Gwiazda Szeryfa",
-  "Neonowa Klacz",
-  "Złota Ostroga",
-  "Buntowniczka",
-  "Saloonowa Królowa",
-  "Whiskey Lady",
-  "Galopująca Gazela",
-  "Szalona Ruda",
-  "Ostra Tequila",
-  "Złota Gwiazda",
-  "Różowy Dynamit",
-  "Galopująca Panna",
-  "Królowa Parkietu",
-  "Wieczorowa Dama",
-  "Błyszcząca Ostroga",
-  "Neonowa Amazonka",
-  "Gorąca Czekolada",
-  "Słodka Zemsta",
-  "Karmazynowa Dama",
-  "Diamentowa Przełęcz",
-  "Srebrna Podkowa",
-  "Błękitna Laguna",
-  "Śpiewająca Syrena",
-  "Tańcząca z Wilkami",
-  "Wielka Błękitna",
-  "Słońce Teksasu",
-  "Dzika Orchidea",
-  "Perłowa Dama",
-  "Rubinowa Róża",
-  "Szmaragdowa Dolina",
-];
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
+import { Loader2, Dices, Settings, LogIn, Brain, Heart, BookOpen, TrendingUp } from 'lucide-react'
+import { PanelButton } from '@/components/ui/panel-button'
+import { FUNNY_NAMES } from '@/lib/games/data'
 
 const GAME_MODES = [
   {
-    id: "trivia",
+    id: 'trivia',
     icon: Brain,
-    label: "Quiz o Pannie Młodej",
-    description:
-      "Kto zna Pannę Młodą najlepiej? Uczestniczki odpowiadają i głosują jednocześnie.",
-    color: "var(--neon-pink)",
-    border: "rgba(255,16,240,0.5)",
-    bg: "rgba(255,16,240,0.07)",
+    label: 'Quiz o Pannie Młodej',
+    description: 'Kto zna Pannę Młodą najlepiej? Uczestniczki odpowiadają i głosują jednocześnie.',
+    color: 'var(--neon-pink)',
+    border: 'rgba(255,16,240,0.5)',
+    bg: 'rgba(255,16,240,0.07)',
   },
   {
-    id: "categories",
+    id: 'categories',
     icon: BookOpen,
-    label: "Skategoryzowane pytania",
+    label: 'Skategoryzowane pytania',
     description:
-      "Wybierz kategorię — anatomia, historia, kultura popularna i więcej. Pytania punktowane dla całej ekipy.",
-    color: "#a78bfa",
-    border: "rgba(167,139,250,0.5)",
-    bg: "rgba(167,139,250,0.07)",
+      'Wybierz kategorię — anatomia, historia, kultura popularna i więcej. Pytania punktowane dla całej ekipy.',
+    color: '#a78bfa',
+    border: 'rgba(167,139,250,0.5)',
+    bg: 'rgba(167,139,250,0.07)',
   },
   {
-    id: "never",
+    id: 'never',
     icon: Heart,
-    label: "Nigdy przenigdy",
+    label: 'Nigdy przenigdy',
     description:
-      "Karty z wyznaniami — brak odpowiedzi, brak punktów. Host przechodzi dalej kiedy uzna że już.",
-    color: "rgba(255,215,0,0.5)",
-    border: "rgba(255,215,0,0.5)",
-    bg: "rgba(255,215,0,0.07)",
+      'Karty z wyznaniami — brak odpowiedzi, brak punktów. Host przechodzi dalej kiedy uzna że już.',
+    color: 'rgba(255,215,0,0.5)',
+    border: 'rgba(255,215,0,0.5)',
+    bg: 'rgba(255,215,0,0.07)',
   },
   {
-    id: "highlow",
+    id: 'highlow',
     icon: TrendingUp,
-    label: "Mniej czy więcej",
+    label: 'Mniej czy więcej',
     description:
-      "Dwie drużyny, kapitan i głosowanie. Drużyna A podaje liczbę, drużyna B zgaduje — mniej czy więcej?",
-    color: "#10b981",
-    border: "rgba(16,185,129,0.5)",
-    bg: "rgba(16,185,129,0.07)",
+      'Dwie drużyny, kapitan i głosowanie. Drużyna A podaje liczbę, drużyna B zgaduje — mniej czy więcej?',
+    color: '#10b981',
+    border: 'rgba(16,185,129,0.5)',
+    bg: 'rgba(16,185,129,0.07)',
   },
-];
+]
 
 export default function HostSetupPage() {
-  const router = useRouter();
-  const [hostName, setHostName] = useState("");
-  const [selectedMode, setSelectedMode] = useState<string | null>(null);
-  const [creating, setCreating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [placeholder, setPlaceholder] = useState("np. Szeryf Alicja");
+  const router = useRouter()
+  const { data: session, status } = useSession()
+  const [hostName, setHostName] = useState('')
+  const [selectedMode, setSelectedMode] = useState<string | null>(null)
+  const [creating, setCreating] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [placeholder, setPlaceholder] = useState('np. Szeryf Alicja')
 
   useEffect(() => {
-    const randomName =
-      FUNNY_NAMES[Math.floor(Math.random() * FUNNY_NAMES.length)];
-    setPlaceholder(`np. ${randomName}`);
-  }, []);
+    const randomName = FUNNY_NAMES[Math.floor(Math.random() * FUNNY_NAMES.length)]
+    setPlaceholder(`np. ${randomName}`)
+  }, [])
 
   const handleCreate = async () => {
-    if (!hostName.trim() || !selectedMode) return;
-    setCreating(true);
-    setError(null);
+    if (!hostName.trim() || !selectedMode) return
+    setCreating(true)
+    setError(null)
     try {
-      const res = await fetch("/api/sessions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/sessions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           hostName: hostName.trim(),
           gameMode: selectedMode,
         }),
-      });
-      if (!res.ok) throw new Error();
-      const { pin } = await res.json();
-      router.push(`/graj/host/${pin}?mode=${selectedMode}`);
+      })
+      if (!res.ok) throw new Error()
+      const { pin } = await res.json()
+      router.push(`/graj/host/${pin}?mode=${selectedMode}`)
     } catch {
-      setError("Could not create a game. Try again!");
-      setCreating(false);
+      setError('Could not create a game. Try again!')
+      setCreating(false)
     }
-  };
+  }
 
   return (
-    <div className="w-full min-h-dvh flex flex-col items-center justify-center p-6 overflow-y-auto">
-      {/* Panel link */}
-      <Link
-        href="/panel"
-        className="fixed top-4 right-4 z-20 flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold transition-colors"
-        style={{
-          borderColor: "rgba(255,220,180,0.18)",
-          backgroundColor: "rgba(13,8,24,0.6)",
-          color: "rgba(255,220,180,0.55)",
-          backdropFilter: "blur(8px)",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = "rgba(255,215,0,0.4)";
-          e.currentTarget.style.color = "var(--sheriff-gold)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = "rgba(255,220,180,0.18)";
-          e.currentTarget.style.color = "rgba(255,220,180,0.55)";
-        }}
+    <div className="flex min-h-dvh w-full flex-col items-center justify-center overflow-y-auto p-6">
+      <PanelButton
+        onClick={() => router.push(session ? '/panel' : '/login')}
+        isLoading={status === 'loading'}
       >
-        <Settings size={13} />
-        Panel
-      </Link>
+        {session ? (
+          <>
+            <Settings size={13} />
+            {session.user?.name ?? 'Panel'}
+          </>
+        ) : (
+          <>
+            <LogIn size={13} />
+            Zaloguj się
+          </>
+        )}
+      </PanelButton>
 
       {/* Ambient glows */}
       <div aria-hidden className="pointer-events-none fixed inset-0">
         <div
-          className="absolute top-[-25%] left-[-15%] w-[65vw] h-[65vw] rounded-full opacity-[0.07]"
+          className="absolute top-[-25%] left-[-15%] h-[65vw] w-[65vw] rounded-full opacity-[0.07]"
           style={{
-            background:
-              "radial-gradient(circle,var(--neon-pink) 0%,transparent 70%)",
-            filter: "blur(80px)",
+            background: 'radial-gradient(circle,var(--neon-pink) 0%,transparent 70%)',
+            filter: 'blur(80px)',
           }}
         />
         <div
-          className=" bottom-[-25%] right-[-15%] w-[65vw] h-[65vw] rounded-full opacity-[0.07]"
+          className="right-[-15%] bottom-[-25%] h-[65vw] w-[65vw] rounded-full opacity-[0.07]"
           style={{
-            background:
-              "radial-gradient(circle,var(--sheriff-gold) 0%,transparent 70%)",
-            filter: "blur(80px)",
+            background: 'radial-gradient(circle,var(--sheriff-gold) 0%,transparent 70%)',
+            filter: 'blur(80px)',
           }}
         />
       </div>
 
-      <div className="relative z-10 w-full max-w-xl flex flex-col gap-10 mx-auto">
+      <div className="relative z-10 mx-auto flex w-full max-w-xl flex-col gap-10">
         {/* Host name */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <label className="block text-xs uppercase tracking-widest text-text-muted font-semibold mb-2">
+          <label className="text-text-muted mb-2 block text-xs font-semibold tracking-widest uppercase">
             Jak się chcesz nazywać kowboju?
           </label>
           <div className="flex gap-2">
@@ -193,28 +139,23 @@ export default function HostSetupPage() {
               type="text"
               value={hostName}
               onChange={(e) => setHostName(e.target.value)}
-              onKeyDown={(e) =>
-                e.key === "Enter" && hostName.trim() && handleCreate()
-              }
+              onKeyDown={(e) => e.key === 'Enter' && hostName.trim() && handleCreate()}
               maxLength={20}
               autoFocus
               placeholder={placeholder}
-              className="flex-1 bg-saloon-surface border-2 rounded-xl p-4 text-lg font-bold text-text-primary placeholder:text-text-muted focus:outline-none transition-colors"
+              className="bg-saloon-surface text-text-primary placeholder:text-text-muted flex-1 rounded-xl border-2 p-4 text-lg font-bold transition-colors focus:outline-none"
               style={{
-                borderColor: hostName.trim()
-                  ? "var(--sheriff-gold)"
-                  : "var(--saloon-border)",
+                borderColor: hostName.trim() ? 'var(--sheriff-gold)' : 'var(--saloon-border)',
               }}
             />
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => {
-                const randomName =
-                  FUNNY_NAMES[Math.floor(Math.random() * FUNNY_NAMES.length)];
-                setHostName(randomName);
+                const randomName = FUNNY_NAMES[Math.floor(Math.random() * FUNNY_NAMES.length)]
+                setHostName(randomName)
               }}
-              className="px-4 rounded-xl border-2 flex items-center justify-center bg-saloon-surface transition-colors"
-              style={{ borderColor: "var(--saloon-border)" }}
+              className="bg-saloon-surface flex items-center justify-center rounded-xl border-2 px-4 transition-colors"
+              style={{ borderColor: 'var(--saloon-border)' }}
               title="Losuj imię"
             >
               <Dices size={24} className="text-text-muted" />
@@ -228,33 +169,31 @@ export default function HostSetupPage() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <label className="block text-xs uppercase tracking-widest text-text-muted font-semibold mb-3">
+          <label className="text-text-muted mb-3 block text-xs font-semibold tracking-widest uppercase">
             Wybierz tryb gry
           </label>
           <div className="flex flex-col gap-3">
             {GAME_MODES.map((mode) => {
-              const active = selectedMode === mode.id;
+              const active = selectedMode === mode.id
               return (
                 <motion.button
                   key={mode.id}
                   id={`mode-${mode.id}`}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => setSelectedMode(mode.id)}
-                  className="relative overflow-hidden group flex items-center gap-4 p-4 rounded-2xl border-2 text-left transition-all duration-200"
+                  className="group relative flex items-center gap-4 overflow-hidden rounded-2xl border-2 p-4 text-left transition-all duration-200"
                   style={{
-                    borderColor: active ? mode.border : "var(--saloon-border)",
-                    backgroundColor: active ? mode.bg : "transparent",
-                    boxShadow: active ? `0 0 20px ${mode.border}` : "none",
+                    borderColor: active ? mode.border : 'var(--saloon-border)',
+                    backgroundColor: active ? mode.bg : 'transparent',
+                    boxShadow: active ? `0 0 20px ${mode.border}` : 'none',
                   }}
                 >
                   <div className="pointer-events-none absolute inset-y-0 -left-[100%] z-0 w-full skew-x-[-20deg] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-all duration-700 ease-in-out group-hover:left-[100%]" />
 
                   <div
-                    className="relative z-10 w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+                    className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
                     style={{
-                      backgroundColor: active
-                        ? mode.bg
-                        : "var(--saloon-surface)",
+                      backgroundColor: active ? mode.bg : 'var(--saloon-surface)',
                       border: `1px solid ${mode.border}`,
                     }}
                   >
@@ -263,14 +202,14 @@ export default function HostSetupPage() {
 
                   <div className="relative z-10 flex-1">
                     <p
-                      className="font-bold text-sm transition-colors duration-200"
+                      className="text-sm font-bold transition-colors duration-200"
                       style={{
-                        color: active ? mode.color : "var(--text-primary)",
+                        color: active ? mode.color : 'var(--text-primary)',
                       }}
                     >
                       {mode.label}
                     </p>
-                    <p className="text-text-muted text-[11px] mt-0.5 leading-snug">
+                    <p className="text-text-muted mt-0.5 text-[11px] leading-snug">
                       {mode.description}
                     </p>
                   </div>
@@ -279,14 +218,14 @@ export default function HostSetupPage() {
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className="relative z-10 w-5 h-5 rounded-full flex items-center justify-center shrink-0"
+                      className="relative z-10 flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
                       style={{ backgroundColor: mode.color }}
                     >
-                      <span className="text-white text-[10px]">✓</span>
+                      <span className="text-[10px] text-white">✓</span>
                     </motion.div>
                   )}
                 </motion.button>
-              );
+              )
             })}
           </div>
         </motion.div>
@@ -302,11 +241,11 @@ export default function HostSetupPage() {
             disabled={!hostName.trim() || !selectedMode || creating}
             whileTap={{ scale: 0.97 }}
             onClick={handleCreate}
-            className="w-full py-4 rounded-2xl text-white flex items-center justify-center gap-3 disabled:opacity-30 hover:cursor-pointer bg-neon-pink hover:bg-neon-pink/80"
+            className="bg-neon-pink hover:bg-neon-pink/80 flex w-full items-center justify-center gap-3 rounded-2xl py-4 text-white hover:cursor-pointer disabled:opacity-30"
             style={{
               fontFamily: "'Bebas Neue',cursive",
-              fontSize: "1.15rem",
-              letterSpacing: "0.15em",
+              fontSize: '1.15rem',
+              letterSpacing: '0.15em',
             }}
           >
             {creating ? (
@@ -322,7 +261,7 @@ export default function HostSetupPage() {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-red-400 text-xs text-center mt-3"
+              className="mt-3 text-center text-xs text-red-400"
             >
               {error}
             </motion.p>
@@ -330,5 +269,5 @@ export default function HostSetupPage() {
         </motion.div>
       </div>
     </div>
-  );
+  )
 }

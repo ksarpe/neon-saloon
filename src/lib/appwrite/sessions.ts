@@ -5,12 +5,62 @@ import {
   APPWRITE_DATABASE_ID,
   APPWRITE_TABLE_GAME_SESSIONS,
 } from "./server";
-import type { SessionData } from "@/lib/redis";
+
+// ─── Session types ────────────────────────────────────────────────────────────
+
+export type SessionPlayer = {
+  playerId: string;
+  playerName: string;
+  avatar: string;
+  teamId: string | null;
+  teamName: string | null;
+};
+
+export type SessionTeam = {
+  teamId: string;
+  teamName: string;
+  color: string;
+  emoji: string;
+};
+
+export type SessionStatus = "waiting" | "active" | "finished";
+
+export type SessionVote = {
+  playerId: string;
+  playerName: string;
+  teamId: string | null;
+  teamName: string | null;
+  cardIndex: number;
+  answerIndex: number;
+  answerText: string;
+};
+
+export type HighLowSessionData = {
+  questionIndex: number;
+  guessingTeamId: string;
+  votingTeamId: string;
+  guessingCaptainId: string;
+  votingCaptainId: string;
+  currentNumber?: string;
+};
+
+export type SessionData = {
+  pin: string;
+  hostName: string;
+  status: SessionStatus;
+  createdAt: number;
+  players: SessionPlayer[];
+  teams: SessionTeam[];
+  cardIndex: number;
+  votes: SessionVote[];
+  gameMode?: string;
+  highlowData?: HighLowSessionData;
+};
 import { AppwriteException, Models } from "node-appwrite";
 
 // ─── Status mapping ──────────────────────────────────────────────────────────
-// Redis uses "active"; the Appwrite enum column uses "playing" (created in
-// setup script). Map transparently so callers see the Redis shape.
+// SessionData uses "active"; the Appwrite enum column uses "playing".
+// Map transparently so callers always see SessionStatus values.
 
 type AppwriteStatus = "waiting" | "playing" | "finished";
 
@@ -51,12 +101,11 @@ function rowToSession(row: SessionRow): SessionData {
   return data;
 }
 
-// ─── Public API (mirrors lib/redis.ts) ───────────────────────────────────────
+// ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
  * Fetch a session by PIN.
- * Uses the PIN directly as the Appwrite row `$id` — O(1) primary key lookup,
- * no Query.equal needed.
+ * Uses the PIN directly as the Appwrite row `$id` — O(1) primary key lookup.
  */
 export async function getSession(pin: string): Promise<SessionData | null> {
   try {
@@ -118,7 +167,7 @@ export async function saveSession(data: SessionData): Promise<void> {
 }
 
 /**
- * Patch a session. Equivalent to Redis `updateSession`.
+ * Patch a session (read-merge-write).
  */
 export async function updateSession(
   pin: string,
@@ -133,7 +182,6 @@ export async function updateSession(
 
 /**
  * Check if a session row already exists for `pin`.
- * Replaces the `redis.exists(sessionKey(pin))` check in sessions/route.ts.
  */
 export async function checkPinExists(pin: string): Promise<boolean> {
   return (await getSession(pin)) !== null;

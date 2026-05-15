@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star } from "lucide-react";
-import { GameCardStack } from "@/components/SharedCard";
+import { GameCardStack } from "@/components/Card";
 import { GameSummary } from "@/components/GameSummary";
 import { useRealtimeGame as useGameSocket } from "@/hooks/useRealtimeGame";
 import type {
@@ -11,7 +11,7 @@ import type {
   VotesRevealedPayload,
   NextCardPayload,
   GameFinishedPayload,
-} from "@/lib/pusher-server";
+} from "@/lib/game-types";
 
 // ─── Reveal view ──────────────────────────────────────────────────────────────
 

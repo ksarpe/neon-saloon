@@ -1,26 +1,26 @@
-import { NextResponse } from "next/server";
-import { updateSession } from "@/lib/sessions";
-import { triggerGameEvent as triggerSessionEvent } from "@/lib/realtime";
-import type { WireCard } from "@/lib/pusher-server";
+import { NextResponse } from 'next/server'
+import { updateSession } from '@/lib/appwrite/sessions'
+import { triggerGameEvent as triggerSessionEvent } from '@/lib/appwrite/realtime'
+import type { WireCard } from '@/lib/game-types'
 
-type RouteContext = { params: Promise<{ pin: string }> };
+type RouteContext = { params: Promise<{ pin: string }> }
 
 export async function POST(request: Request, { params }: RouteContext) {
-  const { pin } = await params;
+  const { pin } = await params
   try {
-    const body = await request.json();
-    const { cardIndex, card } = body as { cardIndex: number; card: WireCard };
+    const body = await request.json()
+    const { cardIndex, card } = body as { cardIndex: number; card: WireCard }
 
-    await updateSession(pin, { cardIndex });
+    await updateSession(pin, { cardIndex })
 
     await triggerSessionEvent(pin, {
-      event: "next-card",
+      event: 'next-card',
       data: { cardIndex, card },
-    });
+    })
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true })
   } catch (err) {
-    console.error(`[POST /api/sessions/${pin}/next-card]`, err);
-    return NextResponse.json({ error: "Failed" }, { status: 500 });
+    console.error(`[POST /api/sessions/${pin}/next-card]`, err)
+    return NextResponse.json({ error: 'Failed' }, { status: 500 })
   }
 }

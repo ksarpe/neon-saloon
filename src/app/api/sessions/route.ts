@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { saveSession, checkPinExists } from '@/lib/sessions'
+import { saveSession, checkPinExists } from '@/lib/appwrite/sessions'
 
 function generatePin(): string {
   const chars = '0123456789'

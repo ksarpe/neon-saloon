@@ -46,6 +46,16 @@ body {
   touch-action: manipulation;
 }
 
+/* Hide scrollbars everywhere while keeping scroll functionality */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   background-color: var(--saloon-dark);
   /* Subtle Cow Print Pattern */

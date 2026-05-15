@@ -1,37 +1,36 @@
-"use client";
+'use client'
 
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { motion } from "framer-motion";
-import { Tv, Smartphone, ChevronRight, LogIn, Settings } from "lucide-react";
+import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
+import { motion } from 'framer-motion'
+import { Tv, Smartphone, ChevronRight, LogIn, Settings } from 'lucide-react'
+import { PanelButton } from '@/components/ui/panel-button'
 
 export default function GrajPage() {
-  const router = useRouter();
-  const { data: session, status } = useSession();
+  const router = useRouter()
+  const { data: session, status } = useSession()
 
   return (
-    <main className="relative w-full h-dvh overflow-hidden flex flex-col items-center justify-center px-6">
+    <main className="relative flex h-dvh w-full flex-col items-center justify-center overflow-hidden px-6">
       {/* Ambient glows */}
       <div aria-hidden className="pointer-events-none fixed inset-0 z-[2]">
         <div
-          className="absolute top-[-25%] left-[-15%] w-[65vw] h-[65vw] rounded-full opacity-[0.15]"
+          className="absolute top-[-25%] left-[-15%] h-[65vw] w-[65vw] rounded-full opacity-[0.15]"
           style={{
-            background:
-              "radial-gradient(circle,var(--neon-pink) 0%,transparent 70%)",
-            filter: "blur(80px)",
+            background: 'radial-gradient(circle,var(--neon-pink) 0%,transparent 70%)',
+            filter: 'blur(80px)',
           }}
         />
         <div
-          className="absolute bottom-[-25%] right-[-15%] w-[65vw] h-[65vw] rounded-full opacity-[0.15]"
+          className="absolute right-[-15%] bottom-[-25%] h-[65vw] w-[65vw] rounded-full opacity-[0.15]"
           style={{
-            background:
-              "radial-gradient(circle,var(--sheriff-gold) 0%,transparent 70%)",
-            filter: "blur(80px)",
+            background: 'radial-gradient(circle,var(--sheriff-gold) 0%,transparent 70%)',
+            filter: 'blur(80px)',
           }}
         />
       </div>
 
-      <div className="relative z-[10] flex flex-col items-center gap-10 w-full max-w-lg text-center">
+      <div className="relative z-[10] flex w-full max-w-lg flex-col items-center gap-10 text-center">
         {/* Hero */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -39,7 +38,7 @@ export default function GrajPage() {
           transition={{ duration: 0.6 }}
         >
           <h1
-            className="text-6xl sm:text-8xl tracking-widest shimmer-text leading-none"
+            className="shimmer-text text-6xl leading-none tracking-widest sm:text-8xl"
             style={{ fontFamily: "var(--font-bebas), 'Bebas Neue', cursive" }}
           >
             Last rodeo Andżeliki
@@ -48,7 +47,7 @@ export default function GrajPage() {
 
         {/* Action buttons */}
         <motion.div
-          className="flex flex-col gap-4 w-full"
+          className="flex w-full flex-col gap-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
@@ -57,39 +56,36 @@ export default function GrajPage() {
           <motion.button
             id="host-game-btn"
             whileTap={{ scale: 0.97 }}
-            onClick={() => router.push("/graj/host")}
-            className="relative cursor-pointer overflow-hidden group flex items-center gap-4 p-5 rounded-2xl border-2 text-left"
+            onClick={() => router.push('/graj/host')}
+            className="group relative flex cursor-pointer items-center gap-4 overflow-hidden rounded-2xl border-2 p-5 text-left"
             style={{
-              borderColor: "var(--sheriff-gold)",
-              backgroundColor: "rgba(255,215,0,0.12)",
+              borderColor: 'var(--sheriff-gold)',
+              backgroundColor: 'rgba(255,215,0,0.12)',
             }}
           >
             <div className="pointer-events-none absolute inset-y-0 -left-[100%] z-0 w-full skew-x-[-20deg] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-all duration-700 ease-in-out group-hover:left-[100%]" />
 
             <div
-              className="relative z-10 w-12 h-12 rounded-full flex items-center justify-center shrink-0"
-              style={{ backgroundColor: "rgba(255,215,0,0.15)" }}
+              className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full"
+              style={{ backgroundColor: 'rgba(255,215,0,0.15)' }}
             >
-              <Tv size={22} style={{ color: "var(--sheriff-gold)" }} />
+              <Tv size={22} style={{ color: 'var(--sheriff-gold)' }} />
             </div>
             <div className="relative z-10 flex-1">
               <p
-                className="font-bold text-base transition-colors"
-                style={{ color: "var(--sheriff-gold)" }}
+                className="text-base font-bold transition-colors"
+                style={{ color: 'var(--sheriff-gold)' }}
               >
                 Chcę być szeryfem.
               </p>
-              <p
-                className="text-xs mt-0.5"
-                style={{ color: "rgba(255,220,180,0.6)" }}
-              >
+              <p className="mt-0.5 text-xs" style={{ color: 'rgba(255,220,180,0.6)' }}>
                 Wyświetl na dużym ekranie / TV
               </p>
             </div>
             <ChevronRight
               size={16}
               className="relative z-10"
-              style={{ color: "rgba(255,220,180,0.5)" }}
+              style={{ color: 'rgba(255,220,180,0.5)' }}
             />
           </motion.button>
 
@@ -97,73 +93,44 @@ export default function GrajPage() {
           <motion.button
             id="join-game-btn"
             whileTap={{ scale: 0.97 }}
-            onClick={() => router.push("/graj/join")}
-            className="relative cursor-pointer overflow-hidden group flex items-center gap-4 p-5 rounded-2xl border-2 text-left"
+            onClick={() => router.push('/graj/join')}
+            className="group relative flex cursor-pointer items-center gap-4 overflow-hidden rounded-2xl border-2 p-5 text-left"
             style={{
-              borderColor: "var(--neon-pink)",
-              backgroundColor: "var(--neon-pink-dim)",
+              borderColor: 'var(--neon-pink)',
+              backgroundColor: 'var(--neon-pink-dim)',
             }}
           >
             <div className="pointer-events-none absolute inset-y-0 -left-[100%] z-0 w-full skew-x-[-20deg] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-all duration-700 ease-in-out group-hover:left-[100%]" />
 
             <div
-              className="relative z-10 w-12 h-12 rounded-full flex items-center justify-center shrink-0"
-              style={{ backgroundColor: "rgba(255,16,240,0.15)" }}
+              className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full"
+              style={{ backgroundColor: 'rgba(255,16,240,0.15)' }}
             >
-              <Smartphone size={22} style={{ color: "var(--neon-pink)" }} />
+              <Smartphone size={22} style={{ color: 'var(--neon-pink)' }} />
             </div>
             <div className="relative z-10 flex-1">
-              <p
-                className="font-bold text-base"
-                style={{ color: "var(--neon-pink)" }}
-              >
+              <p className="text-base font-bold" style={{ color: 'var(--neon-pink)' }}>
                 Dołącz do rozgrywki kowbojko.
               </p>
-              <p
-                className="text-xs mt-0.5"
-                style={{ color: "rgba(255,220,180,0.6)" }}
-              >
+              <p className="mt-0.5 text-xs" style={{ color: 'rgba(255,220,180,0.6)' }}>
                 Wpisz kod szeryfa na telefonie.
               </p>
             </div>
             <ChevronRight
               size={16}
               className="relative z-10"
-              style={{ color: "rgba(255,220,180,0.5)" }}
+              style={{ color: 'rgba(255,220,180,0.5)' }}
             />
           </motion.button>
         </motion.div>
       </div>
 
       {/* Top-right auth button */}
-      <motion.button
-        onClick={() => router.push(session ? "/panel" : "/login")}
-        className="fixed top-4 right-4 z-[20] flex items-center gap-2 px-4 py-2 rounded-xl border text-xs font-semibold cursor-pointer transition-colors duration-200"
-        style={{
-          borderColor: "rgba(255,220,180,0.25)",
-          backgroundColor: "rgba(10,4,20,0.55)",
-          color: "rgba(255,220,180,0.85)",
-          backdropFilter: "blur(8px)",
-        }}
-        initial={{ opacity: 0, y: -8 }}
-        animate={{
-          opacity: status === "loading" ? 0 : 1,
-          y: status === "loading" ? -8 : 0,
-        }}
-        transition={{ duration: 0.3 }}
-        whileHover={{
-          backgroundColor: "rgba(255,215,0,0.12)",
-          borderColor: "rgba(255,215,0,0.55)",
-          color: "rgba(255,235,150,1)",
-          boxShadow: "0 0 14px rgba(255,215,0,0.18)",
-          scale: 1.03,
-        }}
-        whileTap={{ scale: 0.96 }}
-      >
+      <PanelButton onClick={() => router.push(session ? '/panel' : '/login')}>
         {session ? (
           <>
             <Settings size={13} />
-            {session.user?.name ?? "Panel"}
+            {session.user?.name ?? 'Panel'}
           </>
         ) : (
           <>
@@ -171,7 +138,7 @@ export default function GrajPage() {
             Zaloguj się
           </>
         )}
-      </motion.button>
+      </PanelButton>
     </main>
-  );
+  )
 }
