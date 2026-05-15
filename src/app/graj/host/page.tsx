@@ -3,7 +3,15 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { Loader2, Dices, Settings, Brain, Heart, BookOpen, TrendingUp } from "lucide-react";
+import {
+  Loader2,
+  Dices,
+  Settings,
+  Brain,
+  Heart,
+  BookOpen,
+  TrendingUp,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 
@@ -72,7 +80,7 @@ const GAME_MODES = [
     label: "Nigdy przenigdy",
     description:
       "Karty z wyznaniami — brak odpowiedzi, brak punktów. Host przechodzi dalej kiedy uzna że już.",
-    color: "var(--sheriff-gold)",
+    color: "rgba(255,215,0,0.5)",
     border: "rgba(255,215,0,0.5)",
     bg: "rgba(255,215,0,0.07)",
   },
@@ -170,24 +178,6 @@ export default function HostSetupPage() {
       </div>
 
       <div className="relative z-10 w-full max-w-xl flex flex-col gap-10 mx-auto">
-        {/* Header */}
-        <motion.div
-          className="text-center"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h1
-            className="text-5xl tracking-widest shimmer-text"
-            style={{ fontFamily: "'Bebas Neue',cursive" }}
-          >
-            USTAWIENIA
-          </h1>
-          <p className="text-text-muted text-xs uppercase tracking-widest mt-1">
-            ustaw swoją nazwę oraz wybierz grę w jakiej będziecie rywalizować.
-          </p>
-        </motion.div>
-
         {/* Host name */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -195,7 +185,7 @@ export default function HostSetupPage() {
           transition={{ delay: 0.1 }}
         >
           <label className="block text-xs uppercase tracking-widest text-text-muted font-semibold mb-2">
-            Nazwa kowboja
+            Jak się chcesz nazywać kowboju?
           </label>
           <div className="flex gap-2">
             <input
@@ -239,7 +229,7 @@ export default function HostSetupPage() {
           transition={{ delay: 0.2 }}
         >
           <label className="block text-xs uppercase tracking-widest text-text-muted font-semibold mb-3">
-            Tryb
+            Wybierz tryb gry
           </label>
           <div className="flex flex-col gap-3">
             {GAME_MODES.map((mode) => {
@@ -312,10 +302,8 @@ export default function HostSetupPage() {
             disabled={!hostName.trim() || !selectedMode || creating}
             whileTap={{ scale: 0.97 }}
             onClick={handleCreate}
-            className="w-full py-4 rounded-2xl text-white flex items-center justify-center gap-3 disabled:opacity-30"
+            className="w-full py-4 rounded-2xl text-white flex items-center justify-center gap-3 disabled:opacity-30 hover:cursor-pointer bg-neon-pink hover:bg-neon-pink/80"
             style={{
-              background: "linear-gradient(135deg,var(--neon-pink),#c800c8)",
-              boxShadow: "0 4px 30px rgba(255,16,240,0.5)",
               fontFamily: "'Bebas Neue',cursive",
               fontSize: "1.15rem",
               letterSpacing: "0.15em",

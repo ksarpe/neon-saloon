@@ -6,8 +6,6 @@ datasource db {
   provider = "postgresql"
 }
 
-// ─── Auth ─────────────────────────────────────────────────────────────────────
-
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -16,52 +14,35 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // ─── Premium ──────────────────────────────────────────────────
-  isPremium Boolean @default(false)
-
-  // ─── Stripe ───────────────────────────────────────────────────
-  /// Stripe Customer ID (cus_…) — ustawiany przy pierwszej płatności
-  stripeCustomerId String? @unique
-
-  /// ID aktywnej subskrypcji (sub_…)
-  stripeSubscriptionId String? @unique
-
-  /// ID cennika/planu (price_…) – który plan wykupił
-  stripePriceId String?
-
-  /// Koniec bieżącego okresu rozliczeniowego — do sprawdzenia ważności dostępu
-  stripeCurrentPeriodEnd DateTime?
-
-  /// Status subskrypcji od Stripe: "active" | "trialing" | "past_due" | "canceled" | "unpaid"
+  isPremium                Boolean   @default(false)
+  //STRIPE
+  stripeCustomerId         String?   @unique
+  stripeSubscriptionId     String?   @unique
+  stripeCurrentPeriodEnd   DateTime?
   stripeSubscriptionStatus String?
 
-  // ─── Relations ────────────────────────────────────────────────
   neverQuestions NeverQuestion[]
   quizQuestions  QuizQuestion[]
 }
 
-// ─── Content ─────────────────────────────────────────────────────────────────
-
-/// Własne pytania "Nigdy przenigdy" dodane przez użytkownika
 model NeverQuestion {
   id   String @id @default(cuid())
   text String
 
-  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
 
   createdAt DateTime @default(now())
 }
 
-/// Własne pytania quizowe z poprawną odpowiedzią i opcjami wielokrotnego wyboru
 model QuizQuestion {
   id      String   @id @default(cuid())
   text    String
   answer  String
   options String[]
 
-  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
 
   createdAt DateTime @default(now())
 }

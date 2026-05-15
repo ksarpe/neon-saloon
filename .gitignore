@@ -16,6 +16,9 @@
 # next.js
 /.next/
 /out/
+/.vscode
+/playwright-report
+/test-results
 
 # production
 /build

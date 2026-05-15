@@ -29,14 +29,14 @@ export default function PageTransition({
 
   return (
     <>
-      <AnimatePresence mode="sync" initial={false}>
+      <AnimatePresence mode="popLayout" initial={false}>
         <motion.div
           key={pathname}
-          initial={{ opacity: 0, scale: 0.97 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ x: "-100%", opacity: 0 }}
-          transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="fixed inset-0 z-10 overflow-y-auto page-slide"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.22, ease: "easeInOut" }}
+          className="fixed inset-0 z-10 overflow-y-auto"
         >
           {children}
         </motion.div>
@@ -45,9 +45,9 @@ export default function PageTransition({
       {!isHome && !backHidden && (
         <motion.button
           key={`back-${pathname}`}
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2, duration: 0.2 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.18, ease: "easeInOut" }}
           onClick={handleBack}
           className="fixed top-2 left-4 z-50 flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold cursor-pointer"
           style={{

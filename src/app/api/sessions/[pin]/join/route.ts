@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getSession, saveSession } from "@/lib/redis";
-import { triggerSessionEvent } from "@/lib/pusher-server";
+import { getSession, saveSession } from "@/lib/sessions";
+import { triggerGameEvent as triggerSessionEvent } from "@/lib/realtime";
 
 type RouteContext = { params: Promise<{ pin: string }> };
 
@@ -74,6 +74,16 @@ export async function POST(request: Request, { params }: RouteContext) {
         teamName: resolvedTeamName,
       },
     });
+
+    if (resolvedTeamId) {
+      const memberCount = session.players.filter(
+        (p: { teamId: string | null }) => p.teamId === resolvedTeamId,
+      ).length;
+      await triggerSessionEvent(pin, {
+        event: "team-updated",
+        data: { teamId: resolvedTeamId, teamName: resolvedTeamName ?? "", memberCount },
+      });
+    }
 
     return NextResponse.json({ playerId, teamId: resolvedTeamId, avatar }, { status: 200 });
   } catch (err) {

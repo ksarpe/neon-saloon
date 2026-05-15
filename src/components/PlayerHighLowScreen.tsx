@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, TrendingDown, TrendingUp, Star, Trophy } from "lucide-react";
-import { useGameSocket } from "@/hooks/useGameSocket";
+import { useRealtimeGame as useGameSocket } from "@/hooks/useRealtimeGame";
 import type {
   HighLowRoundStartPayload,
   HighLowRoundResultPayload,

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star } from "lucide-react";
 import { GameCardStack } from "@/components/SharedCard";
 import { GameSummary } from "@/components/GameSummary";
-import { useGameSocket } from "@/hooks/useGameSocket";
+import { useRealtimeGame as useGameSocket } from "@/hooks/useRealtimeGame";
 import type {
   WireCard,
   VotesRevealedPayload,
@@ -15,7 +15,7 @@ import type {
 
 // ─── Reveal view ──────────────────────────────────────────────────────────────
 
-function RevealView({ data }: { data: VotesRevealedPayload }) {
+function RevealView({ data, countdown }: { data: VotesRevealedPayload; countdown: number | null }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -27,8 +27,11 @@ function RevealView({ data }: { data: VotesRevealedPayload }) {
       </p>
       {data.votes.map((v, i) => {
         const hasCorrectAnswer = !!data.correctAnswer;
-        const isCorrect = hasCorrectAnswer && v.answerText === data.correctAnswer;
+        const rawAnswerText = v.answerText.replace(/^[A-Z]: /, "");
+        const isCorrect = hasCorrectAnswer && rawAnswerText === data.correctAnswer;
         const isWrong = hasCorrectAnswer && !isCorrect;
+        const isDrinking = !hasCorrectAnswer && v.answerIndex === -1;
+        const isNotDrinking = !hasCorrectAnswer && v.answerIndex === -2;
         return (
           <motion.div
             key={v.playerId}
@@ -43,12 +46,16 @@ function RevealView({ data }: { data: VotesRevealedPayload }) {
             <span
               className="text-xs font-bold px-2 py-0.5 rounded-full"
               style={{
-                backgroundColor: isCorrect
+                backgroundColor: isCorrect || isDrinking
                   ? "rgba(16,185,129,0.15)"
-                  : isWrong
+                  : isWrong || isNotDrinking
                     ? "rgba(239,68,68,0.15)"
                     : "rgba(255,220,180,0.1)",
-                color: isCorrect ? "#10b981" : isWrong ? "#ef4444" : "rgba(255,220,180,0.7)",
+                color: isCorrect || isDrinking
+                  ? "#10b981"
+                  : isWrong || isNotDrinking
+                    ? "#ef4444"
+                    : "rgba(255,220,180,0.7)",
               }}
             >
               {v.answerText}
@@ -103,9 +110,11 @@ function RevealView({ data }: { data: VotesRevealedPayload }) {
           </div>
         </div>
       )}
-      <p className="text-center text-xs text-text-muted animate-pulse mt-1">
-        Czekaj na szeryfa!
-      </p>
+      {countdown !== null && (
+        <p className="text-center text-xs text-text-muted animate-pulse mt-1">
+          Następna karta za {countdown}…
+        </p>
+      )}
     </motion.div>
   );
 }
@@ -113,6 +122,10 @@ function RevealView({ data }: { data: VotesRevealedPayload }) {
 // ─── Game over ────────────────────────────────────────────────────────────────
 
 function GameOverView({ data }: { data: GameFinishedPayload }) {
+  const drinksScores = data.scores
+    .filter((s) => (s.drinks ?? 0) > 0)
+    .map((s) => ({ id: s.playerId, name: s.playerName, score: s.drinks! }));
+
   return (
     <GameSummary
       scores={data.scores.map((s) => ({
@@ -125,6 +138,7 @@ function GameOverView({ data }: { data: GameFinishedPayload }) {
           ? data.teamScores.map((t) => ({ id: t.teamId, name: t.teamName, score: t.score }))
           : undefined
       }
+      drinksScores={drinksScores.length > 0 ? drinksScores : undefined}
     />
   );
 }
@@ -158,13 +172,30 @@ export default function PlayerGameScreen({
   const [isFlipped, setIsFlipped] = useState(false);
   const [currentCard, setCurrentCard] = useState<WireCard>(initialCard);
   const [currentCardIndex, setCurrentCardIndex] = useState(initialCardIndex);
-  const [revealData, setRevealData] = useState<VotesRevealedPayload | null>(
-    null,
-  );
-  const [finishData, setFinishData] = useState<GameFinishedPayload | null>(
-    null,
-  );
+  const [revealData, setRevealData] = useState<VotesRevealedPayload | null>(null);
+  const [finishData, setFinishData] = useState<GameFinishedPayload | null>(null);
   const [loading, setLoading] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
+
+  // Visual countdown after votes are revealed — HostScreen sends the actual next-card event
+  useEffect(() => {
+    if (phase !== "reveal") {
+      setCountdown(null);
+      return;
+    }
+    setCountdown(4);
+    let n = 4;
+    const tick = setInterval(() => {
+      n -= 1;
+      if (n <= 0) {
+        clearInterval(tick);
+        setCountdown(null);
+      } else {
+        setCountdown(n);
+      }
+    }, 1000);
+    return () => clearInterval(tick);
+  }, [phase, currentCardIndex]);
 
   useGameSocket(pin, {
     onVotesRevealed: useCallback((d: VotesRevealedPayload) => {
@@ -217,16 +248,14 @@ export default function PlayerGameScreen({
         <div
           className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full opacity-[0.07]"
           style={{
-            background:
-              "radial-gradient(circle,var(--neon-pink) 0%,transparent 70%)",
+            background: "radial-gradient(circle,var(--neon-pink) 0%,transparent 70%)",
             filter: "blur(60px)",
           }}
         />
         <div
           className="absolute bottom-[-15%] right-[-10%] w-[40vw] h-[40vw] rounded-full opacity-[0.06]"
           style={{
-            background:
-              "radial-gradient(circle,var(--sheriff-gold) 0%,transparent 70%)",
+            background: "radial-gradient(circle,var(--sheriff-gold) 0%,transparent 70%)",
             filter: "blur(80px)",
           }}
         />
@@ -237,14 +266,9 @@ export default function PlayerGameScreen({
         <div className="flex items-center gap-2">
           <span className="text-xl">{avatar}</span>
           <div>
-            <p className="text-xs font-bold text-text-primary leading-none">
-              {playerName}
-            </p>
+            <p className="text-xs font-bold text-text-primary leading-none">{playerName}</p>
             {teamName && (
-              <p
-                className="text-[10px] mt-0.5 leading-none"
-                style={{ color: "var(--neon-pink)" }}
-              >
+              <p className="text-[10px] mt-0.5 leading-none" style={{ color: "var(--neon-pink)" }}>
                 {teamName}
               </p>
             )}
@@ -259,7 +283,7 @@ export default function PlayerGameScreen({
         </div>
       </div>
 
-      {/* Content — centred */}
+      {/* Content */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-6 overflow-y-auto">
         <div className="w-full max-w-sm mx-auto flex flex-col items-center gap-6">
           <AnimatePresence mode="wait">
@@ -279,7 +303,6 @@ export default function PlayerGameScreen({
                   onFlip={() => setIsFlipped(true)}
                 />
 
-                {/* Action buttons — only show after reveal, hidden for NEVER cards */}
                 <AnimatePresence>
                   {isFlipped && currentCard.type !== "NEVER" && (
                     <motion.div
@@ -309,7 +332,6 @@ export default function PlayerGameScreen({
                                   transition: { duration: 0.15 },
                                 }}
                               >
-                                {/* Letter badge */}
                                 <span
                                   className="shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black"
                                   style={{
@@ -353,15 +375,51 @@ export default function PlayerGameScreen({
                       )}
                     </motion.div>
                   )}
+
+                  {/* NEVER cards — PIJĘ / NIE PIJĘ */}
                   {isFlipped && currentCard.type === "NEVER" && (
-                    <motion.p
-                      key="never-hint"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-center text-xs text-text-muted animate-pulse"
+                    <motion.div
+                      key="never-btns"
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex gap-3 w-full"
                     >
-                      Czekaj aż szeryf przejdzie dalej…
-                    </motion.p>
+                      <motion.button
+                        whileTap={{ scale: 0.95 }}
+                        disabled={loading}
+                        onClick={() => castVote(-2, "🚫 Nie piję")}
+                        className="flex-1 py-5 rounded-2xl border-2 font-black text-sm flex flex-col items-center justify-center gap-1"
+                        style={{
+                          borderColor: "rgba(255,220,180,0.25)",
+                          backgroundColor: "rgba(255,220,180,0.06)",
+                          color: "rgba(255,220,180,0.8)",
+                          fontFamily: "'Bebas Neue',cursive",
+                          letterSpacing: "0.08em",
+                          fontSize: "1rem",
+                        }}
+                      >
+                        <span className="text-2xl">🚫</span>
+                        NIE PIJĘ
+                      </motion.button>
+                      <motion.button
+                        whileTap={{ scale: 0.95 }}
+                        disabled={loading}
+                        onClick={() => castVote(-1, "🍺 Piję")}
+                        className="flex-1 py-5 rounded-2xl border-2 font-black text-sm flex flex-col items-center justify-center gap-1"
+                        style={{
+                          borderColor: "var(--neon-pink)",
+                          backgroundColor: "rgba(255,16,240,0.1)",
+                          color: "var(--neon-pink)",
+                          boxShadow: "0 0 20px rgba(255,16,240,0.2)",
+                          fontFamily: "'Bebas Neue',cursive",
+                          letterSpacing: "0.08em",
+                          fontSize: "1rem",
+                        }}
+                      >
+                        <span className="text-2xl">🍺</span>
+                        PIJĘ
+                      </motion.button>
+                    </motion.div>
                   )}
                 </AnimatePresence>
               </motion.div>
@@ -377,7 +435,6 @@ export default function PlayerGameScreen({
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.3 }}
               >
-                {/* Avatar z zielonym ringiem */}
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -399,12 +456,9 @@ export default function PlayerGameScreen({
                   >
                     Odpowiedź zapisana!
                   </h2>
-                  <p className="text-text-muted text-sm">
-                    Czekaj aż szeryf odsłoni karty
-                  </p>
+                  <p className="text-text-muted text-sm">Czekaj na wyniki…</p>
                 </div>
 
-                {/* Pulsujące kropki */}
                 <div className="flex gap-2 mt-1">
                   {[0, 1, 2].map((i) => (
                     <motion.span
@@ -428,7 +482,7 @@ export default function PlayerGameScreen({
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <RevealView data={revealData} />
+                <RevealView data={revealData} countdown={countdown} />
               </motion.div>
             )}
 

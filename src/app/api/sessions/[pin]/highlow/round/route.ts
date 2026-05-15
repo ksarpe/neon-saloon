@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getSession, updateSession } from "@/lib/redis";
-import { triggerSessionEvent } from "@/lib/pusher-server";
+import { getSession, updateSession } from "@/lib/sessions";
+import { triggerGameEvent as triggerSessionEvent } from "@/lib/realtime";
 import type { HighLowRoundStartPayload } from "@/lib/pusher-server";
 
 type RouteContext = { params: Promise<{ pin: string }> };

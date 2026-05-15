@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { triggerSessionEvent } from "@/lib/pusher-server";
+import { triggerGameEvent as triggerSessionEvent } from "@/lib/realtime";
 import type { ScoreEntry, TeamScoreEntry } from "@/lib/pusher-server";
 
 type RouteContext = { params: Promise<{ pin: string }> };

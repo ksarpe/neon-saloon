@@ -146,7 +146,10 @@ export default function GrajPage() {
           backdropFilter: "blur(8px)",
         }}
         initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: status === "loading" ? 0 : 1, y: status === "loading" ? -8 : 0 }}
+        animate={{
+          opacity: status === "loading" ? 0 : 1,
+          y: status === "loading" ? -8 : 0,
+        }}
         transition={{ duration: 0.3 }}
         whileHover={{
           backgroundColor: "rgba(255,215,0,0.12)",

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getSession, updateSession } from "@/lib/redis";
-import { triggerSessionEvent } from "@/lib/pusher-server";
+import { getSession, updateSession } from "@/lib/sessions";
+import { triggerGameEvent as triggerSessionEvent, cleanupSessionEvents } from "@/lib/realtime";
 import type { WireCard } from "@/lib/pusher-server";
 
 type RouteContext = { params: Promise<{ pin: string }> };
@@ -48,6 +48,9 @@ export async function POST(request: Request, { params }: RouteContext) {
         event: "game-finished",
         data: { scores: body.scores ?? [], teamScores: body.teamScores ?? [] },
       });
+      // Fire-and-forget: purge ephemeral game-events rows for this session.
+      // No-op in Pusher mode. Errors are swallowed inside cleanupSessionEvents.
+      void cleanupSessionEvents(pin);
     }
 
     return NextResponse.json({ ok: true });

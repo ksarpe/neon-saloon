@@ -1,12 +1,12 @@
-"use client";
+'use client'
 
-import { useState, Suspense } from "react";
-import { signIn } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { Eye, EyeOff, Loader2, Zap, ArrowLeft } from "lucide-react";
+import { useState, Suspense } from 'react'
+import { signIn } from 'next-auth/react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Eye, EyeOff, Loader2 } from 'lucide-react'
 
-type Tab = "login" | "register";
+type Tab = 'login' | 'register'
 
 function InputField({
   label,
@@ -17,17 +17,17 @@ function InputField({
   autoComplete,
   right,
 }: {
-  label: string;
-  type: string;
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-  autoComplete?: string;
-  right?: React.ReactNode;
+  label: string
+  type: string
+  value: string
+  onChange: (v: string) => void
+  placeholder?: string
+  autoComplete?: string
+  right?: React.ReactNode
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[11px] uppercase tracking-widest font-semibold text-text-muted">
+      <label className="text-text-muted text-[11px] font-semibold tracking-widest uppercase">
         {label}
       </label>
       <div className="relative">
@@ -37,32 +37,26 @@ function InputField({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           autoComplete={autoComplete}
-          className="w-full bg-transparent border-2 rounded-xl px-4 py-3.5 text-sm font-semibold text-text-primary placeholder:text-text-muted focus:outline-none transition-all duration-200"
+          className="text-text-primary placeholder:text-text-muted w-full rounded-xl border-2 bg-transparent px-4 py-3.5 text-sm font-semibold transition-all duration-200 focus:outline-none"
           style={{
-            borderColor: value
-              ? "var(--sheriff-gold)"
-              : "rgba(255,220,180,0.18)",
-            backgroundColor: "rgba(255,220,180,0.04)",
+            borderColor: value ? 'var(--sheriff-gold)' : 'rgba(255,220,180,0.18)',
+            backgroundColor: 'rgba(255,220,180,0.04)',
           }}
           onFocus={(e) => {
-            e.currentTarget.style.borderColor = "var(--neon-pink)";
-            e.currentTarget.style.boxShadow = "0 0 0 3px rgba(255,16,240,0.1)";
+            e.currentTarget.style.borderColor = 'var(--neon-pink)'
+            e.currentTarget.style.boxShadow = '0 0 0 3px rgba(255,16,240,0.1)'
           }}
           onBlur={(e) => {
             e.currentTarget.style.borderColor = value
-              ? "var(--sheriff-gold)"
-              : "rgba(255,220,180,0.18)";
-            e.currentTarget.style.boxShadow = "none";
+              ? 'var(--sheriff-gold)'
+              : 'rgba(255,220,180,0.18)'
+            e.currentTarget.style.boxShadow = 'none'
           }}
         />
-        {right && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            {right}
-          </div>
-        )}
+        {right && <div className="absolute top-1/2 right-3 -translate-y-1/2">{right}</div>}
       </div>
     </div>
-  );
+  )
 }
 
 function PasswordField({
@@ -72,17 +66,17 @@ function PasswordField({
   placeholder,
   autoComplete,
 }: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-  autoComplete?: string;
+  label: string
+  value: string
+  onChange: (v: string) => void
+  placeholder?: string
+  autoComplete?: string
 }) {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(false)
   return (
     <InputField
       label={label}
-      type={show ? "text" : "password"}
+      type={show ? 'text' : 'password'}
       value={value}
       onChange={onChange}
       placeholder={placeholder}
@@ -97,7 +91,7 @@ function PasswordField({
         </button>
       }
     />
-  );
+  )
 }
 
 function ErrorBanner({ message }: { message: string }) {
@@ -106,48 +100,48 @@ function ErrorBanner({ message }: { message: string }) {
       initial={{ opacity: 0, y: -8, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.97 }}
-      className="px-4 py-3 rounded-xl text-sm font-semibold text-center"
+      className="rounded-xl px-4 py-3 text-center text-sm font-semibold"
       style={{
-        backgroundColor: "rgba(239,68,68,0.1)",
-        border: "1px solid rgba(239,68,68,0.35)",
-        color: "#f87171",
+        backgroundColor: 'rgba(239,68,68,0.1)',
+        border: '1px solid rgba(239,68,68,0.35)',
+        color: '#f87171',
       }}
     >
       {message}
     </motion.div>
-  );
+  )
 }
 
 // ─── Login form ───────────────────────────────────────────────────────────────
 
 function LoginForm({ onSwitch }: { onSwitch: () => void }) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/graj/host";
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl') ?? '/graj/host'
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !password) return;
-    setLoading(true);
-    setError(null);
+    e.preventDefault()
+    if (!email || !password) return
+    setLoading(true)
+    setError(null)
 
-    const res = await signIn("credentials", {
+    const res = await signIn('credentials', {
       email,
       password,
       redirect: false,
-    });
+    })
 
     if (res?.error) {
-      setError("Nieprawidłowy e-mail lub hasło");
-      setLoading(false);
+      setError('Nieprawidłowy e-mail lub hasło')
+      setLoading(false)
     } else {
-      router.push(callbackUrl);
+      router.push(callbackUrl)
     }
-  };
+  }
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -175,98 +169,94 @@ function LoginForm({ onSwitch }: { onSwitch: () => void }) {
         type="submit"
         disabled={loading || !email || !password}
         whileTap={{ scale: 0.97 }}
-        className="mt-1 w-full py-4 rounded-2xl font-bold text-white flex items-center justify-center gap-2 disabled:opacity-40"
+        className="mt-1 flex w-full items-center justify-center gap-2 rounded-2xl py-4 font-bold text-white disabled:opacity-40"
         style={{
-          background: "linear-gradient(135deg,var(--neon-pink),#c800c8)",
-          boxShadow: "0 4px 30px rgba(255,16,240,0.4)",
+          background: 'linear-gradient(135deg,var(--neon-pink),#c800c8)',
+          boxShadow: '0 4px 30px rgba(255,16,240,0.4)',
           fontFamily: "'Bebas Neue',cursive",
-          letterSpacing: "0.15em",
-          fontSize: "1.1rem",
+          letterSpacing: '0.15em',
+          fontSize: '1.1rem',
         }}
       >
-        {loading ? (
-          <Loader2 size={18} className="animate-spin" />
-        ) : (
-          "Wejdź do salonu"
-        )}
+        {loading ? <Loader2 size={18} className="animate-spin" /> : 'Wejdź do salonu'}
       </motion.button>
 
-      <p className="text-center text-sm text-text-muted">
-        Nie masz konta?{" "}
+      <p className="text-text-muted text-center text-sm">
+        Nie masz konta?{' '}
         <button
           type="button"
           onClick={onSwitch}
           className="font-bold transition-colors"
-          style={{ color: "var(--sheriff-gold)" }}
+          style={{ color: 'var(--sheriff-gold)' }}
         >
           Załóż teraz
         </button>
       </p>
     </form>
-  );
+  )
 }
 
 // ─── Register form ────────────────────────────────────────────────────────────
 
 function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/graj/host";
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl') ?? '/graj/host'
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirm, setConfirm] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !password) return;
+    e.preventDefault()
+    if (!email || !password) return
 
     if (password !== confirm) {
-      setError("Hasła nie są takie same");
-      return;
+      setError('Hasła nie są takie same')
+      return
     }
     if (password.length < 6) {
-      setError("Hasło musi mieć minimum 6 znaków");
-      return;
+      setError('Hasło musi mieć minimum 6 znaków')
+      return
     }
 
-    setLoading(true);
-    setError(null);
+    setLoading(true)
+    setError(null)
 
     try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, name }),
-      });
+      })
 
-      const data = await res.json();
+      const data = await res.json()
       if (!res.ok) {
-        setError(data.error ?? "Coś poszło nie tak");
-        setLoading(false);
-        return;
+        setError(data.error ?? 'Coś poszło nie tak')
+        setLoading(false)
+        return
       }
 
       // Auto-login after successful registration
-      const signInRes = await signIn("credentials", {
+      const signInRes = await signIn('credentials', {
         email,
         password,
         redirect: false,
-      });
+      })
 
       if (signInRes?.error) {
-        setError("Konto założone! Zaloguj się ręcznie.");
-        setLoading(false);
+        setError('Konto założone! Zaloguj się ręcznie.')
+        setLoading(false)
       } else {
-        router.push(callbackUrl);
+        router.push(callbackUrl)
       }
     } catch {
-      setError("Błąd połączenia — spróbuj ponownie");
-      setLoading(false);
+      setError('Błąd połączenia — spróbuj ponownie')
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -309,35 +299,31 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
         type="submit"
         disabled={loading || !email || !password || !confirm}
         whileTap={{ scale: 0.97 }}
-        className="mt-1 w-full py-4 rounded-2xl font-bold text-white flex items-center justify-center gap-2 disabled:opacity-40"
+        className="mt-1 flex w-full items-center justify-center gap-2 rounded-2xl py-4 font-bold text-white disabled:opacity-40"
         style={{
-          background: "linear-gradient(135deg,var(--neon-pink),#c800c8)",
-          boxShadow: "0 4px 30px rgba(255,16,240,0.4)",
+          background: 'linear-gradient(135deg,var(--neon-pink),#c800c8)',
+          boxShadow: '0 4px 30px rgba(255,16,240,0.4)',
           fontFamily: "'Bebas Neue',cursive",
-          letterSpacing: "0.15em",
-          fontSize: "1.1rem",
+          letterSpacing: '0.15em',
+          fontSize: '1.1rem',
         }}
       >
-        {loading ? (
-          <Loader2 size={18} className="animate-spin" />
-        ) : (
-          "Otwórz konto"
-        )}
+        {loading ? <Loader2 size={18} className="animate-spin" /> : 'Otwórz konto'}
       </motion.button>
 
-      <p className="text-center text-sm text-text-muted">
-        Masz już konto?{" "}
+      <p className="text-text-muted text-center text-sm">
+        Masz już konto?{' '}
         <button
           type="button"
           onClick={onSwitch}
           className="font-bold transition-colors"
-          style={{ color: "var(--sheriff-gold)" }}
+          style={{ color: 'var(--sheriff-gold)' }}
         >
           Zaloguj się
         </button>
       </p>
     </form>
-  );
+  )
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -347,35 +333,33 @@ export default function LoginPage() {
     <Suspense>
       <LoginPageInner />
     </Suspense>
-  );
+  )
 }
 
 function LoginPageInner() {
-  const [tab, setTab] = useState<Tab>("login");
+  const [tab, setTab] = useState<Tab>('login')
 
   return (
-    <div className="w-full min-h-dvh flex flex-col items-center justify-center p-6">
+    <div className="flex min-h-dvh w-full flex-col items-center justify-center p-6">
       {/* Ambient glows */}
       <div aria-hidden className="pointer-events-none fixed inset-0">
         <div
-          className="absolute top-[-20%] left-[-15%] w-[60vw] h-[60vw] rounded-full opacity-[0.09]"
+          className="absolute top-[-20%] left-[-15%] h-[60vw] w-[60vw] rounded-full opacity-[0.09]"
           style={{
-            background:
-              "radial-gradient(circle,var(--neon-pink) 0%,transparent 70%)",
-            filter: "blur(80px)",
+            background: 'radial-gradient(circle,var(--neon-pink) 0%,transparent 70%)',
+            filter: 'blur(80px)',
           }}
         />
         <div
-          className="absolute bottom-[-20%] right-[-15%] w-[55vw] h-[55vw] rounded-full opacity-[0.07]"
+          className="absolute right-[-15%] bottom-[-20%] h-[55vw] w-[55vw] rounded-full opacity-[0.07]"
           style={{
-            background:
-              "radial-gradient(circle,var(--sheriff-gold) 0%,transparent 70%)",
-            filter: "blur(80px)",
+            background: 'radial-gradient(circle,var(--sheriff-gold) 0%,transparent 70%)',
+            filter: 'blur(80px)',
           }}
         />
       </div>
 
-      <div className="relative z-10 w-full max-w-sm flex flex-col gap-8">
+      <div className="relative z-10 flex w-full max-w-sm flex-col gap-8">
         {/* Logo / title */}
         <motion.div
           className="text-center"
@@ -383,15 +367,15 @@ function LoginPageInner() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
         >
-          <div className="flex items-center justify-center gap-2 mb-3">
+          <div className="mb-3 flex items-center justify-center gap-2">
             <span
-              className="text-6xl tracking-widest shimmer-text"
+              className="shimmer-text text-6xl tracking-widest"
               style={{ fontFamily: "'Bebas Neue',cursive" }}
             >
               last rodeo
             </span>
           </div>
-          <p className="text-text-muted text-xs uppercase tracking-widest">
+          <p className="text-text-muted text-xs tracking-widest uppercase">
             Zaloguj się, żeby prowadzić gry
           </p>
         </motion.div>
@@ -401,45 +385,42 @@ function LoginPageInner() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="rounded-2xl border p-6 flex flex-col gap-6"
+          className="flex flex-col gap-6 rounded-2xl border p-6"
           style={{
-            borderColor: "rgba(255,220,180,0.12)",
-            backgroundColor: "rgba(13,8,24,0.85)",
-            backdropFilter: "blur(20px)",
-            boxShadow:
-              "0 8px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,16,240,0.06)",
+            borderColor: 'rgba(255,220,180,0.12)',
+            backgroundColor: 'rgba(13,8,24,0.85)',
+            backdropFilter: 'blur(20px)',
+            boxShadow: '0 8px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,16,240,0.06)',
           }}
         >
           {/* Tab switcher */}
           <div
-            className="flex rounded-xl p-1 gap-1"
-            style={{ backgroundColor: "rgba(255,220,180,0.06)" }}
+            className="flex gap-1 rounded-xl p-1"
+            style={{ backgroundColor: 'rgba(255,220,180,0.06)' }}
           >
-            {(["login", "register"] as Tab[]).map((t) => (
+            {(['login', 'register'] as Tab[]).map((t) => (
               <button
                 key={t}
                 type="button"
                 onClick={() => setTab(t)}
-                className="flex-1 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all duration-200"
+                className="flex-1 rounded-lg py-2 text-xs font-bold tracking-widest uppercase transition-all duration-200"
                 style={{
-                  backgroundColor:
-                    tab === t ? "rgba(255,16,240,0.15)" : "transparent",
-                  color:
-                    tab === t ? "var(--neon-pink)" : "rgba(255,220,180,0.45)",
+                  backgroundColor: tab === t ? 'rgba(255,16,240,0.15)' : 'transparent',
+                  color: tab === t ? 'var(--neon-pink)' : 'rgba(255,220,180,0.45)',
                   boxShadow:
                     tab === t
-                      ? "0 0 16px rgba(255,16,240,0.2), inset 0 0 0 1px rgba(255,16,240,0.25)"
-                      : "none",
+                      ? '0 0 16px rgba(255,16,240,0.2), inset 0 0 0 1px rgba(255,16,240,0.25)'
+                      : 'none',
                 }}
               >
-                {t === "login" ? "Zaloguj się" : "Załóż konto"}
+                {t === 'login' ? 'Zaloguj się' : 'Załóż konto'}
               </button>
             ))}
           </div>
 
           {/* Form */}
           <AnimatePresence mode="wait">
-            {tab === "login" ? (
+            {tab === 'login' ? (
               <motion.div
                 key="login"
                 initial={{ opacity: 0, x: -16 }}
@@ -447,7 +428,7 @@ function LoginPageInner() {
                 exit={{ opacity: 0, x: 16 }}
                 transition={{ duration: 0.2 }}
               >
-                <LoginForm onSwitch={() => setTab("register")} />
+                <LoginForm onSwitch={() => setTab('register')} />
               </motion.div>
             ) : (
               <motion.div
@@ -457,7 +438,7 @@ function LoginPageInner() {
                 exit={{ opacity: 0, x: -16 }}
                 transition={{ duration: 0.2 }}
               >
-                <RegisterForm onSwitch={() => setTab("login")} />
+                <RegisterForm onSwitch={() => setTab('login')} />
               </motion.div>
             )}
           </AnimatePresence>
@@ -465,7 +446,7 @@ function LoginPageInner() {
 
         {/* Footer hint */}
         <motion.p
-          className="text-center text-[11px] text-text-muted"
+          className="text-text-muted text-center text-[11px]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
@@ -474,5 +455,5 @@ function LoginPageInner() {
         </motion.p>
       </div>
     </div>
-  );
+  )
 }
