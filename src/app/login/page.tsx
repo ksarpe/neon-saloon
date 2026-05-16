@@ -5,6 +5,7 @@ import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 type Tab = 'login' | 'register'
 
@@ -165,21 +166,14 @@ function LoginForm({ onSwitch }: { onSwitch: () => void }) {
         {error && <ErrorBanner key={error} message={error} />}
       </AnimatePresence>
 
-      <motion.button
-        type="submit"
+      <Button
+        type="primary"
+        htmlType="submit"
         disabled={loading || !email || !password}
-        whileTap={{ scale: 0.97 }}
-        className="mt-1 flex w-full items-center justify-center gap-2 rounded-2xl py-4 font-bold text-white disabled:opacity-40"
-        style={{
-          background: 'linear-gradient(135deg,var(--neon-pink),#c800c8)',
-          boxShadow: '0 4px 30px rgba(255,16,240,0.4)',
-          fontFamily: "'Bebas Neue',cursive",
-          letterSpacing: '0.15em',
-          fontSize: '1.1rem',
-        }}
+        className="mt-1 w-full"
       >
         {loading ? <Loader2 size={18} className="animate-spin" /> : 'Wejdź do salonu'}
-      </motion.button>
+      </Button>
 
       <p className="text-text-muted text-center text-sm">
         Nie masz konta?{' '}
@@ -295,21 +289,14 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
         {error && <ErrorBanner key={error} message={error} />}
       </AnimatePresence>
 
-      <motion.button
-        type="submit"
+      <Button
+        type="primary"
+        htmlType="submit"
         disabled={loading || !email || !password || !confirm}
-        whileTap={{ scale: 0.97 }}
-        className="mt-1 flex w-full items-center justify-center gap-2 rounded-2xl py-4 font-bold text-white disabled:opacity-40"
-        style={{
-          background: 'linear-gradient(135deg,var(--neon-pink),#c800c8)',
-          boxShadow: '0 4px 30px rgba(255,16,240,0.4)',
-          fontFamily: "'Bebas Neue',cursive",
-          letterSpacing: '0.15em',
-          fontSize: '1.1rem',
-        }}
+        className="mt-1 w-full"
       >
         {loading ? <Loader2 size={18} className="animate-spin" /> : 'Otwórz konto'}
-      </motion.button>
+      </Button>
 
       <p className="text-text-muted text-center text-sm">
         Masz już konto?{' '}

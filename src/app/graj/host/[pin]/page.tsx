@@ -1,7 +1,7 @@
 'use client'
 
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
-import HostScreen from '@/components/HostScreen'
+import HostScreen from '@/components/Host'
 import HostHighLowScreen from '@/components/HighLow/HostHighLowScreen'
 import { buildDeck } from '@/lib/store'
 import { useMemo, useEffect, useState } from 'react'

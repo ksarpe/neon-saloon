@@ -3,9 +3,8 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
-import { Loader2, Dices, Settings, LogIn, Brain, Heart, BookOpen, TrendingUp } from 'lucide-react'
-import { PanelButton } from '@/components/ui/panel-button'
+import { Loader2, Dices, Brain, Heart, BookOpen, TrendingUp } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { FUNNY_NAMES } from '@/lib/games/data'
 
 const GAME_MODES = [
@@ -52,7 +51,6 @@ const GAME_MODES = [
 
 export default function HostSetupPage() {
   const router = useRouter()
-  const { data: session, status } = useSession()
   const [hostName, setHostName] = useState('')
   const [selectedMode, setSelectedMode] = useState<string | null>(null)
   const [creating, setCreating] = useState(false)
@@ -88,23 +86,6 @@ export default function HostSetupPage() {
 
   return (
     <div className="flex min-h-dvh w-full flex-col items-center justify-center overflow-y-auto p-6">
-      <PanelButton
-        onClick={() => router.push(session ? '/panel' : '/login')}
-        isLoading={status === 'loading'}
-      >
-        {session ? (
-          <>
-            <Settings size={13} />
-            {session.user?.name ?? 'Panel'}
-          </>
-        ) : (
-          <>
-            <LogIn size={13} />
-            Zaloguj się
-          </>
-        )}
-      </PanelButton>
-
       {/* Ambient glows */}
       <div aria-hidden className="pointer-events-none fixed inset-0">
         <div
@@ -236,27 +217,20 @@ export default function HostSetupPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
         >
-          <motion.button
+          <Button
             id="create-lobby-btn"
+            type="primary"
             disabled={!hostName.trim() || !selectedMode || creating}
-            whileTap={{ scale: 0.97 }}
             onClick={handleCreate}
-            className="bg-neon-pink hover:bg-neon-pink/80 flex w-full items-center justify-center gap-3 rounded-2xl py-4 text-white hover:cursor-pointer disabled:opacity-30"
-            style={{
-              fontFamily: "'Bebas Neue',cursive",
-              fontSize: '1.15rem',
-              letterSpacing: '0.15em',
-            }}
+            className="w-full"
+            size="lg"
           >
             {creating ? (
-              <>
-                <Loader2 size={18} className="animate-spin" />
-                Tworze salon...
-              </>
+              <><Loader2 size={18} className="animate-spin" /> Tworze salon...</>
             ) : (
               <>Otwórz salon na dzikim zachodzie</>
             )}
-          </motion.button>
+          </Button>
           {error && (
             <motion.p
               initial={{ opacity: 0 }}

@@ -209,7 +209,7 @@ export default function LandingPage() {
           transition={{ duration: 0.5, delay: 0.5 }}
           className="flex w-full max-w-sm flex-col gap-3 sm:flex-row"
         >
-          <Button onClick={() => router.push('/graj')} type="primary">
+          <Button onClick={() => router.push('/graj')} type="primary" className="flex-1">
             Zagrajcie teraz
           </Button>
 

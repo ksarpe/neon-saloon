@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { Home, Users, User } from 'lucide-react'
 import { RankingList } from './RankingList'
 import type { SummaryScore, Tab } from './types'
+import { Button } from '@/components/ui/button'
 
 interface Props {
   scores: SummaryScore[]
@@ -120,23 +121,17 @@ export function GameSummary({
       {tab === 'egzekwo' && hasEgzekwo && <RankingList scores={egzekwoScores!} unit="egzekucji" icon="⚡" />}
 
       {/* Home button */}
-      <motion.a
-        href={homeHref}
+      <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="mt-2 flex w-full items-center justify-center gap-2 rounded-2xl px-8 py-4 text-white"
-        style={{
-          background: 'linear-gradient(135deg,var(--neon-pink),#c800c8)',
-          fontFamily: "'Bebas Neue',cursive",
-          letterSpacing: '0.12em',
-          fontSize: '1.1rem',
-          boxShadow: '0 4px 32px rgba(255,16,240,0.4)',
-        }}
+        className="mt-2 w-full"
       >
-        <Home size={18} />
-        Wróć do menu głównego
-      </motion.a>
+        <Button type="primary" href={homeHref} className="w-full">
+          <Home size={18} />
+          Wróć do menu głównego
+        </Button>
+      </motion.div>
     </div>
   )
 }

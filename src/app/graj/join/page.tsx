@@ -1,4 +1,4 @@
-import JoinGameForm from "@/components/JoinGameForm";
+import JoinGameForm from "@/components/JoinGame";
 
 export const metadata = {
   title: "Dołącz do gry – last rodeo andżeliki 🤠",

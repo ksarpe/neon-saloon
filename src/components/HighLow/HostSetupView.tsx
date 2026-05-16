@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { ChevronRight, Dices, Check } from 'lucide-react'
 import type { SessionTeam } from '@/lib/appwrite/sessions'
 import { FUNNY_NAMES } from '@/lib/games/data'
+import { Button } from '@/components/ui/button'
 
 const AVATAR_LIST = ['🤠', '💃', '🌸', '✨', '🍾', '🎀', '👑', '🦋', '🌺', '🎉']
 
@@ -129,21 +130,14 @@ export function HostSetupView({ team1, team2, onContinue }: Props) {
         </div>
       </div>
 
-      <motion.button
+      <Button
+        type="primary"
         disabled={!canContinue}
-        whileTap={{ scale: 0.97 }}
         onClick={() => canContinue && onContinue(name.trim(), avatar!, teamId!)}
-        className="flex w-full items-center justify-center gap-2 rounded-2xl py-4 text-white disabled:opacity-30"
-        style={{
-          background: 'linear-gradient(135deg,var(--neon-pink),#c800c8)',
-          fontFamily: "'Bebas Neue',cursive",
-          fontSize: '1.1rem',
-          letterSpacing: '0.1em',
-          boxShadow: '0 4px 30px rgba(255,16,240,0.4)',
-        }}
+        className="w-full"
       >
         Dalej <ChevronRight size={18} />
-      </motion.button>
+      </Button>
     </div>
   )
 }

@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { Play } from 'lucide-react'
 import type { SessionTeam, SessionPlayer } from '@/lib/appwrite/sessions'
+import { Button } from '@/components/ui/button'
 
 interface Props {
   pin: string
@@ -100,21 +101,14 @@ export function HostLobby({ pin, players, team1, team2, onStart }: Props) {
         ))}
       </div>
 
-      <motion.button
+      <Button
+        type="primary"
         disabled={!canStart}
-        whileTap={{ scale: 0.97 }}
         onClick={onStart}
-        className="flex items-center gap-3 rounded-2xl px-10 py-5 text-white disabled:opacity-30"
-        style={{
-          background: 'linear-gradient(135deg,var(--neon-pink),#c800c8)',
-          boxShadow: '0 4px 40px rgba(255,16,240,0.5)',
-          fontFamily: "'Bebas Neue',cursive",
-          fontSize: '1.15rem',
-          letterSpacing: '0.15em',
-        }}
+        size="lg"
       >
         <Play size={22} /> Rozpocznij grę
-      </motion.button>
+      </Button>
     </div>
   )
 }

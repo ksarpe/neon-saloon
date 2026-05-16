@@ -1,14 +1,11 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
 import { motion } from 'framer-motion'
-import { Tv, Smartphone, ChevronRight, LogIn, Settings } from 'lucide-react'
-import { PanelButton } from '@/components/ui/panel-button'
+import { Tv, Smartphone, ChevronRight } from 'lucide-react'
 
 export default function GrajPage() {
   const router = useRouter()
-  const { data: session, status } = useSession()
 
   return (
     <main className="relative flex h-dvh w-full flex-col items-center justify-center overflow-hidden px-6">
@@ -125,20 +122,6 @@ export default function GrajPage() {
         </motion.div>
       </div>
 
-      {/* Top-right auth button */}
-      <PanelButton onClick={() => router.push(session ? '/panel' : '/login')}>
-        {session ? (
-          <>
-            <Settings size={13} />
-            {session.user?.name ?? 'Panel'}
-          </>
-        ) : (
-          <>
-            <LogIn size={13} />
-            Zaloguj się
-          </>
-        )}
-      </PanelButton>
     </main>
   )
 }
