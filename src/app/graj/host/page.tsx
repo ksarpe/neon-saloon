@@ -5,6 +5,9 @@ import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { Loader2, Dices, Brain, Heart, BookOpen, TrendingUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { ProModal } from '@/components/ui/ContentGate'
+import { useContentAccess } from '@/hooks/useContentAccess'
+import { checkAccess } from '@/lib/content-access'
 import { FUNNY_NAMES } from '@/lib/games/data'
 
 const GAME_MODES = [
@@ -46,6 +49,7 @@ const GAME_MODES = [
     color: '#10b981',
     border: 'rgba(16,185,129,0.5)',
     bg: 'rgba(16,185,129,0.07)',
+    isPremium: true,
   },
 ]
 
@@ -55,7 +59,9 @@ export default function HostSetupPage() {
   const [selectedMode, setSelectedMode] = useState<string | null>(null)
   const [creating, setCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [proModalOpen, setProModalOpen] = useState(false)
   const [placeholder, setPlaceholder] = useState('np. Szeryf Alicja')
+  const access = useContentAccess()
 
   useEffect(() => {
     const randomName = FUNNY_NAMES[Math.floor(Math.random() * FUNNY_NAMES.length)]
@@ -161,7 +167,13 @@ export default function HostSetupPage() {
                   key={mode.id}
                   id={`mode-${mode.id}`}
                   whileTap={{ scale: 0.97 }}
-                  onClick={() => setSelectedMode(mode.id)}
+                  onClick={() => {
+                    if (mode.isPremium && !checkAccess({ type: 'premium' }, access).granted) {
+                      setProModalOpen(true)
+                      return
+                    }
+                    setSelectedMode(mode.id)
+                  }}
                   className="group relative flex items-center gap-4 overflow-hidden rounded-2xl border-2 p-4 text-left transition-all duration-200"
                   style={{
                     borderColor: active ? mode.border : 'var(--saloon-border)',
@@ -170,6 +182,12 @@ export default function HostSetupPage() {
                   }}
                 >
                   <div className="pointer-events-none absolute inset-y-0 -left-[100%] z-0 w-full skew-x-[-20deg] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-all duration-700 ease-in-out group-hover:left-[100%]" />
+
+                  {mode.isPremium && (
+                    <div className="absolute top-2 right-2 z-20 flex items-center gap-1 rounded-full border border-yellow-500/50 bg-black/60 px-2 py-0.5 text-[9px] font-bold tracking-widest text-yellow-400 uppercase">
+                      🔒 PRO
+                    </div>
+                  )}
 
                   <div
                     className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
@@ -242,6 +260,8 @@ export default function HostSetupPage() {
           )}
         </motion.div>
       </div>
+
+      {proModalOpen && <ProModal onClose={() => setProModalOpen(false)} />}
     </div>
   )
 }

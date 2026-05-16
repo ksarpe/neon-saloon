@@ -13,6 +13,7 @@ interface GameModeCard {
   desc: string
   gradient: string
   accent: string
+  isPremium?: boolean
 }
 
 const GAME_MODES: GameModeCard[] = [
@@ -47,6 +48,7 @@ const GAME_MODES: GameModeCard[] = [
     desc: 'Dwie drużyny, zgadywanie na żywo. Wygrywają sprytniejsi.',
     gradient: 'linear-gradient(160deg, #001a0d 0%, #004020 55%, #0d9e6a 100%)',
     accent: '#10b981',
+    isPremium: true,
   },
 ]
 
@@ -74,6 +76,13 @@ const HOW_IT_WORKS = [
 function ModeCardContent({ mode, isActive }: { mode: GameModeCard; isActive: boolean }) {
   return (
     <>
+      {/* PRO badge */}
+      {mode.isPremium && (
+        <div className="absolute top-4 right-4 z-20 flex items-center gap-1 rounded-full border border-yellow-500/50 bg-black/60 px-2.5 py-1 text-[10px] font-bold tracking-widest text-yellow-400 uppercase backdrop-blur-sm">
+          🔒 PRO
+        </div>
+      )}
+
       {/* Top edge shine */}
       <div
         className="absolute top-0 right-0 left-0 h-px"
