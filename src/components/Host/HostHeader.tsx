@@ -1,11 +1,14 @@
 'use client'
 
-import { useRef, useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Zap, Menu, X, Flag } from 'lucide-react'
-import type { GameCard } from '@/lib/store'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Flag, Menu, X, Zap } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+
 import type { VoteCastPayload } from '@/lib/game-types'
-import type { LivePlayer, HostPhase } from './types'
+import { BRIDAL_QUIZ_TITLE, NEVER_TITLE } from '@/lib/games/default-deck'
+import type { GameCard } from '@/lib/store'
+
+import type { HostPhase, LivePlayer } from './types'
 import { ACCENT } from './types'
 
 interface Props {
@@ -31,6 +34,13 @@ export function HostHeader({
 }: Props) {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+  const cardTypeLabel =
+    currentCard?.title ??
+    (currentCard?.type === 'QUIZ'
+      ? BRIDAL_QUIZ_TITLE
+      : currentCard?.type === 'NEVER'
+        ? NEVER_TITLE
+        : currentCard?.type)
 
   useEffect(() => {
     if (!menuOpen) return
@@ -62,14 +72,14 @@ export function HostHeader({
           {phase === 'active' && currentCard && (
             <>
               <span
-                className="rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-widest uppercase"
+                className="max-w-[180px] truncate rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-widest uppercase"
                 style={{
                   color: ACCENT[currentCard.type] ?? 'var(--neon-pink)',
                   borderColor: `${ACCENT[currentCard.type] ?? 'var(--neon-pink)'}55`,
                   backgroundColor: `${ACCENT[currentCard.type] ?? 'var(--neon-pink)'}15`,
                 }}
               >
-                {currentCard.type}
+                {cardTypeLabel}
               </span>
               <span className="text-text-muted text-xs font-semibold tabular-nums">
                 {cardIndex + 1} / {totalCards}

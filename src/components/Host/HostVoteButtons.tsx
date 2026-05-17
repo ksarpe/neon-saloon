@@ -55,7 +55,7 @@ export function HostVoteButtons({
                   borderColor: 'rgba(255,220,180,0.25)',
                   backgroundColor: 'rgba(255,220,180,0.06)',
                   color: 'rgba(255,220,180,0.8)',
-                  fontFamily: "'Bebas Neue',cursive",
+                  fontFamily: "var(--font-app)",
                   letterSpacing: '0.08em',
                   fontSize: '0.95rem',
                 }}
@@ -73,7 +73,7 @@ export function HostVoteButtons({
                   backgroundColor: 'rgba(255,16,240,0.1)',
                   color: 'var(--neon-pink)',
                   boxShadow: '0 0 20px rgba(255,16,240,0.2)',
-                  fontFamily: "'Bebas Neue',cursive",
+                  fontFamily: "var(--font-app)",
                   letterSpacing: '0.08em',
                   fontSize: '0.95rem',
                 }}
@@ -110,7 +110,7 @@ export function HostVoteButtons({
                       style={{
                         backgroundColor: 'rgba(255,16,240,0.15)',
                         color: 'var(--neon-pink)',
-                        fontFamily: "'Bebas Neue',cursive",
+                        fontFamily: "var(--font-app)",
                       }}
                     >
                       {letter}

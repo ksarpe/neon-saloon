@@ -22,22 +22,10 @@ export function SetupView({ name, onNameChange, avatar, onAvatarChange, onContin
 
   return (
     <div className="mx-auto flex w-full max-w-sm flex-col items-center gap-8">
-      <div className="text-center">
-        <h1
-          className="shimmer-text text-5xl tracking-widest"
-          style={{ fontFamily: "'Bebas Neue',cursive" }}
-        >
-          last rodeo andżeliki
-        </h1>
-        <p className="text-text-muted mt-1 text-xs tracking-widest uppercase">
-          Najpierw wybierz swój awatar
-        </p>
-      </div>
-
       {/* Avatar picker */}
       <div className="w-full">
         <p className="text-text-muted mb-3 text-center text-[10px] font-semibold tracking-widest uppercase">
-          Wybierz awatar
+          Wybierz awatar oraz nazwę
         </p>
         <div className="grid grid-cols-5 gap-2">
           {AVATAR_LIST.map((emoji) => (

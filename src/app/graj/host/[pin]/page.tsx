@@ -1,17 +1,18 @@
 'use client'
 
-import { useParams, useSearchParams, useRouter } from 'next/navigation'
-import HostScreen from '@/components/Host'
-import HostHighLowScreen from '@/components/HighLow/HostHighLowScreen'
-import BattleRoyaleHost from '@/components/BattleRoyale/BattleRoyaleHost'
-import { buildDeck } from '@/lib/store'
-import { useMemo, useEffect, useState } from 'react'
-import type { GameCard } from '@/lib/store'
 import { motion } from 'framer-motion'
 import { Loader2 } from 'lucide-react'
-import { QUESTION_CATEGORIES } from '@/lib/games/categories'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useMemo, useState } from 'react'
+
+import BattleRoyaleHost from '@/components/BattleRoyale/BattleRoyaleHost'
+import HostHighLowScreen from '@/components/HighLow/HostHighLowScreen'
+import HostScreen from '@/components/Host'
 import type { SessionTeam } from '@/lib/appwrite/sessions'
 import { useBackButton } from '@/lib/back-button-context'
+import { QUESTION_CATEGORIES } from '@/lib/games/categories'
+import type { GameCard } from '@/lib/store'
+import { buildDeck } from '@/lib/store'
 
 type NeverSource = 'app' | 'own' | 'all'
 
@@ -52,24 +53,6 @@ function PickerShell({
 
   return (
     <div className="flex min-h-dvh w-full flex-col items-center justify-center p-6">
-      {/* Ambient glows */}
-      <div aria-hidden className="pointer-events-none fixed inset-0">
-        <div
-          className="absolute top-[-20%] left-[-15%] h-[60vw] w-[60vw] rounded-full opacity-[0.07]"
-          style={{
-            background: `radial-gradient(circle,${glowColor} 0%,transparent 70%)`,
-            filter: 'blur(80px)',
-          }}
-        />
-        <div
-          className="absolute right-[-15%] bottom-[-20%] h-[60vw] w-[60vw] rounded-full opacity-[0.07]"
-          style={{
-            background: 'radial-gradient(circle,var(--sheriff-gold) 0%,transparent 70%)',
-            filter: 'blur(80px)',
-          }}
-        />
-      </div>
-
       <div className="relative z-10 mx-auto flex w-full max-w-2xl flex-col gap-8">
         {/* Header — back button is handled globally by PageTransition */}
         <motion.div
@@ -80,7 +63,10 @@ function PickerShell({
         >
           <h1
             className="shimmer-text text-5xl tracking-widest"
-            style={{ fontFamily: "'Bebas Neue', cursive" }}
+            style={{
+              fontFamily: "var(--font-app)",
+              textShadow: `0 0 28px ${glowColor}`,
+            }}
           >
             {title}
           </h1>
@@ -328,7 +314,7 @@ function HighLowTeamSetup({
           style={{
             background: 'linear-gradient(135deg,#10b981,#059669)',
             boxShadow: '0 4px 30px rgba(16,185,129,0.4)',
-            fontFamily: "'Bebas Neue',cursive",
+            fontFamily: "var(--font-app)",
             fontSize: '1.1rem',
             letterSpacing: '0.15em',
           }}
@@ -380,7 +366,21 @@ export default function HostPage() {
 
   // Predefined cards from the store (filtered by mode)
   const appNeverCards = useMemo(() => fullDeck.filter((c) => c.type === 'NEVER'), [fullDeck])
-  const appQuizCards = useMemo(() => fullDeck.filter((c) => c.type === 'QUIZ'), [fullDeck])
+  const appBridalQuizCards = useMemo(() => fullDeck.filter((c) => c.type === 'QUIZ'), [fullDeck])
+  const categoryCards = useMemo<GameCard[]>(() => {
+    if (mode !== 'categories' || !selectedCategory) return []
+    const cat = QUESTION_CATEGORIES.find((c) => c.id === selectedCategory)
+    if (!cat) return []
+
+    return cat.questions.map((q, i) => ({
+      id: `cat-${selectedCategory}-${i}`,
+      type: 'QUIZ' as const,
+      title: cat.name,
+      description: q.text,
+      answer: q.answer,
+      options: q.options,
+    }))
+  }, [mode, selectedCategory])
 
   // "never" mode: fetch user's custom questions when needed
   useEffect(() => {
@@ -394,7 +394,6 @@ export default function HostPage() {
           data.map((q) => ({
             id: `custom-${q.id}`,
             type: 'NEVER' as const,
-            title: 'Nigdy przenigdy',
             description: q.text,
           }))
         )
@@ -402,27 +401,10 @@ export default function HostPage() {
       .catch(() => {})
   }, [mode, neverSource])
 
-  // "categories" mode: build deck from selected category
-  useEffect(() => {
-    if (mode !== 'categories' || !selectedCategory) return
-    const cat = QUESTION_CATEGORIES.find((c) => c.id === selectedCategory)
-    if (!cat) return
-    setCustomCards(
-      cat.questions.map((q, i) => ({
-        id: `cat-${selectedCategory}-${i}`,
-        type: 'QUIZ' as const,
-        title: cat.name,
-        description: q.text,
-        answer: q.answer,
-        options: q.options,
-      }))
-    )
-  }, [mode, selectedCategory])
-
   // Assemble final deck
   const deck = useMemo(() => {
-    if (mode === 'trivia') return appQuizCards
-    if (mode === 'categories') return customCards // shuffled below
+    if (mode === 'trivia') return appBridalQuizCards
+    if (mode === 'categories') return categoryCards
     if (mode === 'never') {
       if (neverSource === 'app') return shuffle(appNeverCards)
       if (neverSource === 'own') return shuffle(customCards)
@@ -430,7 +412,7 @@ export default function HostPage() {
       return []
     }
     return []
-  }, [mode, neverSource, appNeverCards, appQuizCards, customCards])
+  }, [mode, neverSource, appNeverCards, appBridalQuizCards, categoryCards, customCards])
 
   // ── Pickers shown before the lobby ──────────────────────────────────────────
 

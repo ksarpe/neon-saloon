@@ -141,7 +141,7 @@ export function HostRound({
                 className="w-full rounded-xl border-2 bg-saloon-surface px-4 py-4 text-center text-3xl font-black text-text-primary placeholder:text-text-muted transition-colors focus:outline-none"
                 style={{
                   borderColor: numberInput ? 'var(--neon-pink)' : 'var(--saloon-border)',
-                  fontFamily: "'Bebas Neue',cursive",
+                  fontFamily: "var(--font-app)",
                   letterSpacing: '0.1em',
                 }}
               />
@@ -153,7 +153,7 @@ export function HostRound({
                 style={{
                   background: 'linear-gradient(135deg,var(--neon-pink),#c800c8)',
                   boxShadow: '0 4px 30px rgba(255,16,240,0.4)',
-                  fontFamily: "'Bebas Neue',cursive",
+                  fontFamily: "var(--font-app)",
                   fontSize: '1.1rem',
                   letterSpacing: '0.1em',
                 }}
@@ -195,7 +195,7 @@ export function HostRound({
             </p>
             <p
               className="text-5xl font-black"
-              style={{ color: 'var(--sheriff-gold)', fontFamily: "'Bebas Neue',cursive" }}
+              style={{ color: 'var(--sheriff-gold)', fontFamily: "var(--font-app)" }}
             >
               {submittedNumber} <span className="text-2xl">{currentQuestion.unit}</span>
             </p>
@@ -247,7 +247,7 @@ export function HostRound({
                       <TrendingDown size={30} />
                       <span
                         style={{
-                          fontFamily: "'Bebas Neue',cursive",
+                          fontFamily: "var(--font-app)",
                           fontSize: '1.15rem',
                           letterSpacing: '0.15em',
                         }}
@@ -276,7 +276,7 @@ export function HostRound({
                       <TrendingUp size={30} />
                       <span
                         style={{
-                          fontFamily: "'Bebas Neue',cursive",
+                          fontFamily: "var(--font-app)",
                           fontSize: '1.15rem',
                           letterSpacing: '0.15em',
                         }}

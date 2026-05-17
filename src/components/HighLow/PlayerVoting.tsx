@@ -107,7 +107,7 @@ export function PlayerVoting({
           </p>
           <p
             className="text-6xl font-black"
-            style={{ color: 'var(--sheriff-gold)', fontFamily: "'Bebas Neue',cursive" }}
+            style={{ color: 'var(--sheriff-gold)', fontFamily: "var(--font-app)" }}
           >
             {submittedNumber}
             <span className="ml-2 text-3xl">{roundData.questionUnit}</span>
@@ -135,7 +135,7 @@ export function PlayerVoting({
             ) : (
               <>
                 <TrendingDown size={30} />
-                <span style={{ fontFamily: "'Bebas Neue',cursive", fontSize: '1.15rem', letterSpacing: '0.15em' }}>
+                <span style={{ fontFamily: "var(--font-app)", fontSize: '1.15rem', letterSpacing: '0.15em' }}>
                   Mniej
                 </span>
               </>
@@ -158,7 +158,7 @@ export function PlayerVoting({
             ) : (
               <>
                 <TrendingUp size={30} />
-                <span style={{ fontFamily: "'Bebas Neue',cursive", fontSize: '1.15rem', letterSpacing: '0.15em' }}>
+                <span style={{ fontFamily: "var(--font-app)", fontSize: '1.15rem', letterSpacing: '0.15em' }}>
                   Więcej
                 </span>
               </>
@@ -206,7 +206,7 @@ export function PlayerVoting({
           </p>
           <p
             className="text-4xl font-black"
-            style={{ color: 'var(--sheriff-gold)', fontFamily: "'Bebas Neue',cursive" }}
+            style={{ color: 'var(--sheriff-gold)', fontFamily: "var(--font-app)" }}
           >
             {submittedNumber} <span className="text-xl">{roundData.questionUnit}</span>
           </p>

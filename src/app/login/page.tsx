@@ -328,23 +328,6 @@ function LoginPageInner() {
 
   return (
     <div className="flex min-h-dvh w-full flex-col items-center justify-center p-6">
-      {/* Ambient glows */}
-      <div aria-hidden className="pointer-events-none fixed inset-0">
-        <div
-          className="absolute top-[-20%] left-[-15%] h-[60vw] w-[60vw] rounded-full opacity-[0.09]"
-          style={{
-            background: 'radial-gradient(circle,var(--neon-pink) 0%,transparent 70%)',
-            filter: 'blur(80px)',
-          }}
-        />
-        <div
-          className="absolute right-[-15%] bottom-[-20%] h-[55vw] w-[55vw] rounded-full opacity-[0.07]"
-          style={{
-            background: 'radial-gradient(circle,var(--sheriff-gold) 0%,transparent 70%)',
-            filter: 'blur(80px)',
-          }}
-        />
-      </div>
 
       <div className="relative z-10 flex w-full max-w-sm flex-col gap-8">
         {/* Logo / title */}
@@ -357,7 +340,7 @@ function LoginPageInner() {
           <div className="mb-3 flex items-center justify-center gap-2">
             <span
               className="shimmer-text text-6xl tracking-widest"
-              style={{ fontFamily: "'Bebas Neue',cursive" }}
+              style={{ fontFamily: "var(--font-app)" }}
             >
               last rodeo
             </span>

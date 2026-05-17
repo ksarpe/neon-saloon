@@ -112,16 +112,6 @@ export default function BattleRoyalePlayer({ pin, playerId, playerName, avatar, 
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <div aria-hidden className="pointer-events-none fixed inset-0">
-        <div
-          className="absolute top-[-20%] left-[-10%] h-[50vw] w-[50vw] rounded-full opacity-[0.07]"
-          style={{ background: 'radial-gradient(circle,#ef4444 0%,transparent 70%)', filter: 'blur(60px)' }}
-        />
-        <div
-          className="absolute right-[-10%] bottom-[-15%] h-[40vw] w-[40vw] rounded-full opacity-[0.06]"
-          style={{ background: 'radial-gradient(circle,var(--sheriff-gold) 0%,transparent 70%)', filter: 'blur(80px)' }}
-        />
-      </div>
 
       {/* Top bar */}
       <div className="relative z-10 flex items-center justify-between border-b px-4 py-3" style={{ borderColor: 'var(--saloon-border)', backgroundColor: 'var(--saloon-bg)' }}>
@@ -165,7 +155,7 @@ export default function BattleRoyalePlayer({ pin, playerId, playerName, avatar, 
                   </p>
                   <div className="flex items-center gap-1.5">
                     <Clock size={13} style={{ color: timerLeft <= 5 ? '#ef4444' : 'var(--sheriff-gold)' }} />
-                    <span className="font-mono font-bold text-lg" style={{ color: timerLeft <= 5 ? '#ef4444' : 'var(--sheriff-gold)', fontFamily: "'Bebas Neue',cursive" }}>
+                    <span className="font-mono font-bold text-lg" style={{ color: timerLeft <= 5 ? '#ef4444' : 'var(--sheriff-gold)', fontFamily: "var(--font-app)" }}>
                       {timerLeft}s
                     </span>
                   </div>
@@ -272,7 +262,7 @@ export default function BattleRoyalePlayer({ pin, playerId, playerName, avatar, 
                   <Skull size={72} style={{ color: '#ef4444' }} />
                 </motion.div>
                 <div>
-                  <p className="text-3xl font-bold" style={{ color: '#ef4444', fontFamily: "'Bebas Neue',cursive", letterSpacing: '0.1em' }}>
+                  <p className="text-3xl font-bold" style={{ color: '#ef4444', fontFamily: "var(--font-app)", letterSpacing: '0.1em' }}>
                     Odpadłeś!
                   </p>
                   <p className="mt-2 text-sm" style={{ color: 'var(--text-muted)' }}>
@@ -298,7 +288,7 @@ export default function BattleRoyalePlayer({ pin, playerId, playerName, avatar, 
                       <Trophy size={72} style={{ color: 'var(--sheriff-gold)' }} />
                     </motion.div>
                     <div>
-                      <p className="shimmer-text text-5xl tracking-widest" style={{ fontFamily: "'Bebas Neue',cursive" }}>
+                      <p className="shimmer-text text-5xl tracking-widest" style={{ fontFamily: "var(--font-app)" }}>
                         Wygrałeś!
                       </p>
                       <p className="mt-2 text-sm" style={{ color: 'var(--text-muted)' }}>Jesteś ostatnim ocalałym</p>
@@ -308,7 +298,7 @@ export default function BattleRoyalePlayer({ pin, playerId, playerName, avatar, 
                   <>
                     <Skull size={72} style={{ color: '#ef4444', opacity: 0.6 }} />
                     <div>
-                      <p className="text-4xl font-bold" style={{ fontFamily: "'Bebas Neue',cursive", color: 'var(--text-muted)' }}>
+                      <p className="text-4xl font-bold" style={{ fontFamily: "var(--font-app)", color: 'var(--text-muted)' }}>
                         Koniec gry
                       </p>
                       {gameOver?.winner && (

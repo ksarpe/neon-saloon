@@ -52,7 +52,7 @@ export function PlayingView({ card, isFlipped, onFlip, loading, castVote }: Prop
                         style={{
                           backgroundColor: 'rgba(255,16,240,0.15)',
                           color: 'var(--neon-pink)',
-                          fontFamily: "'Bebas Neue',cursive",
+                          fontFamily: "var(--font-app)",
                           letterSpacing: '0.05em',
                           fontSize: '1rem',
                         }}
@@ -108,7 +108,7 @@ export function PlayingView({ card, isFlipped, onFlip, loading, castVote }: Prop
                 borderColor: 'rgba(255,220,180,0.25)',
                 backgroundColor: 'rgba(255,220,180,0.06)',
                 color: 'rgba(255,220,180,0.8)',
-                fontFamily: "'Bebas Neue',cursive",
+                fontFamily: "var(--font-app)",
                 letterSpacing: '0.08em',
                 fontSize: '1rem',
               }}
@@ -126,7 +126,7 @@ export function PlayingView({ card, isFlipped, onFlip, loading, castVote }: Prop
                 backgroundColor: 'rgba(255,16,240,0.1)',
                 color: 'var(--neon-pink)',
                 boxShadow: '0 0 20px rgba(255,16,240,0.2)',
-                fontFamily: "'Bebas Neue',cursive",
+                fontFamily: "var(--font-app)",
                 letterSpacing: '0.08em',
                 fontSize: '1rem',
               }}

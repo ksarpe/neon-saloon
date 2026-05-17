@@ -1,46 +1,25 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Tv, Smartphone, ChevronRight } from 'lucide-react'
+import { ChevronRight,Smartphone, Tv } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export default function GrajPage() {
   const router = useRouter()
 
   return (
-    <main className="relative flex h-dvh w-full flex-col items-center justify-center overflow-hidden px-6">
-      {/* Ambient glows */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 z-[2]">
-        <div
-          className="absolute top-[-25%] left-[-15%] h-[65vw] w-[65vw] rounded-full opacity-[0.15]"
-          style={{
-            background: 'radial-gradient(circle,var(--neon-pink) 0%,transparent 70%)',
-            filter: 'blur(80px)',
-          }}
-        />
-        <div
-          className="absolute right-[-15%] bottom-[-25%] h-[65vw] w-[65vw] rounded-full opacity-[0.15]"
-          style={{
-            background: 'radial-gradient(circle,var(--sheriff-gold) 0%,transparent 70%)',
-            filter: 'blur(80px)',
-          }}
-        />
-      </div>
-
-      <div className="relative z-[10] flex w-full max-w-lg flex-col items-center gap-10 text-center">
+    <main className="relative -mt-14 flex h-dvh w-full flex-col items-center justify-center overflow-hidden px-6">
+      <div className="relative z-10 flex w-full max-w-lg flex-col items-center gap-10 text-center">
         {/* Hero */}
-        <motion.div
+        <motion.h1
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
+          className="shimmer-text text-[clamp(2rem,14vw,7rem)] leading-[0.9] tracking-wide uppercase whitespace-nowrap"
+          style={{ fontFamily: 'var(--font-logo)' }}
         >
-          <h1
-            className="shimmer-text text-6xl leading-none tracking-widest sm:text-8xl"
-            style={{ fontFamily: "var(--font-bebas), 'Bebas Neue', cursive" }}
-          >
-            Last rodeo Andżeliki
-          </h1>
-        </motion.div>
+          Last Rodeo
+        </motion.h1>
 
         {/* Action buttons */}
         <motion.div
@@ -121,7 +100,6 @@ export default function GrajPage() {
           </motion.button>
         </motion.div>
       </div>
-
     </main>
   )
 }

@@ -69,7 +69,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
         .then((r) => (r.ok ? r.json() : null))
         .then((data) => { if (data?.players) setPlayers(data.players) })
         .catch(() => {})
-    }, 3000)
+    }, 5000)
     return () => clearInterval(id)
   }, [phase, pin])
 
@@ -94,7 +94,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
           })
         })
         .catch(() => {})
-    }, 3000)
+    }, 5000)
     return () => clearInterval(id)
   }, [phase, pin])
 
@@ -341,24 +341,6 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
   // ── Render ────────────────────────────────────────────────────────────────────
   return (
     <div className="flex min-h-dvh w-full flex-col">
-      {/* Ambient glows */}
-      <div aria-hidden className="pointer-events-none fixed inset-0">
-        <div
-          className="absolute top-[-20%] left-[-15%] h-[60vw] w-[60vw] rounded-full opacity-[0.06]"
-          style={{
-            background: 'radial-gradient(circle,var(--neon-pink) 0%,transparent 70%)',
-            filter: 'blur(80px)',
-          }}
-        />
-        <div
-          className="absolute right-[-15%] bottom-[-20%] h-[60vw] w-[60vw] rounded-full opacity-[0.06]"
-          style={{
-            background: 'radial-gradient(circle,var(--sheriff-gold) 0%,transparent 70%)',
-            filter: 'blur(80px)',
-          }}
-        />
-      </div>
-
       {/* Header */}
       <HostHeader
         phase={phase}

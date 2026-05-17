@@ -5,7 +5,7 @@ export type CardType = "QUIZ" | "NEVER";
 export interface GameCard {
   id: string;
   type: CardType;
-  title: string;
+  title?: string;
   description: string;
   emoji?: string;
   answer?: string;

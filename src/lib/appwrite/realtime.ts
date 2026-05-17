@@ -1,10 +1,11 @@
 // Server-only: re-exports server.ts which uses APPWRITE_API_KEY.
+import { AppwriteException } from "node-appwrite";
+
 import {
-  getTablesDB,
   APPWRITE_DATABASE_ID,
   APPWRITE_TABLE_GAME_SESSIONS,
+  getTablesDB,
 } from "./server";
-import { AppwriteException } from "node-appwrite";
 import type { SessionRow } from "./sessions";
 
 // ─── Per-row Realtime broadcast design ──────────────────────────────────────
@@ -113,9 +114,9 @@ export async function cleanupSessionEvents(pin: string): Promise<void> {
 export type WireCard = {
   id: string;
   type: "QUIZ" | "TEST" | "NEVER";
-  title: string;
+  title?: string;
   description: string;
-  emoji: string;
+  emoji?: string;
   options?: string[]; // Added for A, B, C, D support
 };
 

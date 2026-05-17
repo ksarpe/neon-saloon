@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { BookOpen, Brain, Dices, Heart, Loader2, Swords, TrendingUp } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { Loader2, Dices, Brain, Heart, BookOpen, TrendingUp, Swords } from 'lucide-react'
+import { useState } from 'react'
+
 import { Button } from '@/components/ui/button'
 import { ProModal } from '@/components/ui/ContentGate'
 import { useContentAccess } from '@/hooks/useContentAccess'
@@ -70,13 +71,11 @@ export default function HostSetupPage() {
   const [creating, setCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [proModalOpen, setProModalOpen] = useState(false)
-  const [placeholder, setPlaceholder] = useState('np. Szeryf Alicja')
-  const access = useContentAccess()
-
-  useEffect(() => {
+  const [placeholder] = useState(() => {
     const randomName = FUNNY_NAMES[Math.floor(Math.random() * FUNNY_NAMES.length)]
-    setPlaceholder(`np. ${randomName}`)
-  }, [])
+    return `np. ${randomName}`
+  })
+  const access = useContentAccess()
 
   const handleCreate = async () => {
     if (!hostName.trim() || !selectedMode) return
@@ -102,30 +101,13 @@ export default function HostSetupPage() {
 
   return (
     <div className="flex min-h-dvh w-full flex-col items-center justify-center overflow-y-auto p-6">
-      {/* Ambient glows */}
-      <div aria-hidden className="pointer-events-none fixed inset-0">
-        <div
-          className="absolute top-[-25%] left-[-15%] h-[65vw] w-[65vw] rounded-full opacity-[0.07]"
-          style={{
-            background: 'radial-gradient(circle,var(--neon-pink) 0%,transparent 70%)',
-            filter: 'blur(80px)',
-          }}
-        />
-        <div
-          className="right-[-15%] bottom-[-25%] h-[65vw] w-[65vw] rounded-full opacity-[0.07]"
-          style={{
-            background: 'radial-gradient(circle,var(--sheriff-gold) 0%,transparent 70%)',
-            filter: 'blur(80px)',
-          }}
-        />
-      </div>
-
-      <div className="relative z-10 mx-auto flex w-full max-w-xl flex-col gap-10">
+      <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col gap-8 sm:gap-10">
         {/* Host name */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1 }}
+          className="w-full max-w-xl self-center"
         >
           <label className="text-text-muted mb-2 block text-xs font-semibold tracking-widest uppercase">
             Jak się chcesz nazywać kowboju?
@@ -165,11 +147,12 @@ export default function HostSetupPage() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
+          className="w-full"
         >
           <label className="text-text-muted mb-3 block text-xs font-semibold tracking-widest uppercase">
             Wybierz tryb gry
           </label>
-          <div className="flex flex-col gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {GAME_MODES.map((mode) => {
               const active = selectedMode === mode.id
               return (
@@ -184,14 +167,14 @@ export default function HostSetupPage() {
                     }
                     setSelectedMode(mode.id)
                   }}
-                  className="group relative flex items-center gap-4 overflow-hidden rounded-2xl border-2 p-4 text-left transition-all duration-200"
+                  className="group relative flex h-full min-h-[128px] items-start gap-4 overflow-hidden rounded-2xl border-2 p-4 text-left transition-all duration-200"
                   style={{
                     borderColor: active ? mode.border : 'var(--saloon-border)',
                     backgroundColor: active ? mode.bg : 'transparent',
                     boxShadow: active ? `0 0 20px ${mode.border}` : 'none',
                   }}
                 >
-                  <div className="pointer-events-none absolute inset-y-0 -left-[100%] z-0 w-full skew-x-[-20deg] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-all duration-700 ease-in-out group-hover:left-[100%]" />
+                  <div className="pointer-events-none absolute inset-y-0 -left-full z-0 w-full skew-x-[-20deg] bg-linear-to-r from-transparent via-white/20 to-transparent transition-all duration-700 ease-in-out group-hover:left-[100%]" />
 
                   {mode.isPremium && (
                     <div className="absolute top-2 right-2 z-20 flex items-center gap-1 rounded-full border border-yellow-500/50 bg-black/60 px-2 py-0.5 text-[9px] font-bold tracking-widest text-yellow-400 uppercase">
@@ -244,6 +227,7 @@ export default function HostSetupPage() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
+          className="w-full max-w-xl self-center"
         >
           <Button
             id="create-lobby-btn"
@@ -254,7 +238,9 @@ export default function HostSetupPage() {
             size="lg"
           >
             {creating ? (
-              <><Loader2 size={18} className="animate-spin" /> Tworze salon...</>
+              <>
+                <Loader2 size={18} className="animate-spin" /> Tworze salon...
+              </>
             ) : (
               <>Otwórz salon na dzikim zachodzie</>
             )}

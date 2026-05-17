@@ -47,7 +47,7 @@ export function RankingList({ scores, unit = 'pkt', icon }: Props) {
           <p
             className="text-3xl leading-tight font-black tracking-wide"
             style={{
-              fontFamily: "'Bebas Neue',cursive",
+              fontFamily: "var(--font-app)",
               color: 'var(--sheriff-gold)',
               letterSpacing: '0.08em',
               textShadow: '0 0 24px rgba(255,215,0,0.6)',

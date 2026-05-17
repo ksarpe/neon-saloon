@@ -27,7 +27,7 @@ export function WaitingState({ playerName, teamName, avatar }: Props) {
       <div>
         <h2
           className="text-4xl tracking-widest"
-          style={{ fontFamily: "'Bebas Neue',cursive", color: 'var(--sheriff-gold)' }}
+          style={{ fontFamily: "var(--font-app)", color: 'var(--sheriff-gold)' }}
         >
           Siodła w dłoń i otwieramy rodeo!
         </h2>

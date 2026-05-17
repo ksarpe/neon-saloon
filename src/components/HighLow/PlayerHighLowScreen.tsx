@@ -140,17 +140,6 @@ export default function PlayerHighLowScreen({
 
   return (
     <div className="relative flex min-h-dvh w-full flex-col items-center justify-center p-6">
-      {/* Ambient glows */}
-      <div aria-hidden className="pointer-events-none fixed inset-0">
-        <div
-          className="absolute top-[-20%] left-[-15%] h-[60vw] w-[60vw] rounded-full opacity-[0.06]"
-          style={{ background: 'radial-gradient(circle,var(--neon-pink) 0%,transparent 70%)', filter: 'blur(80px)' }}
-        />
-        <div
-          className="absolute bottom-[-20%] right-[-15%] h-[60vw] w-[60vw] rounded-full opacity-[0.06]"
-          style={{ background: 'radial-gradient(circle,var(--sheriff-gold) 0%,transparent 70%)', filter: 'blur(80px)' }}
-        />
-      </div>
 
       {/* Score chip */}
       {myScore > 0 && (

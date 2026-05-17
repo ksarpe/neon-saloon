@@ -23,7 +23,7 @@ export function HostLobby({ pin, players, team1, team2, onStart }: Props) {
       <div className="text-center">
         <h1
           className="shimmer-text mt-2 text-6xl tracking-widest sm:text-8xl"
-          style={{ fontFamily: "'Bebas Neue',cursive" }}
+          style={{ fontFamily: "var(--font-app)" }}
         >
           mniej czy więcej
         </h1>
@@ -46,7 +46,7 @@ export function HostLobby({ pin, players, team1, team2, onStart }: Props) {
               transition={{ delay: i * 0.1, type: 'spring', stiffness: 300 }}
               className="flex h-24 w-20 items-center justify-center rounded-2xl border-2 text-5xl font-bold sm:h-32 sm:w-28 sm:text-6xl"
               style={{
-                fontFamily: "'Bebas Neue',cursive",
+                fontFamily: "var(--font-app)",
                 color: 'var(--neon-pink)',
                 borderColor: 'var(--neon-pink)',
                 backgroundColor: 'rgba(255,16,240,0.07)',

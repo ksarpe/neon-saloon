@@ -31,7 +31,7 @@ export function PlayerResult({ resultData, teamId, myScore }: Props) {
           <div className="text-5xl">🎉</div>
           <p
             className="text-3xl font-black tracking-widest"
-            style={{ color: '#10b981', fontFamily: "'Bebas Neue',cursive" }}
+            style={{ color: '#10b981', fontFamily: "var(--font-app)" }}
           >
             Wasza drużyna wygrywa!
           </p>
@@ -48,7 +48,7 @@ export function PlayerResult({ resultData, teamId, myScore }: Props) {
           <div className="text-5xl">😬</div>
           <p
             className="text-3xl font-black tracking-widest"
-            style={{ color: '#ef4444', fontFamily: "'Bebas Neue',cursive" }}
+            style={{ color: '#ef4444', fontFamily: "var(--font-app)" }}
           >
             Nie tym razem
           </p>
@@ -64,7 +64,7 @@ export function PlayerResult({ resultData, teamId, myScore }: Props) {
         </p>
         <p
           className="text-5xl font-black"
-          style={{ color: '#10b981', fontFamily: "'Bebas Neue',cursive" }}
+          style={{ color: '#10b981', fontFamily: "var(--font-app)" }}
         >
           {resultData.correctAnswer.toLocaleString('pl-PL')}{' '}
           <span className="text-2xl">{resultData.unit}</span>

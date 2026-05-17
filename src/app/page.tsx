@@ -3,14 +3,13 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { ChevronRight, Brain, Heart, Tv, BookOpen, TrendingUp, type LucideIcon } from 'lucide-react'
+import { ChevronRight, Brain, Heart, BookOpen, TrendingUp, type LucideIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 interface GameModeCard {
   id: string
   icon: LucideIcon
   label: string
-  desc: string
   gradient: string
   accent: string
   isPremium?: boolean
@@ -21,7 +20,6 @@ const GAME_MODES: GameModeCard[] = [
     id: 'trivia',
     icon: Brain,
     label: 'Quiz o Pannie Młodej',
-    desc: 'Kto zna ją najlepiej? Odpowiadajcie jednocześnie.',
     gradient: 'linear-gradient(160deg, #2d0040 0%, #6b0080 55%, #c0458a 100%)',
     accent: '#dd54a2',
   },
@@ -29,7 +27,6 @@ const GAME_MODES: GameModeCard[] = [
     id: 'categories',
     icon: BookOpen,
     label: 'Skategoryzowane pytania',
-    desc: 'Anatomia, historia, kultura — pytania dla całej ekipy.',
     gradient: 'linear-gradient(160deg, #0d0030 0%, #2a0075 55%, #8b72e0 100%)',
     accent: '#a78bfa',
   },
@@ -37,7 +34,6 @@ const GAME_MODES: GameModeCard[] = [
     id: 'never',
     icon: Heart,
     label: 'Nigdy Przenigdy',
-    desc: 'Karty z wyznaniami. Podniesione ręce, czerwone twarze.',
     gradient: 'linear-gradient(160deg, #1a0c00 0%, #4a2800 55%, #c47d00 100%)',
     accent: '#f59e0b',
   },
@@ -45,7 +41,6 @@ const GAME_MODES: GameModeCard[] = [
     id: 'highlow',
     icon: TrendingUp,
     label: 'Mniej czy Więcej',
-    desc: 'Dwie drużyny, zgadywanie na żywo. Wygrywają sprytniejsi.',
     gradient: 'linear-gradient(160deg, #001a0d 0%, #004020 55%, #0d9e6a 100%)',
     accent: '#10b981',
     isPremium: true,
@@ -165,39 +160,17 @@ export default function LandingPage() {
 
   return (
     <main className="relative w-full overflow-x-hidden">
-      {/* ── Ambient glows ────────────────────────────────────────────────── */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 z-[2]">
-        <div
-          className="absolute top-[-20%] left-[-10%] h-[60vw] w-[60vw] rounded-full"
-          style={{
-            background: 'radial-gradient(circle,var(--neon-pink) 0%,transparent 70%)',
-            filter: 'blur(120px)',
-            opacity: 0.12,
-          }}
-        />
-        <div
-          className="absolute right-[-10%] bottom-[-10%] h-[55vw] w-[55vw] rounded-full"
-          style={{
-            background: 'radial-gradient(circle,var(--sheriff-gold) 0%,transparent 70%)',
-            filter: 'blur(120px)',
-            opacity: 0.1,
-          }}
-        />
-      </div>
-
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
-      <section className="relative z-[10] flex min-h-dvh flex-col items-center justify-center gap-8 px-6 text-center">
+      <section className="relative z-10 flex min-h-dvh flex-col items-center justify-center gap-8 px-6 text-center">
         {/* Title */}
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="shimmer-text text-[clamp(3.5rem,14vw,9rem)] leading-[0.9] tracking-widest"
-          style={{ fontFamily: "var(--font-bebas), 'Bebas Neue', cursive" }}
+          className="shimmer-text text-[clamp(2rem,12vw,10rem)] leading-[0.9] tracking-wide uppercase whitespace-nowrap"
+          style={{ fontFamily: 'var(--font-logo)' }}
         >
           Last Rodeo
-          <br />
-          Andżeliki
         </motion.h1>
 
         {/* Tagline */}
@@ -219,7 +192,7 @@ export default function LandingPage() {
           className="flex w-full max-w-sm flex-col gap-3 sm:flex-row"
         >
           <Button onClick={() => router.push('/graj')} type="primary" className="flex-1">
-            Zagrajcie teraz
+            Zagraj teraz
           </Button>
 
           <Button onClick={() => router.push('/graj/join')} type="outline">
@@ -246,7 +219,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── HOW IT WORKS ──────────────────────────────────────────────────── */}
-      <section className="relative z-[10] mx-auto flex max-w-4xl flex-col items-center gap-16 px-6 py-24">
+      <section className="relative z-10 mx-auto flex max-w-4xl flex-col items-center gap-16 px-6 py-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -256,7 +229,7 @@ export default function LandingPage() {
         >
           <h2
             className="shimmer-text text-5xl tracking-widest sm:text-6xl"
-            style={{ fontFamily: "var(--font-bebas), 'Bebas Neue', cursive" }}
+            style={{ fontFamily: 'var(--font-app)' }}
           >
             Jak to działa?
           </h2>
@@ -283,7 +256,7 @@ export default function LandingPage() {
               <span
                 className="text-4xl font-black tracking-tight"
                 style={{
-                  fontFamily: "var(--font-bebas), 'Bebas Neue', cursive",
+                  fontFamily: 'var(--font-app)',
                   color: item.color,
                   opacity: 0.9,
                 }}
@@ -304,7 +277,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── GAME MODES ────────────────────────────────────────────────────── */}
-      <section className="relative z-[10] flex w-full flex-col items-center gap-12 overflow-hidden py-20">
+      <section className="relative z-10 flex w-full flex-col items-center gap-12 overflow-hidden py-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -314,7 +287,7 @@ export default function LandingPage() {
         >
           <h2
             className="shimmer-text text-5xl tracking-widest sm:text-6xl"
-            style={{ fontFamily: "var(--font-bebas), 'Bebas Neue', cursive" }}
+            style={{ fontFamily: 'var(--font-app)' }}
           >
             Tryby gry
           </h2>
@@ -381,18 +354,6 @@ export default function LandingPage() {
           })}
         </div>
 
-        {/* Description for active mode */}
-        <motion.p
-          key={activeMode}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="max-w-md px-6 text-center text-sm leading-relaxed"
-          style={{ color: 'rgba(240,223,192,0.7)' }}
-        >
-          {GAME_MODES[activeMode].desc}
-        </motion.p>
-
         {/* Navigation dots */}
         <div className="flex items-center gap-2">
           {GAME_MODES.map((mode, i) => (
@@ -414,7 +375,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── BOTTOM CTA ────────────────────────────────────────────────────── */}
-      <section className="relative z-[10] flex flex-col items-center gap-8 px-6 py-32 text-center">
+      <section className="relative z-10 flex flex-col items-center gap-8 px-6 py-32 text-center">
         {/* Glow */}
         <div
           aria-hidden
@@ -424,29 +385,13 @@ export default function LandingPage() {
               'radial-gradient(ellipse at center, rgba(221,84,162,0.12) 0%, transparent 70%)',
           }}
         />
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.94 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="flex h-20 w-20 items-center justify-center rounded-3xl"
-          style={{
-            backgroundColor: 'rgba(221,84,162,0.1)',
-            border: '2px solid rgba(221,84,162,0.3)',
-            boxShadow: '0 0 40px rgba(221,84,162,0.2)',
-          }}
-        >
-          <Tv size={36} style={{ color: 'var(--neon-pink)' }} />
-        </motion.div>
-
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.1 }}
           className="shimmer-text text-5xl tracking-widest sm:text-7xl"
-          style={{ fontFamily: "var(--font-bebas), 'Bebas Neue', cursive" }}
+          style={{ fontFamily: 'var(--font-app)' }}
         >
           Gotowe na
           <br />
@@ -465,7 +410,7 @@ export default function LandingPage() {
           Andżeliki.
         </motion.p>
 
-        <Button onClick={() => router.push('/graj')} type="primary" size='lg'>
+        <Button onClick={() => router.push('/graj')} type="primary" size="lg">
           Wejdź do salonu
         </Button>
       </section>

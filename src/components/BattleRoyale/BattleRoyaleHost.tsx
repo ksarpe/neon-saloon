@@ -106,7 +106,7 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
         .then((r) => (r.ok ? r.json() : null))
         .then((d) => { if (d?.players) setPlayers(d.players) })
         .catch(() => {})
-    }, 3000)
+    }, 5000)
     return () => clearInterval(id)
   }, [phase, pin])
 
@@ -261,16 +261,6 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
 
   return (
     <div className="flex min-h-dvh w-full flex-col">
-      <div aria-hidden className="pointer-events-none fixed inset-0">
-        <div
-          className="absolute top-[-20%] left-[-15%] h-[60vw] w-[60vw] rounded-full opacity-[0.06]"
-          style={{ background: 'radial-gradient(circle,#ef4444 0%,transparent 70%)', filter: 'blur(80px)' }}
-        />
-        <div
-          className="absolute right-[-15%] bottom-[-20%] h-[60vw] w-[60vw] rounded-full opacity-[0.06]"
-          style={{ background: 'radial-gradient(circle,var(--sheriff-gold) 0%,transparent 70%)', filter: 'blur(80px)' }}
-        />
-      </div>
 
       <div className="relative z-10 flex flex-1 items-center justify-center overflow-y-auto p-6 sm:p-10">
         <div className="mx-auto w-full max-w-4xl">
@@ -316,7 +306,7 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
                       <Clock size={14} style={{ color: timerLeft <= 5 ? '#ef4444' : 'var(--sheriff-gold)' }} />
                       <span
                         className="font-mono text-2xl font-bold"
-                        style={{ color: timerLeft <= 5 ? '#ef4444' : 'var(--sheriff-gold)', fontFamily: "'Bebas Neue',cursive" }}
+                        style={{ color: timerLeft <= 5 ? '#ef4444' : 'var(--sheriff-gold)', fontFamily: "var(--font-app)" }}
                       >
                         {timerLeft}s
                       </span>
@@ -459,7 +449,7 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
               <motion.div key="reveal" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
                 <div className="flex flex-col gap-6">
                   <div className="text-center">
-                    <h2 className="shimmer-text text-4xl tracking-widest" style={{ fontFamily: "'Bebas Neue',cursive" }}>
+                    <h2 className="shimmer-text text-4xl tracking-widest" style={{ fontFamily: "var(--font-app)" }}>
                       Wyniki rundy
                     </h2>
                     <p className="text-text-muted mt-1 text-sm">{revealData.questionText}</p>
@@ -556,7 +546,7 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
                   <div className="flex items-center justify-center gap-3">
                     <div
                       className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-base font-bold"
-                      style={{ backgroundColor: 'var(--saloon-surface)', color: 'var(--sheriff-gold)', fontFamily: "'Bebas Neue',cursive", fontSize: '1.2rem' }}
+                      style={{ backgroundColor: 'var(--saloon-surface)', color: 'var(--sheriff-gold)', fontFamily: "var(--font-app)", fontSize: '1.2rem' }}
                     >
                       {nextCountdown}
                     </div>
@@ -577,7 +567,7 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
                     <Trophy size={72} style={{ color: 'var(--sheriff-gold)' }} />
                   </motion.div>
                   <div>
-                    <h1 className="shimmer-text text-6xl tracking-widest" style={{ fontFamily: "'Bebas Neue',cursive" }}>
+                    <h1 className="shimmer-text text-6xl tracking-widest" style={{ fontFamily: "var(--font-app)" }}>
                       Koniec gry!
                     </h1>
                     {winner ? (

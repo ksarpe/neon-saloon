@@ -239,24 +239,6 @@ export default function JoinGameForm() {
 
   return (
     <div className="flex h-dvh w-full flex-col items-center justify-center overflow-hidden px-6">
-      {/* Ambient glows */}
-      <div aria-hidden className="pointer-events-none fixed inset-0">
-        <div
-          className="absolute top-[-20%] left-[-10%] h-[50vw] w-[50vw] rounded-full opacity-[0.07]"
-          style={{
-            background: 'radial-gradient(circle,var(--neon-pink) 0%,transparent 70%)',
-            filter: 'blur(60px)',
-          }}
-        />
-        <div
-          className="absolute right-[-10%] bottom-[-15%] h-[40vw] w-[40vw] rounded-full opacity-[0.06]"
-          style={{
-            background: 'radial-gradient(circle,var(--sheriff-gold) 0%,transparent 70%)',
-            filter: 'blur(80px)',
-          }}
-        />
-      </div>
-
       <div className="relative z-10 w-full max-w-sm">
         <AnimatePresence mode="popLayout" initial={false}>
           {step === 'pin' && (

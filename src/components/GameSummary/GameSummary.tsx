@@ -38,7 +38,7 @@ export function GameSummary({
       >
         <h1
           className="shimmer-text text-6xl tracking-widest sm:text-7xl"
-          style={{ fontFamily: "'Bebas Neue',cursive" }}
+          style={{ fontFamily: "var(--font-app)" }}
         >
           Game Over, Cowgirls!
         </h1>

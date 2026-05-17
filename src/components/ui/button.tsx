@@ -53,7 +53,7 @@ export const Button = ({
   const primaryStyle = {
     background: 'linear-gradient(135deg,var(--neon-pink),#c800c8)',
     boxShadow: '0 4px 40px rgba(221,84,162,0.55)',
-    fontFamily: "var(--font-bebas), 'Bebas Neue', cursive",
+    fontFamily: "var(--font-app)",
     fontSize: size === 'lg' ? '1.25rem' : '1.1rem',
     letterSpacing: '0.12em',
   }

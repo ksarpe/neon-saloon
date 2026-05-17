@@ -35,7 +35,7 @@ export function HostReveal({ resultData, guessingTeam, votingTeam, questionHint,
         >
           <p
             className="text-6xl font-black"
-            style={{ color: '#10b981', fontFamily: "'Bebas Neue',cursive" }}
+            style={{ color: '#10b981', fontFamily: "var(--font-app)" }}
           >
             {resultData.correctAnswer.toLocaleString('pl-PL')}{' '}
             <span className="text-3xl">{resultData.unit}</span>
@@ -79,7 +79,7 @@ export function HostReveal({ resultData, guessingTeam, votingTeam, questionHint,
           <p className="text-text-muted mb-1 text-xs tracking-widest uppercase">Punkt dla</p>
           <p
             className="text-3xl font-black tracking-widest"
-            style={{ color: 'var(--sheriff-gold)', fontFamily: "'Bebas Neue',cursive" }}
+            style={{ color: 'var(--sheriff-gold)', fontFamily: "var(--font-app)" }}
           >
             {resultData.winningTeamName}
           </p>
@@ -92,7 +92,7 @@ export function HostReveal({ resultData, guessingTeam, votingTeam, questionHint,
         className="flex items-center gap-2 rounded-2xl px-8 py-4 text-white"
         style={{
           background: 'linear-gradient(135deg,var(--neon-pink),#c800c8)',
-          fontFamily: "'Bebas Neue',cursive",
+          fontFamily: "var(--font-app)",
           letterSpacing: '0.1em',
           fontSize: '1.1rem',
         }}

@@ -32,7 +32,7 @@ export function TeamPicker({
         <span className="text-4xl">🏇</span>
         <h2
           className="mt-2 text-3xl tracking-widest"
-          style={{ fontFamily: "'Bebas Neue',cursive", color: 'var(--neon-pink)' }}
+          style={{ fontFamily: "var(--font-app)", color: 'var(--neon-pink)' }}
         >
           Wybierz swoją bandę
         </h2>

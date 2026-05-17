@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { motion } from 'framer-motion'
 import { Volume2, VolumeX } from 'lucide-react'
 
 const STORAGE_KEY = 'neon-music-muted'
@@ -83,12 +82,11 @@ export function BackgroundMusic() {
   }
 
   return (
-    <motion.button
+    <button
       {...{ [BTN_ATTR]: '' }}
       onClick={toggleMute}
-      whileTap={{ scale: 0.85 }}
       title={muted ? 'Włącz muzykę' : 'Wycisz muzykę'}
-      className="fixed bottom-4 left-4 z-50 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border"
+      className="fixed bottom-4 left-4 z-50 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border active:scale-[0.85] transition-transform"
       style={{
         backgroundColor: 'rgba(13,8,24,0.88)',
         backdropFilter: 'blur(14px)',
@@ -102,14 +100,12 @@ export function BackgroundMusic() {
       {muted ? (
         <VolumeX size={15} />
       ) : (
-        <motion.span
-          animate={playing ? { scale: [1, 1.12, 1] } : {}}
-          transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-          className="flex items-center justify-center"
+        <span
+          className={`flex items-center justify-center${playing ? ' music-pulse' : ''}`}
         >
           <Volume2 size={15} />
-        </motion.span>
+        </span>
       )}
-    </motion.button>
+    </button>
   )
 }

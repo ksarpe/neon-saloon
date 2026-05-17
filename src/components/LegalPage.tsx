@@ -44,17 +44,6 @@ export function LegalPage({ title, subtitle, lastUpdated, sections }: Props) {
 
   return (
     <div className="relative z-10 min-h-dvh w-full">
-      {/* Ambient glows */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
-        <div
-          className="absolute top-[-10%] left-[-10%] h-[50vw] w-[50vw] rounded-full opacity-[0.04]"
-          style={{ background: 'radial-gradient(circle,var(--neon-pink) 0%,transparent 70%)', filter: 'blur(80px)' }}
-        />
-        <div
-          className="absolute bottom-[-10%] right-[-10%] h-[50vw] w-[50vw] rounded-full opacity-[0.04]"
-          style={{ background: 'radial-gradient(circle,var(--sheriff-gold) 0%,transparent 70%)', filter: 'blur(80px)' }}
-        />
-      </div>
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 pb-24 pt-10 sm:px-8">
         {/* Back link */}
@@ -78,7 +67,7 @@ export function LegalPage({ title, subtitle, lastUpdated, sections }: Props) {
         >
           <h1
             className="shimmer-text text-5xl tracking-widest sm:text-6xl"
-            style={{ fontFamily: "'Bebas Neue',cursive" }}
+            style={{ fontFamily: "var(--font-app)" }}
           >
             {title}
           </h1>
@@ -150,7 +139,7 @@ export function LegalPage({ title, subtitle, lastUpdated, sections }: Props) {
                 <h2
                   className="mb-4 text-2xl tracking-wider"
                   style={{
-                    fontFamily: "'Bebas Neue',cursive",
+                    fontFamily: "var(--font-app)",
                     color: 'var(--sheriff-gold)',
                     letterSpacing: '0.06em',
                   }}

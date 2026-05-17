@@ -181,23 +181,13 @@ export default function PanelPage() {
 
   return (
     <div className="w-full min-h-dvh flex flex-col">
-      <div aria-hidden className="pointer-events-none fixed inset-0">
-        <div
-          className="absolute top-[-20%] right-[-10%] w-[50vw] h-[50vw] rounded-full opacity-[0.06]"
-          style={{ background: "radial-gradient(circle,var(--neon-pink) 0%,transparent 70%)", filter: "blur(80px)" }}
-        />
-        <div
-          className="absolute bottom-[-20%] left-[-10%] w-[45vw] h-[45vw] rounded-full opacity-[0.05]"
-          style={{ background: "radial-gradient(circle,var(--sheriff-gold) 0%,transparent 70%)", filter: "blur(80px)" }}
-        />
-      </div>
 
       {/* Header */}
       <div className="relative z-10 shrink-0 border-b" style={{ borderColor: "rgba(255,220,180,0.1)" }}>
         <div className="max-w-3xl mx-auto flex items-center justify-between px-6 py-4">
           <h1
             className="text-xl tracking-widest shimmer-text"
-            style={{ fontFamily: "'Bebas Neue',cursive" }}
+            style={{ fontFamily: "var(--font-app)" }}
           >
             Panel szeryfa
           </h1>

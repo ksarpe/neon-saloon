@@ -36,7 +36,12 @@
       "Bash(Remove-Item \"src\\\\components\\\\PlayerHighLowScreen.tsx\")",
       "Bash(mkdir -p \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\\\\app\\\\api\\\\sessions\\\\[pin]\\\\battle-royale\\\\round\" \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\\\\app\\\\api\\\\sessions\\\\[pin]\\\\battle-royale\\\\answer\" \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\\\\app\\\\api\\\\sessions\\\\[pin]\\\\battle-royale\\\\reveal\" \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\\\\app\\\\api\\\\sessions\\\\[pin]\\\\battle-royale\\\\next\")",
       "Bash(npx next *)",
-      "Bash(Select-Object Name, FullName)"
+      "Bash(Select-Object Name, FullName)",
+      "Bash(node -e \"const { QUESTION_CATEGORIES } = require\\('./src/lib/games/categories.ts'\\); console.log\\('ERROR: ts-node needed'\\)\")",
+      "Bash(Select-String -Path \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\\\\lib\\\\games\\\\categories.ts\" -Pattern \"text: '\")",
+      "Bash(Measure-Object)",
+      "Bash(Select-Object -ExpandProperty Count)",
+      "PowerShell($anatomy = \\(Select-String -Path \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\\\\lib\\\\games\\\\categories.ts\" -Pattern \"text: '\"\\).Count; Write-Host \"Total questions: $anatomy\")"
     ]
   }
 }
