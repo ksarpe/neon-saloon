@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { BookOpen, Brain, Dices, Heart, Loader2, Swords, TrendingUp } from 'lucide-react'
+import { BookOpen, Brain, Dices, Heart, Loader2, Lock, Swords, TrendingUp } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
@@ -177,8 +177,9 @@ export default function HostSetupPage() {
                   <div className="pointer-events-none absolute inset-y-0 -left-full z-0 w-full skew-x-[-20deg] bg-linear-to-r from-transparent via-white/20 to-transparent transition-all duration-700 ease-in-out group-hover:left-[100%]" />
 
                   {mode.isPremium && (
-                    <div className="absolute top-2 right-2 z-20 flex items-center gap-1 rounded-full border border-yellow-500/50 bg-black/60 px-2 py-0.5 text-[9px] font-bold tracking-widest text-yellow-400 uppercase">
-                      🔒 PRO
+                    <div className="absolute bottom-2 right-2 z-20 flex items-center gap-1 rounded-full border border-yellow-500/50 bg-black/60 px-2 py-0.5 text-[9px] font-bold tracking-widest text-yellow-400 uppercase">
+                      {!checkAccess({ type: 'premium' }, access).granted && <Lock size={10} aria-hidden />}
+                      PRO
                     </div>
                   )}
 

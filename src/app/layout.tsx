@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Open_Sans, Anton } from 'next/font/google'
+import { Sora, Anton } from 'next/font/google'
 import './globals.css'
 import PageTransition from '@/components/PageTransition'
 import { BackButtonProvider } from '@/lib/back-button-context'
@@ -7,7 +7,7 @@ import { Providers } from '@/components/Providers'
 import { BackgroundMusic } from '@/components/BackgroundMusic'
 import { Zap } from 'lucide-react'
 
-const font = Open_Sans({
+const font = Sora({
   subsets: ['latin', 'latin-ext'],
   variable: '--font-app',
   display: 'swap',
@@ -43,8 +43,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`h-full ${font.variable} ${logoFont.variable}`}>
-      <body className="bg-saloon-dark text-text-primary noise-overlay h-full antialiased">
-        {/* Global background video (ping-pong loop) */}
+      <body className="bg-saloon-dark text-text-primary h-full antialiased">
         {/* Global dark overlay */}
         <div
           aria-hidden

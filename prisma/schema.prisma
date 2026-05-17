@@ -23,6 +23,7 @@ model User {
 
   neverQuestions NeverQuestion[]
   quizQuestions  QuizQuestion[]
+  passwordResetTokens PasswordResetToken[]
 }
 
 model NeverQuestion {
@@ -45,4 +46,19 @@ model QuizQuestion {
   userId String
 
   createdAt DateTime @default(now())
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
 }

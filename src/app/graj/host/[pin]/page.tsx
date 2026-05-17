@@ -16,6 +16,13 @@ import { buildDeck } from '@/lib/store'
 
 type NeverSource = 'app' | 'own' | 'all'
 
+type QuizApiQuestion = {
+  id: string
+  text: string
+  answer: string
+  options: string[]
+}
+
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr]
   for (let i = a.length - 1; i > 0; i--) {
@@ -64,7 +71,7 @@ function PickerShell({
           <h1
             className="shimmer-text text-5xl tracking-widest"
             style={{
-              fontFamily: "var(--font-app)",
+              fontFamily: 'var(--font-app)',
               textShadow: `0 0 28px ${glowColor}`,
             }}
           >
@@ -132,7 +139,9 @@ function CategoryPicker({
       {loading && (
         <div className="flex items-center justify-center gap-2 pt-2">
           <Loader2 size={14} className="animate-spin" style={{ color: 'var(--text-muted)' }} />
-          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Konfiguruję grę…</span>
+          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+            Konfiguruję grę…
+          </span>
         </div>
       )}
     </PickerShell>
@@ -215,6 +224,78 @@ function NeverSourcePicker({
             <p className="text-text-muted text-xs leading-snug">{src.desc}</p>
           </motion.button>
         ))}
+      </div>
+    </PickerShell>
+  )
+}
+
+function TriviaDeckState({
+  loading,
+  onPanel,
+  onBack,
+}: {
+  loading: boolean
+  onPanel: () => void
+  onBack: () => void
+}) {
+  return (
+    <PickerShell
+      title="Quiz o Pannie Młodej"
+      subtitle={
+        loading
+          ? 'Pobieram Twoje pytania z panelu szeryfa'
+          : 'Dodaj własne pytania, żeby uruchomić ten tryb'
+      }
+      glowColor="var(--neon-pink)"
+      onBack={onBack}
+    >
+      <div
+        className="flex flex-col items-center gap-4 rounded-2xl border p-6 text-center"
+        style={{
+          borderColor: 'rgba(255,16,240,0.25)',
+          backgroundColor: 'rgba(13,8,24,0.55)',
+        }}
+      >
+        {loading ? (
+          <>
+            <Loader2 size={24} className="animate-spin" style={{ color: 'var(--neon-pink)' }} />
+            <p className="text-text-muted text-sm">Sprawdzam pytania quizowe...</p>
+          </>
+        ) : (
+          <>
+            <p className="text-text-primary text-base font-bold">
+              Nie masz jeszcze pytań do tego quizu.
+            </p>
+            <p className="text-text-muted max-w-md text-sm leading-snug">
+              Quiz o Pannie Młodej korzysta tylko z pytań dodanych przez Ciebie w panelu.
+            </p>
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+              <button
+                type="button"
+                onClick={onPanel}
+                className="rounded-xl border-2 px-5 py-3 text-xs font-bold tracking-widest uppercase"
+                style={{
+                  borderColor: 'var(--neon-pink)',
+                  backgroundColor: 'rgba(255,16,240,0.12)',
+                  color: 'var(--neon-pink)',
+                }}
+              >
+                Otwórz panel
+              </button>
+              <button
+                type="button"
+                onClick={onBack}
+                className="rounded-xl border px-5 py-3 text-xs font-bold tracking-widest uppercase"
+                style={{
+                  borderColor: 'rgba(255,220,180,0.15)',
+                  color: 'rgba(255,220,180,0.7)',
+                }}
+              >
+                Wróć do trybów
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </PickerShell>
   )
@@ -314,7 +395,7 @@ function HighLowTeamSetup({
           style={{
             background: 'linear-gradient(135deg,#10b981,#059669)',
             boxShadow: '0 4px 30px rgba(16,185,129,0.4)',
-            fontFamily: "var(--font-app)",
+            fontFamily: 'var(--font-app)',
             fontSize: '1.1rem',
             letterSpacing: '0.15em',
           }}
@@ -341,6 +422,8 @@ export default function HostPage() {
   const fullDeck = useMemo(() => buildDeck(), [])
 
   const [customCards, setCustomCards] = useState<GameCard[]>([])
+  const [quizCards, setQuizCards] = useState<GameCard[]>([])
+  const [quizLoading, setQuizLoading] = useState(mode === 'trivia')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [neverSource, setNeverSource] = useState<NeverSource | null>(null)
   const [brCategoryId, setBrCategoryId] = useState<string | null>(null)
@@ -366,7 +449,6 @@ export default function HostPage() {
 
   // Predefined cards from the store (filtered by mode)
   const appNeverCards = useMemo(() => fullDeck.filter((c) => c.type === 'NEVER'), [fullDeck])
-  const appBridalQuizCards = useMemo(() => fullDeck.filter((c) => c.type === 'QUIZ'), [fullDeck])
   const categoryCards = useMemo<GameCard[]>(() => {
     if (mode !== 'categories' || !selectedCategory) return []
     const cat = QUESTION_CATEGORIES.find((c) => c.id === selectedCategory)
@@ -381,6 +463,31 @@ export default function HostPage() {
       options: q.options,
     }))
   }, [mode, selectedCategory])
+
+  // "trivia" mode: Quiz o Pannie Młodej uses only the user's panel questions.
+  useEffect(() => {
+    if (mode !== 'trivia') return
+    fetch('/api/questions/quiz')
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data: QuizApiQuestion[]) => {
+        if (!Array.isArray(data)) {
+          setQuizCards([])
+          return
+        }
+        setQuizCards(
+          data.map((q) => ({
+            id: `quiz-${q.id}`,
+            type: 'QUIZ' as const,
+            title: 'Quiz o Pannie Młodej',
+            description: q.text,
+            answer: q.answer,
+            options: q.options,
+          }))
+        )
+      })
+      .catch(() => setQuizCards([]))
+      .finally(() => setQuizLoading(false))
+  }, [mode])
 
   // "never" mode: fetch user's custom questions when needed
   useEffect(() => {
@@ -403,7 +510,7 @@ export default function HostPage() {
 
   // Assemble final deck
   const deck = useMemo(() => {
-    if (mode === 'trivia') return appBridalQuizCards
+    if (mode === 'trivia') return shuffle(quizCards)
     if (mode === 'categories') return categoryCards
     if (mode === 'never') {
       if (neverSource === 'app') return shuffle(appNeverCards)
@@ -412,7 +519,7 @@ export default function HostPage() {
       return []
     }
     return []
-  }, [mode, neverSource, appNeverCards, appBridalQuizCards, categoryCards, customCards])
+  }, [mode, neverSource, appNeverCards, quizCards, categoryCards, customCards])
 
   // ── Pickers shown before the lobby ──────────────────────────────────────────
 
@@ -424,6 +531,16 @@ export default function HostPage() {
 
   if (mode === 'never' && !neverSource) {
     return <NeverSourcePicker onSelect={setNeverSource} onBack={() => router.push('/graj/host')} />
+  }
+
+  if (mode === 'trivia' && (quizLoading || deck.length === 0)) {
+    return (
+      <TriviaDeckState
+        loading={quizLoading}
+        onPanel={() => router.push('/panel')}
+        onBack={() => router.push('/graj/host')}
+      />
+    )
   }
 
   // ── Battle Royale: category selection then host screen ───────────────────────

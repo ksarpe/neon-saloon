@@ -17,12 +17,15 @@ export function LobbyView({ pin, players, hostAvatar, hostName, onStart }: Props
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-8">
       <div className="text-center">
-        <h1
-          className="shimmer-text mt-2 text-6xl tracking-widest sm:text-8xl"
-          style={{ fontFamily: "var(--font-app)" }}
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.1 }}
+          className="shimmer-text text-[clamp(2rem,12vw,10rem)] leading-[1.1] tracking-wide whitespace-nowrap uppercase"
+          style={{ fontFamily: 'var(--font-logo)' }}
         >
-          last rodeo andżeliki
-        </h1>
+          last rodeo
+        </motion.h1>
       </div>
 
       {/* Host identity */}
@@ -51,7 +54,7 @@ export function LobbyView({ pin, players, hostAvatar, hostName, onStart }: Props
               transition={{ delay: i * 0.1, type: 'spring', stiffness: 300 }}
               className="pulse-pink flex h-24 w-20 items-center justify-center rounded-2xl border-2 text-5xl font-bold sm:h-32 sm:w-28 sm:text-6xl"
               style={{
-                fontFamily: "var(--font-app)",
+                fontFamily: 'var(--font-app)',
                 color: 'var(--neon-pink)',
                 borderColor: 'var(--neon-pink)',
                 backgroundColor: 'rgba(255,16,240,0.07)',

@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ChevronRight,Smartphone, Tv } from 'lucide-react'
+import { ChevronRight, Smartphone, Tv } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 export default function GrajPage() {
@@ -32,11 +32,17 @@ export default function GrajPage() {
           <motion.button
             id="host-game-btn"
             whileTap={{ scale: 0.97 }}
+            whileHover={{
+              scale: 1.02,
+              boxShadow: '0 0 34px var(--sheriff-gold-glow), 0 0 70px var(--sheriff-gold-dim)',
+            }}
             onClick={() => router.push('/graj/host')}
-            className="group relative flex cursor-pointer items-center gap-4 overflow-hidden rounded-2xl border-2 p-5 text-left"
+            className="group relative flex cursor-pointer items-center gap-4 overflow-hidden rounded-2xl border-2 p-5 text-left transition-colors"
             style={{
               borderColor: 'var(--sheriff-gold)',
-              backgroundColor: 'rgba(255,215,0,0.12)',
+              backgroundColor: 'var(--sheriff-gold-dim)',
+              boxShadow:
+                '0 0 14px var(--sheriff-gold-glow), 0 0 34px rgba(152,151,241,0.16), inset 0 0 18px rgba(255,255,255,0.04)',
             }}
           >
             <div className="pointer-events-none absolute inset-y-0 -left-[100%] z-0 w-full skew-x-[-20deg] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-all duration-700 ease-in-out group-hover:left-[100%]" />
@@ -69,11 +75,17 @@ export default function GrajPage() {
           <motion.button
             id="join-game-btn"
             whileTap={{ scale: 0.97 }}
+            whileHover={{
+              scale: 1.02,
+              boxShadow: '0 0 34px var(--neon-pink-glow), 0 0 70px var(--neon-pink-dim)',
+            }}
             onClick={() => router.push('/graj/join')}
-            className="group relative flex cursor-pointer items-center gap-4 overflow-hidden rounded-2xl border-2 p-5 text-left"
+            className="group relative flex cursor-pointer items-center gap-4 overflow-hidden rounded-2xl border-2 p-5 text-left transition-colors"
             style={{
               borderColor: 'var(--neon-pink)',
               backgroundColor: 'var(--neon-pink-dim)',
+              boxShadow:
+                '0 0 14px var(--neon-pink-glow), 0 0 34px rgba(226,67,157,0.16), inset 0 0 18px rgba(255,255,255,0.04)',
             }}
           >
             <div className="pointer-events-none absolute inset-y-0 -left-[100%] z-0 w-full skew-x-[-20deg] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-all duration-700 ease-in-out group-hover:left-[100%]" />

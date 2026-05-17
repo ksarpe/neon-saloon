@@ -1,7 +1,8 @@
+import bcrypt from 'bcryptjs'
 import type { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+
 import { prisma } from './prisma'
-import bcrypt from 'bcryptjs'
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -44,13 +45,30 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id
         token.isPremium = user.isPremium ?? false
+        return token
       }
+
+      if (token.id) {
+        const freshUser = await prisma.user.findUnique({
+          where: { id: token.id },
+          select: { email: true, isPremium: true, name: true },
+        })
+
+        if (freshUser) {
+          token.email = freshUser.email
+          token.isPremium = freshUser.isPremium
+          token.name = freshUser.name ?? freshUser.email
+        }
+      }
+
       return token
     },
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id
+        session.user.email = token.email ?? session.user.email
         session.user.isPremium = token.isPremium
+        session.user.name = token.name ?? session.user.name
       }
       return session
     },

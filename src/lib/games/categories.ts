@@ -4226,6 +4226,7 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
     border: 'rgba(249,115,22,0.5)',
     bg: 'rgba(249,115,22,0.07)',
     questions: [
+      // Podstawy alkoholu i metabolizm
       {
         text: 'Który alkohol powoduje statystycznie najlżejszego kaca przez małą ilość kongenery?',
         answer: 'Wódka',
@@ -4252,7 +4253,7 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
         options: ['Około 20 kcal', 'Około 60 kcal', 'Około 120–130 kcal', 'Ponad 350 kcal'],
       },
       {
-        text: 'Który kraj produkuje najwięcej wina na świecie? (dane OIV 2022)',
+        text: 'Który kraj produkuje najwięcej wina na świecie wg OIV 2022?',
         answer: 'Włochy',
         options: ['Francja', 'Włochy', 'Hiszpania', 'USA'],
       },
@@ -4262,7 +4263,7 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
         options: ['Bellini', 'Spritz', 'Kir Royale', 'Mimosa'],
       },
       {
-        text: 'Co to jest "beer goggles effect" – udowodniony naukowo?',
+        text: 'Co to jest "beer goggles effect" udowodniony naukowo?',
         answer: 'Postrzeganie innych jako atrakcyjniejszych pod wpływem alkoholu',
         options: ['Zamazane widzenie po alkoholu', 'Postrzeganie innych jako atrakcyjniejszych pod wpływem alkoholu', 'Uczucie ciepła po piwie', 'Wzrost tolerancji na alkohol'],
       },
@@ -4272,9 +4273,978 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
         options: ['0,5‰', '1,2‰', '2,5–3‰', '5‰'],
       },
       {
-        text: 'Ile procent alkoholu ma standardowy shot wódki (40 ml)?',
+        text: 'Ile procent alkoholu ma standardowy shot wódki?',
         answer: '40%',
         options: ['20%', '30%', '40%', '70%'],
+      },
+      // Koktajle i drinki
+      {
+        text: 'Z czego zrobiony jest klasyczny Cosmopolitan?',
+        answer: 'Wódka cytrynowa, triple sec, żurawina, sok z limonki',
+        options: ['Gin, tonik, limonka, mięta', 'Rum, coca-cola, limonka', 'Wódka cytrynowa, triple sec, żurawina, sok z limonki', 'Tequila, triple sec, sok z cytryny'],
+      },
+      {
+        text: 'Jaki alkohol jest bazą klasycznego Mojito?',
+        answer: 'Biały rum',
+        options: ['Wódka', 'Biały rum', 'Gin', 'Tequila'],
+      },
+      {
+        text: 'Co wchodzi w skład drinka Aperol Spritz?',
+        answer: 'Aperol, prosecco, woda gazowana',
+        options: ['Aperol, wódka, tonic', 'Campari, prosecco, pomarańcza', 'Aperol, prosecco, woda gazowana', 'Aperol, biały rum, limonka'],
+      },
+      {
+        text: 'Skąd pochodzi drink Margarita?',
+        answer: 'Meksyk',
+        options: ['Kuba', 'Brazylia', 'Meksyk', 'USA'],
+      },
+      {
+        text: 'Co to jest "Sex on the Beach"?',
+        answer: 'Drink z wódki, soku brzoskwiniowego, soku pomarańczowego i grenadyny',
+        options: ['Drink z rumu, mleka kokosowego i soku ananasowego', 'Drink z ginu, tequili i limonki', 'Drink z wódki, soku brzoskwiniowego, soku pomarańczowego i grenadyny', 'Drink z szampana i soku malinowego'],
+      },
+      {
+        text: 'Skąd pochodzi Pina Colada?',
+        answer: 'Portoryko – jest jej oficjalnym napojem narodowym',
+        options: ['Kuba', 'Jamajka', 'Portoryko – jest jej oficjalnym napojem narodowym', 'Brazylia'],
+      },
+      {
+        text: 'Z czego zrobiony jest Negroni?',
+        answer: 'Gin, Campari, słodkie wermut w równych częściach',
+        options: ['Whisky, Aperol, wermut', 'Rum, Campari, sok z cytryny', 'Gin, Campari, słodkie wermut w równych częściach', 'Tequila, triple sec, Campari'],
+      },
+      {
+        text: 'Czym różni się Manhattan od Old Fashioned?',
+        answer: 'Manhattan ma wermut, Old Fashioned ma cukier i bitter – oba opierają się na whisky',
+        options: ['Manhattan jest na bazie ginu', 'Old Fashioned zawiera szampana', 'Manhattan ma wermut, Old Fashioned ma cukier i bitter – oba opierają się na whisky', 'Są identyczne – różnią się tylko kieliszkiem'],
+      },
+      {
+        text: 'Co to jest Bellini?',
+        answer: 'Prosecco z puree z białej brzoskwini – pochodzi z Wenecji',
+        options: ['Szampan z sokiem truskawkowym', 'Prosecco z puree z białej brzoskwini – pochodzi z Wenecji', 'Wino musujące z mango i grenadyną', 'Wermut z sokiem pomarańczowym'],
+      },
+      {
+        text: 'Jaki alkohol jest bazą drinku Tequila Sunrise?',
+        answer: 'Tequila',
+        options: ['Rum', 'Wódka', 'Tequila', 'Gin'],
+      },
+      {
+        text: 'Co to jest Kir Royale?',
+        answer: 'Szampan z likierem z czarnej porzeczki (crème de cassis)',
+        options: ['Prosecco z sokiem pomarańczowym', 'Szampan z sokiem malinowym', 'Szampan z likierem z czarnej porzeczki (crème de cassis)', 'Wino musujące z wodą różaną'],
+      },
+      {
+        text: 'Z czego składa się klasyczna Caipirinha?',
+        answer: 'Cachaça, limonka, cukier trzcinowy – narodowy drink Brazylii',
+        options: ['Rum, limonka, cukier, mięta', 'Tequila, limonka, sól', 'Cachaça, limonka, cukier trzcinowy – narodowy drink Brazylii', 'Wódka, limona, cukier, syrop'],
+      },
+      {
+        text: 'Co to jest Hugo?',
+        answer: 'Prosecco, syrop z kwiatów czarnego bzu, woda gazowana, mięta – popularny w Alpach',
+        options: ['Gin z tonikiem i ogórkiem', 'Prosecco, syrop z kwiatów czarnego bzu, woda gazowana, mięta – popularny w Alpach', 'Wódka z sokiem jabłkowym i cynamonem', 'Szampan z lodem i grenadyną'],
+      },
+      {
+        text: 'Jak się nazywa drink z wódki i napoju energetycznego?',
+        answer: 'Vodka Energy (lub „Wódka Red Bull")',
+        options: ['Power Shot', 'Energizer', 'Vodka Energy (lub „Wódka Red Bull")', 'Electric Lemonade'],
+      },
+      {
+        text: 'Z czego zrobiony jest Daiquiri?',
+        answer: 'Biały rum, sok z limonki, cukier',
+        options: ['Biały rum, mleko kokosowe, ananas', 'Biały rum, sok z limonki, cukier', 'Tequila, sok z cytryny, syrop', 'Cachaça, limonka, syrop cukrowy'],
+      },
+      {
+        text: 'Które miasto jest uważane za kolebkę koktajlu Mojito?',
+        answer: 'Hawana (Kuba)',
+        options: ['Miami', 'Hawana (Kuba)', 'Nowy Jork', 'Mexico City'],
+      },
+      {
+        text: 'Co to jest "dry martini"?',
+        answer: 'Gin (lub wódka) z minimalną ilością wermut wytrawnego, garnirowany oliwką lub skórką cytryny',
+        options: ['Martini bez lodu', 'Gin z tonikiem bez cukru', 'Gin (lub wódka) z minimalną ilością wermut wytrawnego, garnirowany oliwką lub skórką cytryny', 'Wermut podany bez mieszania'],
+      },
+      {
+        text: 'Co to jest "Long Island Iced Tea"?',
+        answer: 'Drink z wódki, ginu, rumu, tequili, triple sec i soku cytrynowego – bez herbaty, ale wygląda jak mrożona',
+        options: ['Herbata z whisky i lodem', 'Drink z rumu i herbaty mrożonej', 'Drink z wódki, ginu, rumu, tequili, triple sec i soku cytrynowego – bez herbaty, ale wygląda jak mrożona', 'Napar herbaciany z alkoholem cytrusowym'],
+      },
+      {
+        text: 'Jaka jest różnica między shakerem a mieszaczem (stirrer) przy koktajlach?',
+        answer: 'Shaker napowietrza i schładza szybciej (dla drinków z sokiem/jajkiem); stirrer zachowuje klarowność (dla czystych alkoholi)',
+        options: ['Shaker służy tylko do drinków bezalkoholowych', 'Stirrer jest szybszy i daje więcej lodu', 'Shaker napowietrza i schładza szybciej (dla drinków z sokiem/jajkiem); stirrer zachowuje klarowność (dla czystych alkoholi)', 'Nie ma różnicy – to kwestia stylu barmana'],
+      },
+      {
+        text: 'Co to jest "Pornstar Martini"?',
+        answer: 'Wódka waniliowa, likier marakuja (Passoa), sok z marakui – podawany z kieliszkiem prosecco obok',
+        options: ['Wódka z sokiem truskawkowym i grenadyną', 'Gin, sok grejpfrutowy, syrop różany', 'Wódka waniliowa, likier marakuja (Passoa), sok z marakui – podawany z kieliszkiem prosecco obok', 'Szampan z musem mango i wódką'],
+      },
+      {
+        text: 'Co to jest "Espresso Martini"?',
+        answer: 'Wódka, likier kawowy (Kahlúa), świeże espresso – shake\'owane z lodem',
+        options: ['Kawa z whisky irlandzką i bitą śmietaną', 'Wódka z kawą mrojoną i mlekiem', 'Wódka, likier kawowy (Kahlúa), świeże espresso – shake\'owane z lodem', 'Amaretto z espresso i syropem cukrowym'],
+      },
+      // Wino
+      {
+        text: 'Z jakiego szczepu winogron produkuje się Pinot Grigio?',
+        answer: 'Pinot Gris (Pinot Grigio to włoska nazwa tego samego szczepu)',
+        options: ['Chardonnay', 'Sauvignon Blanc', 'Pinot Gris (Pinot Grigio to włoska nazwa tego samego szczepu)', 'Riesling'],
+      },
+      {
+        text: 'Co oznacza termin "terroir" w winiarstwie?',
+        answer: 'Całość wpływu środowiska (gleba, klimat, ukształtowanie terenu) na charakter wina',
+        options: ['Technika fermentacji w beczkach dębowych', 'Rocznik wina oznaczający jakość', 'Całość wpływu środowiska (gleba, klimat, ukształtowanie terenu) na charakter wina', 'Specjalny certyfikat jakości dla win francuskich'],
+      },
+      {
+        text: 'Które wino zawiera więcej resweratrolu: czerwone czy białe?',
+        answer: 'Czerwone – resweratrol pochodzi ze skórek winogron, które fermentują razem z sokiem w winach czerwonych',
+        options: ['Białe – ma lepszy skład antyoksydantów', 'Oba zawierają identyczną ilość', 'Czerwone – resweratrol pochodzi ze skórek winogron, które fermentują razem z sokiem w winach czerwonych', 'Różowe – jest pośrednie między nimi'],
+      },
+      {
+        text: 'Co to jest "Prosecco DOC"?',
+        answer: 'Włoskie wino musujące z regionu Veneto i Friuli, chronione oznaczeniem pochodzenia (DOC)',
+        options: ['Najdroższe wino musujące świata', 'Hiszpańska cava z apelacji DOC', 'Włoskie wino musujące z regionu Veneto i Friuli, chronione oznaczeniem pochodzenia (DOC)', 'Mieszanka szampana i wody mineralnej'],
+      },
+      {
+        text: 'Jak nazywa się metoda produkcji szampana polegająca na fermentacji w butelce?',
+        answer: 'Méthode champenoise (metoda tradycyjna)',
+        options: ['Metoda Charmat (tank method)', 'Metoda carbonation', 'Méthode champenoise (metoda tradycyjna)', 'Méthode ancestrale'],
+      },
+      {
+        text: 'Co oznacza "Brut" na etykiecie szampana?',
+        answer: 'Wytrawny – zawartość cukru poniżej 12 g/l',
+        options: ['Ekstra słodki', 'Rocznikowy szampan wysokiej jakości', 'Wytrawny – zawartość cukru poniżej 12 g/l', 'Produkowany wyłącznie z Chardonnay'],
+      },
+      {
+        text: 'Który region Francji produkuje wina Bordeaux?',
+        answer: 'Akwitania (Gironde) – na południowym zachodzie Francji',
+        options: ['Burgundia', 'Alzacja', 'Akwitania (Gironde) – na południowym zachodzie Francji', 'Langwedocja'],
+      },
+      {
+        text: 'Z jakiego szczepu winogron pochodzi Chianti?',
+        answer: 'Sangiovese – minimum 70% w Chianti Classico',
+        options: ['Barbera', 'Nebbiolo', 'Sangiovese – minimum 70% w Chianti Classico', 'Montepulciano'],
+      },
+      {
+        text: 'Co to jest wino Rosé?',
+        answer: 'Wino różowe produkowane przez krótki kontakt soku z czerwonymi skórkami lub macerację',
+        options: ['Mieszanka czerwonego i białego wina (zawsze)', 'Wino różowe produkowane przez krótki kontakt soku z czerwonymi skórkami lub macerację', 'Wino produkowane z różowych odmian winogron', 'Słodkie wino deserowe ze słonecznych rejonów'],
+      },
+      {
+        text: 'Ile butelek wina mieści standardowa beczka bordelaise (barrique)?',
+        answer: 'Około 300 butelek (225 litrów)',
+        options: ['Około 50 butelek', 'Około 150 butelek', 'Około 300 butelek (225 litrów)', 'Ponad 600 butelek'],
+      },
+      {
+        text: 'Co to jest "decanting" wina?',
+        answer: 'Przelewanie wina do karafi w celu dotlenienia i oddzielenia osadu',
+        options: ['Schładzanie wina w lodzie', 'Mieszanie różnych roczników wina', 'Przelewanie wina do karafi w celu dotlenienia i oddzielenia osadu', 'Filtrowanie wina przez specjalną membranę'],
+      },
+      {
+        text: 'Który szczep winogron jest bazą wina Sancerre?',
+        answer: 'Sauvignon Blanc',
+        options: ['Chardonnay', 'Sauvignon Blanc', 'Chenin Blanc', 'Viognier'],
+      },
+      {
+        text: 'Co to jest wino "Orange wine"?',
+        answer: 'Białe wino fermentowane ze skórkami, dające pomarańczowy kolor i taniny – styl z Gruzji i Włoch',
+        options: ['Wino z pomarańczy – nie z winogron', 'Białe wino z dodatkiem soku pomarańczowego', 'Białe wino fermentowane ze skórkami, dające pomarańczowy kolor i taniny – styl z Gruzji i Włoch', 'Wino o smaku cytrusowym z Hiszpanii'],
+      },
+      {
+        text: 'Jak długo może leżakować Château Pétrus w piwnicy?',
+        answer: 'Nawet 50+ lat – jest to jedno z najdłużej leżakujących win świata',
+        options: ['Maksymalnie 5 lat', 'Około 10–15 lat', 'Nawet 50+ lat – jest to jedno z najdłużej leżakujących win świata', 'Wszystkie wina tracą jakość po 20 latach'],
+      },
+      {
+        text: 'Co to jest wino "naturalne" (natural wine)?',
+        answer: 'Wino z ekologicznych winogron, fermentowane dzikimi drożdżami, bez lub z minimalnym użyciem siarki i dodatków',
+        options: ['Wino bez etykiety "E-numerów"', 'Wino produkowane wyłącznie we Francji', 'Wino z ekologicznych winogron, fermentowane dzikimi drożdżami, bez lub z minimalnym użyciem siarki i dodatków', 'Wino nieprzeterminowane – spożywane świeże'],
+      },
+      // Piwo
+      {
+        text: 'Czym różni się ale od lagera?',
+        answer: 'Ale fermentuje górnie (ciepłe drożdże), lager dolnie (zimne drożdże) – stąd różny smak i aromat',
+        options: ['Ale zawsze ma więcej alkoholu', 'Lager jest ciemniejszy i mocniejszy', 'Ale fermentuje górnie (ciepłe drożdże), lager dolnie (zimne drożdże) – stąd różny smak i aromat', 'Ale produkuje się z pszenicy, lager z żyta'],
+      },
+      {
+        text: 'Co to jest IPA?',
+        answer: 'India Pale Ale – mocno chmielone piwo ze Wielkiej Brytanii, początkowo warzone do transportu do Indii',
+        options: ['Irish Pale Ale – piwo z Dublina', 'India Pale Ale – mocno chmielone piwo ze Wielkiej Brytanii, początkowo warzone do transportu do Indii', 'Italian Premium Ale – włoski styl', 'Imperial Pale Ale – piwo o mocy powyżej 10%'],
+      },
+      {
+        text: 'Który kraj wypija najwięcej piwa per capita?',
+        answer: 'Czechy – ok. 130–140 litrów rocznie na osobę',
+        options: ['Niemcy', 'Irlandia', 'Czechy – ok. 130–140 litrów rocznie na osobę', 'Australia'],
+      },
+      {
+        text: 'Co to jest Reinheitsgebot?',
+        answer: 'Bawarskie prawo czystości piwa z 1516 r.: tylko woda, słód i chmiel (drożdże dodano później)',
+        options: ['Austriacki podatek na alkohol z XVIII w.', 'Bawarskie prawo czystości piwa z 1516 r.: tylko woda, słód i chmiel (drożdże dodano później)', 'Certyfikat jakości Unii Europejskiej dla piwa', 'Regulamin spożywania alkoholu w Niemczech'],
+      },
+      {
+        text: 'Ile kalorii ma standardowe piwo (500 ml, 5%)?',
+        answer: 'Około 200–220 kcal',
+        options: ['Około 50 kcal', 'Około 100 kcal', 'Około 200–220 kcal', 'Ponad 500 kcal'],
+      },
+      {
+        text: 'Co to jest Stout?',
+        answer: 'Ciemne piwo górnej fermentacji o wyraźnym smaku palonego słodu; Guinness to jego ikoniczny przykład',
+        options: ['Pszeniczne piwo z Niemiec', 'Czeskie piwo lagerowe', 'Ciemne piwo górnej fermentacji o wyraźnym smaku palonego słodu; Guinness to jego ikoniczny przykład', 'Słodkie piwo deserowe z Belgii'],
+      },
+      {
+        text: 'Skąd pochodzi piwo Leffe?',
+        answer: 'Belgia – warzone przez trapaskich mnichów od XIII w.',
+        options: ['Holandia', 'Niemcy', 'Belgia – warzone przez trapaskich mnichów od XIII w.', 'Francja'],
+      },
+      {
+        text: 'Co to jest "craft beer" (piwo rzemieślnicze)?',
+        answer: 'Piwo produkowane przez małe, niezależne browary z naciskiem na jakość składników i unikatowe receptury',
+        options: ['Piwo bez dodatku drożdży przemysłowych', 'Piwo wyłącznie z organicznych składników', 'Piwo produkowane przez małe, niezależne browary z naciskiem na jakość składników i unikatowe receptury', 'Piwo dojrzewające w beczkach whisky'],
+      },
+      {
+        text: 'Ile procent alkoholu ma tradycyjne Weizenbier (piwo pszeniczne)?',
+        answer: 'Zazwyczaj 4,7–5,4%',
+        options: ['Poniżej 2%', 'Około 3%', 'Zazwyczaj 4,7–5,4%', 'Powyżej 8%'],
+      },
+      {
+        text: 'Co to jest piwo bezalkoholowe "0,0%"?',
+        answer: 'Piwo z zawartością alkoholu poniżej 0,05% – uzyskane przez dealcoholizację lub fermentację bez alkoholu',
+        options: ['Piwo z soku owocowego bez fermentacji', 'Piwo z zawartością alkoholu poniżej 0,05% – uzyskane przez dealcoholizację lub fermentację bez alkoholu', 'Zwykłe piwo rozcieńczone wodą', 'Piwo z drożdżami niezawierającymi alkoholu'],
+      },
+      // Wódka
+      {
+        text: 'Z czego najczęściej produkuje się polską wódkę?',
+        answer: 'Żyto lub pszenica – rzadziej ziemniaki (mit o ziemniaczanej wódce jest przesadzony)',
+        options: ['Wyłącznie z ziemniaków', 'Z buraków cukrowych', 'Żyto lub pszenica – rzadziej ziemniaki (mit o ziemniaczanej wódce jest przesadzony)', 'Z kukurydzy i sorgo'],
+      },
+      {
+        text: 'Który kraj był pierwszym producentem wódki historycznie?',
+        answer: 'Polska lub Rosja – spór trwa; najstarsze polskie zapisy o "wódce" pochodzą z XIV w.',
+        options: ['Szwecja', 'Finlandia', 'Polska lub Rosja – spór trwa; najstarsze polskie zapisy o "wódce" pochodzą z XIV w.', 'Ukraina'],
+      },
+      {
+        text: 'Co to jest wódka Żubrówka?',
+        answer: 'Polska wódka aromatyzowana trawą żubrową (Hierochloe odorata) z Białowieży',
+        options: ['Litewska wódka z żubrem na etykiecie', 'Polska wódka aromatyzowana trawą żubrową (Hierochloe odorata) z Białowieży', 'Białoruska wódka z esencją dębową', 'Rosyjska wódka z kłączem tataraku'],
+      },
+      {
+        text: 'Ile razy standardowo destyluje się wódkę premium?',
+        answer: 'Minimum 3 razy – wiele marek premium chwali się 5–6 destylacjami',
+        options: ['Jeden raz – to wystarczy do czystości', 'Minimum 3 razy – wiele marek premium chwali się 5–6 destylacjami', 'Dokładnie 10 razy', 'Im więcej, tym gorzej – jakość spada'],
+      },
+      {
+        text: 'Czym jest filtrowanie wódki przez węgiel aktywny?',
+        answer: 'Procesem usuwania zanieczyszczeń i kongener, który sprawia że wódka jest "czystsza" i łagodniejsza',
+        options: ['Dodawaniem smaku wędzenia do wódki', 'Procesem usuwania zanieczyszczeń i kongener, który sprawia że wódka jest "czystsza" i łagodniejsza', 'Chłodzeniem wódki do temperatury -18°C', 'Metodą dodawania minerałów dla lepszego smaku'],
+      },
+      {
+        text: 'Jaka jest idealna temperatura podawania wódki?',
+        answer: '-18 do -10°C – mocno schłodzona, co łagodzi smak i zmniejsza odczuwanie alkoholu',
+        options: ['W temperaturze pokojowej 20°C', 'Dokładnie 0°C (zamarzania)', '-18 do -10°C – mocno schłodzona, co łagodzi smak i zmniejsza odczuwanie alkoholu', 'Podgrzana do 40°C'],
+      },
+      // Whisky/Whiskey
+      {
+        text: 'Czym różni się Scotch Whisky od Irish Whiskey?',
+        answer: 'Scotch leżakuje min. 3 lata, Irish min. 3 lata; Scotch jest zazwyczaj torfowy i produkowany w Szkocji, Irish jest potrójnie destylowany i łagodniejszy',
+        options: ['Scotch zawsze jest z jednego słodu, Irish z mieszanki', 'Scotch pisze się bez "e", Irish z "e" – i to jedyna różnica', 'Scotch leżakuje min. 3 lata, Irish min. 3 lata; Scotch jest zazwyczaj torfowy i produkowany w Szkocji, Irish jest potrójnie destylowany i łagodniejszy', 'Irish jest dymny, Scotch słodki'],
+      },
+      {
+        text: 'Co to jest Bourbon?',
+        answer: 'Amerykańska whiskey produkowana z min. 51% kukurydzy, dojrzewająca w nowych wypalonych beczkach dębowych',
+        options: ['Kanadyjska whisky z żyta', 'Tennessee whiskey ze szczepu kukurydzy', 'Amerykańska whiskey produkowana z min. 51% kukurydzy, dojrzewająca w nowych wypalonych beczkach dębowych', 'Japońska whisky w stylu szkockim'],
+      },
+      {
+        text: 'Który region Szkocji słynie z najmocniej torfowych whisky?',
+        answer: 'Islay – whisky takie jak Laphroaig, Ardbeg, Lagavulin',
+        options: ['Speyside – tu jest Glenfiddich i Macallan', 'Highlands – największy region', 'Islay – whisky takie jak Laphroaig, Ardbeg, Lagavulin', 'Lowlands – najbardziej delikatne whisky'],
+      },
+      {
+        text: 'Co oznacza "single malt"?',
+        answer: 'Whisky z jednego browaru (distillery) z użyciem wyłącznie słodowanego jęczmienia',
+        options: ['Whisky produkowana z jednego szczepu winogron', 'Whisky destylowana jednorazowo', 'Whisky z jednego browaru (distillery) z użyciem wyłącznie słodowanego jęczmienia', 'Whisky z jednej beczki (single cask)'],
+      },
+      {
+        text: 'Jak długo leżakuje 12-letnia Scotch whisky?',
+        answer: 'Minimum 12 lat w beczkach w Szkocji – liczba na etykiecie to wiek najmłodszego składnika blend\'u',
+        options: ['Dokładnie 12 lat do dnia', 'Co najmniej 12 lat od zamknięcia butelki', 'Minimum 12 lat w beczkach w Szkocji – liczba na etykiecie to wiek najmłodszego składnika blend\'u', 'Między 10 a 12 latami'],
+      },
+      {
+        text: 'Co to jest "Angels\' Share"?',
+        answer: 'Alkohol parujący z beczki podczas leżakowania whisky – ok. 2% rocznie',
+        options: ['Nagroda dla najlepszego destylatora', 'Alkohol parujący z beczki podczas leżakowania whisky – ok. 2% rocznie', 'Pierwsza porcja destylatu wylewana ze względów bezpieczeństwa', 'Specjalna edycja limitowana z okazji Bożego Narodzenia'],
+      },
+      {
+        text: 'Co to jest Japanese Whisky?',
+        answer: 'Whisky produkowana w Japonii wzorowana na stylu szkockim; marki Suntory i Nikka są globalnymi liderami',
+        options: ['Sake przefermentowane po raz drugi', 'Japońska wódka ryżowa w stylu western', 'Whisky produkowana w Japonii wzorowana na stylu szkockim; marki Suntory i Nikka są globalnymi liderami', 'Import szkockiej whisky butelkowanej w Japonii'],
+      },
+      // Gin
+      {
+        text: 'Jaki smak musi dominować w ginie?',
+        answer: 'Jałowiec (juniper berry) – to wymóg prawny definicji ginu w UE',
+        options: ['Cytrusy', 'Kolendra', 'Jałowiec (juniper berry) – to wymóg prawny definicji ginu w UE', 'Anyż'],
+      },
+      {
+        text: 'Czym różni się London Dry Gin od New Western Gin?',
+        answer: 'London Dry ma dominować jałowiec; New Western może akcentować inne botaniki (np. ogórek, róże, herbata)',
+        options: ['London Dry jest produkowany tylko w Londynie', 'New Western to gin bez jałowca', 'London Dry ma dominować jałowiec; New Western może akcentować inne botaniki (np. ogórek, róże, herbata)', 'Różnią się wyłącznie ceną – nie składem'],
+      },
+      {
+        text: 'Jaki tonic najlepiej pasuje do premium ginu wg barmanów?',
+        answer: 'Tonik wytrawny z minimalną ilością cukru i wysoką gazowością (np. Fever-Tree Indian Tonic)',
+        options: ['Tonik z dużą ilością cukru dla zbalansowania goryczki', 'Tonik cytrynowy', 'Tonik wytrawny z minimalną ilością cukru i wysoką gazowością (np. Fever-Tree Indian Tonic)', 'Zwykła woda gazowana'],
+      },
+      {
+        text: 'Który kraj jest globalnym liderem konsumpcji ginu?',
+        answer: 'Filipiny – spożywają największą ilość ginu na świecie (głównie lokalna marka Ginebra San Miguel)',
+        options: ['Wielka Brytania', 'Hiszpania', 'Filipiny – spożywają największą ilość ginu na świecie (głównie lokalna marka Ginebra San Miguel)', 'USA'],
+      },
+      {
+        text: 'Co to jest Sloe Gin?',
+        answer: 'Likier na bazie ginu macerowany z owocami tarniny (sloe berries) – tradycyjny napój brytyjski',
+        options: ['Powolnie (slow) destylowany gin', 'Gin z dodatkiem śliwek japońskich', 'Likier na bazie ginu macerowany z owocami tarniny (sloe berries) – tradycyjny napój brytyjski', 'Niskoalkoholowy gin bez destylacji'],
+      },
+      // Rum i tequila
+      {
+        text: 'Z czego produkuje się rum?',
+        answer: 'Z melasy (produktu ubocznego cukrownictwa) lub soku z trzciny cukrowej',
+        options: ['Z ryżu i trzciny cukrowej', 'Z fermentowanych bananów tropikalnych', 'Z melasy (produktu ubocznego cukrownictwa) lub soku z trzciny cukrowej', 'Z destylowanego kakao i cukru'],
+      },
+      {
+        text: 'Czym różni się rum biały od ciemnego?',
+        answer: 'Biały nie leżakuje lub krótko (często filtrowany), ciemny dojrzewa latami w beczkach dębowych',
+        options: ['Biały jest z trzciny, ciemny z melasy', 'Ciemny ma mniej alkoholu', 'Biały nie leżakuje lub krótko (często filtrowany), ciemny dojrzewa latami w beczkach dębowych', 'Różnią się wyłącznie zabarwieniem barwnikiem'],
+      },
+      {
+        text: 'Z czego produkuje się tequilę?',
+        answer: 'Z agawy niebieskiej (Agave tequilana Weber) – uprawianej głównie w Jalisco w Meksyku',
+        options: ['Z kaktusa saguaro', 'Z fermentowanego soku z limonki i agawy', 'Z agawy niebieskiej (Agave tequilana Weber) – uprawianej głównie w Jalisco w Meksyku', 'Z fermentowanego kukurydzianego piwa'],
+      },
+      {
+        text: 'Co to jest Mezcal i czym różni się od tequili?',
+        answer: 'Mezcal produkowany jest z różnych gatunków agawy (nie tylko niebieskiej), często z pieczonymi sercami agawy – stąd dymny smak',
+        options: ['Mezcal to tequila z robakiem w butelce', 'Tequila to rodzaj mezcalu z Jalisco; mezcal pochodzi głównie z Oaxaki', 'Mezcal produkowany jest z różnych gatunków agawy (nie tylko niebieskiej), często z pieczonymi sercami agawy – stąd dymny smak', 'Mezcal i tequila to dokładnie to samo – różnią się tylko etykietą'],
+      },
+      {
+        text: 'Co to jest robak w mezcalu?',
+        answer: 'Larwa ćmy (Hypopta agavis) żyjącej na agawie – tradycja marketingowa, nie autentyczna meksykańska praktyka',
+        options: ['Symbol jakości chronionej CRTM', 'Larwa ćmy (Hypopta agavis) żyjącej na agawie – tradycja marketingowa, nie autentyczna meksykańska praktyka', 'Specjalny rodzaj drożdży do fermentacji', 'Lokalny termin na kryształy z agawy'],
+      },
+      // Szampan i wina musujące
+      {
+        text: 'Który region Francji produkuje szampana?',
+        answer: 'Champagne – departamenty Marne, Aube, Aisne i Haute-Marne',
+        options: ['Burgundia', 'Alzacja', 'Champagne – departamenty Marne, Aube, Aisne i Haute-Marne', 'Langwedocja-Roussillon'],
+      },
+      {
+        text: 'Ile atmosfer ciśnienia panuje w butelce szampana?',
+        answer: 'Około 5–6 atmosfer (bar) – trzy razy więcej niż w oponach samochodowych',
+        options: ['Około 1–2 atmosfer', 'Około 3 atmosfer', 'Około 5–6 atmosfer (bar) – trzy razy więcej niż w oponach samochodowych', 'Ponad 10 atmosfer'],
+      },
+      {
+        text: 'Ile bąbelków zawiera butelka szampana?',
+        answer: 'Szacunkowo 47–250 milionów bąbelków CO₂',
+        options: ['Kilka tysięcy', 'Około 1 milion', 'Szacunkowo 47–250 milionów bąbelków CO₂', 'Ponad miliard'],
+      },
+      {
+        text: 'Co to jest Cava?',
+        answer: 'Hiszpańskie wino musujące produkowane metodą tradycyjną głównie w Katalonii (Penedès)',
+        options: ['Włoskie wino musujące z Piemontu', 'Hiszpańskie wino musujące produkowane metodą tradycyjną głównie w Katalonii (Penedès)', 'Greckie wino musujące z wyspy Santorini', 'Argentyńska odmiana prosecco'],
+      },
+      {
+        text: 'Jak należy otwierać szampana?',
+        answer: 'Powoli obracając butelkę, nie korek – cisza, nie huk; utrata CO₂ i niebezpieczeństwo przy hucznym otwarciu',
+        options: ['Mocnym uderzeniem dna butelki w stół', 'Powoli obracając butelkę, nie korek – cisza, nie huk; utrata CO₂ i niebezpieczeństwo przy hucznym otwarciu', 'Specjalnym nożem do sabrage', 'Zawsze w temperaturze pokojowej, nie schłodzonego'],
+      },
+      // Kac i metabolizm
+      {
+        text: 'Jaka jest naukowa przyczyna kaca?',
+        answer: 'Odwodnienie, produkcja aldehydu octowego (toksycznego metabolitu alkoholu), hipoglikemia i zapalenie',
+        options: ['Wyłącznie odwodnienie', 'Tylko cukier zawarty w alkoholu', 'Odwodnienie, produkcja aldehydu octowego (toksycznego metabolitu alkoholu), hipoglikemia i zapalenie', 'Zbyt szybkie picie powodujące zatrucie żołądka'],
+      },
+      {
+        text: 'Ile czasu potrzebuje wątroba na metabolizowanie jednej jednostki alkoholu?',
+        answer: 'Około 1 godziny – bez względu na kawę, wodę czy inne mity',
+        options: ['15–20 minut', 'Około 1 godziny – bez względu na kawę, wodę czy inne mity', 'Zależy od masy ciała – ok. 30 min na 10 kg', 'Do 6 godzin przy dużych dawkach'],
+      },
+      {
+        text: 'Który mit o kacówkach jest naukowo obalony?',
+        answer: 'Kawa nie przyspiesza trzeźwienia – tylko pobudza, ale BAC (stężenie alkoholu) pozostaje bez zmian',
+        options: ['Woda nie pomaga przy kacu', 'Jedzenie tłustego przed piciem jest bezskuteczne', 'Kawa nie przyspiesza trzeźwienia – tylko pobudza, ale BAC (stężenie alkoholu) pozostaje bez zmian', 'Wysiłek fizyczny nie pomaga spalić alkoholu'],
+      },
+      {
+        text: 'Czym jest "hair of the dog" (klin klinem)?',
+        answer: 'Picie małej ilości alkoholu następnego dnia po kacu; tymczasowo łagodzi objawy, ale tylko opóźnia metabolizm aldehydu octowego',
+        options: ['Dieta tłusta następnego dnia po imprezie', 'Picie małej ilości alkoholu następnego dnia po kacu; tymczasowo łagodzi objawy, ale tylko opóźnia metabolizm aldehydu octowego', 'Napój izotoniczny wzbogacony elektrolitami', 'Tradycyjny szkocki lek na kaca z owsianką i whisky'],
+      },
+      {
+        text: 'Co powoduje ból głowy po czerwonym winie?',
+        answer: 'Histaminy, taniny i siarczyny w czerwonym winie – nie sam etanol; osoby z niedoborem DAO są bardziej podatne',
+        options: ['Wyłącznie siarczyny (E220) dodawane do wina', 'Sam etanol – to nie jest nic specyficznego dla czerwonego', 'Histaminy, taniny i siarczyny w czerwonym winie – nie sam etanol; osoby z niedoborem DAO są bardziej podatne', 'Cukier rezydualny w wytrawnych winach czerwonych'],
+      },
+      {
+        text: 'Ile litrów wody traci człowiek przez działanie moczopędne alkoholu po wypiciu 1 litra piwa?',
+        answer: 'Około 800 ml – alkohol hamuje ADH (hormon antydiuretyczny), powodując nadmierne wydalanie moczu',
+        options: ['Dokładnie 1 litr (tyle ile wypiłeś)', 'Około 200 ml – efekt jest minimalny', 'Około 800 ml – alkohol hamuje ADH (hormon antydiuretyczny), powodując nadmierne wydalanie moczu', 'Ponad 2 litry – alkohol silnie odwadnia'],
+      },
+      {
+        text: 'Jak jedzenie przed piciem wpływa na wchłanianie alkoholu?',
+        answer: 'Tłuste potrawy spowalniają opróżnianie żołądka i opóźniają wchłanianie alkoholu – szczyt BAC jest niższy i późniejszy',
+        options: ['Jedzenie całkowicie blokuje wchłanianie alkoholu', 'Jedzenie nie wpływa na BAC – tylko na samopoczucie', 'Tłuste potrawy spowalniają opróżnianie żołądka i opóźniają wchłanianie alkoholu – szczyt BAC jest niższy i późniejszy', 'Weglowodany blokują alkohol, tłuszcze przyspieszają wchłanianie'],
+      },
+      {
+        text: 'Co to jest "blackout" alkoholowy?',
+        answer: 'Brak tworzenia nowych wspomnień (amnezja anterogradna) przy wysokim BAC – osoba może być aktywna, ale mózg nie zapisuje zdarzeń',
+        options: ['Utrata przytomności spowodowana alkoholem', 'Widzenie czarnych plamek przy hipoglikemii alkoholowej', 'Brak tworzenia nowych wspomnień (amnezja anterogradna) przy wysokim BAC – osoba może być aktywna, ale mózg nie zapisuje zdarzeń', 'Nadwrażliwość na światło podczas kaca'],
+      },
+      // Alkohol a zdrowie i nauka
+      {
+        text: 'Czy istnieje bezpieczna dawka alkoholu wg WHO 2023?',
+        answer: 'Nie – WHO 2023 potwierdziło, że żadna ilość alkoholu nie jest całkowicie bezpieczna dla zdrowia',
+        options: ['Tak – do 1 jednostki dziennie jest bezpieczne', 'Tak – do 14 jednostek tygodniowo', 'Nie – WHO 2023 potwierdziło, że żadna ilość alkoholu nie jest całkowicie bezpieczna dla zdrowia', 'Tak – kieliszek wina dziennie poprawia zdrowie serca'],
+      },
+      {
+        text: 'Ile kalorii dostarcza gram czystego alkoholu?',
+        answer: '7 kcal na gram – więcej niż białko i węglowodany (4 kcal), mniej niż tłuszcz (9 kcal)',
+        options: ['4 kcal – tyle samo co cukier', '7 kcal na gram – więcej niż białko i węglowodany (4 kcal), mniej niż tłuszcz (9 kcal)', '9 kcal – tyle samo co tłuszcz', '12 kcal – alkohol jest najbardziej kalorycznym makroskładnikiem'],
+      },
+      {
+        text: 'Jak alkohol wpływa na sen?',
+        answer: 'Alkohol skraca fazę REM i fragmentuje sen – może ułatwić zasypianie, ale pogarsza jakość i regenerację',
+        options: ['Alkohol poprawia jakość snu przez relaksację', 'Alkohol nie wpływa na strukturę snu', 'Alkohol skraca fazę REM i fragmentuje sen – może ułatwić zasypianie, ale pogarsza jakość i regenerację', 'Alkohol wydłuża fazę głębokiego snu NREM'],
+      },
+      {
+        text: 'Ile procent nowotworów na świecie jest powiązanych z alkoholem wg IARC?',
+        answer: 'Około 5–6% globalnych przypadków raka – alkohol jest karcynogenem grupy 1 wg IARC',
+        options: ['Poniżej 1% – wpływ jest marginalny', 'Około 5–6% globalnych przypadków raka – alkohol jest karcynogenem grupy 1 wg IARC', 'Ponad 20%', 'Tylko rak wątroby jest związany z alkoholem'],
+      },
+      {
+        text: 'Jaki jest efekt alkoholu na układ sercowo-naczyniowy wg aktualnej nauki?',
+        answer: 'Nawet umiarkowane spożycie wiąże się z podwyższonym ryzykiem migotania przedsionków i nadciśnienia; mity o "zdrowym winie" zostały w dużej mierze obalone',
+        options: ['Kieliszek wina dziennie wyraźnie zmniejsza ryzyko zawału', 'Piwo jest korzystne dla serca w dawce do 2 butelek', 'Nawet umiarkowane spożycie wiąże się z podwyższonym ryzykiem migotania przedsionków i nadciśnienia; mity o "zdrowym winie" zostały w dużej mierze obalone', 'Alkohol jest obojętny dla serca poniżej 14 jednostek tygodniowo'],
+      },
+      {
+        text: 'Co to jest FAS (Fetal Alcohol Syndrome)?',
+        answer: 'Zespół alkoholowy płodu – wady rozwojowe, zaburzenia neurologiczne i twarzoczaszkowe spowodowane spożywaniem alkoholu w ciąży',
+        options: ['Alergia na alkohol u noworodków', 'Zespół alkoholowy płodu – wady rozwojowe, zaburzenia neurologiczne i twarzoczaszkowe spowodowane spożywaniem alkoholu w ciąży', 'Nadwrażliwość na alkohol wynikająca z genów', 'Choroba wątroby u noworodków matek alkoholiczek'],
+      },
+      {
+        text: 'Jaki enzym metabolizuje alkohol w wątrobie w pierwszym etapie?',
+        answer: 'Dehydrogenaza alkoholowa (ADH) – przekształca etanol w aldehyd octowy',
+        options: ['Lipaza wątrobowa', 'Cytochrom P450 (tylko w nadmiarze)', 'Dehydrogenaza alkoholowa (ADH) – przekształca etanol w aldehyd octowy', 'Amylaza śluzówkowa'],
+      },
+      {
+        text: 'Dlaczego niektóre osoby (często Azjaci) czerwienią się po alkoholu?',
+        answer: 'Wariant genu ALDH2*2 – enzym ALDH2 metabolizuje aldehyd octowy wolniej, powodując jego gromadzenie i rozszerzenie naczyń ("Asian flush")',
+        options: ['Niedobór wodny w organizmie', 'Nadwrażliwość układu nerwowego na etanol', 'Wariant genu ALDH2*2 – enzym ALDH2 metabolizuje aldehyd octowy wolniej, powodując jego gromadzenie i rozszerzenie naczyń ("Asian flush")', 'Wysoki poziom histaminy we krwi'],
+      },
+      // Ciekawostki z imprez i kultury
+      {
+        text: 'Jaki drink zamówiła Carrie Bradshaw w Sex and the City?',
+        answer: 'Cosmopolitan',
+        options: ['Martini', 'Mimosa', 'Cosmopolitan', 'Bellini'],
+      },
+      {
+        text: 'Który drink jest symbolem James\'a Bonda?',
+        answer: 'Martini – wstrząśnięte, nie mieszane ("shaken, not stirred")',
+        options: ['Old Fashioned', 'Whisky z lodem', 'Martini – wstrząśnięte, nie mieszane ("shaken, not stirred")', 'Negroni z cytryną'],
+      },
+      {
+        text: 'W którym roku wynaleziono szampana według popularnej legendy?',
+        answer: 'Około 1693 r. – przypisywane mnichowi Dom Pérignonowi, choć faktycznie wino musujące produkowano już wcześniej',
+        options: ['Około 1400 r.', 'Około 1693 r. – przypisywane mnichowi Dom Pérignonowi, choć faktycznie wino musujące produkowano już wcześniej', 'W 1789 r. – rok Rewolucji Francuskiej', 'W 1850 r. – wtedy opatentowano butelkę szampana'],
+      },
+      {
+        text: 'Co to jest "prosecco stopper" i do czego służy?',
+        answer: 'Korek z mechanizmem uszczelniającym butelkę prosecco/szampana po otwarciu, zachowujący bąbelki do kilku dni',
+        options: ['Specjalna nakrętka na butelkę wódki', 'Korek z mechanizmem uszczelniającym butelkę prosecco/szampana po otwarciu, zachowujący bąbelki do kilku dni', 'Filtr do czyszczenia kieliszków', 'Termin na osobę niepijącą alkoholu na imprezie'],
+      },
+      {
+        text: 'Ile jest oficjalnych koktajli IBA (International Bartenders Association)?',
+        answer: '77 oficjalnych receptur w trzech kategoriach (New Era, Contemporary, Unforgettables)',
+        options: ['12 klasycznych koktajli', '40 koktajli sezonowych', '77 oficjalnych receptur w trzech kategoriach (New Era, Contemporary, Unforgettables)', 'Ponad 200 – nowe są dodawane co roku'],
+      },
+      {
+        text: 'Co to jest "flairowe barmaństwo" (flair bartending)?',
+        answer: 'Akrobatyczne manipulowanie butelkami i szkłem podczas przygotowywania drinków – połączenie umiejętności i show',
+        options: ['Mieszanie drinków w unikalnych kolorach', 'Akrobatyczne manipulowanie butelkami i szkłem podczas przygotowywania drinków – połączenie umiejętności i show', 'Podawanie alkoholu w niestandardowych naczyniach', 'Serwowanie drinków z płomykiem'],
+      },
+      {
+        text: 'Który kraj spożywa największą ilość alkoholu na osobę rocznie wg WHO?',
+        answer: 'Czechy lub Litwa – konsekwentnie w czołówce z ok. 12–14 l czystego alkoholu na osobę rocznie',
+        options: ['Rosja', 'Niemcy', 'Czechy lub Litwa – konsekwentnie w czołówce z ok. 12–14 l czystego alkoholu na osobę rocznie', 'Irlandia'],
+      },
+      {
+        text: 'Co to jest "mocktail"?',
+        answer: 'Bezalkoholowy koktajl – składniki i techniki jak w koktajlu, ale bez alkoholu',
+        options: ['Koktajl z minimalną zawartością alkoholu (poniżej 0,5%)', 'Drink z alkoholem podrobiony jako bezalkoholowy', 'Bezalkoholowy koktajl – składniki i techniki jak w koktajlu, ale bez alkoholu', 'Koktajl z kilkoma alkoholami jednocześnie'],
+      },
+      {
+        text: 'Jak nazywa się technika wlewania alkoholu powoli po odwróconej łyżeczce?',
+        answer: 'Layering (warstwowanie) – pozwala tworzyć koktajle wielowarstwowe dzięki różnym ciężarom właściwym cieczy',
+        options: ['Muddling – rozcieranie składników', 'Layering (warstwowanie) – pozwala tworzyć koktajle wielowarstwowe dzięki różnym ciężarom właściwym cieczy', 'Carbonation – dodawanie CO₂', 'Infusion – moczenie składników w alkoholu'],
+      },
+      {
+        text: 'Co to jest "muddle" w recepturze koktajlu?',
+        answer: 'Rozgniatanie świeżych składników (limonka, mięta, owoce) w szejkerze lub szklance tłuczkiem barowym',
+        options: ['Mieszanie alkoholu łyżką barową', 'Rozgniatanie świeżych składników (limonka, mięta, owoce) w szejkerze lub szklance tłuczkiem barowym', 'Filtrowanie koktajlu przez sito', 'Zmrażanie kieliszka przed podaniem'],
+      },
+      // Szukaszki i reguły picia
+      {
+        text: 'Co to jest promil (‰) i ile to jest mg alkoholu na 100 ml krwi?',
+        answer: '1‰ = 100 mg alkoholu na 100 ml krwi (0,1%); w Polsce limit dla kierowców to 0,2‰',
+        options: ['1‰ = 1 mg/100 ml krwi', '1‰ = 10 mg/100 ml krwi', '1‰ = 100 mg alkoholu na 100 ml krwi (0,1%); w Polsce limit dla kierowców to 0,2‰', '1‰ = 1 g alkoholu w 1 litrze krwi – tyle samo ile 1 g/l'],
+      },
+      {
+        text: 'Ile jednostek alkoholu (UK units) zawiera butelka wina (750 ml, 12%)?',
+        answer: '9 jednostek (750 ml × 0,12 = 90 ml czystego alkoholu; 1 unit = 10 ml etanolu)',
+        options: ['3 jednostki', '6 jednostek', '9 jednostek (750 ml × 0,12 = 90 ml czystego alkoholu; 1 unit = 10 ml etanolu)', '12 jednostek'],
+      },
+      {
+        text: 'Ile czasu potrzebuje osoba 70 kg na wytrzeźwienie po 3 piwach (5%)?',
+        answer: 'Około 4–5 godzin – wątroba metabolizuje ok. 0,15‰ na godzinę',
+        options: ['Około 1 godziny', 'Około 2 godzin', 'Około 4–5 godzin – wątroba metabolizuje ok. 0,15‰ na godzinę', 'Ponad 10 godzin'],
+      },
+      {
+        text: 'Ile promili alkoholu może być niebezpieczne dla życia?',
+        answer: 'Powyżej 3–4‰ grozi śpiączką i depresją ośrodka oddechowego; śmierć zwykle przy 4–5‰+',
+        options: ['Już 1‰ jest niebezpieczne', '2‰ to dawka śmiertelna', 'Powyżej 3–4‰ grozi śpiączką i depresją ośrodka oddechowego; śmierć zwykle przy 4–5‰+', 'Alkohol nigdy nie jest śmiertelny sam w sobie'],
+      },
+      {
+        text: 'Jak alkohol wpływa na podejmowanie decyzji seksualnych?',
+        answer: 'Hamuje korę przedczołową odpowiedzialną za ocenę ryzyka, co prowadzi do bardziej ryzykownych decyzji (mniej prezerwatyw, więcej partnerów)',
+        options: ['Alkohol zwiększa zdolności decyzyjne przez relaks', 'Brak udokumentowanego wpływu na decyzje seksualne', 'Hamuje korę przedczołową odpowiedzialną za ocenę ryzyka, co prowadzi do bardziej ryzykownych decyzji (mniej prezerwatyw, więcej partnerów)', 'Alkohol sprawia, że kobiety są bardziej asertywne seksualnie'],
+      },
+      // Popularne drinki imprezowe
+      {
+        text: 'Z czego składa się Jägerbomb?',
+        answer: 'Shot Jägermeistera wrzucony do kufla z napojem energetycznym (Red Bull)',
+        options: ['Jägermeister z sokiem pomarańczowym', 'Shot Jägermeistera wrzucony do kufla z napojem energetycznym (Red Bull)', 'Jägermeister z piwem pszenicznym', 'Dwa shoty różnych ziołówek w szklance z lodem'],
+      },
+      {
+        text: 'Co to jest "Kamikaze" shot?',
+        answer: 'Wódka, triple sec i sok z limonki – podawany jako shot',
+        options: ['Tequila, sol i limonka', 'Wódka, triple sec i sok z limonki – podawany jako shot', 'Rum, sok limonkowy i tabasco', 'Gin, tonik i grenadyna w jednym shotu'],
+      },
+      {
+        text: 'Czym jest "Sambuca"?',
+        answer: 'Włoski likier anyżkowy; tradycyjnie podawany z trzema ziarenkami kawy i palony przed wypiciem',
+        options: ['Hiszpańska brandy cytrusowa', 'Włoski likier anyżkowy; tradycyjnie podawany z trzema ziarenkami kawy i palony przed wypiciem', 'Szwedzka gorzka ziołowa nalewka', 'Grecka ouzo z dodatkiem likieru owocowego'],
+      },
+      {
+        text: 'Skąd pochodzi drink "Harvey Wallbanger"?',
+        answer: 'USA lata 70. – wódka, sok pomarańczowy i likier Galliano',
+        options: ['Australijski surfer, który uderzył w ścianę baru po przegranym surfingu – a drink to wódka, Galliano i OJ', 'USA lata 70. – wódka, sok pomarańczowy i likier Galliano', 'Hawajski drink z rumu i kokosa', 'Włoski aperitif z Galliano i prosecco'],
+      },
+      {
+        text: 'Co to jest "Paloma"?',
+        answer: 'Meksykański drink z tequili, soku grejpfrutowego i wody gazowanej z solą; popularniejszy w Meksyku niż Margarita',
+        options: ['Hiszpański drink z wina różowego i limonady', 'Meksykański drink z tequili, soku grejpfrutowego i wody gazowanej z solą; popularniejszy w Meksyku niż Margarita', 'Kubański drink z rumu, grejpfruta i mięty', 'Kolumbijski drink na bazie aguardiente i cytrusów'],
+      },
+      {
+        text: 'Jak się nazywa drink z wódki, soku żurawinowego, limonki i ginger beer?',
+        answer: 'Moscow Mule (podawany w miedzianym kubku)',
+        options: ['Dark and Stormy', 'Moscow Mule (podawany w miedzianym kubku)', 'Shirley Temple', 'Greyhound'],
+      },
+      {
+        text: 'Co to jest "Gimlet"?',
+        answer: 'Gin (lub wódka) z sokiem z limonki i syropem cukrowym – klasyczny drink Royal Navy z XIX w.',
+        options: ['Whisky ze słodkim wermut i bitterem', 'Rum, mięta i woda gazowana', 'Gin (lub wódka) z sokiem z limonki i syropem cukrowym – klasyczny drink Royal Navy z XIX w.', 'Gin z Elderflower tonic i ogórkiem'],
+      },
+      {
+        text: 'Co to jest "Aperitivo hour"?',
+        answer: 'Włoska tradycja popołudniowego drinka przed kolacją (ok. 18–20), często z przekąskami – odpowiednik happy hour',
+        options: ['Poranny drink podany z kawą', 'Włoska tradycja popołudniowego drinka przed kolacją (ok. 18–20), często z przekąskami – odpowiednik happy hour', 'Zamknięte imprezy dla znajomych w domach', 'Nocna degustacja win w restauracji'],
+      },
+      // Drinki specjalne dla wieczoru panieńskiego
+      {
+        text: 'Jaki kolor ma grenadyna i z czego jest zrobiona?',
+        answer: 'Czerwony – tradycyjnie z granatu (pomegranate), dziś często z innych czerwonych owoców i syropu',
+        options: ['Pomarańczowy – z pomarańczy i cukru', 'Czerwony – tradycyjnie z granatu (pomegranate), dziś często z innych czerwonych owoców i syropu', 'Różowy – wyłącznie z malin', 'Fioletowy – z jagód i borówek'],
+      },
+      {
+        text: 'Co to jest "Strawberry Daiquiri"?',
+        answer: 'Blendowany drink z białego rumu, świeżych truskawek, soku z limonki i cukru – podawany zamrożony',
+        options: ['Truskawkowe prosecco z grenadyną', 'Blendowany drink z białego rumu, świeżych truskawek, soku z limonki i cukru – podawany zamrożony', 'Drink z wódki truskawkowej i tonikiem', 'Likier truskawkowy z lemoniadą'],
+      },
+      {
+        text: 'Jak się nazywa drink z wódki i soku żurawinowego?',
+        answer: 'Cape Codder (lub Vodka Cranberry)',
+        options: ['Screwdriver', 'Cape Codder (lub Vodka Cranberry)', 'Greyhound', 'Sea Breeze'],
+      },
+      {
+        text: 'Co to jest Lychee Martini?',
+        answer: 'Wódka, likier lichi (np. Soho) i sok z lichi – popularny drink azjatycki o słodko-kwiatowym smaku',
+        options: ['Gin z cytrusami i słodkim wermut', 'Wódka, likier lichi (np. Soho) i sok z lichi – popularny drink azjatycki o słodko-kwiatowym smaku', 'Szampan z musem egzotycznych owoców', 'Rum z mlekiem kokosowym i lichi'],
+      },
+      {
+        text: 'Jaki drink podaje się w ananas wydrążony jako naczynie?',
+        answer: 'Piña Colada – tradycyjne podanie w Puerto Rico i na Karaibach',
+        options: ['Tequila Sunrise', 'Piña Colada – tradycyjne podanie w Puerto Rico i na Karaibach', 'Rum Punch', 'Blue Lagoon'],
+      },
+      {
+        text: 'Co to jest "Blue Lagoon"?',
+        answer: 'Wódka, blue curaçao i lemoniada – intensywnie niebieski drink o smaku cytrusowym',
+        options: ['Gin z tonikiem i niebieskim syropem', 'Wódka, blue curaçao i lemoniada – intensywnie niebieski drink o smaku cytrusowym', 'Rum z sokiem ananasowym i barwnikiem', 'Szampan z syropem borówkowym'],
+      },
+      // Historia i ciekawostki
+      {
+        text: 'Kiedy w USA zakończono prohibicję?',
+        answer: '1933 r. – 21. poprawka do Konstytucji zniosła 18. poprawkę (prohibicję z 1920 r.)',
+        options: ['1920 r.', '1929 r. – po krachu giełdowym', '1933 r. – 21. poprawka do Konstytucji zniosła 18. poprawkę (prohibicję z 1920 r.)', '1945 r. – po II wojnie światowej'],
+      },
+      {
+        text: 'Który kraj jako pierwszy na świecie zalegalizował sprzedaż alkoholu po weekendach?',
+        answer: 'Finlandia zniosła swoje ograniczenia sprzedaży w soboty w 1969 r.',
+        options: ['Szwecja', 'Finlandia zniosła swoje ograniczenia sprzedaży w soboty w 1969 r.', 'Norwegia', 'Polska'],
+      },
+      {
+        text: 'Co to jest "Bacchanalian" i skąd pochodzi to słowo?',
+        answer: 'Uczta z winem i alkoholem wywodząca się z kultu Bachusa (Dionizosa) – boga wina w mitologii rzymskiej/greckiej',
+        options: ['Starożytna egipska recepta na piwo', 'Uczta z winem i alkoholem wywodząca się z kultu Bachusa (Dionizosa) – boga wina w mitologii rzymskiej/greckiej', 'Religijny zakaz spożycia alkoholu', 'Włoska impreza plenerowa z winem'],
+      },
+      {
+        text: 'Które piwo jest uważane za najstarszy udokumentowany przepis na alkohol?',
+        answer: 'Sumeryjski "Hymn do Ninkasi" (ok. 1800 p.n.e.) zawiera przepis na piwo ze słodowanego ziarna',
+        options: ['Egipskie piwo z papirusu Ebera (ok. 1500 p.n.e.)', 'Sumeryjski "Hymn do Ninkasi" (ok. 1800 p.n.e.) zawiera przepis na piwo ze słodowanego ziarna', 'Chińskie wino ryżowe z Jiahu (ok. 7000 p.n.e.) – to jednak inny napój', 'Mezopotamskie wino winogronowe (ok. 4000 p.n.e.)'],
+      },
+      {
+        text: 'Co to jest Absynt i dlaczego był zakazany?',
+        answer: 'Likier ziołowy z piołunem (thujon), zakazany w wielu krajach 1905–1915 przez mit o halucynogenności; dziś dozwolony z limitowaną zawartością thujonu',
+        options: ['Chemiczny alkohol przemysłowy używany w latach 20.', 'Likier ziołowy z piołunem (thujon), zakazany w wielu krajach 1905–1915 przez mit o halucynogenności; dziś dozwolony z limitowaną zawartością thujonu', 'Trunek z ekstraktem opium, zakazany przez ONZ', 'Wzmocnione wino z kokainą jak "Vin Mariani"'],
+      },
+      {
+        text: 'Jaka jest zawartość alkoholu w polskiej Spirytusie Rektyfikowanym?',
+        answer: '95–96% – to jeden z najsilniejszych dostępnych w handlu alkoholi',
+        options: ['75%', '80%', '95–96% – to jeden z najsilniejszych dostępnych w handlu alkoholi', '99,9% – czysty etanol'],
+      },
+      {
+        text: 'Co to jest "sipping whisky"?',
+        answer: 'Whisky przeznaczona do powolnego delektowania się w czystej postaci lub z jedną kostką lodu – bez mieszania z colą',
+        options: ['Whisky o mocy powyżej 60%', 'Specjalny szczep słodowanego ziarna', 'Whisky przeznaczona do powolnego delektowania się w czystej postaci lub z jedną kostką lodu – bez mieszania z colą', 'Whisky podawana przez słomkę bambusową'],
+      },
+      {
+        text: 'Jaka jest różnica między brandy a koniakiem?',
+        answer: 'Koniak to brandy produkowana wyłącznie w regionie Cognac (Francja) z określonych szczepów winogron – każdy koniak jest brandy, ale nie każda brandy to koniak',
+        options: ['Brandy jest z winogron, koniak z jabłek', 'Koniak leżakuje w dębie, brandy w stali', 'Koniak to brandy produkowana wyłącznie w regionie Cognac (Francja) z określonych szczepów winogron – każdy koniak jest brandy, ale nie każda brandy to koniak', 'Brandy i koniak to to samo – różnią się tylko ceną'],
+      },
+      {
+        text: 'Co to jest Armagnac?',
+        answer: 'Francuska brandy z regionu Gaskonia – starsza niż koniak, destylowana tylko raz, bardziej rustykalna',
+        options: ['Belgijska czekoladowa nalewka', 'Włoska brandy z Piemontu', 'Francuska brandy z regionu Gaskonia – starsza niż koniak, destylowana tylko raz, bardziej rustykalna', 'Hiszpańskie brandy z winnic przy Kordobie'],
+      },
+      {
+        text: 'Czym jest Calvados?',
+        answer: 'Normandzka brandy jabłkowa (lub gruszkowa) – leżakuje w beczkach dębowych; nazwa pochodzi od departamentu Calvados',
+        options: ['Belgijski likier śliwkowy', 'Normandzka brandy jabłkowa (lub gruszkowa) – leżakuje w beczkach dębowych; nazwa pochodzi od departamentu Calvados', 'Bretoński cydr niedeystylowany', 'Alzacki owocowy schnapps'],
+      },
+      {
+        text: 'Co to jest Grappa?',
+        answer: 'Włoski destylat z wytłoków winogronowych (skórki, pestki, ogonki) po tłoczeniu wina – typowo mocna i aromatyczna',
+        options: ['Włoski likier cytrusowy z Sycylii', 'Włoski destylat z wytłoków winogronowych (skórki, pestki, ogonki) po tłoczeniu wina – typowo mocna i aromatyczna', 'Piemoncki likier z orzechów laskowych', 'Dolnowłoska wódka ryżowa'],
+      },
+      {
+        text: 'Co to jest Ouzo?',
+        answer: 'Grecki likier anyżkowy; mętnieje po dodaniu wody (efekt "louche") – chlorofil anyżu wytrąca się',
+        options: ['Turecka rakı z figami', 'Grecki likier anyżkowy; mętnieje po dodaniu wody (efekt "louche") – chlorofil anyżu wytrąca się', 'Albański destylat winogronowy', 'Cypryjska nalewka z kopru włoskiego'],
+      },
+      {
+        text: 'Jaka jest różnica między Pastis a Pernod?',
+        answer: 'Pastis to gatunek (anyżowy aperitif z lawendą i korzeniami); Pernod to marka – jeden z najpopularniejszych pastisów',
+        options: ['Pernod to marka absyntu, pastis jest bez thujonu', 'Pastis jest słodszy, Pernod wytrawny', 'Pastis to gatunek (anyżowy aperitif z lawendą i korzeniami); Pernod to marka – jeden z najpopularniejszych pastisów', 'Są identyczne – różnią się tylko opakowaniem'],
+      },
+      // Barman i techniki
+      {
+        text: 'Co to jest "free pouring" u barmana?',
+        answer: 'Nalewanie alkoholu bez miarki (jigger) z pamięci – wymaga doświadczenia i precyzji',
+        options: ['Podawanie drinków gratis w happy hour', 'Nalewanie alkoholu bez miarki (jigger) z pamięci – wymaga doświadczenia i precyzji', 'Technika nalewania piwa bez pianki', 'Serwowanie alkoholu prosto z beczki'],
+      },
+      {
+        text: 'Co to jest "jigger" w barmańskim slangu?',
+        answer: 'Mała miarka dwustronna do precyzyjnego odmierzania alkoholu (zazwyczaj 30 ml i 45 ml)',
+        options: ['Rodzaj shakera', 'Małe naczynie do degustacji', 'Mała miarka dwustronna do precyzyjnego odmierzania alkoholu (zazwyczaj 30 ml i 45 ml)', 'Nakrętka do butelek alkoholu'],
+      },
+      {
+        text: 'Jaka jest różnica między "up" a "on the rocks" przy zamawianiu drinka?',
+        answer: '"Up" = schłodzony i przecedzony do kieliszka bez lodu; "on the rocks" = podany z lodem w szklance',
+        options: ['"Up" to drink podany z kieliszka do góry nogami', '"On the rocks" to drink z solą na krawędzi szklanki', '"Up" = schłodzony i przecedzony do kieliszka bez lodu; "on the rocks" = podany z lodem w szklance', '"Up" to wyższy kieliszek, "rocks" to niższy'],
+      },
+      {
+        text: 'Co to jest "dirty" w kontekście Martini?',
+        answer: 'Martini z dodatkiem solanki z oliwek – daje słony, mętny smak',
+        options: ['Martini bez lodu i bez wermutu', 'Martini z brudnymi (nierówno zmielonymi) ziołami', 'Martini z dodatkiem solanki z oliwek – daje słony, mętny smak', 'Martini po wstrząśnięciu zamiast mieszania'],
+      },
+      {
+        text: 'Jak schładza się kieliszek do martini przed podaniem?',
+        answer: 'Wypełniając lodem i wodą na kilka minut, po czym wylewając przed nalaniem drinka',
+        options: ['Wkładając do zamrażarki na co najmniej 24 godziny', 'Wypełniając lodem i wodą na kilka minut, po czym wylewając przed nalaniem drinka', 'Polewając kieliszek zimną wodą pod kranem', 'Schładzanie kieliszka nie jest potrzebne przy zimnym drinku'],
+      },
+      {
+        text: 'Co to jest "amaro"?',
+        answer: 'Włoski gorzki likier ziołowy (amaro = gorzki); przykłady: Fernet-Branca, Averna, Montenegro',
+        options: ['Słodki włoski deser z mascarpone', 'Włoski gorzki likier ziołowy (amaro = gorzki); przykłady: Fernet-Branca, Averna, Montenegro', 'Argentyński napój fermentowany z ziół', 'Katalońska gorzka nalewka bez alkoholu'],
+      },
+      {
+        text: 'Co to jest Fernet-Branca?',
+        answer: 'Włoski amaro z 27 ziołami; popularny w Argentynie jako kac-lek i Mediolan jako digestif',
+        options: ['Szwajcarska wódka ziołowa na bazie alpejskich kwiatów', 'Włoski amaro z 27 ziołami; popularny w Argentynie jako kac-lek i Mediolan jako digestif', 'Czeski bitter ze szkoły mniszej', 'Belgijski likier czekoladowo-ziołowy'],
+      },
+      {
+        text: 'Co to jest "Angostura Bitters"?',
+        answer: 'Esencja bitterów z goryczki, ziół i kory angostury – używana kroplami do aromatyzowania koktajli (Old Fashioned, Manhattan)',
+        options: ['Wenezuelski rum z wyspy Trinidad', 'Esencja bitterów z goryczki, ziół i kory angostury – używana kroplami do aromatyzowania koktajli (Old Fashioned, Manhattan)', 'Argentyński aperitif o smaku anyżowym', 'Bitter produkowany wyłącznie do celów medycznych'],
+      },
+      // Wino musujące i szampan – szczegóły
+      {
+        text: 'Co to jest "Riddling" w produkcji szampana?',
+        answer: 'Stopniowe obracanie butelek (remuage) w celu przesunięcia drożdżowego osadu do szyjki przed dégorgement',
+        options: ['Dodawanie drożdży do butelki przed fermentacją', 'Stopniowe obracanie butelek (remuage) w celu przesunięcia drożdżowego osadu do szyjki przed dégorgement', 'Degustacja szampana po 3 latach leżakowania', 'Etykietowanie butelek szampana'],
+      },
+      {
+        text: 'Co to jest "dégorgement"?',
+        answer: 'Usuwanie drożdżowego osadu z szyjki butelki przez jej zamrożenie i wystrzelenie korka z osadem',
+        options: ['Dodawanie mieszanki dosage (cukier + wino) po otworzeniu', 'Usuwanie drożdżowego osadu z szyjki butelki przez jej zamrożenie i wystrzelenie korka z osadem', 'Degustacja wina po riddlingu przez sommeliera', 'Korekta kwasowości szampana przed finałowym korkowanie'],
+      },
+      {
+        text: 'Co to jest "dosage" w szampanie?',
+        answer: 'Mieszanina cukru i wina dodawana po dégorgement, ustalająca poziom słodkości (Brut, Extra Dry, Demi-Sec itp.)',
+        options: ['Ilość CO₂ dodawana do butelki', 'Mieszanina cukru i wina dodawana po dégorgement, ustalająca poziom słodkości (Brut, Extra Dry, Demi-Sec itp.)', 'Zawartość alkoholu mierzona przed butelkowaniem', 'Dawka siarki jako konserwant'],
+      },
+      {
+        text: 'Co oznacza "NV" (Non-Vintage) na butelce szampana?',
+        answer: 'Blend roczników (bez podanego roku) zapewniający stały styl domu szampańskiego; większość szampanów to NV',
+        options: ['Nisko alkoholowe wino musujące', 'Blend roczników (bez podanego roku) zapewniający stały styl domu szampańskiego; większość szampanów to NV', 'Nowy wariant smaku marki', 'Skrót od "Nowa Vintage" – najnowszy rocznik'],
+      },
+      // Popularne pytania wiedzy ogólnej
+      {
+        text: 'Jaki drink jest tradycyjnie podawany na Nowy Rok w Polsce?',
+        answer: 'Szampan lub wino musujące – toast o północy to powszechna tradycja',
+        options: ['Wódka z ogórkiem kiszonym', 'Miód pitny', 'Szampan lub wino musujące – toast o północy to powszechna tradycja', 'Krupnik – miodówka z korzeniami'],
+      },
+      {
+        text: 'Czym jest Krupnik?',
+        answer: 'Polska nalewka/likier na miodzie i korzeniach (cynamon, goździki, kardamon, wanilia) – tradycyjnie podawany gorący',
+        options: ['Zupa z kaszy w wydaniu alkoholowym', 'Polska nalewka/likier na miodzie i korzeniach (cynamon, goździki, kardamon, wanilia) – tradycyjnie podawany gorący', 'Litewskie piwo miodowe', 'Rosyjska wódka z miodowym aromatem'],
+      },
+      {
+        text: 'Co to jest Nalewka?',
+        answer: 'Polskie tradycyjne destylaty/maceraty owocowe lub ziołowe na spirytusie – domowe nalewki to wielowiekowa tradycja',
+        options: ['Rodzaj polskiej wódki klasy premium', 'Polskie tradycyjne destylaty/maceraty owocowe lub ziołowe na spirytusie – domowe nalewki to wielowiekowa tradycja', 'Mieszanina win importowanych pod polską etykietą', 'Zakwas na chleb – nie alkohol'],
+      },
+      {
+        text: 'Czym jest Miód pitny?',
+        answer: 'Fermentowany napój miodowy – jeden z najstarszych alkoholi w Polsce; od półtoraka do czwórniaka zależnie od proporcji miodu',
+        options: ['Miód z wodą podgrzany do gorącej czekolady', 'Fermentowany napój miodowy – jeden z najstarszych alkoholi w Polsce; od półtoraka do czwórniaka zależnie od proporcji miodu', 'Likier miodowy na bazie spirytusu', 'Napój bezalkoholowy z miodu i jabłek'],
+      },
+      {
+        text: 'Co to jest Goldwasser (Goldwasser Gdańsk)?',
+        answer: 'Historyczny gdański likier ziołowy zawierający płatki złota 22-karatowego – produkowany od XVI w.',
+        options: ['Polska wódka z Mazur z dominującym smakiem zboża', 'Historyczny gdański likier ziołowy zawierający płatki złota 22-karatowego – produkowany od XVI w.', 'Woda mineralna z Gdańska z domieszką alkoholu', 'Pruski koniak produkowany do 1945 r.'],
+      },
+      {
+        text: 'Ile procent alkoholu ma typowy Baileys Irish Cream?',
+        answer: '17%',
+        options: ['10%', '17%', '25%', '35%'],
+      },
+      {
+        text: 'Z czego zrobiony jest Kahlúa?',
+        answer: 'Rum, cukier trzcinowy, kawa arabika i wanilia – meksykański likier kawowy',
+        options: ['Whisky, kawa i syrop klonowy', 'Rum, cukier trzcinowy, kawa arabika i wanilia – meksykański likier kawowy', 'Wódka z ekstraktem kawowca i mlekiem', 'Brazylijska cachaça z kawą i czekoladą'],
+      },
+      {
+        text: 'Co to jest Amaretto?',
+        answer: 'Włoski słodki likier migdałowy (lub z pestek moreli); Amaretto Disaronno to najbardziej znana marka',
+        options: ['Gorzki włoski aperitif na ziołach alpejskich', 'Włoski słodki likier migdałowy (lub z pestek moreli); Amaretto Disaronno to najbardziej znana marka', 'Destylat wiśniowy z Piemontu', 'Nalewka z migdałów i grappa'],
+      },
+      {
+        text: 'Jak się nazywa drink z Amaretto i soku pomarańczowego?',
+        answer: 'Amaretto Sour lub Godfather – Amaretto Sour to z cytryną, Godfather to z whisky/amaretto',
+        options: ['Sicilian Sunrise', 'Italian Dream', 'Amaretto Sour lub Godfather – Amaretto Sour to z cytryną, Godfather to z whisky/amaretto', 'Venetian Kiss'],
+      },
+      {
+        text: 'Co to jest Limoncello?',
+        answer: 'Włoski likier cytrynowy z południa Włoch (Amalfi, Sorrento, Capri) – macerowane skórki cytryn na spirytusie z cukrem',
+        options: ['Sycylijska lemoniada z domieszką alkoholu', 'Włoski likier cytrynowy z południa Włoch (Amalfi, Sorrento, Capri) – macerowane skórki cytryn na spirytusie z cukrem', 'Neapolitańskie wino cytrynowe', 'Likier produkowany tylko przez zakonnice w Kampanii'],
+      },
+      {
+        text: 'Co to jest Chambord?',
+        answer: 'Francuski likier z czarnych malin i owoców leśnych; używany w Kir Royale i French Martini',
+        options: ['Francuski koniak z regionu Chambord', 'Francuski likier z czarnych malin i owoców leśnych; używany w Kir Royale i French Martini', 'Alzacka nalewka z borówek', 'Likier produkowany w Château Chambord'],
+      },
+      {
+        text: 'Jak się nazywa tradycyjny japoński alkohol ryżowy?',
+        answer: 'Sake (日本酒) – fermentowany napój ryżowy; nieco mylnie zwany "winem ryżowym", technicznie bliższy piwu',
+        options: ['Soju', 'Umeshu', 'Sake (日本酒) – fermentowany napój ryżowy; nieco mylnie zwany "winem ryżowym", technicznie bliższy piwu', 'Shochu'],
+      },
+      {
+        text: 'Czym różni się Sake od Shochu?',
+        answer: 'Sake to fermentowany napój ryżowy (~15%); Shochu to destylowany alkohol z różnych składników (ryż, słodkie ziemniaki, kasza gryczana) – do 45%',
+        options: ['Sake jest mocniejsze (40%), Shochu słabsze (5%)', 'Sake to napój z ryżu brązowego, Shochu z białego', 'Sake to fermentowany napój ryżowy (~15%); Shochu to destylowany alkohol z różnych składników (ryż, słodkie ziemniaki, kasza gryczana) – do 45%', 'Shochu pochodzi z Chin, Sake tylko z Japonii'],
+      },
+      {
+        text: 'Co to jest Soju?',
+        answer: 'Koreański destylowany alkohol (podobny do wódki, ~20–25%); najlepiej sprzedający się alkohol spirytusowy na świecie',
+        options: ['Japońskie sake z dodatkiem limonki', 'Chiński baijiu rozcieńczony do koreańskich norm', 'Koreański destylowany alkohol (podobny do wódki, ~20–25%); najlepiej sprzedający się alkohol spirytusowy na świecie', 'Koreańskie piwo ryżowe z gazowaniem'],
+      },
+      {
+        text: 'Jaki jest najdrożej sprzedany alkohol na świecie?',
+        answer: 'Butelka Macallan Fine and Rare 1926 sprzedana za 2,7 mln USD w 2023 r.',
+        options: ['Pétrus 1945 za 1 mln USD', 'Butelka Macallan Fine and Rare 1926 sprzedana za 2,7 mln USD w 2023 r.', 'Dom Pérignon Rosé za 500 000 USD', 'Kolekcjonerska Coca-Cola z alkoholem za 3 mln USD'],
+      },
+      {
+        text: 'Ile procent pary wodnej wydziela się podczas destylacji jako "heads" (głowa) do odrzucenia?',
+        answer: 'Około 5–10% pierwszych destylatu (heads) zawiera metanol i aldehydy – zawsze odrzucane przez destylatorów',
+        options: ['Głowy stanowią ponad 50% destylatu', 'Głowy są zachowywane jako najlepszy alkohol', 'Około 5–10% pierwszych destylatu (heads) zawiera metanol i aldehydy – zawsze odrzucane przez destylatorów', 'Metanol usuwa się przez filtrację, nie przez odrzucenie głowy'],
+      },
+      {
+        text: 'Co to jest "Tails" w destylacji?',
+        answer: 'Końcowa frakcja destylatu z wyższymi alkoholami i fuzelami – zazwyczaj odrzucana lub redestylowana',
+        options: ['Etykieta na butelce destylatu', 'Końcowa frakcja destylatu z wyższymi alkoholami i fuzelami – zazwyczaj odrzucana lub redestylowana', 'Ostatnie kilka butelek z partii', 'Specjalna wersja alkoholu leżakowana najdłużej'],
+      },
+      {
+        text: 'Które piwo ma najwyższy poziom alkoholu na świecie?',
+        answer: 'Snake Venom (Scottish brewery Brewmeister) – ok. 67,5% ABV; produkowane metodą freeze distillation',
+        options: ['Carlsberg Special – 20%', 'Sam Adams Utopias – 28%', 'Snake Venom (Scottish brewery Brewmeister) – ok. 67,5% ABV; produkowane metodą freeze distillation', 'Chimay Grande Reserve – 9%'],
+      },
+      {
+        text: 'Czym jest "barrel aging" koktajli?',
+        answer: 'Maturacja gotowych koktajli (np. Negroni, Manhattan) w małych beczkach dębowych – dodaje złożoności i zaokrąglenia smaku',
+        options: ['Leżakowanie kieliszków w piwnicy przed podaniem', 'Maturacja gotowych koktajli (np. Negroni, Manhattan) w małych beczkach dębowych – dodaje złożoności i zaokrąglenia smaku', 'Dodawanie wiórków dębowych bezpośrednio do shejkera', 'Podawanie drinków w drewnianych kubkach'],
+      },
+      {
+        text: 'Co to jest "bottle service" w klubie?',
+        answer: 'Zakup całej butelki alkoholu z rezerwacją stolika VIP – zazwyczaj wielokrotnie droższy niż pojedyncze drinki',
+        options: ['Darmowa butelka wody mineralnej przy zamówieniu drinków', 'Zakup całej butelki alkoholu z rezerwacją stolika VIP – zazwyczaj wielokrotnie droższy niż pojedyncze drinki', 'Specjalny serwis dostawy alkoholu do domu', 'Voucher na darmowy drink w urodziny'],
+      },
+      {
+        text: 'Ile promili to granica stanu wskazania (nie upojenia) w Polsce?',
+        answer: '0,2–0,5‰ to stan po spożyciu; powyżej 0,5‰ to stan upojenia (różne przepisy karne)',
+        options: ['Każde stężenie powyżej 0,1‰', '0,2–0,5‰ to stan po spożyciu; powyżej 0,5‰ to stan upojenia (różne przepisy karne)', '1,0‰ i powyżej to granica wskazania', 'W Polsce nie ma prawnej definicji stanu wskazania'],
+      },
+      {
+        text: 'Jak długo pozostaje alkohol wykrywalny w moczu?',
+        answer: 'Etanol do ok. 12 godzin; metabolit EtG (ethyl glucuronide) nawet do 80 godzin po wypiciu',
+        options: ['Maksymalnie 2 godziny', 'Dokładnie 24 godziny', 'Etanol do ok. 12 godzin; metabolit EtG (ethyl glucuronide) nawet do 80 godzin po wypiciu', 'Alkohol jest w moczu widoczny przez cały tydzień'],
+      },
+      // Finałowe uzupełnienie – 24 pytania
+      {
+        text: 'Co to jest "shrub" w nowoczesnym barmaństwie?',
+        answer: 'Syrop octan-owocowy (ocet + owoce + cukier) dodawany do koktajli dla kwasowości i głębi – modny składnik craft barów',
+        options: ['Rodzaj garniru z ziół na krawędzi szklanki', 'Syrop octan-owocowy (ocet + owoce + cukier) dodawany do koktajli dla kwasowości i głębi – modny składnik craft barów', 'Napar z owoców bez alkoholu', 'Technika zamrażania cytrusów do koktajli'],
+      },
+      {
+        text: 'Jaki drink tradycyjnie pija się na wieczorze panieńskim w UK?',
+        answer: 'Prosecco i Jägerbomby to klasyka; "Woo Woo" (wódka, peach schnapps, żurawina) jest bardzo popularny',
+        options: ['Piwo Guinness', 'Prosecco i Jägerbomby to klasyka; "Woo Woo" (wódka, peach schnapps, żurawina) jest bardzo popularny', 'Port z tonikiem', 'Wyłącznie szampan Premier Cru'],
+      },
+      {
+        text: 'Co to jest "Sgroppino"?',
+        answer: 'Wenecki drink: sorbet cytrynowy + prosecco + wódka – podawany jako deser lub aperitif',
+        options: ['Sycylijska granita z limoncello', 'Wenecki drink: sorbet cytrynowy + prosecco + wódka – podawany jako deser lub aperitif', 'Piemoncki koktajl z Arneis i grapefruitem', 'Toskański drink ze Vin Santo i lodu'],
+      },
+      {
+        text: 'Czym jest "aquavit" (akvavit)?',
+        answer: 'Skandynawski destylat zbożowy/ziemniaczany aromatyzowany kminem lub koprem włoskim – tradycyjny napój Szwecji, Norwegii i Danii',
+        options: ['Fińska wódka arktyczna', 'Skandynawski destylat zbożowy/ziemniaczany aromatyzowany kminem lub koprem włoskim – tradycyjny napój Szwecji, Norwegii i Danii', 'Islandzki likier z porostów', 'Duński ekstrakt z ryb morskich'],
+      },
+      {
+        text: 'Jaka jest polska norma zawartości alkoholu w wódce?',
+        answer: 'Minimum 37,5% ABV – taki wymóg nakłada unijne rozporządzenie dla Spirit Drinks',
+        options: ['Dokładnie 40% – mniej to nie wódka', 'Minimum 37,5% ABV – taki wymóg nakłada unijne rozporządzenie dla Spirit Drinks', 'Co najmniej 50% ABV', 'Brak minimalnej normy w Unii Europejskiej'],
+      },
+      {
+        text: 'Co to jest Baijiu?',
+        answer: 'Chiński destylowany alkohol ze zboża (sorgo, ryż, kukurydza) – najsprzedawalniejszy mocny alkohol świata, ok. 50–60% ABV',
+        options: ['Japońska wódka ryżowa dla kobiet', 'Chiński destylowany alkohol ze zboża (sorgo, ryż, kukurydza) – najsprzedawalniejszy mocny alkohol świata, ok. 50–60% ABV', 'Koreański piwo ryżowe z fusami', 'Wietnamski likier z ryżu i ziół'],
+      },
+      {
+        text: 'Co to jest Pisco?',
+        answer: 'Peruwiański/chilijski destylat winogronowy – obie nacje kłócą się o jego ojczyznę; baza Pisco Sour',
+        options: ['Meksykański rum z Jukastanu', 'Peruwiański/chilijski destylat winogronowy – obie nacje kłócą się o jego ojczyznę; baza Pisco Sour', 'Kolumbijska cachaça z Karaibów', 'Argentyński likier różany'],
+      },
+      {
+        text: 'Z czego składa się Pisco Sour?',
+        answer: 'Pisco, sok z limonki, syrop cukrowy, białko jajka i bitter Angostura – koktajl narodowy Peru',
+        options: ['Cachaça, limonka, cukier, soda', 'Pisco, sok z limonki, syrop cukrowy, białko jajka i bitter Angostura – koktajl narodowy Peru', 'Tequila, grejpfrut, sól, białko', 'Rum, cytryna, syrop, piana z mleka'],
+      },
+      {
+        text: 'Jak się nazywa cydr musujący z Normandii?',
+        answer: 'Cidre Bouché Brut de Normandie – chronione oznaczenie geograficzne; tradycyjnie podawany w kuflach',
+        options: ['Calvados Extra Young', 'Cidre Bouché Brut de Normandie – chronione oznaczenie geograficzne; tradycyjnie podawany w kuflach', 'Pommeau de Normandie', 'Poiré – gruszkowiec z Normandii'],
+      },
+      {
+        text: 'Co to jest Poiré?',
+        answer: 'Cydr gruszkowy z Normandii lub Bretanii – lżejszy od jabłkowego, bardzo aromatyczny',
+        options: ['Belgijskie piwo pszeniczne z gruszką', 'Cydr gruszkowy z Normandii lub Bretanii – lżejszy od jabłkowego, bardzo aromatyczny', 'Alzacki destylat gruszkowy (eau-de-vie)', 'Szwajcarski likier gruszkowy z kawy'],
+      },
+      {
+        text: 'Ile procent alkoholu ma Campari?',
+        answer: '20,5–25% – zależnie od rynku; włoski bitter z 60+ składnikami',
+        options: ['5%', '12%', '20,5–25% – zależnie od rynku; włoski bitter z 60+ składnikami', '40%'],
+      },
+      {
+        text: 'Czym zabarwiony był oryginalny Campari?',
+        answer: 'Koszenilą (barwnik z owadów Dactylopius coccus) – w 2006 r. zamieniony na syntetyczny barwnik E124',
+        options: ['Sokiem z wiśni i buraków', 'Czerwoną papryką i kurkumą', 'Koszenilą (barwnik z owadów Dactylopius coccus) – w 2006 r. zamieniony na syntetyczny barwnik E124', 'Ekstraktem z różowego pieprzu'],
+      },
+      {
+        text: 'Co to jest "Punt e Mes"?',
+        answer: 'Włoski wermut czerwony (Carpano) o intensywnej goryczy – nazwa znaczy "punkt i pół" w dialekcie turyńskim',
+        options: ['Piemoncki destylat ze skórek cytrusów', 'Włoski wermut czerwony (Carpano) o intensywnej goryczy – nazwa znaczy "punkt i pół" w dialekcie turyńskim', 'Toskański likier szałwiowy', 'Sycylijski amaretto z migdałów i wina'],
+      },
+      {
+        text: 'Jaki drink podaje się w miedzianym kubku i dlaczego?',
+        answer: 'Moscow Mule – miedź schładza szybciej i wzmacnia odczucie orzeźwienia przez przewodnictwo cieplne',
+        options: ['Negroni – dla zachowania temperatury', 'Mojito – miedź redukuje utlenianie mięty', 'Moscow Mule – miedź schładza szybciej i wzmacnia odczucie orzeźwienia przez przewodnictwo cieplne', 'Dark and Stormy – tradycja z XVIII-wiecznych statków'],
+      },
+      {
+        text: 'Co to jest Tequila Blanco (Silver)?',
+        answer: 'Tequila bez leżakowania lub leżakowana do 60 dni – czysta, o wyrazistym smaku agawy',
+        options: ['Tequila z dodatkiem srebra koloidalnego', 'Tequila z mniej niż 51% agawy niebieskiej', 'Tequila bez leżakowania lub leżakowana do 60 dni – czysta, o wyrazistym smaku agawy', 'Najdroższa klasa tequili'],
+      },
+      {
+        text: 'Co to jest Tequila Añejo?',
+        answer: 'Tequila leżakująca 1–3 lata w beczkach dębowych – bardziej złożona, z nutami wanilii i karmelu',
+        options: ['Tequila produkowana przed 1950 r.', 'Tequila z dodatkiem karmelu jako barwnika', 'Tequila leżakująca 1–3 lata w beczkach dębowych – bardziej złożona, z nutami wanilii i karmelu', 'Tequila przefiltrowana przez węgiel aktywny'],
+      },
+      {
+        text: 'Ile kalorii ma standardowy kieliszek (40 ml) wódki 40%?',
+        answer: 'Około 96 kcal – alkohol daje 7 kcal/g, więc 40 ml × 0,4 × 0,789 g/ml × 7 kcal',
+        options: ['Około 20 kcal', 'Około 50 kcal', 'Około 96 kcal – alkohol daje 7 kcal/g, więc 40 ml × 0,4 × 0,789 g/ml × 7 kcal', 'Około 200 kcal'],
+      },
+      {
+        text: 'Czym jest "ABV" na etykiecie alkoholu?',
+        answer: 'Alcohol By Volume – procent objętości czystego etanolu względem całkowitej objętości napoju',
+        options: ['Absolute Best Vintage – oznaczenie jakości', 'Alcohol By Volume – procent objętości czystego etanolu względem całkowitej objętości napoju', 'Average Bottle Value – cena rynkowa butelki', 'Ageing Barrel Variety – typ beczki do leżakowania'],
+      },
+      {
+        text: 'Co to jest "Proof" jako miara alkoholu (system USA)?',
+        answer: 'Proof w USA = 2 × ABV%, więc 80 proof = 40% ABV; wywodzi się z angielskiego testu prochu z XVII w.',
+        options: ['Proof = ABV% / 2', 'Proof w USA = 2 × ABV%, więc 80 proof = 40% ABV; wywodzi się z angielskiego testu prochu z XVII w.', 'Proof = 10 × zawartość w g/l', 'Proof to certyfikat jakości bez związku z alkoholem'],
+      },
+      {
+        text: 'Jaki jest najpopularniejszy alkohol spożywany na polskich weselach?',
+        answer: 'Wódka – wg badań GUS i CBOS dominuje na weselach z ok. 80% udziałem',
+        options: ['Piwo', 'Wino', 'Wódka – wg badań GUS i CBOS dominuje na weselach z ok. 80% udziałem', 'Nalewki domowe'],
+      },
+      {
+        text: 'Jak alkohol wpływa na koordynację ruchową?',
+        answer: 'Hamuje móżdżek i układ przedsionkowy odpowiedzialne za równowagę i koordynację – stąd zataczanie przy 0,5–1,5‰',
+        options: ['Poprawia koordynację przez relaks mięśni', 'Wpływa tylko na wzrok, nie na ruch', 'Hamuje móżdżek i układ przedsionkowy odpowiedzialne za równowagę i koordynację – stąd zataczanie przy 0,5–1,5‰', 'Koordynacja spada tylko po przekroczeniu 3‰'],
+      },
+      {
+        text: 'Co to jest "drink spiking" i dlaczego jest przestępstwem?',
+        answer: 'Dodawanie alkoholu lub substancji odurzających do drinka bez wiedzy osoby; karalne w Polsce i UE jako przestępstwo przeciw nietykalności cielesnej',
+        options: ['Wlewanie mocniejszego alkoholu do słabszego drinka za barmanem', 'Dodawanie alkoholu lub substancji odurzających do drinka bez wiedzy osoby; karalne w Polsce i UE jako przestępstwo przeciw nietykalności cielesnej', 'Serwowanie alkoholu nieletnim w koktajlach', 'Podawanie fałszywego mocnego alkoholu jako wody'],
+      },
+      {
+        text: 'Jaki smak ma Galliano?',
+        answer: 'Anyżowo-waniliowy z nutami cytrusów i ziołowymi – włoski likier o wyrazistym, złożonym aromacie',
+        options: ['Kawowy z kardamonem i wanilią', 'Anyżowo-waniliowy z nutami cytrusów i ziołowymi – włoski likier o wyrazistym, złożonym aromacie', 'Czekoladowo-miętowy', 'Malinowo-różany z pieprzem'],
+      },
+      {
+        text: 'Co to jest "toast" i skąd pochodzi tradycja wznoszenia toastów?',
+        answer: 'Ze starożytnego zwyczaju wkładania opieczonego chleba (toast) do wina – wcześniej do pucharu, by wchłonąć osad; dziś symboliczny gest wzniesienia kieliszka',
+        options: ['Z angielskiego słowa "toast" oznaczającego ogień', 'Ze starożytnego zwyczaju wkładania opieczonego chleba (toast) do wina – wcześniej do pucharu, by wchłonąć osad; dziś symboliczny gest wzniesienia kieliszka', 'Z francuskiej tradycji monarchistycznej z XIV w.', 'Z greckiego słowa "toastos" oznaczającego zdrowie'],
       },
     ],
   },

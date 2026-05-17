@@ -36,12 +36,15 @@ export function GameSummary({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1
-          className="shimmer-text text-6xl tracking-widest sm:text-7xl"
-          style={{ fontFamily: "var(--font-app)" }}
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.1 }}
+          className="shimmer-text text-[clamp(2rem,12vw,6rem)] leading-[1.1] tracking-wide uppercase whitespace-nowrap"
+          style={{ fontFamily: 'var(--font-logo)' }}
         >
-          Game Over, Cowgirls!
-        </h1>
+          Game Over,<br /> Cowgirls!
+        </motion.h1>
         <p className="text-text-muted mt-2 text-xs tracking-widest uppercase">
           Końcowy ranking kowbojek
         </p>
