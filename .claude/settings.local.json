@@ -33,7 +33,10 @@
       "Bash(Remove-Item \"src/components/cards/CardDeck.tsx\", \"src/components/cards/CardBackFace.tsx\", \"src/components/cards/CardFrontFace.tsx\", \"src/components/GameScreen.tsx\", \"src/components/GameOverScreen.tsx\", \"src/components/Scoreboard.tsx\", \"src/components/SetupScreen.tsx\" -ErrorAction SilentlyContinue)",
       "Bash(Write-Host \"Deleted\")",
       "Bash(Remove-Item \"src\\\\components\\\\HostHighLowScreen.tsx\")",
-      "Bash(Remove-Item \"src\\\\components\\\\PlayerHighLowScreen.tsx\")"
+      "Bash(Remove-Item \"src\\\\components\\\\PlayerHighLowScreen.tsx\")",
+      "Bash(mkdir -p \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\\\\app\\\\api\\\\sessions\\\\[pin]\\\\battle-royale\\\\round\" \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\\\\app\\\\api\\\\sessions\\\\[pin]\\\\battle-royale\\\\answer\" \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\\\\app\\\\api\\\\sessions\\\\[pin]\\\\battle-royale\\\\reveal\" \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\\\\app\\\\api\\\\sessions\\\\[pin]\\\\battle-royale\\\\next\")",
+      "Bash(npx next *)",
+      "Bash(Select-Object Name, FullName)"
     ]
   }
 }

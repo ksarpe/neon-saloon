@@ -230,6 +230,48 @@ export type HighLowRoundResultPayload = {
   scores: ScoreEntry[];
 };
 
+// ─── Battle Royale event payloads ────────────────────────────────────────────
+
+export type BRRoundStartPayload = {
+  questionIndex: number;
+  questionText: string;
+  options: string[];
+  timerDuration: number;
+  roundStartTime: number;
+  alivePlayers: string[];  // playerIds still in game
+};
+
+export type BRAnswerSubmittedPayload = {
+  playerId: string;
+  playerName: string;
+};
+
+export type BRAnswerResult = {
+  playerId: string;
+  playerName: string;
+  avatar: string;
+  answerIndex: number;
+  answerText: string;
+  answeredAt: number;
+  isCorrect: boolean;
+  isEliminated: boolean;
+};
+
+export type BRRoundRevealPayload = {
+  questionText: string;
+  correctAnswer: string;
+  answers: BRAnswerResult[];
+  eliminatedThisRound: string[];  // playerIds
+  survivingPlayers: string[];     // playerIds still alive after this round
+  gameOver: boolean;
+  winner?: string;                // playerName if only 1 remains
+};
+
+export type BRGameOverPayload = {
+  winner?: string;
+  survivingPlayers: string[];
+};
+
 export type SessionEvent =
   | { event: "player-joined"; data: PlayerJoinedPayload }
   | { event: "player-left"; data: PlayerLeftPayload }
@@ -242,6 +284,10 @@ export type SessionEvent =
   | { event: "game-finished"; data: GameFinishedPayload }
   | { event: "highlow-round-start"; data: HighLowRoundStartPayload }
   | { event: "highlow-number-submitted"; data: HighLowNumberSubmittedPayload }
-  | { event: "highlow-round-result"; data: HighLowRoundResultPayload };
+  | { event: "highlow-round-result"; data: HighLowRoundResultPayload }
+  | { event: "br-round-start"; data: BRRoundStartPayload }
+  | { event: "br-answer-submitted"; data: BRAnswerSubmittedPayload }
+  | { event: "br-round-reveal"; data: BRRoundRevealPayload }
+  | { event: "br-game-over"; data: BRGameOverPayload };
 
 export const sessionChannel = (pin: string) => `session-${pin}`;

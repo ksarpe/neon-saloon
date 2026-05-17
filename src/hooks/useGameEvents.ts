@@ -82,6 +82,18 @@ function dispatch(
     case "highlow-round-result":
       handlers.onHighLowRoundResult?.(data as Parameters<NonNullable<GameSocketHandlers["onHighLowRoundResult"]>>[0]);
       break;
+    case "br-round-start":
+      handlers.onBRRoundStart?.(data as Parameters<NonNullable<GameSocketHandlers["onBRRoundStart"]>>[0]);
+      break;
+    case "br-answer-submitted":
+      handlers.onBRAnswerSubmitted?.(data as Parameters<NonNullable<GameSocketHandlers["onBRAnswerSubmitted"]>>[0]);
+      break;
+    case "br-round-reveal":
+      handlers.onBRRoundReveal?.(data as Parameters<NonNullable<GameSocketHandlers["onBRRoundReveal"]>>[0]);
+      break;
+    case "br-game-over":
+      handlers.onBRGameOver?.(data as Parameters<NonNullable<GameSocketHandlers["onBRGameOver"]>>[0]);
+      break;
     default:
       console.warn(`[Appwrite RT] unknown event type: ${type}`);
   }

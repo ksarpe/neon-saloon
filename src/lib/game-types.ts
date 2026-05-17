@@ -18,6 +18,10 @@ export type {
   HighLowRoundStartPayload,
   HighLowNumberSubmittedPayload,
   HighLowRoundResultPayload,
+  BRRoundStartPayload,
+  BRAnswerSubmittedPayload,
+  BRRoundRevealPayload,
+  BRGameOverPayload,
   SessionEvent,
 } from '@/lib/appwrite/realtime'
 
@@ -34,6 +38,10 @@ import type {
   HighLowRoundStartPayload,
   HighLowNumberSubmittedPayload,
   HighLowRoundResultPayload,
+  BRRoundStartPayload,
+  BRAnswerSubmittedPayload,
+  BRRoundRevealPayload,
+  BRGameOverPayload,
 } from '@/lib/appwrite/realtime'
 
 // ─── Handler interface ────────────────────────────────────────────────────────
@@ -52,4 +60,8 @@ export interface GameSocketHandlers {
   onHighLowRoundStart?: (data: HighLowRoundStartPayload) => void
   onHighLowNumberSubmitted?: (data: HighLowNumberSubmittedPayload) => void
   onHighLowRoundResult?: (data: HighLowRoundResultPayload) => void
+  onBRRoundStart?: (data: BRRoundStartPayload) => void
+  onBRAnswerSubmitted?: (data: BRAnswerSubmittedPayload) => void
+  onBRRoundReveal?: (data: BRRoundRevealPayload) => void
+  onBRGameOver?: (data: BRGameOverPayload) => void
 }

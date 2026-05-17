@@ -3,6 +3,7 @@
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import HostScreen from '@/components/Host'
 import HostHighLowScreen from '@/components/HighLow/HostHighLowScreen'
+import BattleRoyaleHost from '@/components/BattleRoyale/BattleRoyaleHost'
 import { buildDeck } from '@/lib/store'
 import { useMemo, useEffect, useState } from 'react'
 import type { GameCard } from '@/lib/store'
@@ -97,9 +98,11 @@ function PickerShell({
 function CategoryPicker({
   onSelect,
   onBack,
+  loading = false,
 }: {
   onSelect: (id: string) => void
   onBack: () => void
+  loading?: boolean
 }) {
   return (
     <PickerShell
@@ -116,10 +119,12 @@ function CategoryPicker({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: i * 0.08 }}
             whileTap={{ scale: 0.97 }}
+            disabled={loading}
             onClick={() => onSelect(cat.id)}
-            className="flex flex-col gap-2 rounded-2xl border-2 p-5 text-left transition-all duration-200"
+            className="flex flex-col gap-2 rounded-2xl border-2 p-5 text-left transition-all duration-200 disabled:opacity-50"
             style={{ borderColor: cat.border, backgroundColor: cat.bg }}
             onMouseEnter={(e) => {
+              if (loading) return
               e.currentTarget.style.boxShadow = `0 0 24px ${cat.border}`
               e.currentTarget.style.borderColor = cat.color
             }}
@@ -138,6 +143,12 @@ function CategoryPicker({
           </motion.button>
         ))}
       </div>
+      {loading && (
+        <div className="flex items-center justify-center gap-2 pt-2">
+          <Loader2 size={14} className="animate-spin" style={{ color: 'var(--text-muted)' }} />
+          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Konfiguruję grę…</span>
+        </div>
+      )}
     </PickerShell>
   )
 }
@@ -346,6 +357,8 @@ export default function HostPage() {
   const [customCards, setCustomCards] = useState<GameCard[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [neverSource, setNeverSource] = useState<NeverSource | null>(null)
+  const [brCategoryId, setBrCategoryId] = useState<string | null>(null)
+  const [brSetupLoading, setBrSetupLoading] = useState(false)
 
   // HighLow teams (null = not yet set up)
   const [hlTeam1, setHlTeam1] = useState<SessionTeam | null>(null)
@@ -429,6 +442,33 @@ export default function HostPage() {
 
   if (mode === 'never' && !neverSource) {
     return <NeverSourcePicker onSelect={setNeverSource} onBack={() => router.push('/graj/host')} />
+  }
+
+  // ── Battle Royale: category selection then host screen ───────────────────────
+
+  if (mode === 'battle-royale') {
+    if (!brCategoryId) {
+      return (
+        <CategoryPicker
+          onSelect={async (catId) => {
+            setBrSetupLoading(true)
+            try {
+              await fetch(`/api/sessions/${pin}/battle-royale/setup`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ categoryId: catId }),
+              })
+              setBrCategoryId(catId)
+            } finally {
+              setBrSetupLoading(false)
+            }
+          }}
+          onBack={() => router.push('/graj/host')}
+          loading={brSetupLoading}
+        />
+      )
+    }
+    return <BattleRoyaleHost pin={pin} categoryId={brCategoryId} />
   }
 
   // ── HighLow: team setup step then lobby ──────────────────────────────────

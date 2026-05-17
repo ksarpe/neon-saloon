@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { Loader2, Dices, Brain, Heart, BookOpen, TrendingUp } from 'lucide-react'
+import { Loader2, Dices, Brain, Heart, BookOpen, TrendingUp, Swords } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ProModal } from '@/components/ui/ContentGate'
 import { useContentAccess } from '@/hooks/useContentAccess'
@@ -50,6 +50,16 @@ const GAME_MODES = [
     border: 'rgba(16,185,129,0.5)',
     bg: 'rgba(16,185,129,0.07)',
     isPremium: true,
+  },
+  {
+    id: 'battle-royale',
+    icon: Swords,
+    label: 'Battle Royale',
+    description:
+      'Wszyscy odpowiadają naraz. Kto się pomyli — odpada. Jeśli wszyscy dobrze — odpada najwolniejszy. Ostatni ocalały wygrywa.',
+    color: '#ef4444',
+    border: 'rgba(239,68,68,0.5)',
+    bg: 'rgba(239,68,68,0.07)',
   },
 ]
 

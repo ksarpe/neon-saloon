@@ -6,6 +6,7 @@ import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
 import { ensureAnonymousSession } from '@/lib/appwrite/client'
 import PlayerGameScreen from '@/components/PlayerGame'
 import PlayerHighLowScreen from '@/components/HighLow/PlayerHighLowScreen'
+import BattleRoyalePlayer from '@/components/BattleRoyale/BattleRoyalePlayer'
 import { useBackButton } from '@/lib/back-button-context'
 import type {
   PlayerJoinedPayload,
@@ -13,6 +14,7 @@ import type {
   TeamUpdatedPayload,
   GameStartedPayload,
   HighLowRoundStartPayload,
+  BRRoundStartPayload,
 } from '@/lib/game-types'
 import { slide } from './types'
 import type { Step, LiveTeam, PlayerInfo } from './types'
@@ -39,6 +41,8 @@ export default function JoinGameForm() {
   const [gameStartData, setGameStartData] = useState<GameStartedPayload | null>(null)
   // HighLow first round data
   const [hlRoundData, setHlRoundData] = useState<HighLowRoundStartPayload | null>(null)
+  // Battle Royale: store first round data so BattleRoyalePlayer can initialize immediately
+  const [brRoundData, setBrRoundData] = useState<BRRoundStartPayload | null>(null)
 
   const { setHidden: setBackHidden } = useBackButton()
 
@@ -125,6 +129,10 @@ export default function JoinGameForm() {
       setHlRoundData(d)
       setStep('playing')
     }, []),
+    onBRRoundStart: useCallback((d: BRRoundStartPayload) => {
+      setBrRoundData(d)
+      setStep('playing')
+    }, []),
   })
 
   // ── Step handlers ────────────────────────────────────────────────────────────
@@ -200,6 +208,17 @@ export default function JoinGameForm() {
         />
       )
     }
+    if (gameMode === 'battle-royale' && brRoundData) {
+      return (
+        <BattleRoyalePlayer
+          pin={pin}
+          playerId={playerInfo.playerId}
+          playerName={playerName}
+          avatar={playerInfo.avatar}
+          initialRoundData={brRoundData}
+        />
+      )
+    }
     if (gameStartData) {
       return (
         <PlayerGameScreen
@@ -252,7 +271,11 @@ export default function JoinGameForm() {
               transition={{ duration: 0.18, ease: 'easeInOut' }}>
               <NameInput value={playerName} onChange={setPlayerName} avatar={avatar}
                 onAvatarChange={setAvatar}
-                onSubmit={() => setStep(gameMode === 'highlow' ? 'team' : 'mode')}
+                onSubmit={() => {
+                  if (gameMode === 'battle-royale') doJoin(null, null)
+                  else if (gameMode === 'highlow') setStep('team')
+                  else setStep('mode')
+                }}
                 onBack={() => setStep('pin')} />
             </motion.div>
           )}

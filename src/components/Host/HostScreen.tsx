@@ -13,7 +13,7 @@ import type {
   NextCardPayload,
 } from '@/lib/game-types'
 import type { GameCard } from '@/lib/store'
-import type { LivePlayer, ScoreEntry, TeamScoreEntry, HostPhase, HostScreenProps } from './types'
+import type { LivePlayer, ScoreEntry, TeamScoreEntry, HostPhase, HostScreenProps, VoteRecord } from './types'
 import { computeTeamScores } from './types'
 import { SetupView } from './SetupView'
 import { LobbyView } from './LobbyView'
@@ -40,7 +40,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
   const [cardIndex, setCardIndex] = useState(0)
   const [currentVotes, setCurrentVotes] = useState<VoteCastPayload[]>([])
   const [isRevealed, setIsRevealed] = useState(false)
-  const [revealedVotes, setRevealedVotes] = useState<ReturnType<typeof Array.prototype.map>>([])
+  const [revealedVotes, setRevealedVotes] = useState<VoteRecord[]>([])
   const [scores, setScores] = useState<ScoreEntry[]>([])
   const [teamScores, setTeamScores] = useState<TeamScoreEntry[]>([])
   const [countdown, setCountdown] = useState<number | null>(null)

@@ -44,6 +44,25 @@ export type HighLowSessionData = {
   currentNumber?: string;
 };
 
+export type BRAnswer = {
+  playerId: string;
+  playerName: string;
+  avatar: string;
+  answerIndex: number;   // -1 = no answer (timed out)
+  answerText: string;
+  answeredAt: number;    // ms since epoch; -1 = timed out
+  isCorrect: boolean;
+};
+
+export type BattleRoyaleData = {
+  categoryId: string;
+  questionIndex: number;
+  eliminatedPlayers: string[];  // playerIds eliminated so far
+  roundAnswers: BRAnswer[];     // answers for the current round (cleared each round)
+  timerDuration: number;        // seconds (default 20)
+  roundStartTime?: number;      // ms epoch when round started
+};
+
 export type SessionData = {
   pin: string;
   hostName: string;
@@ -55,6 +74,7 @@ export type SessionData = {
   votes: SessionVote[];
   gameMode?: string;
   highlowData?: HighLowSessionData;
+  battleRoyaleData?: BattleRoyaleData;
 };
 import { AppwriteException, Models } from "node-appwrite";
 
