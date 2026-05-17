@@ -5,6 +5,8 @@ import { useBackButton } from '@/lib/back-button-context'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
 import { GameSummary } from '@/components/GameSummary'
+import { hostAuthHeaders, hostJsonHeaders } from '@/lib/session-host-secret'
+import { playerJsonHeaders, savePlayerSecret } from '@/lib/session-player-secret'
 import type {
   PlayerJoinedPayload,
   PlayerLeftPayload,
@@ -49,7 +51,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
 
   // ── Hydrate on mount ─────────────────────────────────────────────────────────
   useEffect(() => {
-    fetch(`/api/sessions/${pin}`)
+    fetch(`/api/sessions/${pin}`, { headers: hostAuthHeaders(pin) })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (!data) return
@@ -65,7 +67,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
   useEffect(() => {
     if (phase !== 'lobby') return
     const id = setInterval(() => {
-      fetch(`/api/sessions/${pin}`)
+      fetch(`/api/sessions/${pin}`, { headers: hostAuthHeaders(pin) })
         .then((r) => (r.ok ? r.json() : null))
         .then((data) => { if (data?.players) setPlayers(data.players) })
         .catch(() => {})
@@ -77,7 +79,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
   useEffect(() => {
     if (phase !== 'active') return
     const id = setInterval(() => {
-      fetch(`/api/sessions/${pin}`)
+      fetch(`/api/sessions/${pin}`, { headers: hostAuthHeaders(pin) })
         .then((r) => (r.ok ? r.json() : null))
         .then((data) => {
           if (!data?.votes) return
@@ -147,6 +149,9 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
       })
       if (res.ok) {
         const data = await res.json()
+        if (typeof data.playerSecret === 'string') {
+          savePlayerSecret(pin, data.playerId, data.playerSecret)
+        }
         setHostPlayerId(data.playerId)
         setPlayers((p) => {
           if (p.some((x) => x.playerId === data.playerId)) return p
@@ -165,7 +170,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
 
     await fetch(`/api/sessions/${pin}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: hostJsonHeaders(pin),
       body: JSON.stringify({ action: 'start', card: firstCard }),
     })
     setPhase('active')
@@ -221,7 +226,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
     const updatedTeamScores = computeTeamScores(updatedScores)
     await fetch(`/api/sessions/${pin}/reveal`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: hostJsonHeaders(pin),
       body: JSON.stringify({
         cardIndex,
         correctAnswer: card.answer,
@@ -241,7 +246,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
     if (next >= initialCards.length) {
       await fetch(`/api/sessions/${pin}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: hostJsonHeaders(pin),
         body: JSON.stringify({ action: 'finish', scores, teamScores }),
       })
       setPhase('finished')
@@ -249,7 +254,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
     }
     await fetch(`/api/sessions/${pin}/next-card`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: hostJsonHeaders(pin),
       body: JSON.stringify({ cardIndex: next, card: initialCards[next] }),
     })
     setCardIndex(next)
@@ -265,7 +270,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
     try {
       await fetch(`/api/sessions/${pin}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: hostJsonHeaders(pin),
         body: JSON.stringify({ action: 'finish', scores, teamScores }),
       })
     } catch (err) {
@@ -280,7 +285,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
       try {
         await fetch(`/api/sessions/${pin}/vote`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: playerJsonHeaders(pin, hostPlayerId),
           body: JSON.stringify({
             playerId: hostPlayerId,
             playerName: hostName,

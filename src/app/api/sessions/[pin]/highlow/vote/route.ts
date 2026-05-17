@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/appwrite/sessions'
 import { triggerGameEvent as triggerSessionEvent } from '@/lib/appwrite/realtime'
 import { HIGHLOW_QUESTIONS } from '@/lib/games/highlow'
+import { getAuthorizedPlayer } from '@/lib/session-player-auth'
 import type { ScoreEntry } from '@/lib/game-types'
 
 type RouteContext = { params: Promise<{ pin: string }> }
@@ -17,10 +18,12 @@ export async function POST(request: Request, { params }: RouteContext) {
 
     const session = await getSession(pin)
     if (!session) return NextResponse.json({ error: 'Session not found' }, { status: 404 })
+    const player = getAuthorizedPlayer(request, session, playerId)
+    if (!player) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
     const hl = session.highlowData
     if (!hl) return NextResponse.json({ error: 'No active round' }, { status: 400 })
-    if (hl.votingCaptainId !== playerId) {
+    if (hl.votingCaptainId !== player.playerId) {
       return NextResponse.json({ error: 'Not the voting captain' }, { status: 403 })
     }
     if (!hl.currentNumber) {

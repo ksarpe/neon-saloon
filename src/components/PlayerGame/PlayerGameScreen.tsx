@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
+import { playerJsonHeaders } from '@/lib/session-player-secret'
 import type {
   WireCard,
   VotesRevealedPayload,
@@ -73,7 +74,7 @@ export default function PlayerGameScreen({
       try {
         await fetch(`/api/sessions/${pin}/vote`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: playerJsonHeaders(pin, playerId),
           body: JSON.stringify({
             playerId,
             playerName,

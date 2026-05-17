@@ -11,6 +11,7 @@ import HostScreen from '@/components/Host'
 import type { SessionTeam } from '@/lib/appwrite/sessions'
 import { useBackButton } from '@/lib/back-button-context'
 import { QUESTION_CATEGORIES } from '@/lib/games/categories'
+import { hostAuthHeaders, hostJsonHeaders } from '@/lib/session-host-secret'
 import type { GameCard } from '@/lib/store'
 import { buildDeck } from '@/lib/store'
 
@@ -324,7 +325,7 @@ function HighLowTeamSetup({
     try {
       const res = await fetch(`/api/sessions/${pin}/highlow/setup`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: hostJsonHeaders(pin),
         body: JSON.stringify({ team1Name: name1.trim(), team2Name: name2.trim() }),
       })
       if (!res.ok) throw new Error()
@@ -436,7 +437,7 @@ export default function HostPage() {
   // If navigating back to this page after teams were already set up, restore them
   useEffect(() => {
     if (mode !== 'highlow') return
-    fetch(`/api/sessions/${pin}`)
+    fetch(`/api/sessions/${pin}`, { headers: hostAuthHeaders(pin) })
       .then((r) => r.json())
       .then((data) => {
         if (Array.isArray(data.teams) && data.teams.length >= 2) {
@@ -554,7 +555,7 @@ export default function HostPage() {
             try {
               await fetch(`/api/sessions/${pin}/battle-royale/setup`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: hostJsonHeaders(pin),
                 body: JSON.stringify({ categoryId: catId }),
               })
               setBrCategoryId(catId)

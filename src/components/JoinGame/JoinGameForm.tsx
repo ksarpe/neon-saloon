@@ -4,6 +4,7 @@ import { useState, useCallback, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
 import { ensureAnonymousSession } from '@/lib/appwrite/client'
+import { getPlayerSecret, savePlayerSecret } from '@/lib/session-player-secret'
 import PlayerGameScreen from '@/components/PlayerGame'
 import PlayerHighLowScreen from '@/components/HighLow/PlayerHighLowScreen'
 import BattleRoyalePlayer from '@/components/BattleRoyale/BattleRoyalePlayer'
@@ -64,7 +65,9 @@ export default function JoinGameForm() {
       if (!pid || !p) return
       navigator.sendBeacon(
         `/api/sessions/${p}/leave`,
-        new Blob([JSON.stringify({ playerId: pid })], { type: 'application/json' })
+        new Blob([JSON.stringify({ playerId: pid, playerSecret: getPlayerSecret(p, pid) })], {
+          type: 'application/json',
+        })
       )
     }
     window.addEventListener('beforeunload', leave)
@@ -81,17 +84,20 @@ export default function JoinGameForm() {
       .then((r) => r.json())
       .then((data) => {
         if (Array.isArray(data.teams)) {
-          const players: Array<{ teamId: string | null }> = Array.isArray(data.players)
-            ? data.players
-            : []
           setLiveTeams(
             data.teams.map(
-              (t: { teamId: string; teamName: string; color: string; emoji: string }) => ({
+              (t: {
+                teamId: string
+                teamName: string
+                color: string
+                emoji: string
+                memberCount?: number
+              }) => ({
                 teamId: t.teamId,
                 teamName: t.teamName,
                 color: t.color,
                 emoji: t.emoji,
-                memberCount: players.filter((p) => p.teamId === t.teamId).length,
+                memberCount: t.memberCount ?? 0,
               })
             )
           )
@@ -175,6 +181,9 @@ export default function JoinGameForm() {
         })
         if (!res.ok) throw new Error()
         const data = await res.json()
+        if (typeof data.playerSecret === 'string') {
+          savePlayerSecret(pin, data.playerId, data.playerSecret)
+        }
         setPlayerInfo({
           playerId: data.playerId,
           avatar: data.avatar,

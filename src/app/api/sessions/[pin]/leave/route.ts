@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getSession, saveSession } from '@/lib/appwrite/sessions'
 import { triggerGameEvent as triggerSessionEvent } from '@/lib/appwrite/realtime'
+import { getAuthorizedPlayer } from '@/lib/session-player-auth'
 
 type RouteContext = { params: Promise<{ pin: string }> }
 
@@ -9,13 +10,15 @@ export async function POST(request: Request, { params }: RouteContext) {
 
   try {
     const body = await request.json()
-    const { playerId } = body as { playerId?: string }
+    const { playerId, playerSecret } = body as { playerId?: string; playerSecret?: string }
     if (!playerId) {
       return NextResponse.json({ error: 'playerId required' }, { status: 400 })
     }
 
     const session = await getSession(pin)
     if (!session) return NextResponse.json({ ok: true })
+    const player = getAuthorizedPlayer(request, session, playerId, playerSecret)
+    if (!player) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
     session.players = session.players.filter((p) => p.playerId !== playerId)
     await saveSession(session)

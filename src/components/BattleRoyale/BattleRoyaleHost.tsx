@@ -9,6 +9,8 @@ import { LobbyView } from '@/components/Host/LobbyView'
 import { Play, Skull, CheckCircle2, Clock, Trophy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { SessionPlayer } from '@/lib/appwrite/sessions'
+import { hostAuthHeaders } from '@/lib/session-host-secret'
+import { playerJsonHeaders, savePlayerSecret } from '@/lib/session-player-secret'
 import type {
   PlayerJoinedPayload,
   PlayerLeftPayload,
@@ -102,7 +104,7 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
   useEffect(() => {
     if (phase !== 'lobby') return
     const id = setInterval(() => {
-      fetch(`/api/sessions/${pin}`)
+      fetch(`/api/sessions/${pin}`, { headers: hostAuthHeaders(pin) })
         .then((r) => (r.ok ? r.json() : null))
         .then((d) => { if (d?.players) setPlayers(d.players) })
         .catch(() => {})
@@ -141,7 +143,10 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
     setLoading(true)
     if (timerRef.current) clearInterval(timerRef.current)
     try {
-      await fetch(`/api/sessions/${pin}/battle-royale/reveal`, { method: 'POST' })
+      await fetch(`/api/sessions/${pin}/battle-royale/reveal`, {
+        method: 'POST',
+        headers: hostAuthHeaders(pin),
+      })
     } finally {
       setLoading(false)
     }
@@ -163,11 +168,17 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
     if (loading) return
     setLoading(true)
     try {
-      const res = await fetch(`/api/sessions/${pin}/battle-royale/next`, { method: 'POST' })
+      const res = await fetch(`/api/sessions/${pin}/battle-royale/next`, {
+        method: 'POST',
+        headers: hostAuthHeaders(pin),
+      })
       const data = await res.json()
       if (data.finished) { setPhase('gameover'); return }
       setQuestionIndex((i) => i + 1)
-      await fetch(`/api/sessions/${pin}/battle-royale/round`, { method: 'POST' })
+      await fetch(`/api/sessions/${pin}/battle-royale/round`, {
+        method: 'POST',
+        headers: hostAuthHeaders(pin),
+      })
       setAnsweredIds(new Set())
       setRevealData(null)
       setHostHasAnswered(false)
@@ -215,6 +226,9 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
       })
       if (joinRes.ok) {
         const joinData = await joinRes.json()
+        if (typeof joinData.playerSecret === 'string') {
+          savePlayerSecret(pin, joinData.playerId, joinData.playerSecret)
+        }
         setHostPlayerId(joinData.playerId)
         setPlayers((p) => {
           if (p.some((x) => x.playerId === joinData.playerId)) return p
@@ -223,7 +237,10 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
       }
 
       // /round sets session.status = 'active' and fires br-round-start
-      await fetch(`/api/sessions/${pin}/battle-royale/round`, { method: 'POST' })
+      await fetch(`/api/sessions/${pin}/battle-royale/round`, {
+        method: 'POST',
+        headers: hostAuthHeaders(pin),
+      })
       setHostHasAnswered(false)
       setSelectedOptionIndex(null)
       setAnsweredIds(new Set())
@@ -241,7 +258,7 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
     try {
       await fetch(`/api/sessions/${pin}/battle-royale/answer`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: playerJsonHeaders(pin, hostPlayerId),
         body: JSON.stringify({
           playerId: hostPlayerId,
           playerName: hostName,

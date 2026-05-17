@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { saveSession, checkPinExists } from '@/lib/appwrite/sessions'
+import { createSession, type SessionData } from '@/lib/appwrite/sessions'
+import { createHostSecret, hashHostSecret } from '@/lib/session-host-auth'
 
 function generatePin(): string {
   const chars = '0123456789'
@@ -10,11 +11,28 @@ function generatePin(): string {
   return pin
 }
 
-async function generateUniquePin(): Promise<string> {
+async function createSessionWithUniquePin(
+  hostName: string,
+  gameMode: string,
+): Promise<{ pin: string; hostSecret: string }> {
   for (let attempt = 0; attempt < 10; attempt++) {
     const pin = generatePin()
-    const exists = await checkPinExists(pin)
-    if (!exists) return pin
+    const hostSecret = createHostSecret()
+    const session: SessionData = {
+      pin,
+      hostSecretHash: hashHostSecret(hostSecret),
+      hostName,
+      status: 'waiting',
+      createdAt: Date.now(),
+      players: [],
+      teams: [],
+      cardIndex: 0,
+      votes: [],
+      gameMode,
+    }
+
+    const created = await createSession(session)
+    if (created) return { pin, hostSecret }
   }
   throw new Error('Could not generate a unique PIN')
 }
@@ -25,21 +43,9 @@ export async function POST(request: Request) {
     const hostName: string = body.hostName ?? 'Host'
     const gameMode: string = body.gameMode ?? 'classic'
 
-    const pin = await generateUniquePin()
+    const { pin, hostSecret } = await createSessionWithUniquePin(hostName, gameMode)
 
-    await saveSession({
-      pin,
-      hostName,
-      status: 'waiting',
-      createdAt: Date.now(),
-      players: [],
-      teams: [],
-      cardIndex: 0,
-      votes: [],
-      gameMode,
-    })
-
-    return NextResponse.json({ pin }, { status: 201 })
+    return NextResponse.json({ pin, hostSecret }, { status: 201 })
   } catch (err) {
     console.error('[POST /api/sessions]', err)
     return NextResponse.json({ error: 'Failed to create session' }, { status: 500 })

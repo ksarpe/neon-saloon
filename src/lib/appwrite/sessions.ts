@@ -10,6 +10,7 @@ import {
 
 export type SessionPlayer = {
   playerId: string;
+  playerSecretHash?: string;
   playerName: string;
   avatar: string;
   teamId: string | null;
@@ -65,6 +66,7 @@ export type BattleRoyaleData = {
 
 export type SessionData = {
   pin: string;
+  hostSecretHash?: string;
   hostName: string;
   status: SessionStatus;
   createdAt: number;
@@ -121,6 +123,20 @@ function rowToSession(row: SessionRow): SessionData {
   return data;
 }
 
+function buildSessionRowData(data: SessionData) {
+  const status = toAppwriteStatus(data.status);
+
+  return {
+    pin: data.pin,
+    // hostName stored in hostId until NextAuth-Appwrite integration
+    hostId: data.hostName ?? "host",
+    players: JSON.stringify(data.players ?? []),
+    state: JSON.stringify(data),
+    status,
+    updatedAt: new Date().toISOString(),
+  };
+}
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
@@ -143,26 +159,36 @@ export async function getSession(pin: string): Promise<SessionData | null> {
 }
 
 /**
+ * Create a new session row. Returns false when the PIN already exists.
+ */
+export async function createSession(data: SessionData): Promise<boolean> {
+  const db = getTablesDB();
+
+  try {
+    await db.createRow<SessionRow>(
+      APPWRITE_DATABASE_ID,
+      APPWRITE_TABLE_GAME_SESSIONS,
+      ID.custom(data.pin),
+      buildSessionRowData(data),
+    );
+    return true;
+  } catch (err) {
+    if (err instanceof AppwriteException && err.code === 409) return false;
+    throw err;
+  }
+}
+
+/**
  * Persist a session. Uses the PIN as the row ID so the call is idempotent:
  * create on first call, update-or-create on subsequent calls.
  */
 export async function saveSession(data: SessionData): Promise<void> {
   const db = getTablesDB();
-  const status = toAppwriteStatus(data.status);
+  const rowData = buildSessionRowData(data);
   // We deliberately omit `events` here — it's owned by triggerGameEvent
   // (per-row Realtime broadcast). Appwrite updateRow does PATCH semantics,
   // so omitted columns are preserved. On createRow, `events` falls back to
   // its column default ("[]" set in scripts/appwrite-setup.ts).
-  const rowData = {
-    pin: data.pin,
-    // hostName stored in hostId until NextAuth↔Appwrite integration
-    hostId: data.hostName ?? "host",
-    players: JSON.stringify(data.players ?? []),
-    state: JSON.stringify(data),
-    status,
-    updatedAt: new Date().toISOString(),
-  };
-
   try {
     // Attempt update first (row already exists for this PIN)
     await db.updateRow<SessionRow>(

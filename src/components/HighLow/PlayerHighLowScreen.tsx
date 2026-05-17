@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Star } from 'lucide-react'
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
+import { playerJsonHeaders } from '@/lib/session-player-secret'
 import { PlayerWaiting } from './PlayerWaiting'
 import { PlayerGuessing } from './PlayerGuessing'
 import { PlayerVoting } from './PlayerVoting'
@@ -109,7 +110,7 @@ export default function PlayerHighLowScreen({
     try {
       await fetch(`/api/sessions/${pin}/highlow/number`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: playerJsonHeaders(pin, playerId),
         body: JSON.stringify({ playerId, number: num }),
       })
     } catch {
@@ -126,7 +127,7 @@ export default function PlayerHighLowScreen({
       try {
         await fetch(`/api/sessions/${pin}/highlow/vote`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: playerJsonHeaders(pin, playerId),
           body: JSON.stringify({ playerId, vote, currentScores: scores }),
         })
       } catch {

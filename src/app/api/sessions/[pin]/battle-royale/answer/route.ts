@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getSession, saveSession } from '@/lib/appwrite/sessions'
 import { triggerGameEvent } from '@/lib/appwrite/realtime'
 import { QUESTION_CATEGORIES } from '@/lib/games/categories'
+import { getAuthorizedPlayer } from '@/lib/session-player-auth'
 
 type RouteContext = { params: Promise<{ pin: string }> }
 
@@ -10,10 +11,8 @@ export async function POST(request: Request, { params }: RouteContext) {
 
   try {
     const body = await request.json()
-    const { playerId, playerName, avatar, answerIndex, answerText } = body as {
+    const { playerId, answerIndex, answerText } = body as {
       playerId: string
-      playerName: string
-      avatar: string
       answerIndex: number
       answerText: string
     }
@@ -22,6 +21,8 @@ export async function POST(request: Request, { params }: RouteContext) {
 
     const session = await getSession(pin)
     if (!session) return NextResponse.json({ error: 'Session not found' }, { status: 404 })
+    const player = getAuthorizedPlayer(request, session, playerId)
+    if (!player) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
     const br = session.battleRoyaleData
     if (!br) return NextResponse.json({ error: 'Not a battle-royale session' }, { status: 400 })
@@ -36,7 +37,15 @@ export async function POST(request: Request, { params }: RouteContext) {
     const isCorrect = question ? question.options[answerIndex] === question.answer : false
 
     const answeredAt = Date.now()
-    const newAnswer = { playerId, playerName, avatar, answerIndex, answerText, answeredAt, isCorrect }
+    const newAnswer = {
+      playerId,
+      playerName: player.playerName,
+      avatar: player.avatar,
+      answerIndex,
+      answerText,
+      answeredAt,
+      isCorrect,
+    }
 
     // Upsert answer (player can only answer once per round)
     const others = br.roundAnswers.filter((a) => a.playerId !== playerId)
@@ -45,7 +54,7 @@ export async function POST(request: Request, { params }: RouteContext) {
 
     await triggerGameEvent(pin, {
       event: 'br-answer-submitted',
-      data: { playerId, playerName },
+      data: { playerId, playerName: player.playerName },
     })
 
     return NextResponse.json({ ok: true })

@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
+import { getSession } from '@/lib/appwrite/sessions'
 import { triggerGameEvent as triggerSessionEvent } from '@/lib/appwrite/realtime'
+import { isHostAuthorized } from '@/lib/session-host-auth'
 import type { ScoreEntry, TeamScoreEntry } from '@/lib/game-types'
 
 type RouteContext = { params: Promise<{ pin: string }> }
@@ -8,6 +10,12 @@ export async function POST(request: Request, { params }: RouteContext) {
   const { pin } = await params
 
   try {
+    const session = await getSession(pin)
+    if (!session) return NextResponse.json({ error: 'Session not found' }, { status: 404 })
+    if (!isHostAuthorized(request, session)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
     const body = await request.json()
     const { cardIndex, correctAnswer, votes, scores, teamScores } = body as {
       cardIndex: number

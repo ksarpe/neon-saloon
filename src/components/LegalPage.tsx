@@ -2,8 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import Link from 'next/link'
-import { ChevronLeft } from 'lucide-react'
 
 export interface LegalSection {
   id: string
@@ -31,7 +29,7 @@ export function LegalPage({ title, subtitle, lastUpdated, sections }: Props) {
           }
         }
       },
-      { rootMargin: '-10% 0% -75% 0%' }
+      { rootMargin: '-10% 0% -80% 0%' }
     )
 
     sections.forEach(({ id }) => {
@@ -39,25 +37,30 @@ export function LegalPage({ title, subtitle, lastUpdated, sections }: Props) {
       if (el) observer.observe(el)
     })
 
-    return () => observer.disconnect()
+    const lastId = sections[sections.length - 1]?.id
+    const handleScroll = () => {
+      if (!lastId) return
+      // Only override when close to the bottom — avoids racing with the main observer
+      const nearBottom =
+        window.scrollY + window.innerHeight >= document.body.scrollHeight - window.innerHeight * 0.5
+      if (!nearBottom) return
+      const lastEl = document.getElementById(lastId)
+      if (!lastEl) return
+      const rect = lastEl.getBoundingClientRect()
+      if (rect.top < window.innerHeight && rect.top >= 0) setActiveId(lastId)
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('scroll', handleScroll)
+    }
   }, [sections])
 
   return (
-    <div className="relative z-10 min-h-dvh w-full">
-
-      <div className="relative z-10 mx-auto max-w-5xl px-4 pb-24 pt-10 sm:px-8">
-        {/* Back link */}
-        <Link
-          href="/"
-          className="mb-8 inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase transition-colors"
-          style={{ color: 'rgba(255,220,180,0.4)' }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--neon-pink)')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,220,180,0.4)')}
-        >
-          <ChevronLeft size={13} />
-          Wróć na stronę główną
-        </Link>
-
+    <div className="relative z-10 mb-100 min-h-dvh w-full">
+      <div className="relative z-10 mx-auto max-w-5xl px-4 pt-10 pb-24 sm:px-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -16 }}
@@ -66,14 +69,12 @@ export function LegalPage({ title, subtitle, lastUpdated, sections }: Props) {
           className="mb-12"
         >
           <h1
-            className="shimmer-text text-5xl tracking-widest sm:text-6xl"
-            style={{ fontFamily: "var(--font-app)" }}
+            className="text-5xl tracking-widest sm:text-6xl"
+            style={{ fontFamily: 'var(--font-logo)', color: 'var(--sheriff-gold)' }}
           >
             {title}
           </h1>
-          {subtitle && (
-            <p className="text-text-muted mt-2 text-sm">{subtitle}</p>
-          )}
+          {subtitle && <p className="text-text-muted mt-2 text-sm">{subtitle}</p>}
           {lastUpdated && (
             <p className="mt-1 text-xs" style={{ color: 'rgba(255,220,180,0.3)' }}>
               Ostatnia aktualizacja: {lastUpdated}
@@ -112,7 +113,7 @@ export function LegalPage({ title, subtitle, lastUpdated, sections }: Props) {
                   >
                     {/* Active indicator bar */}
                     <span
-                      className="absolute left-0 top-1/2 h-3/5 w-0.5 -translate-y-1/2 rounded-full transition-all duration-200"
+                      className="absolute top-1/2 left-0 h-3/5 w-0.5 -translate-y-1/2 rounded-full transition-all duration-200"
                       style={{
                         backgroundColor: isActive ? 'var(--neon-pink)' : 'transparent',
                         boxShadow: isActive ? '0 0 8px var(--neon-pink)' : 'none',
@@ -139,7 +140,7 @@ export function LegalPage({ title, subtitle, lastUpdated, sections }: Props) {
                 <h2
                   className="mb-4 text-2xl tracking-wider"
                   style={{
-                    fontFamily: "var(--font-app)",
+                    fontFamily: 'var(--font-app)',
                     color: 'var(--sheriff-gold)',
                     letterSpacing: '0.06em',
                   }}

@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
 import { Clock, CheckCircle2, Skull, Trophy } from 'lucide-react'
+import { playerJsonHeaders } from '@/lib/session-player-secret'
 import type {
   BRRoundStartPayload,
   BRRoundRevealPayload,
@@ -98,7 +99,7 @@ export default function BattleRoyalePlayer({ pin, playerId, playerName, avatar, 
     try {
       await fetch(`/api/sessions/${pin}/battle-royale/answer`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: playerJsonHeaders(pin, playerId),
         body: JSON.stringify({ playerId, playerName, avatar, answerIndex: idx, answerText: text }),
       })
       setPhase('answered')

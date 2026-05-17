@@ -10,6 +10,7 @@ import { ProModal } from '@/components/ui/ContentGate'
 import { useContentAccess } from '@/hooks/useContentAccess'
 import { checkAccess } from '@/lib/content-access'
 import { FUNNY_NAMES } from '@/lib/games/data'
+import { saveHostSecret } from '@/lib/session-host-secret'
 
 const GAME_MODES = [
   {
@@ -91,7 +92,10 @@ export default function HostSetupPage() {
         }),
       })
       if (!res.ok) throw new Error()
-      const { pin } = await res.json()
+      const { pin, hostSecret } = await res.json()
+      if (typeof hostSecret === 'string') {
+        saveHostSecret(pin, hostSecret)
+      }
       router.push(`/graj/host/${pin}?mode=${selectedMode}`)
     } catch {
       setError('Could not create a game. Try again!')

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getSession, saveSession } from '@/lib/appwrite/sessions'
 import { triggerGameEvent as triggerSessionEvent } from '@/lib/appwrite/realtime'
+import { createPlayerSecret, hashPlayerSecret } from '@/lib/session-player-auth'
 
 type RouteContext = { params: Promise<{ pin: string }> }
 
@@ -39,6 +40,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     }
 
     const playerId = `player_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`
+    const playerSecret = createPlayerSecret()
     const avatar = chosenAvatar ?? PLAYER_AVATARS[Math.floor(Math.random() * PLAYER_AVATARS.length)]
 
     // Resolve team
@@ -66,6 +68,7 @@ export async function POST(request: Request, { params }: RouteContext) {
       ...session.players,
       {
         playerId,
+        playerSecretHash: hashPlayerSecret(playerSecret),
         playerName: playerName.trim(),
         avatar,
         teamId: resolvedTeamId,
@@ -96,7 +99,7 @@ export async function POST(request: Request, { params }: RouteContext) {
       })
     }
 
-    return NextResponse.json({ playerId, teamId: resolvedTeamId, avatar }, { status: 200 })
+    return NextResponse.json({ playerId, playerSecret, teamId: resolvedTeamId, avatar }, { status: 200 })
   } catch (err) {
     console.error(`[POST /api/sessions/${pin}/join]`, err)
     return NextResponse.json({ error: 'Failed to join session' }, { status: 500 })

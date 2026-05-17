@@ -7,6 +7,8 @@ import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
 import { useBackButton } from '@/lib/back-button-context'
 import { GameSummary } from '@/components/GameSummary'
 import { HIGHLOW_QUESTIONS } from '@/lib/games/highlow'
+import { hostAuthHeaders, hostJsonHeaders } from '@/lib/session-host-secret'
+import { playerJsonHeaders, savePlayerSecret } from '@/lib/session-player-secret'
 import { HostSetupView } from './HostSetupView'
 import { HostLobby } from './HostLobby'
 import { HostRound } from './HostRound'
@@ -84,7 +86,7 @@ export default function HostHighLowScreen({ pin, team1, team2, initialPlayers }:
   useEffect(() => {
     if (phase !== 'lobby') return
     const id = setInterval(() => {
-      fetch(`/api/sessions/${pin}`)
+      fetch(`/api/sessions/${pin}`, { headers: hostAuthHeaders(pin) })
         .then((r) => r.json())
         .then((d) => { if (d.players) setPlayers(d.players) })
         .catch(() => {})
@@ -130,6 +132,9 @@ export default function HostHighLowScreen({ pin, team1, team2, initialPlayers }:
         })
         if (res.ok) {
           const data = await res.json()
+          if (typeof data.playerSecret === 'string') {
+            savePlayerSecret(pin, data.playerId, data.playerSecret)
+          }
           setHostPlayerId(data.playerId)
           setPlayers((p) => {
             if (p.some((x) => x.playerId === data.playerId)) return p
@@ -164,7 +169,7 @@ export default function HostHighLowScreen({ pin, team1, team2, initialPlayers }:
 
       await fetch(`/api/sessions/${pin}/highlow/round`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: hostJsonHeaders(pin),
         body: JSON.stringify({
           roundIndex: rIdx,
           questionText: q.text,
@@ -206,7 +211,7 @@ export default function HostHighLowScreen({ pin, team1, team2, initialPlayers }:
     setMenuOpen(false)
     await fetch(`/api/sessions/${pin}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: hostJsonHeaders(pin),
       body: JSON.stringify({ action: 'finish', scores, teamScores: [] }),
     })
     setPhase('finished')
@@ -219,7 +224,7 @@ export default function HostHighLowScreen({ pin, team1, team2, initialPlayers }:
     try {
       await fetch(`/api/sessions/${pin}/highlow/number`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: playerJsonHeaders(pin, hostPlayerId),
         body: JSON.stringify({ playerId: hostPlayerId, number: num }),
       })
     } catch {
@@ -236,7 +241,7 @@ export default function HostHighLowScreen({ pin, team1, team2, initialPlayers }:
       try {
         await fetch(`/api/sessions/${pin}/highlow/vote`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: playerJsonHeaders(pin, hostPlayerId),
           body: JSON.stringify({ playerId: hostPlayerId, vote, currentScores: scores }),
         })
       } catch {

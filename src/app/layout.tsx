@@ -5,7 +5,7 @@ import PageTransition from '@/components/PageTransition'
 import { BackButtonProvider } from '@/lib/back-button-context'
 import { Providers } from '@/components/Providers'
 import { BackgroundMusic } from '@/components/BackgroundMusic'
-import { Zap } from 'lucide-react'
+import { AppFooter } from '@/components/AppFooter'
 
 const font = Sora({
   subsets: ['latin', 'latin-ext'],
@@ -50,6 +50,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           className="pointer-events-none fixed inset-0 z-1"
           style={{ background: 'rgba(23, 2, 23, 0.75)' }}
         />
+        <img src="/icons/bottle-bg.png" width="10%" className='absolute bottom-1/4 right-1/4'></img>
         <Providers>
           <BackButtonProvider>
             <PageTransition>{children}</PageTransition>
@@ -57,33 +58,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <BackgroundMusic />
         </Providers>
 
-        {/* Global footer */}
-        <footer
-          className="pointer-events-none fixed right-0 bottom-0 left-0 z-20 flex items-center justify-center gap-2 pt-6 pb-3"
-          style={{
-            background: 'linear-gradient(to top, rgba(10,4,20,0.75) 0%, transparent 100%)',
-          }}
-        >
-          <Zap size={10} style={{ color: 'var(--neon-pink)' }} />
-          <span
-            className="pointer-events-auto flex flex-wrap items-center justify-center gap-2 text-[11px] tracking-wide"
-            style={{ color: 'rgba(255,220,180,0.4)' }}
-          >
-            Last Rodeo <span style={{ color: 'rgba(255,220,180,0.22)' }}>v1.0 custom</span>
-            {' · '}
-            <a href="https://aknsoftware.com" style={{ color: 'rgba(255,220,180,0.4)' }}>
-              AKN Software
-            </a>
-            {' · '}
-            <a href="/regulamin" style={{ color: 'rgba(255,220,180,0.4)' }}>
-              Regulamin
-            </a>
-            {' · '}
-            <a href="/polityka-prywatnosci" style={{ color: 'rgba(255,220,180,0.4)' }}>
-              Polityka prywatności
-            </a>
-          </span>
-        </footer>
+        <AppFooter />
       </body>
     </html>
   )

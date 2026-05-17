@@ -41,7 +41,9 @@
       "Bash(Select-String -Path \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\\\\lib\\\\games\\\\categories.ts\" -Pattern \"text: '\")",
       "Bash(Measure-Object)",
       "Bash(Select-Object -ExpandProperty Count)",
-      "PowerShell($anatomy = \\(Select-String -Path \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\\\\lib\\\\games\\\\categories.ts\" -Pattern \"text: '\"\\).Count; Write-Host \"Total questions: $anatomy\")"
+      "PowerShell($anatomy = \\(Select-String -Path \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\\\\lib\\\\games\\\\categories.ts\" -Pattern \"text: '\"\\).Count; Write-Host \"Total questions: $anatomy\")",
+      "Bash(Get-ChildItem -Path \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\" -Recurse -Directory)",
+      "Bash(Find \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\" -name \"layout*\" -type f)"
     ]
   }
 }
