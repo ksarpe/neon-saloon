@@ -34,7 +34,7 @@ export function PlayerGuessing({
         className="flex w-full flex-col items-center gap-5 text-center"
       >
         <div
-          className="rounded-full border px-4 py-1.5 text-xs font-bold uppercase tracking-widest"
+          className="rounded-full border px-4 py-1.5 text-xs font-bold tracking-widest uppercase"
           style={{
             borderColor: 'rgba(255,16,240,0.5)',
             backgroundColor: 'rgba(255,16,240,0.1)',
@@ -49,7 +49,7 @@ export function PlayerGuessing({
           style={{ borderColor: 'rgba(255,215,0,0.25)', backgroundColor: 'rgba(255,215,0,0.05)' }}
         >
           <p className="text-text-muted mb-2 text-xs tracking-widest uppercase">Pytanie</p>
-          <p className="text-lg font-bold leading-snug" style={{ color: 'var(--sheriff-gold)' }}>
+          <p className="text-lg leading-snug font-bold" style={{ color: 'var(--sheriff-pink)' }}>
             {roundData.questionText}
           </p>
           <p className="text-text-muted mt-2 text-xs">
@@ -67,10 +67,10 @@ export function PlayerGuessing({
             onKeyDown={(e) => e.key === 'Enter' && onSubmitNumber()}
             placeholder={`Liczba w ${roundData.questionUnit}…`}
             autoFocus
-            className="w-full rounded-xl border-2 bg-saloon-surface px-4 py-4 text-center text-3xl font-black text-text-primary placeholder:text-text-muted transition-colors focus:outline-none"
+            className="bg-saloon-surface text-text-primary placeholder:text-text-muted w-full rounded-xl border-2 px-4 py-4 text-center text-3xl font-black transition-colors focus:outline-none"
             style={{
               borderColor: numberInput ? 'var(--neon-pink)' : 'var(--saloon-border)',
-              fontFamily: "var(--font-app)",
+              fontFamily: 'var(--font-app)',
               letterSpacing: '0.1em',
             }}
           />
@@ -82,7 +82,7 @@ export function PlayerGuessing({
             style={{
               background: 'linear-gradient(135deg,var(--neon-pink),#c800c8)',
               boxShadow: '0 4px 30px rgba(255,16,240,0.4)',
-              fontFamily: "var(--font-app)",
+              fontFamily: 'var(--font-app)',
               fontSize: '1.1rem',
               letterSpacing: '0.1em',
             }}
@@ -104,7 +104,7 @@ export function PlayerGuessing({
       className="flex flex-col items-center gap-5 text-center"
     >
       <div
-        className="rounded-full border px-4 py-1.5 text-xs font-bold uppercase tracking-widest"
+        className="rounded-full border px-4 py-1.5 text-xs font-bold tracking-widest uppercase"
         style={{
           borderColor: 'rgba(255,16,240,0.4)',
           backgroundColor: 'rgba(255,16,240,0.08)',
@@ -119,17 +119,17 @@ export function PlayerGuessing({
         style={{ borderColor: 'rgba(255,215,0,0.25)', backgroundColor: 'rgba(255,215,0,0.05)' }}
       >
         <p className="text-text-muted mb-2 text-xs">Pytanie</p>
-        <p className="text-base font-bold leading-snug" style={{ color: 'var(--sheriff-gold)' }}>
+        <p className="text-base leading-snug font-bold" style={{ color: 'var(--sheriff-pink)' }}>
           {roundData.questionText}
         </p>
       </div>
 
       {submittedNumber !== null ? (
         <div className="flex flex-col items-center gap-2">
-          <p className="text-text-muted text-xs uppercase tracking-widest">Wasza odpowiedź</p>
+          <p className="text-text-muted text-xs tracking-widest uppercase">Wasza odpowiedź</p>
           <p
             className="text-5xl font-black"
-            style={{ color: 'var(--neon-pink)', fontFamily: "var(--font-app)" }}
+            style={{ color: 'var(--neon-pink)', fontFamily: 'var(--font-app)' }}
           >
             {submittedNumber} <span className="text-2xl">{roundData.questionUnit}</span>
           </p>

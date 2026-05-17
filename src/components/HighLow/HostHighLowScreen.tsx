@@ -13,11 +13,7 @@ import { HostSetupView } from './HostSetupView'
 import { HostLobby } from './HostLobby'
 import { HostRound } from './HostRound'
 import { HostReveal } from './HostReveal'
-import type {
-  HighLowRoundResultPayload,
-  ScoreEntry,
-  PlayerJoinedPayload,
-} from '@/lib/game-types'
+import type { HighLowRoundResultPayload, ScoreEntry, PlayerJoinedPayload } from '@/lib/game-types'
 import type { SessionTeam, SessionPlayer } from '@/lib/appwrite/sessions'
 
 type HLPhase = 'setup' | 'lobby' | 'guessing' | 'voting' | 'revealed' | 'finished'
@@ -88,7 +84,9 @@ export default function HostHighLowScreen({ pin, team1, team2, initialPlayers }:
     const id = setInterval(() => {
       fetch(`/api/sessions/${pin}`, { headers: hostAuthHeaders(pin) })
         .then((r) => r.json())
-        .then((d) => { if (d.players) setPlayers(d.players) })
+        .then((d) => {
+          if (d.players) setPlayers(d.players)
+        })
         .catch(() => {})
     }, 5000)
     return () => clearInterval(id)
@@ -138,7 +136,16 @@ export default function HostHighLowScreen({ pin, team1, team2, initialPlayers }:
           setHostPlayerId(data.playerId)
           setPlayers((p) => {
             if (p.some((x) => x.playerId === data.playerId)) return p
-            return [...p, { playerId: data.playerId, playerName: name, avatar, teamId: chosenTeam.teamId, teamName: chosenTeam.teamName }]
+            return [
+              ...p,
+              {
+                playerId: data.playerId,
+                playerName: name,
+                avatar,
+                teamId: chosenTeam.teamId,
+                teamName: chosenTeam.teamName,
+              },
+            ]
           })
         }
       } catch {
@@ -257,7 +264,10 @@ export default function HostHighLowScreen({ pin, team1, team2, initialPlayers }:
     <div className="flex min-h-dvh w-full flex-col">
       {/* Header — hidden in setup */}
       {phase !== 'setup' && (
-        <div className="relative z-20 shrink-0 border-b" style={{ borderColor: 'rgba(255,220,180,0.1)' }}>
+        <div
+          className="relative z-20 shrink-0 border-b"
+          style={{ borderColor: 'rgba(255,220,180,0.1)' }}
+        >
           <div className="mx-auto grid max-w-5xl grid-cols-3 items-center px-6 py-4">
             <div className="flex items-center gap-2">
               <Zap size={14} style={{ color: 'var(--neon-pink)' }} />
@@ -269,7 +279,11 @@ export default function HostHighLowScreen({ pin, team1, team2, initialPlayers }:
               {phase !== 'lobby' && phase !== 'finished' && (
                 <span
                   className="rounded-full border px-3 py-1 text-[10px] font-bold tracking-widest uppercase"
-                  style={{ color: 'var(--sheriff-gold)', borderColor: 'rgba(255,215,0,0.35)', backgroundColor: 'rgba(255,215,0,0.08)' }}
+                  style={{
+                    color: 'var(--sheriff-pink)',
+                    borderColor: 'rgba(255,215,0,0.35)',
+                    backgroundColor: 'rgba(255,215,0,0.08)',
+                  }}
                 >
                   Runda {roundIndex + 1}
                 </span>
@@ -277,7 +291,10 @@ export default function HostHighLowScreen({ pin, team1, team2, initialPlayers }:
             </div>
             <div className="flex items-center justify-end gap-3">
               <div className="flex items-center gap-2">
-                <span className="h-2 w-2 animate-pulse rounded-full" style={{ backgroundColor: 'var(--neon-pink)' }} />
+                <span
+                  className="h-2 w-2 animate-pulse rounded-full"
+                  style={{ backgroundColor: 'var(--neon-pink)' }}
+                />
                 <span className="text-text-muted text-xs font-bold">LIVE</span>
               </div>
               {phase !== 'finished' && (
@@ -286,7 +303,11 @@ export default function HostHighLowScreen({ pin, team1, team2, initialPlayers }:
                     whileTap={{ scale: 0.9 }}
                     onClick={() => setMenuOpen((o) => !o)}
                     className="flex h-8 w-8 items-center justify-center rounded-lg border"
-                    style={{ borderColor: 'rgba(255,220,180,0.18)', backgroundColor: 'rgba(255,220,180,0.05)', color: 'rgba(255,220,180,0.65)' }}
+                    style={{
+                      borderColor: 'rgba(255,220,180,0.18)',
+                      backgroundColor: 'rgba(255,220,180,0.05)',
+                      color: 'rgba(255,220,180,0.65)',
+                    }}
                   >
                     {menuOpen ? <X size={15} /> : <Menu size={15} />}
                   </motion.button>
@@ -297,14 +318,22 @@ export default function HostHighLowScreen({ pin, team1, team2, initialPlayers }:
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.92 }}
                         className="absolute top-10 right-0 z-[100] min-w-[180px] rounded-2xl border p-1.5 shadow-xl"
-                        style={{ borderColor: 'rgba(255,220,180,0.15)', backgroundColor: 'rgba(13,8,24,0.95)', backdropFilter: 'blur(16px)' }}
+                        style={{
+                          borderColor: 'rgba(255,220,180,0.15)',
+                          backgroundColor: 'rgba(13,8,24,0.95)',
+                          backdropFilter: 'blur(16px)',
+                        }}
                       >
                         <button
                           onClick={handleFinish}
                           className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold"
                           style={{ color: '#ef4444' }}
-                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(239,68,68,0.1)')}
-                          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.backgroundColor = 'rgba(239,68,68,0.1)')
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.backgroundColor = 'transparent')
+                          }
                         >
                           <Flag size={14} /> Zakończ grę
                         </button>
@@ -323,14 +352,30 @@ export default function HostHighLowScreen({ pin, team1, team2, initialPlayers }:
         <div className="mx-auto w-full max-w-3xl">
           <AnimatePresence mode="wait">
             {phase === 'setup' && (
-              <motion.div key="setup" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+              <motion.div
+                key="setup"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
                 <HostSetupView team1={team1} team2={team2} onContinue={handleSetupComplete} />
               </motion.div>
             )}
 
             {phase === 'lobby' && (
-              <motion.div key="lobby" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-                <HostLobby pin={pin} players={players} team1={team1} team2={team2} onStart={handleStart} />
+              <motion.div
+                key="lobby"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                <HostLobby
+                  pin={pin}
+                  players={players}
+                  team1={team1}
+                  team2={team2}
+                  onStart={handleStart}
+                />
               </motion.div>
             )}
 
@@ -373,13 +418,23 @@ export default function HostHighLowScreen({ pin, team1, team2, initialPlayers }:
             )}
 
             {phase === 'finished' && (
-              <motion.div key="finished" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
+              <motion.div
+                key="finished"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
                 <GameSummary
-                  scores={scores.map((s) => ({ id: s.playerId, name: s.playerName, score: s.score }))}
+                  scores={scores.map((s) => ({
+                    id: s.playerId,
+                    name: s.playerName,
+                    score: s.score,
+                  }))}
                   teamScores={[team1, team2].map((t) => ({
                     id: t.teamId,
                     name: t.teamName,
-                    score: scores.filter((s) => s.playerTeamId === t.teamId).reduce((sum, s) => sum + s.score, 0),
+                    score: scores
+                      .filter((s) => s.playerTeamId === t.teamId)
+                      .reduce((sum, s) => sum + s.score, 0),
                   }))}
                 />
               </motion.div>

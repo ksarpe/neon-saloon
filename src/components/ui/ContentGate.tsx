@@ -94,30 +94,44 @@ export function ProModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-4 backdrop-blur-sm sm:items-center"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-[#0d0818]/85 p-4 backdrop-blur-sm sm:items-center"
       onClick={onClose}
     >
       <div
-        className="relative max-h-[92dvh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-yellow-500/30 bg-zinc-950 p-5 shadow-2xl sm:p-7"
+        className="relative max-h-[92dvh] w-full max-w-4xl overflow-y-auto rounded-2xl border p-5 shadow-2xl sm:p-7"
+        style={{
+          borderColor: 'var(--saloon-border)',
+          background:
+            'radial-gradient(circle at top left, rgba(221,84,162,0.18), transparent 34%), linear-gradient(160deg, rgba(26,15,42,0.98), rgba(13,8,24,0.98))',
+          boxShadow: '0 24px 80px rgba(0,0,0,0.48), 0 0 36px rgba(226,67,157,0.16)',
+        }}
         onClick={(event) => event.stopPropagation()}
       >
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-zinc-400 transition-colors hover:border-white/20 hover:text-white"
+          className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full border transition-colors hover:border-[rgba(221,84,162,0.55)] hover:text-[var(--text-primary)]"
+          style={{ borderColor: 'var(--saloon-border)', color: 'var(--text-muted)' }}
           aria-label="Zamknij"
         >
           <X size={18} aria-hidden />
         </button>
 
         <div className="mb-6 pr-10">
-          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-yellow-500/40 bg-yellow-500/10 text-yellow-400">
+          <div
+            className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border"
+            style={{
+              borderColor: 'rgba(221,84,162,0.42)',
+              background: 'rgba(221,84,162,0.12)',
+              color: 'var(--neon-pink)',
+            }}
+          >
             <Crown size={24} aria-hidden />
           </div>
-          <h2 className="text-2xl font-bold tracking-wide text-yellow-400">
+          <h2 className="shimmer-text text-3xl tracking-wide">
             Odblokuj Last Rodeo PRO
           </h2>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-400">
+          <p className="text-text-muted mt-2 max-w-2xl text-sm leading-relaxed">
             Wybierz dostęp miesięczny albo jednorazowy plan dożywotni. Oba odblokowują tryby
             premium, w tym Mniej czy więcej.
           </p>
@@ -130,29 +144,51 @@ export function ProModal({ onClose }: { onClose: () => void }) {
             return (
               <div
                 key={plan.id}
-                className="flex min-h-[320px] flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-left"
+                className="flex min-h-[320px] flex-col rounded-2xl border p-5 text-left transition-colors"
+                style={{
+                  borderColor: plan.featured ? 'rgba(221,84,162,0.55)' : 'var(--saloon-border)',
+                  background: plan.featured
+                    ? 'linear-gradient(180deg, rgba(221,84,162,0.14), rgba(255,220,180,0.055))'
+                    : 'rgba(255,220,180,0.055)',
+                }}
               >
                 <div className="mb-4 flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-lg font-bold text-white">{plan.name}</p>
-                    <p className="mt-1 text-sm text-zinc-400">{plan.description}</p>
+                    <p className="text-text-primary text-lg font-bold">{plan.name}</p>
+                    <p className="text-text-muted mt-1 text-sm">{plan.description}</p>
                   </div>
                   {plan.badge && (
-                    <span className="rounded-full border border-yellow-500/40 bg-yellow-500/10 px-2.5 py-1 text-[10px] font-bold tracking-widest text-yellow-400 uppercase">
+                    <span
+                      className="rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-widest uppercase"
+                      style={{
+                        borderColor: 'rgba(249,74,255,0.4)',
+                        background: 'rgba(249,74,255,0.1)',
+                        color: 'var(--sheriff-pink)',
+                      }}
+                    >
                       {plan.badge}
                     </span>
                   )}
                 </div>
 
                 <div className="mb-5">
-                  <p className="text-2xl font-black text-yellow-400">{plan.priceLabel}</p>
-                  <p className="mt-1 text-xs text-zinc-500">{plan.billingLabel}</p>
+                  <p className="text-4xl font-black" style={{ color: 'var(--text-primary)' }}>
+                    {plan.priceLabel}
+                  </p>
+                  <p className="mt-1 text-xs font-semibold" style={{ color: 'var(--neon-pink)' }}>
+                    {plan.billingLabel}
+                  </p>
                 </div>
 
-                <div className="flex flex-1 flex-col gap-2 text-sm text-zinc-300">
+                <div className="text-text-primary flex flex-1 flex-col gap-2 text-sm">
                   {plan.features.map((feature) => (
                     <div key={feature} className="flex gap-2">
-                      <Check className="mt-0.5 shrink-0 text-yellow-400" size={16} aria-hidden />
+                      <Check
+                        className="mt-0.5 shrink-0"
+                        size={16}
+                        style={{ color: 'var(--neon-pink)' }}
+                        aria-hidden
+                      />
                       <span>{feature}</span>
                     </div>
                   ))}
@@ -162,7 +198,12 @@ export function ProModal({ onClose }: { onClose: () => void }) {
                   type="button"
                   disabled={loadingPlan !== null}
                   onClick={() => startCheckout(plan.id)}
-                  className="mt-6 flex min-h-12 items-center justify-center rounded-xl border border-yellow-500/50 bg-yellow-400 px-5 py-3 text-sm font-black text-black transition-colors hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="mt-6 flex min-h-12 items-center justify-center rounded-xl border px-5 py-3 text-sm font-black transition-transform hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                  style={{
+                    borderColor: 'rgba(221,84,162,0.55)',
+                    background: 'linear-gradient(135deg, var(--neon-pink), var(--sheriff-pink))',
+                    color: '#fff7fb',
+                  }}
                 >
                   {loading ? (
                     <>
@@ -178,20 +219,34 @@ export function ProModal({ onClose }: { onClose: () => void }) {
           })}
         </div>
 
-        <div className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4">
-          <p className="mb-3 text-xs font-bold tracking-widest text-zinc-500 uppercase">
+        <div
+          className="mt-5 rounded-2xl border p-4"
+          style={{ borderColor: 'var(--saloon-border)', background: 'rgba(13,8,24,0.42)' }}
+        >
+          <p className="text-text-muted mb-3 text-xs font-bold tracking-widest uppercase">
             Porównanie
           </p>
-          <div className="grid gap-2 text-sm text-zinc-300 sm:grid-cols-3">
-            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
-              <p className="font-bold text-white">Darmowy</p>
-              <p className="mt-1 text-xs leading-relaxed text-zinc-500">
+          <div className="text-text-primary grid gap-2 text-sm sm:grid-cols-3">
+            <div
+              className="rounded-xl border p-3"
+              style={{ borderColor: 'var(--saloon-border)', background: 'rgba(255,220,180,0.035)' }}
+            >
+              <p className="font-bold">Darmowy</p>
+              <p className="text-text-muted mt-1 text-xs leading-relaxed">
                 Podstawowe tryby i standardowe talie.
               </p>
             </div>
-            <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-3 sm:col-span-2">
-              <p className="font-bold text-yellow-400">PRO</p>
-              <p className="mt-1 text-xs leading-relaxed text-zinc-300">
+            <div
+              className="rounded-xl border p-3 sm:col-span-2"
+              style={{
+                borderColor: 'rgba(221,84,162,0.38)',
+                background: 'rgba(221,84,162,0.1)',
+              }}
+            >
+              <p className="font-bold" style={{ color: 'var(--neon-pink)' }}>
+                PRO
+              </p>
+              <p className="text-text-primary mt-1 text-xs leading-relaxed">
                 Wszystkie tryby premium, pełne paczki kart i przyszłe rozszerzenia bez kolejnych
                 blokad w aplikacji.
               </p>
@@ -216,6 +271,7 @@ const PLANS: Array<{
   priceLabel: string
   billingLabel: string
   badge?: string
+  featured?: boolean
   cta: string
   features: string[]
 }> = [
@@ -223,8 +279,8 @@ const PLANS: Array<{
     id: 'monthly',
     name: 'Subskrypcja miesięczna',
     description: 'Elastyczny dostęp PRO z płatnością co miesiąc.',
-    priceLabel: 'Miesięcznie',
-    billingLabel: 'Cena i rozliczenie widoczne w checkout Stripe.',
+    priceLabel: '19,99 zł',
+    billingLabel: 'za miesięczną subskrypcję',
     cta: 'Wybierz miesięczny',
     features: [
       'Mniej czy więcej i kolejne tryby premium',
@@ -236,9 +292,10 @@ const PLANS: Array<{
     id: 'lifetime',
     name: 'Plan dożywotni',
     description: 'Jedna płatność i stały dostęp do PRO na koncie.',
-    priceLabel: 'Jednorazowo',
-    billingLabel: 'Cena widoczna w checkout Stripe, bez odnawiania.',
+    priceLabel: '69 zł',
+    billingLabel: 'jednorazowo za lifetime dostęp',
     badge: 'Najprościej',
+    featured: true,
     cta: 'Wybierz dożywotni',
     features: [
       'Stały dostęp do obecnych trybów PRO',

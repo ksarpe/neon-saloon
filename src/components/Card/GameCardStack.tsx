@@ -13,7 +13,13 @@ interface Props {
   onFlip: () => void
 }
 
-export function GameCardStack({ card, cardsLeft = 4, isFlipped, isRevealed = false, onFlip }: Props) {
+export function GameCardStack({
+  card,
+  cardsLeft = 4,
+  isFlipped,
+  isRevealed = false,
+  onFlip,
+}: Props) {
   const shadows = Math.min((cardsLeft ?? 1) - 1, 3)
 
   return (
@@ -69,7 +75,10 @@ export function GameCardStack({ card, cardsLeft = 4, isFlipped, isRevealed = fal
           ) : (
             <div className="flex h-full w-full flex-col items-center justify-center gap-3 px-6 text-center">
               <span className="text-3xl">🎉</span>
-              <p className="text-base leading-snug font-bold" style={{ color: 'var(--sheriff-gold)' }}>
+              <p
+                className="text-base leading-snug font-bold"
+                style={{ color: 'var(--sheriff-pink)' }}
+              >
                 {card.answer ?? 'Czas minął!'}
               </p>
             </div>

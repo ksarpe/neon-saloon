@@ -64,7 +64,7 @@ export function HostRound({
             const total = scores
               .filter((s) => s.playerTeamId === team.teamId)
               .reduce((sum, s) => sum + s.score, 0)
-            const accent = team.teamId === team1.teamId ? 'var(--neon-pink)' : 'var(--sheriff-gold)'
+            const accent = team.teamId === team1.teamId ? 'var(--neon-pink)' : 'var(--sheriff-pink)'
             return (
               <div
                 key={team.teamId}
@@ -94,13 +94,12 @@ export function HostRound({
         <p className="text-text-muted text-xs font-semibold tracking-widest uppercase">Pytanie</p>
         <p
           className="text-2xl leading-snug font-bold sm:text-3xl"
-          style={{ color: 'var(--sheriff-gold)' }}
+          style={{ color: 'var(--sheriff-pink)' }}
         >
           {currentQuestion.text}
         </p>
         <p className="text-text-muted text-sm">
-          Odpowiedź w:{' '}
-          <span className="text-text-primary font-bold">{currentQuestion.unit}</span>
+          Odpowiedź w: <span className="text-text-primary font-bold">{currentQuestion.unit}</span>
         </p>
       </div>
 
@@ -121,7 +120,7 @@ export function HostRound({
           {isHostGuessingCaptain ? (
             <div className="flex w-full max-w-sm flex-col gap-3">
               <div
-                className="rounded-full border px-4 py-1.5 text-center text-xs font-bold uppercase tracking-widest"
+                className="rounded-full border px-4 py-1.5 text-center text-xs font-bold tracking-widest uppercase"
                 style={{
                   borderColor: 'rgba(255,16,240,0.5)',
                   backgroundColor: 'rgba(255,16,240,0.1)',
@@ -138,10 +137,10 @@ export function HostRound({
                 onKeyDown={(e) => e.key === 'Enter' && onHostSubmitNumber()}
                 placeholder={`Liczba w ${currentQuestion.unit}…`}
                 autoFocus
-                className="w-full rounded-xl border-2 bg-saloon-surface px-4 py-4 text-center text-3xl font-black text-text-primary placeholder:text-text-muted transition-colors focus:outline-none"
+                className="bg-saloon-surface text-text-primary placeholder:text-text-muted w-full rounded-xl border-2 px-4 py-4 text-center text-3xl font-black transition-colors focus:outline-none"
                 style={{
                   borderColor: numberInput ? 'var(--neon-pink)' : 'var(--saloon-border)',
-                  fontFamily: "var(--font-app)",
+                  fontFamily: 'var(--font-app)',
                   letterSpacing: '0.1em',
                 }}
               />
@@ -153,7 +152,7 @@ export function HostRound({
                 style={{
                   background: 'linear-gradient(135deg,var(--neon-pink),#c800c8)',
                   boxShadow: '0 4px 30px rgba(255,16,240,0.4)',
-                  fontFamily: "var(--font-app)",
+                  fontFamily: 'var(--font-app)',
                   fontSize: '1.1rem',
                   letterSpacing: '0.1em',
                 }}
@@ -175,7 +174,10 @@ export function HostRound({
                 podaje liczbę na telefonie
               </p>
               <div className="flex animate-pulse items-center gap-2">
-                <div className="h-2 w-2 rounded-full" style={{ backgroundColor: 'var(--neon-pink)' }} />
+                <div
+                  className="h-2 w-2 rounded-full"
+                  style={{ backgroundColor: 'var(--neon-pink)' }}
+                />
                 <span className="text-text-muted text-xs">Oczekuję na odpowiedź…</span>
               </div>
             </div>
@@ -195,7 +197,7 @@ export function HostRound({
             </p>
             <p
               className="text-5xl font-black"
-              style={{ color: 'var(--sheriff-gold)', fontFamily: "var(--font-app)" }}
+              style={{ color: 'var(--sheriff-pink)', fontFamily: 'var(--font-app)' }}
             >
               {submittedNumber} <span className="text-2xl">{currentQuestion.unit}</span>
             </p>
@@ -215,7 +217,7 @@ export function HostRound({
           {isHostVotingCaptain ? (
             <div className="flex w-full max-w-sm flex-col gap-3">
               <div
-                className="rounded-full border px-4 py-1.5 text-center text-xs font-bold uppercase tracking-widest"
+                className="rounded-full border px-4 py-1.5 text-center text-xs font-bold tracking-widest uppercase"
                 style={{
                   borderColor: 'rgba(167,139,250,0.5)',
                   backgroundColor: 'rgba(167,139,250,0.1)',
@@ -236,7 +238,9 @@ export function HostRound({
                   style={{
                     borderColor: 'rgba(59,130,246,0.5)',
                     backgroundColor:
-                      hostVotedChoice === 'mniej' ? 'rgba(59,130,246,0.22)' : 'rgba(59,130,246,0.08)',
+                      hostVotedChoice === 'mniej'
+                        ? 'rgba(59,130,246,0.22)'
+                        : 'rgba(59,130,246,0.08)',
                     color: '#3b82f6',
                   }}
                 >
@@ -247,7 +251,7 @@ export function HostRound({
                       <TrendingDown size={30} />
                       <span
                         style={{
-                          fontFamily: "var(--font-app)",
+                          fontFamily: 'var(--font-app)',
                           fontSize: '1.15rem',
                           letterSpacing: '0.15em',
                         }}
@@ -265,7 +269,9 @@ export function HostRound({
                   style={{
                     borderColor: 'rgba(239,68,68,0.5)',
                     backgroundColor:
-                      hostVotedChoice === 'wiecej' ? 'rgba(239,68,68,0.22)' : 'rgba(239,68,68,0.08)',
+                      hostVotedChoice === 'wiecej'
+                        ? 'rgba(239,68,68,0.22)'
+                        : 'rgba(239,68,68,0.08)',
                     color: '#ef4444',
                   }}
                 >
@@ -276,7 +282,7 @@ export function HostRound({
                       <TrendingUp size={30} />
                       <span
                         style={{
-                          fontFamily: "var(--font-app)",
+                          fontFamily: 'var(--font-app)',
                           fontSize: '1.15rem',
                           letterSpacing: '0.15em',
                         }}

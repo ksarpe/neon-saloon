@@ -15,7 +15,7 @@ export default function GrajPage() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="shimmer-text text-[clamp(2rem,14vw,7rem)] leading-[0.9] tracking-wide uppercase whitespace-nowrap"
+          className="shimmer-text text-[clamp(2rem,14vw,7rem)] leading-[0.9] tracking-wide whitespace-nowrap uppercase"
           style={{ fontFamily: 'var(--font-logo)' }}
         >
           Last Rodeo
@@ -34,15 +34,15 @@ export default function GrajPage() {
             whileTap={{ scale: 0.97 }}
             whileHover={{
               scale: 1.02,
-              boxShadow: '0 0 34px var(--sheriff-gold-glow), 0 0 70px var(--sheriff-gold-dim)',
+              boxShadow: '0 0 34px var(--sheriff-pink-glow), 0 0 70px var(--sheriff-pink-dim)',
             }}
             onClick={() => router.push('/graj/host')}
             className="group relative flex cursor-pointer items-center gap-4 overflow-hidden rounded-2xl border-2 p-5 text-left transition-colors"
             style={{
-              borderColor: 'var(--sheriff-gold)',
-              backgroundColor: 'var(--sheriff-gold-dim)',
+              borderColor: 'var(--sheriff-pink)',
+              backgroundColor: 'var(--sheriff-pink-dim)',
               boxShadow:
-                '0 0 14px var(--sheriff-gold-glow), 0 0 34px rgba(152,151,241,0.16), inset 0 0 18px rgba(255,255,255,0.04)',
+                '0 0 14px var(--sheriff-pink-glow), 0 0 34px rgba(152,151,241,0.16), inset 0 0 18px rgba(255,255,255,0.04)',
             }}
           >
             <div className="pointer-events-none absolute inset-y-0 -left-[100%] z-0 w-full skew-x-[-20deg] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-all duration-700 ease-in-out group-hover:left-[100%]" />
@@ -51,12 +51,12 @@ export default function GrajPage() {
               className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full"
               style={{ backgroundColor: 'rgba(255,215,0,0.15)' }}
             >
-              <Tv size={22} style={{ color: 'var(--sheriff-gold)' }} />
+              <Tv size={22} style={{ color: 'var(--sheriff-pink)' }} />
             </div>
             <div className="relative z-10 flex-1">
               <p
                 className="text-base font-bold transition-colors"
-                style={{ color: 'var(--sheriff-gold)' }}
+                style={{ color: 'var(--sheriff-pink)' }}
               >
                 Chcę być szeryfem.
               </p>

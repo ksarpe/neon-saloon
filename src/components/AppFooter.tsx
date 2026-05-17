@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation'
 import { Zap } from 'lucide-react'
 
-const FOOTER_PATHS = ['/', '/zaloguj']
+const FOOTER_PATHS = ['/', '/login']
 
 export function AppFooter() {
   const pathname = usePathname()

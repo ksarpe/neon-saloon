@@ -43,7 +43,9 @@
       "Bash(Select-Object -ExpandProperty Count)",
       "PowerShell($anatomy = \\(Select-String -Path \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\\\\lib\\\\games\\\\categories.ts\" -Pattern \"text: '\"\\).Count; Write-Host \"Total questions: $anatomy\")",
       "Bash(Get-ChildItem -Path \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\" -Recurse -Directory)",
-      "Bash(Find \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\" -name \"layout*\" -type f)"
+      "Bash(Find \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\" -name \"layout*\" -type f)",
+      "Bash(xargs grep -l \"STRIPE_PLAN_CONFIG\\\\|stripe\")",
+      "Bash(xargs grep -l \"monthly\\\\|lifetime\\\\|PRO\\\\|pricing\")"
     ]
   }
 }

@@ -9,12 +9,12 @@ interface Props {
 
 export function PlayerHeader({ pin, avatar, playerName, teamName }: Props) {
   return (
-    <div className="relative z-10 flex shrink-0 items-center justify-between border-b border-saloon-border px-4 py-3">
+    <div className="border-saloon-border relative z-10 flex shrink-0 items-center justify-between border-b px-4 py-3">
       {/* Player identity */}
       <div className="flex items-center gap-2">
         <span className="text-xl">{avatar}</span>
         <div>
-          <p className="text-text-primary text-xs font-bold leading-none">{playerName}</p>
+          <p className="text-text-primary text-xs leading-none font-bold">{playerName}</p>
           {teamName && (
             <p className="mt-0.5 text-[10px] leading-none" style={{ color: 'var(--neon-pink)' }}>
               {teamName}

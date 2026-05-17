@@ -1,9 +1,11 @@
 'use client'
 
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence,motion } from 'framer-motion'
 import { Play } from 'lucide-react'
-import type { SessionTeam, SessionPlayer } from '@/lib/appwrite/sessions'
+
+import { JoinQrCode } from '@/components/JoinQrCode'
 import { Button } from '@/components/ui/button'
+import type { SessionPlayer,SessionTeam } from '@/lib/appwrite/sessions'
 
 interface Props {
   pin: string
@@ -23,7 +25,7 @@ export function HostLobby({ pin, players, team1, team2, onStart }: Props) {
       <div className="text-center">
         <h1
           className="shimmer-text mt-2 text-6xl tracking-widest sm:text-8xl"
-          style={{ fontFamily: "var(--font-app)" }}
+          style={{ fontFamily: 'var(--font-app)' }}
         >
           mniej czy więcej
         </h1>
@@ -33,36 +35,44 @@ export function HostLobby({ pin, players, team1, team2, onStart }: Props) {
       </div>
 
       {/* PIN */}
-      <div className="flex flex-col items-center gap-2">
-        <p className="text-text-muted text-xs font-semibold tracking-widest uppercase">
-          KOD SZERYFA
-        </p>
-        <div className="flex gap-3">
-          {pin.split('').map((d, i) => (
-            <motion.div
-              key={i}
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: i * 0.1, type: 'spring', stiffness: 300 }}
-              className="flex h-24 w-20 items-center justify-center rounded-2xl border-2 text-5xl font-bold sm:h-32 sm:w-28 sm:text-6xl"
-              style={{
-                fontFamily: "var(--font-app)",
-                color: 'var(--neon-pink)',
-                borderColor: 'var(--neon-pink)',
-                backgroundColor: 'rgba(255,16,240,0.07)',
-              }}
-            >
-              {d}
-            </motion.div>
-          ))}
+      <div className="flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center gap-5 lg:flex-row lg:items-end">
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-text-muted text-xs font-semibold tracking-widest uppercase">
+              KOD SZERYFA
+            </p>
+            <div className="flex gap-3">
+              {pin.split('').map((d, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: i * 0.1, type: 'spring', stiffness: 300 }}
+                  className="flex h-24 w-20 items-center justify-center rounded-2xl border-2 text-5xl font-bold sm:h-32 sm:w-28 sm:text-6xl"
+                  style={{
+                    fontFamily: 'var(--font-app)',
+                    color: 'var(--neon-pink)',
+                    borderColor: 'var(--neon-pink)',
+                    backgroundColor: 'rgba(255,16,240,0.07)',
+                  }}
+                >
+                  {d}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+          <JoinQrCode pin={pin} />
         </div>
+        <p className="text-text-muted text-center text-xs">
+          Gracze skanują QR albo wpisują PIN ręcznie
+        </p>
       </div>
 
       {/* Teams */}
       <div className="grid w-full grid-cols-2 gap-4">
         {[
           { team: team1, players: team1Players, accent: 'var(--neon-pink)' },
-          { team: team2, players: team2Players, accent: 'var(--sheriff-gold)' },
+          { team: team2, players: team2Players, accent: 'var(--sheriff-pink)' },
         ].map(({ team, players: tp, accent }) => (
           <div
             key={team.teamId}
@@ -101,12 +111,7 @@ export function HostLobby({ pin, players, team1, team2, onStart }: Props) {
         ))}
       </div>
 
-      <Button
-        type="primary"
-        disabled={!canStart}
-        onClick={onStart}
-        size="lg"
-      >
+      <Button type="primary" disabled={!canStart} onClick={onStart} size="lg">
         <Play size={22} /> Rozpocznij grę
       </Button>
     </div>

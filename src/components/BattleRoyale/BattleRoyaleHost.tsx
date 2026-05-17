@@ -98,7 +98,12 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
     }, 1000)
   }, [])
 
-  useEffect(() => () => { if (timerRef.current) clearInterval(timerRef.current) }, [])
+  useEffect(
+    () => () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+    },
+    []
+  )
 
   // Poll for players in lobby
   useEffect(() => {
@@ -106,7 +111,9 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
     const id = setInterval(() => {
       fetch(`/api/sessions/${pin}`, { headers: hostAuthHeaders(pin) })
         .then((r) => (r.ok ? r.json() : null))
-        .then((d) => { if (d?.players) setPlayers(d.players) })
+        .then((d) => {
+          if (d?.players) setPlayers(d.players)
+        })
         .catch(() => {})
     }, 5000)
     return () => clearInterval(id)
@@ -151,10 +158,13 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
       setLoading(false)
     }
   }, [loading, pin])
-  useEffect(() => { handleRevealRef.current = handleReveal }, [handleReveal])
+  useEffect(() => {
+    handleRevealRef.current = handleReveal
+  }, [handleReveal])
 
   const alivePlayers = players.filter((p) => !eliminatedIds.has(p.playerId))
-  const allAnswered = phase === 'question' && answeredIds.size >= alivePlayers.length && alivePlayers.length > 0
+  const allAnswered =
+    phase === 'question' && answeredIds.size >= alivePlayers.length && alivePlayers.length > 0
 
   useEffect(() => {
     if (!allAnswered) return
@@ -173,7 +183,10 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
         headers: hostAuthHeaders(pin),
       })
       const data = await res.json()
-      if (data.finished) { setPhase('gameover'); return }
+      if (data.finished) {
+        setPhase('gameover')
+        return
+      }
       setQuestionIndex((i) => i + 1)
       await fetch(`/api/sessions/${pin}/battle-royale/round`, {
         method: 'POST',
@@ -189,10 +202,15 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
       setLoading(false)
     }
   }, [loading, pin, startTimer])
-  useEffect(() => { handleNextRoundRef.current = handleNextRound }, [handleNextRound])
+  useEffect(() => {
+    handleNextRoundRef.current = handleNextRound
+  }, [handleNextRound])
 
   useEffect(() => {
-    if (phase !== 'reveal') { setNextCountdown(null); return }
+    if (phase !== 'reveal') {
+      setNextCountdown(null)
+      return
+    }
     let n = AUTO_NEXT_SECONDS
     setNextCountdown(n)
     const tick = setInterval(() => {
@@ -232,7 +250,16 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
         setHostPlayerId(joinData.playerId)
         setPlayers((p) => {
           if (p.some((x) => x.playerId === joinData.playerId)) return p
-          return [...p, { playerId: joinData.playerId, playerName: hostName.trim(), avatar: hostAvatar, teamId: null, teamName: null }]
+          return [
+            ...p,
+            {
+              playerId: joinData.playerId,
+              playerName: hostName.trim(),
+              avatar: hostAvatar,
+              teamId: null,
+              teamName: null,
+            },
+          ]
         })
       }
 
@@ -251,43 +278,52 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
     }
   }, [pin, hostName, hostAvatar, startTimer])
 
-  const handleHostAnswer = useCallback(async (idx: number, text: string) => {
-    if (!hostPlayerId || hostHasAnswered || hostAnswerLoading) return
-    setSelectedOptionIndex(idx)
-    setHostAnswerLoading(true)
-    try {
-      await fetch(`/api/sessions/${pin}/battle-royale/answer`, {
-        method: 'POST',
-        headers: playerJsonHeaders(pin, hostPlayerId),
-        body: JSON.stringify({
-          playerId: hostPlayerId,
-          playerName: hostName,
-          avatar: hostAvatar,
-          answerIndex: idx,
-          answerText: text,
-        }),
-      })
-      setHostHasAnswered(true)
-    } finally {
-      setHostAnswerLoading(false)
-    }
-  }, [hostPlayerId, hostHasAnswered, hostAnswerLoading, pin, hostName, hostAvatar])
+  const handleHostAnswer = useCallback(
+    async (idx: number, text: string) => {
+      if (!hostPlayerId || hostHasAnswered || hostAnswerLoading) return
+      setSelectedOptionIndex(idx)
+      setHostAnswerLoading(true)
+      try {
+        await fetch(`/api/sessions/${pin}/battle-royale/answer`, {
+          method: 'POST',
+          headers: playerJsonHeaders(pin, hostPlayerId),
+          body: JSON.stringify({
+            playerId: hostPlayerId,
+            playerName: hostName,
+            avatar: hostAvatar,
+            answerIndex: idx,
+            answerText: text,
+          }),
+        })
+        setHostHasAnswered(true)
+      } finally {
+        setHostAnswerLoading(false)
+      }
+    },
+    [hostPlayerId, hostHasAnswered, hostAnswerLoading, pin, hostName, hostAvatar]
+  )
 
   const timerPct = (timerLeft / TIMER_SECONDS) * 100
   const hostIsEliminated = hostPlayerId ? eliminatedIds.has(hostPlayerId) : false
 
   return (
     <div className="flex min-h-dvh w-full flex-col">
-
       <div className="relative z-10 flex flex-1 items-center justify-center overflow-y-auto p-6 sm:p-10">
         <div className="mx-auto w-full max-w-4xl">
           <AnimatePresence mode="wait">
             {/* Setup */}
             {phase === 'setup' && (
-              <motion.div key="setup" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <motion.div
+                key="setup"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+              >
                 <SetupView
-                  name={hostName} onNameChange={setHostName}
-                  avatar={hostAvatar} onAvatarChange={setHostAvatar}
+                  name={hostName}
+                  onNameChange={setHostName}
+                  avatar={hostAvatar}
+                  onAvatarChange={setHostAvatar}
                   onContinue={handleSetupComplete}
                 />
               </motion.div>
@@ -295,10 +331,17 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
 
             {/* Lobby */}
             {phase === 'lobby' && (
-              <motion.div key="lobby" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <motion.div
+                key="lobby"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+              >
                 <LobbyView
-                  pin={pin} players={players}
-                  hostAvatar={hostAvatar!} hostName={hostName}
+                  pin={pin}
+                  players={players}
+                  hostAvatar={hostAvatar!}
+                  hostName={hostName}
                   onStart={handleStart}
                 />
               </motion.div>
@@ -306,12 +349,20 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
 
             {/* Active question */}
             {phase === 'question' && question && (
-              <motion.div key={`q-${questionIndex}`} initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}>
+              <motion.div
+                key={`q-${questionIndex}`}
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+              >
                 <div className="flex flex-col gap-6">
                   {/* Header */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold tracking-widest uppercase" style={{ color: '#ef4444' }}>
+                      <span
+                        className="text-xs font-semibold tracking-widest uppercase"
+                        style={{ color: '#ef4444' }}
+                      >
                         BATTLE ROYALE
                       </span>
                       <span className="text-text-muted text-xs">•</span>
@@ -320,10 +371,16 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Clock size={14} style={{ color: timerLeft <= 5 ? '#ef4444' : 'var(--sheriff-gold)' }} />
+                      <Clock
+                        size={14}
+                        style={{ color: timerLeft <= 5 ? '#ef4444' : 'var(--sheriff-pink)' }}
+                      />
                       <span
                         className="font-mono text-2xl font-bold"
-                        style={{ color: timerLeft <= 5 ? '#ef4444' : 'var(--sheriff-gold)', fontFamily: "var(--font-app)" }}
+                        style={{
+                          color: timerLeft <= 5 ? '#ef4444' : 'var(--sheriff-pink)',
+                          fontFamily: 'var(--font-app)',
+                        }}
                       >
                         {timerLeft}s
                       </span>
@@ -331,7 +388,10 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
                   </div>
 
                   {/* Timer bar */}
-                  <div className="h-2 w-full rounded-full overflow-hidden" style={{ backgroundColor: 'var(--saloon-surface)' }}>
+                  <div
+                    className="h-2 w-full overflow-hidden rounded-full"
+                    style={{ backgroundColor: 'var(--saloon-surface)' }}
+                  >
                     <motion.div
                       className="h-full rounded-full"
                       style={{ backgroundColor: timerLeft <= 5 ? '#ef4444' : '#22c55e' }}
@@ -343,9 +403,15 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
                   {/* Question */}
                   <div
                     className="rounded-2xl border-2 p-6 text-center"
-                    style={{ borderColor: 'rgba(239,68,68,0.4)', backgroundColor: 'rgba(239,68,68,0.06)' }}
+                    style={{
+                      borderColor: 'rgba(239,68,68,0.4)',
+                      backgroundColor: 'rgba(239,68,68,0.06)',
+                    }}
                   >
-                    <p className="text-xl font-bold sm:text-2xl" style={{ color: 'var(--text-primary)' }}>
+                    <p
+                      className="text-xl font-bold sm:text-2xl"
+                      style={{ color: 'var(--text-primary)' }}
+                    >
                       {question.text}
                     </p>
                   </div>
@@ -366,8 +432,8 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
                             borderColor: isSelected
                               ? 'rgba(34,197,94,0.7)'
                               : canAnswer
-                              ? 'var(--saloon-border)'
-                              : 'var(--saloon-border)',
+                                ? 'var(--saloon-border)'
+                                : 'var(--saloon-border)',
                             backgroundColor: isSelected
                               ? 'rgba(34,197,94,0.12)'
                               : 'var(--saloon-surface)',
@@ -383,7 +449,9 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
                             e.currentTarget.style.borderColor = 'var(--saloon-border)'
                           }}
                         >
-                          <span style={{ color: 'var(--sheriff-gold)' }}>{String.fromCharCode(65 + i)}. </span>
+                          <span style={{ color: 'var(--sheriff-pink)' }}>
+                            {String.fromCharCode(65 + i)}.{' '}
+                          </span>
                           {opt}
                         </motion.button>
                       )
@@ -423,19 +491,23 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
                               borderColor: isEliminated
                                 ? 'rgba(239,68,68,0.4)'
                                 : hasAnswered
-                                ? 'rgba(34,197,94,0.5)'
-                                : 'var(--saloon-border)',
+                                  ? 'rgba(34,197,94,0.5)'
+                                  : 'var(--saloon-border)',
                               backgroundColor: isEliminated
                                 ? 'rgba(239,68,68,0.07)'
                                 : hasAnswered
-                                ? 'rgba(34,197,94,0.08)'
-                                : 'var(--saloon-surface)',
+                                  ? 'rgba(34,197,94,0.08)'
+                                  : 'var(--saloon-surface)',
                               opacity: isEliminated ? 0.5 : 1,
                             }}
                           >
                             <span className="text-base">{p.avatar}</span>
-                            <span className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>
-                              {p.playerName}{isHost ? ' 🎙' : ''}
+                            <span
+                              className="text-xs font-bold"
+                              style={{ color: 'var(--text-primary)' }}
+                            >
+                              {p.playerName}
+                              {isHost ? ' 🎙' : ''}
                             </span>
                             {isEliminated ? (
                               <Skull size={12} style={{ color: '#ef4444' }} />
@@ -463,10 +535,18 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
 
             {/* Reveal */}
             {phase === 'reveal' && revealData && (
-              <motion.div key="reveal" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <motion.div
+                key="reveal"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+              >
                 <div className="flex flex-col gap-6">
                   <div className="text-center">
-                    <h2 className="shimmer-text text-4xl tracking-widest" style={{ fontFamily: "var(--font-app)" }}>
+                    <h2
+                      className="shimmer-text text-4xl tracking-widest"
+                      style={{ fontFamily: 'var(--font-app)' }}
+                    >
                       Wyniki rundy
                     </h2>
                     <p className="text-text-muted mt-1 text-sm">{revealData.questionText}</p>
@@ -481,9 +561,15 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
                       initial={{ scale: 0.9, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       className="rounded-2xl border-2 p-4 text-center"
-                      style={{ borderColor: 'rgba(239,68,68,0.6)', backgroundColor: 'rgba(239,68,68,0.1)' }}
+                      style={{
+                        borderColor: 'rgba(239,68,68,0.6)',
+                        backgroundColor: 'rgba(239,68,68,0.1)',
+                      }}
                     >
-                      <p className="text-sm font-bold tracking-widest uppercase" style={{ color: '#ef4444' }}>
+                      <p
+                        className="text-sm font-bold tracking-widest uppercase"
+                        style={{ color: '#ef4444' }}
+                      >
                         <Skull size={14} className="mr-1 inline" />
                         Odpada{revealData.eliminatedThisRound.length > 1 ? 'ją' : ''}:{' '}
                         {revealData.eliminatedThisRound
@@ -494,14 +580,37 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
                   )}
 
                   {/* Results table */}
-                  <div className="overflow-hidden rounded-2xl border" style={{ borderColor: 'var(--saloon-border)' }}>
+                  <div
+                    className="overflow-hidden rounded-2xl border"
+                    style={{ borderColor: 'var(--saloon-border)' }}
+                  >
                     <table className="w-full text-sm">
                       <thead>
                         <tr style={{ backgroundColor: 'var(--saloon-surface)' }}>
-                          <th className="px-4 py-3 text-left text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--text-muted)' }}>Gracz</th>
-                          <th className="px-4 py-3 text-left text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--text-muted)' }}>Odpowiedź</th>
-                          <th className="px-4 py-3 text-right text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--text-muted)' }}>Czas</th>
-                          <th className="px-4 py-3 text-right text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--text-muted)' }}>Status</th>
+                          <th
+                            className="px-4 py-3 text-left text-xs font-semibold tracking-widest uppercase"
+                            style={{ color: 'var(--text-muted)' }}
+                          >
+                            Gracz
+                          </th>
+                          <th
+                            className="px-4 py-3 text-left text-xs font-semibold tracking-widest uppercase"
+                            style={{ color: 'var(--text-muted)' }}
+                          >
+                            Odpowiedź
+                          </th>
+                          <th
+                            className="px-4 py-3 text-right text-xs font-semibold tracking-widest uppercase"
+                            style={{ color: 'var(--text-muted)' }}
+                          >
+                            Czas
+                          </th>
+                          <th
+                            className="px-4 py-3 text-right text-xs font-semibold tracking-widest uppercase"
+                            style={{ color: 'var(--text-muted)' }}
+                          >
+                            Status
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -519,7 +628,9 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: i * 0.06 }}
                               style={{
-                                backgroundColor: a.isEliminated ? 'rgba(239,68,68,0.06)' : 'transparent',
+                                backgroundColor: a.isEliminated
+                                  ? 'rgba(239,68,68,0.06)'
+                                  : 'transparent',
                                 borderTop: '1px solid var(--saloon-border)',
                                 opacity: a.isEliminated ? 0.7 : 1,
                               }}
@@ -527,8 +638,12 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
                               <td className="px-4 py-3">
                                 <div className="flex items-center gap-2">
                                   <span>{a.avatar}</span>
-                                  <span className="font-bold" style={{ color: 'var(--text-primary)' }}>
-                                    {a.playerName}{a.playerId === hostPlayerId ? ' 🎙' : ''}
+                                  <span
+                                    className="font-bold"
+                                    style={{ color: 'var(--text-primary)' }}
+                                  >
+                                    {a.playerName}
+                                    {a.playerId === hostPlayerId ? ' 🎙' : ''}
                                   </span>
                                 </div>
                               </td>
@@ -537,18 +652,33 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
                                   {a.isCorrect ? '✓' : '✗'} {a.answerText}
                                 </span>
                               </td>
-                              <td className="px-4 py-3 text-right font-mono text-xs" style={{ color: 'var(--text-muted)' }}>
+                              <td
+                                className="px-4 py-3 text-right font-mono text-xs"
+                                style={{ color: 'var(--text-muted)' }}
+                              >
                                 {a.answeredAt === -1
                                   ? '—'
                                   : `${((a.answeredAt - (revealData.answers[0]?.answeredAt ?? a.answeredAt)) / 1000 + 0.1).toFixed(1)}s`}
                               </td>
                               <td className="px-4 py-3 text-right">
                                 {a.isEliminated ? (
-                                  <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase" style={{ backgroundColor: 'rgba(239,68,68,0.2)', color: '#ef4444' }}>
+                                  <span
+                                    className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase"
+                                    style={{
+                                      backgroundColor: 'rgba(239,68,68,0.2)',
+                                      color: '#ef4444',
+                                    }}
+                                  >
                                     <Skull size={10} /> Odpada
                                   </span>
                                 ) : (
-                                  <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase" style={{ backgroundColor: 'rgba(34,197,94,0.15)', color: '#22c55e' }}>
+                                  <span
+                                    className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase"
+                                    style={{
+                                      backgroundColor: 'rgba(34,197,94,0.15)',
+                                      color: '#22c55e',
+                                    }}
+                                  >
                                     <CheckCircle2 size={10} /> Żyje
                                   </span>
                                 )}
@@ -563,7 +693,12 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
                   <div className="flex items-center justify-center gap-3">
                     <div
                       className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-base font-bold"
-                      style={{ backgroundColor: 'var(--saloon-surface)', color: 'var(--sheriff-gold)', fontFamily: "var(--font-app)", fontSize: '1.2rem' }}
+                      style={{
+                        backgroundColor: 'var(--saloon-surface)',
+                        color: 'var(--sheriff-pink)',
+                        fontFamily: 'var(--font-app)',
+                        fontSize: '1.2rem',
+                      }}
                     >
                       {nextCountdown}
                     </div>
@@ -575,24 +710,35 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
 
             {/* Game over */}
             {phase === 'gameover' && (
-              <motion.div key="gameover" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center">
+              <motion.div
+                key="gameover"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="text-center"
+              >
                 <div className="flex flex-col items-center gap-6">
                   <motion.div
                     animate={{ rotate: [0, -10, 10, -10, 10, 0], scale: [1, 1.2, 1] }}
                     transition={{ duration: 0.8 }}
                   >
-                    <Trophy size={72} style={{ color: 'var(--sheriff-gold)' }} />
+                    <Trophy size={72} style={{ color: 'var(--sheriff-pink)' }} />
                   </motion.div>
                   <div>
-                    <h1 className="shimmer-text text-6xl tracking-widest" style={{ fontFamily: "var(--font-app)" }}>
+                    <h1
+                      className="shimmer-text text-6xl tracking-widest"
+                      style={{ fontFamily: 'var(--font-app)' }}
+                    >
                       Koniec gry!
                     </h1>
                     {winner ? (
-                      <p className="mt-3 text-xl font-bold" style={{ color: 'var(--sheriff-gold)' }}>
+                      <p
+                        className="mt-3 text-xl font-bold"
+                        style={{ color: 'var(--sheriff-pink)' }}
+                      >
                         Zwycięzca: {winner}
                       </p>
                     ) : (
-                      <p className="mt-3 text-text-muted">Brak zwycięzcy — wszyscy odpadli</p>
+                      <p className="text-text-muted mt-3">Brak zwycięzcy — wszyscy odpadli</p>
                     )}
                   </div>
                   {revealData && (
@@ -610,16 +756,30 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
                             }}
                           >
                             <span>{p.avatar}</span>
-                            <span className="text-sm font-bold" style={{ color: survived ? 'var(--sheriff-gold)' : 'var(--text-muted)' }}>
-                              {p.playerName}{isHost ? ' 🎙' : ''}
+                            <span
+                              className="text-sm font-bold"
+                              style={{
+                                color: survived ? 'var(--sheriff-pink)' : 'var(--text-muted)',
+                              }}
+                            >
+                              {p.playerName}
+                              {isHost ? ' 🎙' : ''}
                             </span>
-                            {survived ? <Trophy size={12} style={{ color: 'var(--sheriff-gold)' }} /> : <Skull size={12} style={{ color: '#ef4444' }} />}
+                            {survived ? (
+                              <Trophy size={12} style={{ color: 'var(--sheriff-pink)' }} />
+                            ) : (
+                              <Skull size={12} style={{ color: '#ef4444' }} />
+                            )}
                           </div>
                         )
                       })}
                     </div>
                   )}
-                  <Button type="primary" onClick={() => window.location.href = '/graj/host'} size="lg">
+                  <Button
+                    type="primary"
+                    onClick={() => (window.location.href = '/graj/host')}
+                    size="lg"
+                  >
                     <Play size={18} /> Nowa gra
                   </Button>
                 </div>

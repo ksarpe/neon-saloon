@@ -1,31 +1,34 @@
 'use client'
 
-import { useState, useCallback, useRef, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence,motion } from 'framer-motion'
+import { useSearchParams } from 'next/navigation'
+import { useCallback, useEffect,useRef, useState } from 'react'
+
+import BattleRoyalePlayer from '@/components/BattleRoyale/BattleRoyalePlayer'
+import PlayerHighLowScreen from '@/components/HighLow/PlayerHighLowScreen'
+import PlayerGameScreen from '@/components/PlayerGame'
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
 import { ensureAnonymousSession } from '@/lib/appwrite/client'
-import { getPlayerSecret, savePlayerSecret } from '@/lib/session-player-secret'
-import PlayerGameScreen from '@/components/PlayerGame'
-import PlayerHighLowScreen from '@/components/HighLow/PlayerHighLowScreen'
-import BattleRoyalePlayer from '@/components/BattleRoyale/BattleRoyalePlayer'
 import { useBackButton } from '@/lib/back-button-context'
 import type {
-  PlayerJoinedPayload,
-  TeamCreatedPayload,
-  TeamUpdatedPayload,
+  BRRoundStartPayload,
   GameStartedPayload,
   HighLowRoundStartPayload,
-  BRRoundStartPayload,
+  TeamCreatedPayload,
+  TeamUpdatedPayload,
 } from '@/lib/game-types'
-import { slide } from './types'
-import type { Step, LiveTeam, PlayerInfo } from './types'
-import { PinInput } from './PinInput'
-import { NameInput } from './NameInput'
+import { getPlayerSecret, savePlayerSecret } from '@/lib/session-player-secret'
+
 import { ModeSelector } from './ModeSelector'
+import { NameInput } from './NameInput'
+import { PinInput } from './PinInput'
 import { TeamPicker } from './TeamPicker'
+import type { LiveTeam, PlayerInfo,Step } from './types'
+import { slide } from './types'
 import { WaitingState } from './WaitingState'
 
 export default function JoinGameForm() {
+  const searchParams = useSearchParams()
   const [step, setStep] = useState<Step>('pin')
   const [pin, setPin] = useState('')
   const [playerName, setPlayerName] = useState('')
@@ -34,6 +37,7 @@ export default function JoinGameForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const joiningRef = useRef(false)
+  const autoSubmittedPinRef = useRef<string | null>(null)
   const [liveTeams, setLiveTeams] = useState<LiveTeam[]>([])
   const [playerInfo, setPlayerInfo] = useState<PlayerInfo | null>(null)
   const [gameMode, setGameMode] = useState<string>('trivia')
@@ -54,8 +58,12 @@ export default function JoinGameForm() {
   // Track pin + playerId in refs so the unload handler can read current values
   const pinRef = useRef(pin)
   const playerIdRef = useRef<string | null>(null)
-  useEffect(() => { pinRef.current = pin }, [pin])
-  useEffect(() => { playerIdRef.current = playerInfo?.playerId ?? null }, [playerInfo])
+  useEffect(() => {
+    pinRef.current = pin
+  }, [pin])
+  useEffect(() => {
+    playerIdRef.current = playerInfo?.playerId ?? null
+  }, [playerInfo])
 
   // Send beacon on tab close / component unmount
   useEffect(() => {
@@ -110,7 +118,7 @@ export default function JoinGameForm() {
   const shouldSubscribe = step === 'team' || step === 'waiting' || step === 'playing'
 
   useGameSocket(shouldSubscribe ? pin : null, {
-    onPlayerJoined: useCallback((_d: PlayerJoinedPayload) => {
+    onPlayerJoined: useCallback(() => {
       // memberCount updated authoritatively via onTeamUpdated
     }, []),
     onTeamCreated: useCallback(
@@ -163,6 +171,23 @@ export default function JoinGameForm() {
       setLoading(false)
     }
   }, [])
+
+  useEffect(() => {
+    const pinFromUrl = searchParams.get('pin')?.replace(/\D/g, '').slice(0, 4)
+    if (
+      !pinFromUrl ||
+      pinFromUrl.length !== 4 ||
+      step !== 'pin' ||
+      loading ||
+      autoSubmittedPinRef.current === pinFromUrl
+    ) {
+      return
+    }
+
+    autoSubmittedPinRef.current = pinFromUrl
+    setPin(pinFromUrl)
+    void handlePinSubmit(pinFromUrl)
+  }, [handlePinSubmit, loading, searchParams, step])
 
   const doJoin = useCallback(
     async (teamId: string | null, teamName: string | null) => {
@@ -251,48 +276,98 @@ export default function JoinGameForm() {
       <div className="relative z-10 w-full max-w-sm">
         <AnimatePresence mode="popLayout" initial={false}>
           {step === 'pin' && (
-            <motion.div key="pin" variants={slide} initial="initial" animate="animate" exit="exit"
-              transition={{ duration: 0.18, ease: 'easeInOut' }}>
-              <PinInput value={pin} onChange={setPin} onSubmit={handlePinSubmit}
-                loading={loading} error={error} />
+            <motion.div
+              key="pin"
+              variants={slide}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ duration: 0.18, ease: 'easeInOut' }}
+            >
+              <PinInput
+                value={pin}
+                onChange={setPin}
+                onSubmit={handlePinSubmit}
+                loading={loading}
+                error={error}
+              />
             </motion.div>
           )}
           {step === 'name' && (
-            <motion.div key="name" variants={slide} initial="initial" animate="animate" exit="exit"
-              transition={{ duration: 0.18, ease: 'easeInOut' }}>
-              <NameInput value={playerName} onChange={setPlayerName} avatar={avatar}
+            <motion.div
+              key="name"
+              variants={slide}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ duration: 0.18, ease: 'easeInOut' }}
+            >
+              <NameInput
+                value={playerName}
+                onChange={setPlayerName}
+                avatar={avatar}
                 onAvatarChange={setAvatar}
                 onSubmit={() => {
                   if (gameMode === 'battle-royale') doJoin(null, null)
                   else if (gameMode === 'highlow') setStep('team')
                   else setStep('mode')
                 }}
-                onBack={() => setStep('pin')} />
+                onBack={() => setStep('pin')}
+              />
             </motion.div>
           )}
           {step === 'mode' && (
-            <motion.div key="mode" variants={slide} initial="initial" animate="animate" exit="exit"
-              transition={{ duration: 0.18, ease: 'easeInOut' }}>
-              <ModeSelector onSolo={() => doJoin(null, null)} onTeam={() => setStep('team')}
-                onBack={() => setStep('name')} loading={loading} />
+            <motion.div
+              key="mode"
+              variants={slide}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ duration: 0.18, ease: 'easeInOut' }}
+            >
+              <ModeSelector
+                onSolo={() => doJoin(null, null)}
+                onTeam={() => setStep('team')}
+                onBack={() => setStep('name')}
+                loading={loading}
+              />
             </motion.div>
           )}
           {step === 'team' && (
-            <motion.div key="team" variants={slide} initial="initial" animate="animate" exit="exit"
-              transition={{ duration: 0.18, ease: 'easeInOut' }}>
-              <TeamPicker teams={liveTeams} newTeamName={newTeamName}
+            <motion.div
+              key="team"
+              variants={slide}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ duration: 0.18, ease: 'easeInOut' }}
+            >
+              <TeamPicker
+                teams={liveTeams}
+                newTeamName={newTeamName}
                 onNewTeamNameChange={setNewTeamName}
                 onJoinTeam={(id, name) => doJoin(id, name)}
                 onCreateTeam={() => doJoin(null, newTeamName.trim())}
                 onBack={() => setStep(gameMode === 'highlow' ? 'name' : 'mode')}
-                loading={loading} hideCreate={gameMode === 'highlow'} />
+                loading={loading}
+                hideCreate={gameMode === 'highlow'}
+              />
             </motion.div>
           )}
           {step === 'waiting' && playerInfo && (
-            <motion.div key="waiting" variants={slide} initial="initial" animate="animate" exit="exit"
-              transition={{ duration: 0.18, ease: 'easeInOut' }}>
-              <WaitingState playerName={playerName} teamName={playerInfo.teamName}
-                avatar={playerInfo.avatar} />
+            <motion.div
+              key="waiting"
+              variants={slide}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ duration: 0.18, ease: 'easeInOut' }}
+            >
+              <WaitingState
+                playerName={playerName}
+                teamName={playerInfo.teamName}
+                avatar={playerInfo.avatar}
+              />
             </motion.div>
           )}
         </AnimatePresence>

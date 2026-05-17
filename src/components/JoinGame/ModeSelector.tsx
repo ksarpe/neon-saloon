@@ -22,7 +22,7 @@ export function ModeSelector({ onSolo, onTeam, onBack, loading }: Props) {
           onClick={onSolo}
           className="flex items-center gap-4 rounded-2xl border-2 p-5 text-left disabled:opacity-40"
           style={{
-            borderColor: 'var(--sheriff-gold)',
+            borderColor: 'var(--sheriff-pink)',
             backgroundColor: 'rgba(255,215,0,0.08)',
           }}
         >
@@ -30,10 +30,10 @@ export function ModeSelector({ onSolo, onTeam, onBack, loading }: Props) {
             className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full"
             style={{ backgroundColor: 'rgba(255,215,0,0.15)' }}
           >
-            <User size={22} style={{ color: 'var(--sheriff-gold)' }} />
+            <User size={22} style={{ color: 'var(--sheriff-pink)' }} />
           </div>
           <div>
-            <p className="text-base font-bold" style={{ color: 'var(--sheriff-gold)' }}>
+            <p className="text-base font-bold" style={{ color: 'var(--sheriff-pink)' }}>
               Samotna Kowbojka
             </p>
             <p className="text-text-muted text-xs">Każda kowbojka orze jak może!</p>

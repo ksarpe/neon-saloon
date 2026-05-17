@@ -41,7 +41,7 @@ function InputField({
           autoComplete={autoComplete}
           className="text-text-primary placeholder:text-text-muted w-full rounded-xl border-2 bg-transparent px-4 py-3.5 text-sm font-semibold transition-all duration-200 focus:outline-none"
           style={{
-            borderColor: value ? 'var(--sheriff-gold)' : 'rgba(255,220,180,0.18)',
+            borderColor: value ? 'var(--sheriff-pink)' : 'rgba(255,220,180,0.18)',
             backgroundColor: 'rgba(255,220,180,0.04)',
           }}
           onFocus={(e) => {
@@ -50,7 +50,7 @@ function InputField({
           }}
           onBlur={(e) => {
             e.currentTarget.style.borderColor = value
-              ? 'var(--sheriff-gold)'
+              ? 'var(--sheriff-pink)'
               : 'rgba(255,220,180,0.18)'
             e.currentTarget.style.boxShadow = 'none'
           }}
@@ -185,7 +185,7 @@ function LoginForm({ onSwitch, onForgot }: { onSwitch: () => void; onForgot: () 
         type="button"
         onClick={onForgot}
         className="self-end text-xs font-bold transition-colors"
-        style={{ color: 'var(--sheriff-gold)' }}
+        style={{ color: 'var(--sheriff-pink)' }}
       >
         Nie pamiętasz hasła?
       </button>
@@ -209,7 +209,7 @@ function LoginForm({ onSwitch, onForgot }: { onSwitch: () => void; onForgot: () 
           type="button"
           onClick={onSwitch}
           className="font-bold transition-colors"
-          style={{ color: 'var(--sheriff-gold)' }}
+          style={{ color: 'var(--sheriff-pink)' }}
         >
           Załóż teraz
         </button>
@@ -364,7 +364,7 @@ function ResetPasswordForm({ token, onDone }: { token: string; onDone: () => voi
           backgroundColor: 'rgba(255,220,180,0.04)',
         }}
       >
-        <KeyRound size={18} className="mt-0.5 shrink-0" style={{ color: 'var(--sheriff-gold)' }} />
+        <KeyRound size={18} className="mt-0.5 shrink-0" style={{ color: 'var(--sheriff-pink)' }} />
         <p className="text-text-muted text-xs leading-relaxed">
           Ustaw nowe hasło do konta. Po zapisaniu wrócisz do standardowego logowania.
         </p>
@@ -404,7 +404,7 @@ function ResetPasswordForm({ token, onDone }: { token: string; onDone: () => voi
           type="button"
           onClick={onDone}
           className="flex items-center justify-center gap-2 text-sm font-bold transition-colors"
-          style={{ color: 'var(--sheriff-gold)' }}
+          style={{ color: 'var(--sheriff-pink)' }}
         >
           <CheckCircle2 size={16} />
           Przejdź do logowania
@@ -526,7 +526,7 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
           type="button"
           onClick={onSwitch}
           className="font-bold transition-colors"
-          style={{ color: 'var(--sheriff-gold)' }}
+          style={{ color: 'var(--sheriff-pink)' }}
         >
           Zaloguj się
         </button>

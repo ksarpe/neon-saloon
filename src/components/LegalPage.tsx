@@ -70,7 +70,7 @@ export function LegalPage({ title, subtitle, lastUpdated, sections }: Props) {
         >
           <h1
             className="text-5xl tracking-widest sm:text-6xl"
-            style={{ fontFamily: 'var(--font-logo)', color: 'var(--sheriff-gold)' }}
+            style={{ fontFamily: 'var(--font-logo)', color: 'var(--sheriff-pink)' }}
           >
             {title}
           </h1>
@@ -141,7 +141,7 @@ export function LegalPage({ title, subtitle, lastUpdated, sections }: Props) {
                   className="mb-4 text-2xl tracking-wider"
                   style={{
                     fontFamily: 'var(--font-app)',
-                    color: 'var(--sheriff-gold)',
+                    color: 'var(--sheriff-pink)',
                     letterSpacing: '0.06em',
                   }}
                 >

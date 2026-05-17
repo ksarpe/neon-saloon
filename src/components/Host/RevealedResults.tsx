@@ -78,7 +78,7 @@ export function RevealedResults({ card, revealedVotes, scores, hostPlayerId, cou
       {scores.filter((s) => s.score > 0).length > 0 && (
         <div className="border-saloon-border mt-1 flex flex-col gap-1.5 border-t pt-3">
           <p className="text-text-muted mb-1 flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase">
-            <Star size={10} fill="var(--sheriff-gold)" style={{ color: 'var(--sheriff-gold)' }} />
+            <Star size={10} fill="var(--sheriff-pink)" style={{ color: 'var(--sheriff-pink)' }} />
             Ranking
           </p>
           {[...scores]
@@ -95,10 +95,10 @@ export function RevealedResults({ card, revealedVotes, scores, hostPlayerId, cou
                 <div className="flex items-center gap-1">
                   <Star
                     size={10}
-                    fill="var(--sheriff-gold)"
-                    style={{ color: 'var(--sheriff-gold)' }}
+                    fill="var(--sheriff-pink)"
+                    style={{ color: 'var(--sheriff-pink)' }}
                   />
-                  <span className="text-xs font-bold" style={{ color: 'var(--sheriff-gold)' }}>
+                  <span className="text-xs font-bold" style={{ color: 'var(--sheriff-pink)' }}>
                     {s.score}
                   </span>
                 </div>

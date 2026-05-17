@@ -36,7 +36,7 @@ export function PlayerVoting({
         className="flex flex-col items-center gap-5 text-center"
       >
         <div
-          className="rounded-full border px-4 py-1.5 text-xs font-bold uppercase tracking-widest"
+          className="rounded-full border px-4 py-1.5 text-xs font-bold tracking-widest uppercase"
           style={{
             borderColor: 'rgba(167,139,250,0.5)',
             backgroundColor: 'rgba(167,139,250,0.1)',
@@ -51,7 +51,7 @@ export function PlayerVoting({
           style={{ borderColor: 'rgba(255,215,0,0.25)', backgroundColor: 'rgba(255,215,0,0.05)' }}
         >
           <p className="text-text-muted mb-2 text-xs tracking-widest uppercase">Pytanie</p>
-          <p className="text-base font-bold leading-snug" style={{ color: 'var(--sheriff-gold)' }}>
+          <p className="text-base leading-snug font-bold" style={{ color: 'var(--sheriff-pink)' }}>
             {roundData.questionText}
           </p>
           <p className="text-text-muted mt-2 text-xs">
@@ -81,7 +81,7 @@ export function PlayerVoting({
         className="flex w-full flex-col items-center gap-5 text-center"
       >
         <div
-          className="rounded-full border px-4 py-1.5 text-xs font-bold uppercase tracking-widest"
+          className="rounded-full border px-4 py-1.5 text-xs font-bold tracking-widest uppercase"
           style={{
             borderColor: 'rgba(167,139,250,0.5)',
             backgroundColor: 'rgba(167,139,250,0.1)',
@@ -96,7 +96,7 @@ export function PlayerVoting({
           style={{ borderColor: 'rgba(255,215,0,0.25)', backgroundColor: 'rgba(255,215,0,0.05)' }}
         >
           <p className="text-text-muted mb-1 text-xs">Pytanie</p>
-          <p className="text-sm font-bold leading-snug" style={{ color: 'var(--sheriff-gold)' }}>
+          <p className="text-sm leading-snug font-bold" style={{ color: 'var(--sheriff-pink)' }}>
             {roundData.questionText}
           </p>
         </div>
@@ -107,7 +107,7 @@ export function PlayerVoting({
           </p>
           <p
             className="text-6xl font-black"
-            style={{ color: 'var(--sheriff-gold)', fontFamily: "var(--font-app)" }}
+            style={{ color: 'var(--sheriff-pink)', fontFamily: 'var(--font-app)' }}
           >
             {submittedNumber}
             <span className="ml-2 text-3xl">{roundData.questionUnit}</span>
@@ -126,7 +126,8 @@ export function PlayerVoting({
             className="flex flex-1 flex-col items-center gap-2 rounded-2xl border-2 py-7 font-bold transition-all disabled:opacity-50"
             style={{
               borderColor: 'rgba(59,130,246,0.5)',
-              backgroundColor: votedChoice === 'mniej' ? 'rgba(59,130,246,0.22)' : 'rgba(59,130,246,0.08)',
+              backgroundColor:
+                votedChoice === 'mniej' ? 'rgba(59,130,246,0.22)' : 'rgba(59,130,246,0.08)',
               color: '#3b82f6',
             }}
           >
@@ -135,7 +136,13 @@ export function PlayerVoting({
             ) : (
               <>
                 <TrendingDown size={30} />
-                <span style={{ fontFamily: "var(--font-app)", fontSize: '1.15rem', letterSpacing: '0.15em' }}>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-app)',
+                    fontSize: '1.15rem',
+                    letterSpacing: '0.15em',
+                  }}
+                >
                   Mniej
                 </span>
               </>
@@ -149,7 +156,8 @@ export function PlayerVoting({
             className="flex flex-1 flex-col items-center gap-2 rounded-2xl border-2 py-7 font-bold transition-all disabled:opacity-50"
             style={{
               borderColor: 'rgba(239,68,68,0.5)',
-              backgroundColor: votedChoice === 'wiecej' ? 'rgba(239,68,68,0.22)' : 'rgba(239,68,68,0.08)',
+              backgroundColor:
+                votedChoice === 'wiecej' ? 'rgba(239,68,68,0.22)' : 'rgba(239,68,68,0.08)',
               color: '#ef4444',
             }}
           >
@@ -158,7 +166,13 @@ export function PlayerVoting({
             ) : (
               <>
                 <TrendingUp size={30} />
-                <span style={{ fontFamily: "var(--font-app)", fontSize: '1.15rem', letterSpacing: '0.15em' }}>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-app)',
+                    fontSize: '1.15rem',
+                    letterSpacing: '0.15em',
+                  }}
+                >
                   Więcej
                 </span>
               </>
@@ -179,7 +193,7 @@ export function PlayerVoting({
       className="flex flex-col items-center gap-5 text-center"
     >
       <div
-        className="rounded-full border px-4 py-1.5 text-xs font-bold uppercase tracking-widest"
+        className="rounded-full border px-4 py-1.5 text-xs font-bold tracking-widest uppercase"
         style={{
           borderColor: 'rgba(167,139,250,0.4)',
           backgroundColor: 'rgba(167,139,250,0.08)',
@@ -194,19 +208,17 @@ export function PlayerVoting({
         style={{ borderColor: 'rgba(255,215,0,0.25)', backgroundColor: 'rgba(255,215,0,0.05)' }}
       >
         <p className="text-text-muted mb-2 text-xs">Pytanie</p>
-        <p className="text-base font-bold leading-snug" style={{ color: 'var(--sheriff-gold)' }}>
+        <p className="text-base leading-snug font-bold" style={{ color: 'var(--sheriff-pink)' }}>
           {roundData.questionText}
         </p>
       </div>
 
       {submittedNumber !== null ? (
         <div className="flex flex-col items-center gap-2">
-          <p className="text-text-muted text-xs">
-            Odpowiedź drużyny {roundData.guessingTeamName}
-          </p>
+          <p className="text-text-muted text-xs">Odpowiedź drużyny {roundData.guessingTeamName}</p>
           <p
             className="text-4xl font-black"
-            style={{ color: 'var(--sheriff-gold)', fontFamily: "var(--font-app)" }}
+            style={{ color: 'var(--sheriff-pink)', fontFamily: 'var(--font-app)' }}
           >
             {submittedNumber} <span className="text-xl">{roundData.questionUnit}</span>
           </p>

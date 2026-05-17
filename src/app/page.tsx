@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { ChevronRight, Brain, Heart, BookOpen, TrendingUp, type LucideIcon } from 'lucide-react'
+import { ChevronRight, Brain, Heart, BookOpen, TrendingUp, Check, Minus, type LucideIcon } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 
 interface GameModeCard {
@@ -47,12 +48,75 @@ const GAME_MODES: GameModeCard[] = [
   },
 ]
 
+const PRICING_PLANS = [
+  {
+    id: 'free',
+    name: 'Darmowy',
+    price: null,
+    period: null,
+    badge: null,
+    accent: 'rgba(255,220,180,0.55)',
+    borderColor: 'rgba(255,220,180,0.10)',
+    bgColor: 'rgba(13,8,24,0.45)',
+    isPrimary: false,
+    cta: 'Zagraj za darmo',
+    features: [
+      { label: '4 tryby gry', ok: true },
+      { label: 'Nielimitowani gracze', ok: true },
+      { label: 'Wyniki na żywo', ok: true },
+      { label: 'Mniej czy Więcej', ok: false },
+      { label: 'Własne pytania', ok: false },
+      { label: 'Przyszłe tryby gratis', ok: false },
+    ],
+  },
+  {
+    id: 'monthly',
+    name: 'PRO',
+    price: '19,99 zł',
+    period: '/ mies.',
+    badge: null,
+    accent: 'var(--neon-pink)',
+    borderColor: 'rgba(255,16,240,0.22)',
+    bgColor: 'rgba(13,8,24,0.6)',
+    isPrimary: false,
+    cta: 'Kup miesięczny',
+    features: [
+      { label: '4 tryby gry', ok: true },
+      { label: 'Nielimitowani gracze', ok: true },
+      { label: 'Wyniki na żywo', ok: true },
+      { label: 'Mniej czy Więcej', ok: true },
+      { label: 'Własne pytania', ok: true },
+      { label: 'Przyszłe tryby gratis', ok: false },
+    ],
+  },
+  {
+    id: 'lifetime',
+    name: 'PRO Dożywotni',
+    price: '69 zł',
+    period: 'jednorazowo',
+    badge: 'Najlepsza wartość',
+    accent: 'var(--sheriff-gold)',
+    borderColor: 'rgba(255,180,0,0.28)',
+    bgColor: 'rgba(13,8,24,0.6)',
+    isPrimary: true,
+    cta: 'Kup dożywotni',
+    features: [
+      { label: '4 tryby gry', ok: true },
+      { label: 'Nielimitowani gracze', ok: true },
+      { label: 'Wyniki na żywo', ok: true },
+      { label: 'Mniej czy Więcej', ok: true },
+      { label: 'Własne pytania', ok: true },
+      { label: 'Przyszłe tryby gratis', ok: true },
+    ],
+  },
+]
+
 const HOW_IT_WORKS = [
   {
     step: '01',
     title: 'Host otwiera salon',
     desc: 'Jeden ekran na TV lub laptopie — wchodzi na /graj i klika Chcę być szeryfem.',
-    color: 'var(--sheriff-gold)',
+    color: 'var(--sheriff-pink)',
   },
   {
     step: '02',
@@ -140,6 +204,7 @@ function ModeCardContent({ mode, isActive }: { mode: GameModeCard; isActive: boo
 
 export default function LandingPage() {
   const router = useRouter()
+  const { data: session } = useSession()
   const [activeMode, setActiveMode] = useState(0)
   const prevActiveRef = useRef(0)
 
@@ -158,6 +223,11 @@ export default function LandingPage() {
   const goNext = () => setActiveMode((a) => (a + 1) % totalModes)
   const goPrev = () => setActiveMode((a) => (a - 1 + totalModes) % totalModes)
 
+  const handlePricingCta = (planId: string) => {
+    if (planId === 'free') return router.push('/graj')
+    router.push(session ? '/panel' : '/login')
+  }
+
   return (
     <main className="relative w-full overflow-x-hidden">
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
@@ -167,7 +237,7 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="shimmer-text text-[clamp(2rem,12vw,10rem)] leading-[0.9] tracking-wide uppercase whitespace-nowrap"
+          className="shimmer-text text-[clamp(2rem,12vw,10rem)] leading-[0.9] tracking-wide whitespace-nowrap uppercase"
           style={{ fontFamily: 'var(--font-logo)' }}
         >
           Last Rodeo
@@ -370,6 +440,155 @@ export default function LandingPage() {
                   i === activeMode ? GAME_MODES[activeMode].accent : 'rgba(255,220,180,0.25)',
               }}
             />
+          ))}
+        </div>
+      </section>
+
+      {/* ── PRICING ───────────────────────────────────────────────────────── */}
+      <section className="relative z-10 mx-auto flex max-w-5xl flex-col items-center gap-16 px-6 py-24">
+        {/* Heading */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center"
+        >
+          <h2
+            className="shimmer-text text-5xl tracking-widest sm:text-6xl"
+            style={{ fontFamily: 'var(--font-app)' }}
+          >
+            Plany
+          </h2>
+          <p className="mt-3 text-sm" style={{ color: 'rgba(240,223,192,0.5)' }}>
+            Jedno wesele. Jedna szansa. Spraw żeby było epickie.
+          </p>
+        </motion.div>
+
+        {/* Cards */}
+        <div className="grid w-full grid-cols-1 gap-5 sm:grid-cols-3">
+          {PRICING_PLANS.map((plan, i) => (
+            <motion.div
+              key={plan.id}
+              initial={{ opacity: 0, y: 28 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              className="relative flex flex-col rounded-2xl border p-6"
+              style={{
+                borderColor: plan.borderColor,
+                backgroundColor: plan.bgColor,
+                backdropFilter: 'blur(12px)',
+                boxShadow: plan.isPrimary
+                  ? '0 0 0 1px rgba(255,180,0,0.15), 0 24px 64px rgba(255,180,0,0.07)'
+                  : 'none',
+              }}
+            >
+              {/* Top edge glow for highlighted card */}
+              {plan.isPrimary && (
+                <div
+                  className="pointer-events-none absolute top-0 right-0 left-0 h-px rounded-t-2xl"
+                  style={{
+                    background:
+                      'linear-gradient(90deg, transparent, rgba(255,180,0,0.6), transparent)',
+                  }}
+                />
+              )}
+
+              {/* Badge */}
+              {plan.badge && (
+                <div
+                  className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-3 py-0.5 text-[10px] font-bold tracking-widest uppercase"
+                  style={{ background: 'var(--sheriff-gold)', color: '#0d0a0b' }}
+                >
+                  {plan.badge}
+                </div>
+              )}
+
+              {/* Plan name */}
+              <p
+                className="mb-2 text-[10px] font-bold tracking-widest uppercase"
+                style={{ color: plan.accent }}
+              >
+                {plan.name}
+              </p>
+
+              {/* Price */}
+              <div className="mb-6 flex items-end gap-1.5">
+                {plan.price ? (
+                  <>
+                    <span
+                      className="text-4xl font-black leading-none"
+                      style={{ color: 'rgba(240,223,192,0.92)', fontFamily: 'var(--font-app)' }}
+                    >
+                      {plan.price}
+                    </span>
+                    <span className="mb-0.5 text-xs" style={{ color: 'rgba(240,223,192,0.4)' }}>
+                      {plan.period}
+                    </span>
+                  </>
+                ) : (
+                  <span
+                    className="text-4xl font-black leading-none"
+                    style={{ color: 'rgba(240,223,192,0.92)', fontFamily: 'var(--font-app)' }}
+                  >
+                    Bezpłatnie
+                  </span>
+                )}
+              </div>
+
+              {/* Features */}
+              <ul className="mb-8 flex flex-col gap-2.5">
+                {plan.features.map((f) => (
+                  <li key={f.label} className="flex items-center gap-2.5 text-xs">
+                    {f.ok ? (
+                      <Check size={13} className="shrink-0" style={{ color: plan.accent }} />
+                    ) : (
+                      <Minus
+                        size={13}
+                        className="shrink-0"
+                        style={{ color: 'rgba(255,220,180,0.18)' }}
+                      />
+                    )}
+                    <span
+                      style={{
+                        color: f.ok ? 'rgba(240,223,192,0.75)' : 'rgba(240,223,192,0.28)',
+                      }}
+                    >
+                      {f.label}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              {/* CTA */}
+              <button
+                type="button"
+                onClick={() => handlePricingCta(plan.id)}
+                className="mt-auto w-full cursor-pointer rounded-xl py-2.5 text-sm font-semibold tracking-wide transition-all duration-200"
+                style={
+                  plan.isPrimary
+                    ? {
+                        background: 'var(--sheriff-gold)',
+                        color: '#0d0a0b',
+                        boxShadow: '0 0 24px rgba(255,180,0,0.18)',
+                      }
+                    : plan.id === 'monthly'
+                      ? {
+                          background: 'rgba(255,16,240,0.10)',
+                          color: 'var(--neon-pink)',
+                          border: '1px solid rgba(255,16,240,0.22)',
+                        }
+                      : {
+                          background: 'rgba(255,220,180,0.07)',
+                          color: 'rgba(240,223,192,0.65)',
+                          border: '1px solid rgba(255,220,180,0.10)',
+                        }
+                }
+              >
+                {plan.cta}
+              </button>
+            </motion.div>
           ))}
         </div>
       </section>

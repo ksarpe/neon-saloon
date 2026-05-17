@@ -32,7 +32,7 @@ export function RankingList({ scores, unit = 'pkt', icon }: Props) {
           transition={{ delay: 0.1, type: 'spring', stiffness: 220, damping: 18 }}
           className="flex w-full flex-col items-center gap-3 rounded-2xl border-2 p-6"
           style={{
-            borderColor: 'var(--sheriff-gold)',
+            borderColor: 'var(--sheriff-pink)',
             backgroundColor: 'rgba(255,215,0,0.07)',
             boxShadow: '0 0 48px rgba(255,215,0,0.22)',
           }}
@@ -47,8 +47,8 @@ export function RankingList({ scores, unit = 'pkt', icon }: Props) {
           <p
             className="text-3xl leading-tight font-black tracking-wide"
             style={{
-              fontFamily: "var(--font-app)",
-              color: 'var(--sheriff-gold)',
+              fontFamily: 'var(--font-app)',
+              color: 'var(--sheriff-pink)',
               letterSpacing: '0.08em',
               textShadow: '0 0 24px rgba(255,215,0,0.6)',
             }}
@@ -56,8 +56,8 @@ export function RankingList({ scores, unit = 'pkt', icon }: Props) {
             {winner.name}
           </p>
           <div className="flex items-center gap-1.5">
-            <Star size={16} fill="var(--sheriff-gold)" style={{ color: 'var(--sheriff-gold)' }} />
-            <span className="text-2xl font-black" style={{ color: 'var(--sheriff-gold)' }}>
+            <Star size={16} fill="var(--sheriff-pink)" style={{ color: 'var(--sheriff-pink)' }} />
+            <span className="text-2xl font-black" style={{ color: 'var(--sheriff-pink)' }}>
               {winner.score}
             </span>
             <span className="text-text-muted text-sm">{unit}</span>
@@ -100,8 +100,15 @@ export function RankingList({ scores, unit = 'pkt', icon }: Props) {
                   {s.name}
                 </span>
                 <div className="flex shrink-0 items-center gap-1">
-                  <Star size={11} fill="var(--sheriff-gold)" style={{ color: 'var(--sheriff-gold)' }} />
-                  <span className="text-sm font-bold tabular-nums" style={{ color: 'var(--sheriff-gold)' }}>
+                  <Star
+                    size={11}
+                    fill="var(--sheriff-pink)"
+                    style={{ color: 'var(--sheriff-pink)' }}
+                  />
+                  <span
+                    className="text-sm font-bold tabular-nums"
+                    style={{ color: 'var(--sheriff-pink)' }}
+                  >
                     {s.score}
                   </span>
                 </div>

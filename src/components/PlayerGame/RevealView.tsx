@@ -16,7 +16,7 @@ export function RevealView({ data, countdown }: Props) {
       animate={{ opacity: 1, y: 0 }}
       className="mx-auto flex w-full max-w-sm flex-col gap-3"
     >
-      <p className="text-text-muted text-center text-xs font-semibold uppercase tracking-widest">
+      <p className="text-text-muted text-center text-xs font-semibold tracking-widest uppercase">
         OTO WYNIKI
       </p>
 
@@ -65,10 +65,10 @@ export function RevealView({ data, countdown }: Props) {
       {/* Rankings */}
       {data.scores.length > 0 && (
         <div className="border-saloon-border mt-4 flex flex-col gap-3 border-t-2 pt-4">
-          <p className="text-text-muted flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.2em]">
-            <Star size={12} fill="var(--sheriff-gold)" style={{ color: 'var(--sheriff-gold)' }} />
+          <p className="text-text-muted flex items-center justify-center gap-2 text-xs font-bold tracking-[0.2em] uppercase">
+            <Star size={12} fill="var(--sheriff-pink)" style={{ color: 'var(--sheriff-pink)' }} />
             RANKING OGÓLNY
-            <Star size={12} fill="var(--sheriff-gold)" style={{ color: 'var(--sheriff-gold)' }} />
+            <Star size={12} fill="var(--sheriff-pink)" style={{ color: 'var(--sheriff-pink)' }} />
           </p>
           <div className="flex flex-col gap-2">
             {[...data.scores]
@@ -83,10 +83,10 @@ export function RevealView({ data, countdown }: Props) {
                   <div className="flex items-center gap-1 rounded-lg bg-black/30 px-2 py-1">
                     <Star
                       size={12}
-                      fill="var(--sheriff-gold)"
-                      style={{ color: 'var(--sheriff-gold)' }}
+                      fill="var(--sheriff-pink)"
+                      style={{ color: 'var(--sheriff-pink)' }}
                     />
-                    <span className="text-sm font-black" style={{ color: 'var(--sheriff-gold)' }}>
+                    <span className="text-sm font-black" style={{ color: 'var(--sheriff-pink)' }}>
                       {s.score}
                     </span>
                   </div>

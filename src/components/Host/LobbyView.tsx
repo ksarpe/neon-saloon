@@ -1,9 +1,12 @@
 'use client'
 
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence,motion } from 'framer-motion'
 import { Play, Users } from 'lucide-react'
-import type { LivePlayer } from './types'
+
+import { JoinQrCode } from '@/components/JoinQrCode'
 import { Button } from '@/components/ui/button'
+
+import type { LivePlayer } from './types'
 
 interface Props {
   pin: string
@@ -31,7 +34,7 @@ export function LobbyView({ pin, players, hostAvatar, hostName, onStart }: Props
       {/* Host identity */}
       <div
         className="flex items-center gap-3 rounded-2xl border px-5 py-3"
-        style={{ borderColor: 'var(--sheriff-gold)', backgroundColor: 'rgba(255,215,0,0.07)' }}
+        style={{ borderColor: 'var(--sheriff-pink)', backgroundColor: 'rgba(255,215,0,0.07)' }}
       >
         <span className="text-2xl">{hostAvatar}</span>
         <div>
@@ -44,39 +47,46 @@ export function LobbyView({ pin, players, hostAvatar, hostName, onStart }: Props
 
       {/* PIN */}
       <div className="flex flex-col items-center gap-3">
-        <p className="text-text-muted text-xs font-semibold tracking-widest uppercase">KOD GRY</p>
-        <div className="flex gap-3">
-          {pin.split('').map((d, i) => (
-            <motion.div
-              key={i}
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: i * 0.1, type: 'spring', stiffness: 300 }}
-              className="pulse-pink flex h-24 w-20 items-center justify-center rounded-2xl border-2 text-5xl font-bold sm:h-32 sm:w-28 sm:text-6xl"
-              style={{
-                fontFamily: 'var(--font-app)',
-                color: 'var(--neon-pink)',
-                borderColor: 'var(--neon-pink)',
-                backgroundColor: 'rgba(255,16,240,0.07)',
-              }}
-            >
-              {d}
-            </motion.div>
-          ))}
+        <div className="flex flex-col items-center gap-5 lg:flex-row lg:items-end">
+          <div className="flex flex-col items-center gap-3">
+            <p className="text-text-muted text-xs font-semibold tracking-widest uppercase">
+              KOD GRY
+            </p>
+            <div className="flex gap-3">
+              {pin.split('').map((d, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: i * 0.1, type: 'spring', stiffness: 300 }}
+                  className="pulse-pink flex h-24 w-20 items-center justify-center rounded-2xl border-2 text-5xl font-bold sm:h-32 sm:w-28 sm:text-6xl"
+                  style={{
+                    fontFamily: 'var(--font-app)',
+                    color: 'var(--neon-pink)',
+                    borderColor: 'var(--neon-pink)',
+                    backgroundColor: 'rgba(255,16,240,0.07)',
+                  }}
+                >
+                  {d}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+          <JoinQrCode pin={pin} />
         </div>
-        <p className="text-text-muted text-xs">
-          Gracze wchodzą na{' '}
-          <span className="text-text-primary font-bold">lastrodeoandzeliki.pl/join</span>
+        <p className="text-text-muted text-center text-xs">
+          Gracze skanują QR albo wchodzą na{' '}
+          <span className="text-text-primary font-bold">lastrodeoandzeliki.pl/graj/join</span>
         </p>
       </div>
 
       {/* Players */}
       <div className="w-full">
         <div className="mb-3 flex items-center justify-center gap-2">
-          <Users size={14} style={{ color: 'var(--sheriff-gold)' }} />
+          <Users size={14} style={{ color: 'var(--sheriff-pink)' }} />
           <span
             className="text-xs font-semibold tracking-widest uppercase"
-            style={{ color: 'var(--sheriff-gold)' }}
+            style={{ color: 'var(--sheriff-pink)' }}
           >
             {players.length} {players.length === 1 ? 'cowgirl' : 'cowgirls'} w salonie
           </span>

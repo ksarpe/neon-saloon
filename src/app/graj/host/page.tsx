@@ -128,7 +128,7 @@ export default function HostSetupPage() {
               placeholder={placeholder}
               className="bg-saloon-surface text-text-primary placeholder:text-text-muted flex-1 rounded-xl border-2 p-4 text-lg font-bold transition-colors focus:outline-none"
               style={{
-                borderColor: hostName.trim() ? 'var(--sheriff-gold)' : 'var(--saloon-border)',
+                borderColor: hostName.trim() ? 'var(--sheriff-pink)' : 'var(--saloon-border)',
               }}
             />
             <motion.button
@@ -181,8 +181,10 @@ export default function HostSetupPage() {
                   <div className="pointer-events-none absolute inset-y-0 -left-full z-0 w-full skew-x-[-20deg] bg-linear-to-r from-transparent via-white/20 to-transparent transition-all duration-700 ease-in-out group-hover:left-[100%]" />
 
                   {mode.isPremium && (
-                    <div className="absolute bottom-2 right-2 z-20 flex items-center gap-1 rounded-full border border-yellow-500/50 bg-black/60 px-2 py-0.5 text-[9px] font-bold tracking-widest text-yellow-400 uppercase">
-                      {!checkAccess({ type: 'premium' }, access).granted && <Lock size={10} aria-hidden />}
+                    <div className="absolute right-2 bottom-2 z-20 flex items-center gap-1 rounded-full border border-yellow-500/50 bg-black/60 px-2 py-0.5 text-[9px] font-bold tracking-widest text-yellow-400 uppercase">
+                      {!checkAccess({ type: 'premium' }, access).granted && (
+                        <Lock size={10} aria-hidden />
+                      )}
                       PRO
                     </div>
                   )}

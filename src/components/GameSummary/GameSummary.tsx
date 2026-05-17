@@ -40,10 +40,11 @@ export function GameSummary({
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="shimmer-text text-[clamp(2rem,12vw,6rem)] leading-[1.1] tracking-wide uppercase whitespace-nowrap"
+          className="shimmer-text text-[clamp(2rem,12vw,6rem)] leading-[1.1] tracking-wide whitespace-nowrap uppercase"
           style={{ fontFamily: 'var(--font-logo)' }}
         >
-          Game Over,<br /> Cowgirls!
+          Game Over,
+          <br /> Cowgirls!
         </motion.h1>
         <p className="text-text-muted mt-2 text-xs tracking-widest uppercase">
           Końcowy ranking kowbojek
@@ -78,7 +79,7 @@ export function GameSummary({
               className="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-bold tracking-widest uppercase transition-all duration-200"
               style={{
                 backgroundColor: tab === 'teams' ? 'rgba(249,74,255,0.12)' : 'transparent',
-                color: tab === 'teams' ? 'var(--sheriff-gold)' : 'rgba(255,220,180,0.45)',
+                color: tab === 'teams' ? 'var(--sheriff-pink)' : 'rgba(255,220,180,0.45)',
                 boxShadow: tab === 'teams' ? 'inset 0 0 0 1px rgba(249,74,255,0.2)' : 'none',
               }}
             >
@@ -120,8 +121,12 @@ export function GameSummary({
       {/* Ranking */}
       {tab === 'players' && <RankingList scores={scores} unit="pkt" />}
       {tab === 'teams' && hasTeams && <RankingList scores={teamScores!} unit="pkt" />}
-      {tab === 'drinks' && hasDrinks && <RankingList scores={drinksScores!} unit="łyków" icon="🍺" />}
-      {tab === 'egzekwo' && hasEgzekwo && <RankingList scores={egzekwoScores!} unit="egzekucji" icon="⚡" />}
+      {tab === 'drinks' && hasDrinks && (
+        <RankingList scores={drinksScores!} unit="łyków" icon="🍺" />
+      )}
+      {tab === 'egzekwo' && hasEgzekwo && (
+        <RankingList scores={egzekwoScores!} unit="egzekucji" icon="⚡" />
+      )}
 
       {/* Home button */}
       <motion.div

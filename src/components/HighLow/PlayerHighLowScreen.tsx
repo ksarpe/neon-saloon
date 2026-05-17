@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import { Star } from 'lucide-react'
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
 import { playerJsonHeaders } from '@/lib/session-player-secret'
@@ -39,7 +39,7 @@ interface Props {
 function derivePhase(
   data: HighLowRoundStartPayload,
   playerId: string,
-  teamId: string | null,
+  teamId: string | null
 ): PlayerHLPhase {
   if (playerId === data.guessingCaptainId) return 'guessing-captain'
   if (playerId === data.votingCaptainId) return 'voting-captain-waiting'
@@ -141,23 +141,24 @@ export default function PlayerHighLowScreen({
 
   return (
     <div className="relative flex min-h-dvh w-full flex-col items-center justify-center p-6">
-
       {/* Score chip */}
       {myScore > 0 && (
         <div
           className="fixed top-4 right-4 z-20 flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold"
-          style={{ borderColor: 'rgba(255,215,0,0.4)', backgroundColor: 'rgba(255,215,0,0.08)', color: 'var(--sheriff-gold)' }}
+          style={{
+            borderColor: 'rgba(255,215,0,0.4)',
+            backgroundColor: 'rgba(255,215,0,0.08)',
+            color: 'var(--sheriff-pink)',
+          }}
         >
-          <Star size={11} fill="var(--sheriff-gold)" style={{ color: 'var(--sheriff-gold)' }} />
+          <Star size={11} fill="var(--sheriff-pink)" style={{ color: 'var(--sheriff-pink)' }} />
           {myScore} pkt
         </div>
       )}
 
       <div className="relative z-10 flex w-full max-w-sm flex-col items-center gap-6">
         <AnimatePresence mode="wait">
-          {phase === 'waiting' && (
-            <PlayerWaiting avatar={avatar} teamName={teamName} />
-          )}
+          {phase === 'waiting' && <PlayerWaiting avatar={avatar} teamName={teamName} />}
 
           {(phase === 'guessing-captain' || phase === 'guessing-member') && roundData && (
             <PlayerGuessing
@@ -189,12 +190,7 @@ export default function PlayerHighLowScreen({
             )}
 
           {phase === 'result' && resultData && (
-            <PlayerResult
-              key="result"
-              resultData={resultData}
-              teamId={teamId}
-              myScore={myScore}
-            />
+            <PlayerResult key="result" resultData={resultData} teamId={teamId} myScore={myScore} />
           )}
 
           {phase === 'finished' && (

@@ -13,7 +13,13 @@ interface Props {
   onNextRound: () => void
 }
 
-export function HostReveal({ resultData, guessingTeam, votingTeam, questionHint, onNextRound }: Props) {
+export function HostReveal({
+  resultData,
+  guessingTeam,
+  votingTeam,
+  questionHint,
+  onNextRound,
+}: Props) {
   const voteCorrect = resultData.captainVote === resultData.correctVote
 
   return (
@@ -35,23 +41,24 @@ export function HostReveal({ resultData, guessingTeam, votingTeam, questionHint,
         >
           <p
             className="text-6xl font-black"
-            style={{ color: '#10b981', fontFamily: "var(--font-app)" }}
+            style={{ color: '#10b981', fontFamily: 'var(--font-app)' }}
           >
             {resultData.correctAnswer.toLocaleString('pl-PL')}{' '}
             <span className="text-3xl">{resultData.unit}</span>
           </p>
-          {questionHint && (
-            <p className="text-text-muted mt-2 text-xs">{questionHint}</p>
-          )}
+          {questionHint && <p className="text-text-muted mt-2 text-xs">{questionHint}</p>}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div
             className="rounded-2xl border p-4"
-            style={{ borderColor: 'rgba(255,220,180,0.15)', backgroundColor: 'rgba(255,220,180,0.04)' }}
+            style={{
+              borderColor: 'rgba(255,220,180,0.15)',
+              backgroundColor: 'rgba(255,220,180,0.04)',
+            }}
           >
             <p className="text-text-muted mb-1 text-xs">Odpowiedź {guessingTeam.teamName}</p>
-            <p className="text-2xl font-black" style={{ color: 'var(--sheriff-gold)' }}>
+            <p className="text-2xl font-black" style={{ color: 'var(--sheriff-pink)' }}>
               {resultData.guessingTeamGuess.toLocaleString('pl-PL')} {resultData.unit}
             </p>
           </div>
@@ -79,7 +86,7 @@ export function HostReveal({ resultData, guessingTeam, votingTeam, questionHint,
           <p className="text-text-muted mb-1 text-xs tracking-widest uppercase">Punkt dla</p>
           <p
             className="text-3xl font-black tracking-widest"
-            style={{ color: 'var(--sheriff-gold)', fontFamily: "var(--font-app)" }}
+            style={{ color: 'var(--sheriff-pink)', fontFamily: 'var(--font-app)' }}
           >
             {resultData.winningTeamName}
           </p>
@@ -92,7 +99,7 @@ export function HostReveal({ resultData, guessingTeam, votingTeam, questionHint,
         className="flex items-center gap-2 rounded-2xl px-8 py-4 text-white"
         style={{
           background: 'linear-gradient(135deg,var(--neon-pink),#c800c8)',
-          fontFamily: "var(--font-app)",
+          fontFamily: 'var(--font-app)',
           letterSpacing: '0.1em',
           fontSize: '1.1rem',
         }}

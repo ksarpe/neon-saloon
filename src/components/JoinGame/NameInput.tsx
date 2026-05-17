@@ -31,7 +31,7 @@ export function NameInput({ value, onChange, avatar, onAvatarChange, onSubmit, o
       <div className="text-center">
         <h2
           className="mt-2 text-3xl tracking-widest"
-          style={{ fontFamily: "var(--font-app)", color: 'var(--sheriff-gold)' }}
+          style={{ fontFamily: 'var(--font-app)', color: 'var(--sheriff-pink)' }}
         >
           Jak masz na imię kowboju?
         </h2>

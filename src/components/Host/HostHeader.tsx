@@ -99,14 +99,6 @@ export function HostHeader({
             </span>
           )}
 
-          <div className="flex items-center gap-2">
-            <span
-              className="h-2 w-2 animate-pulse rounded-full"
-              style={{ backgroundColor: 'var(--neon-pink)' }}
-            />
-            <span className="text-text-muted text-xs font-bold tracking-tighter">LIVE</span>
-          </div>
-
           {/* Hamburger menu */}
           <div ref={menuRef} className="relative">
             <motion.button
@@ -138,15 +130,16 @@ export function HostHeader({
                 >
                   {phase !== 'finished' ? (
                     <button
-                      onClick={() => { setMenuOpen(false); onForceFinish() }}
+                      onClick={() => {
+                        setMenuOpen(false)
+                        onForceFinish()
+                      }}
                       className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold"
                       style={{ color: '#ef4444' }}
                       onMouseEnter={(e) =>
                         (e.currentTarget.style.backgroundColor = 'rgba(239,68,68,0.1)')
                       }
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.backgroundColor = 'transparent')
-                      }
+                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                     >
                       <Flag size={14} />
                       Zakończ grę

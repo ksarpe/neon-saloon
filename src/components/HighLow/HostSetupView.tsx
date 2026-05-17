@@ -30,7 +30,7 @@ export function HostSetupView({ team1, team2, onContinue }: Props) {
       <div className="text-center">
         <h1
           className="shimmer-text text-5xl tracking-widest"
-          style={{ fontFamily: "var(--font-app)" }}
+          style={{ fontFamily: 'var(--font-app)' }}
         >
           mniej czy więcej
         </h1>
@@ -105,7 +105,7 @@ export function HostSetupView({ team1, team2, onContinue }: Props) {
             },
             {
               team: team2,
-              accent: 'var(--sheriff-gold)',
+              accent: 'var(--sheriff-pink)',
               border: 'rgba(255,215,0,0.5)',
               bg: 'rgba(255,215,0,0.1)',
             },

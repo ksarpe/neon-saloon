@@ -163,7 +163,7 @@ const NEVER_SOURCES: Array<{
     id: 'app',
     label: 'Pytania aplikacji',
     desc: 'Gotowe wyznania dołączone do gry — działają zawsze, bez konfiguracji.',
-    color: 'var(--sheriff-gold)',
+    color: 'var(--sheriff-pink)',
     border: 'rgba(255,215,0,0.5)',
     bg: 'rgba(255,215,0,0.07)',
   },
@@ -381,7 +381,7 @@ function HighLowTeamSetup({
             placeholder="np. Drużyna Beta"
             className="bg-saloon-surface text-text-primary placeholder:text-text-muted w-full rounded-xl border-2 px-4 py-3 text-base font-bold transition-colors focus:outline-none"
             style={{
-              borderColor: name2.trim() ? 'var(--sheriff-gold)' : 'var(--saloon-border)',
+              borderColor: name2.trim() ? 'var(--sheriff-pink)' : 'var(--saloon-border)',
             }}
           />
         </div>

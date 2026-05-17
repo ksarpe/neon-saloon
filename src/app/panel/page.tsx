@@ -312,9 +312,9 @@ function QuizTab() {
                   onClick={() => setCorrectIndex(idx)}
                   className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-2 transition-colors"
                   style={{
-                    borderColor: active ? 'var(--sheriff-gold)' : 'var(--saloon-border)',
+                    borderColor: active ? 'var(--sheriff-pink)' : 'var(--saloon-border)',
                     backgroundColor: active ? 'rgba(255,215,0,0.1)' : 'rgba(13,8,24,0.4)',
-                    color: active ? 'var(--sheriff-gold)' : 'var(--text-muted)',
+                    color: active ? 'var(--sheriff-pink)' : 'var(--text-muted)',
                   }}
                   title="Prawidłowa odpowiedź"
                 >
@@ -329,7 +329,7 @@ function QuizTab() {
                   className="bg-saloon-surface text-text-primary placeholder:text-text-muted min-w-0 flex-1 rounded-xl border-2 px-4 py-2.5 text-sm transition-colors focus:outline-none"
                   style={{
                     borderColor:
-                      active && option.trim() ? 'var(--sheriff-gold)' : 'var(--saloon-border)',
+                      active && option.trim() ? 'var(--sheriff-pink)' : 'var(--saloon-border)',
                   }}
                 />
                 {options.length > 2 && (
@@ -401,7 +401,7 @@ function QuizTab() {
                 style={{
                   borderColor:
                     option === q.answer ? 'rgba(255,215,0,0.35)' : 'rgba(255,220,180,0.08)',
-                  color: option === q.answer ? 'var(--sheriff-gold)' : 'var(--text-muted)',
+                  color: option === q.answer ? 'var(--sheriff-pink)' : 'var(--text-muted)',
                   backgroundColor: option === q.answer ? 'rgba(255,215,0,0.08)' : 'transparent',
                 }}
               >
@@ -689,7 +689,7 @@ function AccountTab() {
               className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border"
               style={{
                 borderColor: isPremium ? 'rgba(255,215,0,0.4)' : 'rgba(255,16,240,0.35)',
-                color: isPremium ? 'var(--sheriff-gold)' : 'var(--neon-pink)',
+                color: isPremium ? 'var(--sheriff-pink)' : 'var(--neon-pink)',
                 backgroundColor: 'rgba(13,8,24,0.35)',
               }}
             >
@@ -738,7 +738,7 @@ function AccountTab() {
             style={{
               borderColor: 'rgba(255,215,0,0.38)',
               backgroundColor: 'rgba(255,215,0,0.08)',
-              color: 'var(--sheriff-gold)',
+              color: 'var(--sheriff-pink)',
             }}
           >
             {checkoutPlan === 'monthly' ? (
@@ -851,7 +851,7 @@ function AccountTab() {
           }}
         >
           <div className="mb-4 flex items-center gap-2">
-            <KeyRound size={16} style={{ color: 'var(--sheriff-gold)' }} />
+            <KeyRound size={16} style={{ color: 'var(--sheriff-pink)' }} />
             <p className="text-text-primary text-sm font-black">Zmiana hasła</p>
           </div>
           <div className="flex flex-col gap-3">
@@ -862,7 +862,7 @@ function AccountTab() {
               placeholder="Obecne hasło"
               className="bg-saloon-surface text-text-primary placeholder:text-text-muted rounded-xl border-2 px-4 py-3 text-sm transition-colors focus:outline-none"
               style={{
-                borderColor: currentPassword ? 'var(--sheriff-gold)' : 'var(--saloon-border)',
+                borderColor: currentPassword ? 'var(--sheriff-pink)' : 'var(--saloon-border)',
               }}
             />
             <input
@@ -871,7 +871,7 @@ function AccountTab() {
               onChange={(event) => setNewPassword(event.target.value)}
               placeholder="Nowe hasło"
               className="bg-saloon-surface text-text-primary placeholder:text-text-muted rounded-xl border-2 px-4 py-3 text-sm transition-colors focus:outline-none"
-              style={{ borderColor: newPassword ? 'var(--sheriff-gold)' : 'var(--saloon-border)' }}
+              style={{ borderColor: newPassword ? 'var(--sheriff-pink)' : 'var(--saloon-border)' }}
             />
             <button
               type="button"
@@ -879,9 +879,9 @@ function AccountTab() {
               onClick={changePassword}
               className="mt-1 flex items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 text-xs font-black tracking-widest uppercase disabled:opacity-35"
               style={{
-                borderColor: 'var(--sheriff-gold)',
+                borderColor: 'var(--sheriff-pink)',
                 backgroundColor: 'rgba(255,215,0,0.08)',
-                color: 'var(--sheriff-gold)',
+                color: 'var(--sheriff-pink)',
               }}
             >
               {passwordSaving ? (
@@ -1036,7 +1036,7 @@ function PaymentStatusBanner({ checkoutState }: { checkoutState: CheckoutState }
                   ? 'rgba(239,68,68,0.3)'
                   : 'rgba(255,16,240,0.35)',
               color: isActive
-                ? 'var(--sheriff-gold)'
+                ? 'var(--sheriff-pink)'
                 : isFailed || isCancelled
                   ? '#f87171'
                   : 'var(--neon-pink)',
@@ -1104,7 +1104,7 @@ function PanelContent() {
       label: 'Nigdy przenigdy',
       description: 'własne wyznania dokładane do talii',
       icon: BookOpen,
-      color: 'var(--sheriff-gold)',
+      color: 'var(--sheriff-pink)',
     },
     {
       id: 'account',

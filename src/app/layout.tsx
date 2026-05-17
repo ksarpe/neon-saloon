@@ -50,7 +50,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           className="pointer-events-none fixed inset-0 z-1"
           style={{ background: 'rgba(23, 2, 23, 0.75)' }}
         />
-        <img src="/icons/bottle-bg.png" width="10%" className='absolute bottom-1/4 right-1/4'></img>
         <Providers>
           <BackButtonProvider>
             <PageTransition>{children}</PageTransition>
