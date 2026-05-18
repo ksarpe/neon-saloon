@@ -25,6 +25,9 @@ model User {
   neverQuestions      NeverQuestion[]
   quizQuestions       QuizQuestion[]
   passwordResetTokens PasswordResetToken[]
+
+  @@index([email])
+  @@index([stripeCustomerId])
 }
 
 model NeverQuestion {
@@ -35,6 +38,8 @@ model NeverQuestion {
   userId String
 
   createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model QuizQuestion {
@@ -47,6 +52,8 @@ model QuizQuestion {
   userId String
 
   createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model PasswordResetToken {

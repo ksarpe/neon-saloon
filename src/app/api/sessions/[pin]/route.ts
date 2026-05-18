@@ -58,7 +58,7 @@ export async function GET(request: Request, { params }: RouteContext) {
     players: session.players.map(publicPlayer),
     teams: session.teams,
     cardIndex: session.cardIndex,
-    votes: session.votes ?? [],
+    votes: (session.votes ?? []).filter((vote) => vote.cardIndex === session.cardIndex),
     gameMode: session.gameMode ?? 'classic',
     highlowData: session.highlowData ?? null,
   })
@@ -85,7 +85,7 @@ export async function POST(request: Request, { params }: RouteContext) {
 
     if (action === 'start') {
       const card = sanitizeWireCard(body.card)
-      await updateSession(pin, { status: 'active', cardIndex: 0 })
+      await updateSession(pin, { status: 'active', cardIndex: 0, votes: [] })
       await triggerSessionEvent(pin, {
         event: 'game-started',
         data: { cardIndex: 0, card },
@@ -93,7 +93,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     } else if (action === 'finish') {
       const scores = assertSmallArray<ScoreEntry>(body.scores, 'scores')
       const teamScores = assertSmallArray<TeamScoreEntry>(body.teamScores, 'teamScores')
-      await updateSession(pin, { status: 'finished' })
+      await updateSession(pin, { status: 'finished', votes: [] })
       await triggerSessionEvent(pin, {
         event: 'game-finished',
         data: { scores, teamScores },

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 
-import { createSession, type SessionData } from '@/lib/appwrite/sessions'
+import { cleanupOldSessions, createSession, type SessionData } from '@/lib/appwrite/sessions'
 import { optionalString, readLimitedJson, validationErrorResponse } from '@/lib/request-validation'
 import { createHostSecret, hashHostSecret } from '@/lib/session-host-auth'
 import { SESSION_PIN_LENGTH } from '@/lib/session-pin'
@@ -45,6 +45,12 @@ export async function POST(request: Request) {
     const body = await readLimitedJson<{ hostName?: unknown; gameMode?: unknown }>(request)
     const hostName = optionalString(body.hostName, 'hostName', 24) ?? 'Host'
     const gameMode = optionalString(body.gameMode, 'gameMode', 32) ?? 'classic'
+
+    try {
+      await cleanupOldSessions()
+    } catch (cleanupError) {
+      console.error('[POST /api/sessions] Failed to cleanup old sessions', cleanupError)
+    }
 
     const { pin, hostSecret } = await createSessionWithUniquePin(hostName, gameMode)
 

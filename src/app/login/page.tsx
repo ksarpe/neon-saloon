@@ -7,6 +7,7 @@ import { signIn } from 'next-auth/react'
 import { Suspense, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
+import { getPasswordPolicyError } from '@/lib/password-policy'
 
 type Tab = 'login' | 'register' | 'forgot'
 
@@ -336,8 +337,9 @@ function ResetPasswordForm({ token, onDone }: { token: string; onDone: () => voi
       setError('Hasła nie są takie same')
       return
     }
-    if (password.length < 6) {
-      setError('Hasło musi mieć minimum 6 znaków')
+    const passwordError = getPasswordPolicyError(password)
+    if (passwordError) {
+      setError(passwordError)
       return
     }
 
@@ -384,7 +386,7 @@ function ResetPasswordForm({ token, onDone }: { token: string; onDone: () => voi
         label="Nowe hasło"
         value={password}
         onChange={setPassword}
-        placeholder="min. 6 znaków"
+        placeholder="min. 10 znakow, Aa1!"
         autoComplete="new-password"
       />
       <PasswordField
@@ -443,8 +445,9 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
       setError('Hasła nie są takie same')
       return
     }
-    if (password.length < 6) {
-      setError('Hasło musi mieć minimum 6 znaków')
+    const passwordError = getPasswordPolicyError(password)
+    if (passwordError) {
+      setError(passwordError)
       return
     }
 
@@ -506,7 +509,7 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
         label="Hasło"
         value={password}
         onChange={setPassword}
-        placeholder="min. 6 znaków"
+        placeholder="min. 10 znakow, Aa1!"
         autoComplete="new-password"
       />
       <PasswordField

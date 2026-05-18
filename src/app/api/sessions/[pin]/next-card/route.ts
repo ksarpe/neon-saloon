@@ -30,7 +30,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     const cardIndex = requiredInteger(body.cardIndex, 'cardIndex', 0, 10_000)
     const card = sanitizeWireCard(body.card)
 
-    await updateSession(pin, { cardIndex })
+    await updateSession(pin, { cardIndex, votes: [] })
 
     await triggerSessionEvent(pin, {
       event: 'next-card',

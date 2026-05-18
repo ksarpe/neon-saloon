@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server'
-import { getSession, saveSession } from '@/lib/appwrite/sessions'
+
+import type { BRAnswerResult } from '@/lib/appwrite/realtime'
 import { triggerGameEvent } from '@/lib/appwrite/realtime'
+import type { BRAnswer } from '@/lib/appwrite/sessions'
+import { getSession, saveSession } from '@/lib/appwrite/sessions'
 import { QUESTION_CATEGORIES } from '@/lib/games/categories'
 import { isHostAuthorized } from '@/lib/session-host-auth'
-import type { BRAnswer } from '@/lib/appwrite/sessions'
-import type { BRAnswerResult } from '@/lib/appwrite/realtime'
 
 type RouteContext = { params: Promise<{ pin: string }> }
 
@@ -35,9 +36,13 @@ export async function POST(_request: Request, { params }: RouteContext) {
     if (!question) return NextResponse.json({ error: 'No question found' }, { status: 400 })
 
     const alivePlayers = session.players.filter((p) => !br.eliminatedPlayers.includes(p.playerId))
+    const submittedAnswers = normalizeRoundAnswers(
+      br.roundAnswers,
+      alivePlayers.map((p) => p.playerId)
+    )
 
     // Build answer list — players who didn't answer are treated as timed out (wrong)
-    const submittedIds = new Set(br.roundAnswers.map((a) => a.playerId))
+    const submittedIds = new Set(submittedAnswers.map((a) => a.playerId))
     const timedOutPlayers: BRAnswer[] = alivePlayers
       .filter((p) => !submittedIds.has(p.playerId))
       .map((p) => ({
@@ -50,7 +55,7 @@ export async function POST(_request: Request, { params }: RouteContext) {
         isCorrect: false,
       }))
 
-    const allAnswers: BRAnswer[] = [...br.roundAnswers, ...timedOutPlayers]
+    const allAnswers: BRAnswer[] = [...submittedAnswers, ...timedOutPlayers]
 
     // Elimination logic
     const correctOnes = allAnswers.filter((a) => a.isCorrect)
@@ -71,7 +76,7 @@ export async function POST(_request: Request, { params }: RouteContext) {
       eliminatedIds = wrongOnes.map((a) => a.playerId)
     }
 
-    const updatedEliminated = [...br.eliminatedPlayers, ...eliminatedIds]
+    const updatedEliminated = Array.from(new Set([...br.eliminatedPlayers, ...eliminatedIds]))
     const survivingIds = alivePlayers
       .map((p) => p.playerId)
       .filter((id) => !eliminatedIds.includes(id))
@@ -119,4 +124,15 @@ export async function POST(_request: Request, { params }: RouteContext) {
     console.error(`[POST /api/sessions/${pin}/battle-royale/reveal]`, err)
     return NextResponse.json({ error: 'Failed to reveal round' }, { status: 500 })
   }
+}
+
+function normalizeRoundAnswers(answers: BRAnswer[] | undefined, alivePlayerIds: string[]) {
+  const alive = new Set(alivePlayerIds)
+  const byPlayer = new Map<string, BRAnswer>()
+
+  for (const answer of answers ?? []) {
+    if (alive.has(answer.playerId)) byPlayer.set(answer.playerId, answer)
+  }
+
+  return Array.from(byPlayer.values())
 }

@@ -101,6 +101,9 @@ export async function createStripeCustomer(input: {
 
   return stripeApiRequest<{ id: string }>('/customers', {
     method: 'POST',
+    headers: {
+      'Idempotency-Key': `customer:${input.userId}`,
+    },
     body,
   })
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { triggerGameEvent } from '@/lib/appwrite/realtime'
+import type { BRAnswer } from '@/lib/appwrite/sessions'
 import { getSession, saveSession } from '@/lib/appwrite/sessions'
 import { QUESTION_CATEGORIES } from '@/lib/games/categories'
 import {
@@ -11,6 +12,7 @@ import {
   requiredString,
   validationErrorResponse,
 } from '@/lib/request-validation'
+import { enforceSessionActionRateLimit } from '@/lib/session-action-rate-limit'
 import { getAuthorizedPlayer } from '@/lib/session-player-auth'
 
 type RouteContext = { params: Promise<{ pin: string }> }
@@ -32,9 +34,16 @@ export async function POST(request: Request, { params }: RouteContext) {
     if (!session) return NextResponse.json({ error: 'Session not found' }, { status: 404 })
     const player = getAuthorizedPlayer(request, session, playerId)
     if (!player) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    const rateLimitResponse = enforceSessionActionRateLimit(
+      'battleRoyaleAnswer',
+      pin,
+      player.playerId
+    )
+    if (rateLimitResponse) return rateLimitResponse
 
     const br = session.battleRoyaleData
     if (!br) return NextResponse.json({ error: 'Not a battle-royale session' }, { status: 400 })
+    if (!br.roundStartTime) return NextResponse.json({ error: 'No active round' }, { status: 400 })
 
     // Ignore answers from already-eliminated players
     if (br.eliminatedPlayers.includes(playerId)) {
@@ -46,7 +55,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     const isCorrect = question ? question.options[answerIndex] === question.answer : false
 
     const answeredAt = Date.now()
-    const newAnswer = {
+    const newAnswer: BRAnswer = {
       playerId,
       playerName: player.playerName,
       avatar: player.avatar,
@@ -56,9 +65,15 @@ export async function POST(request: Request, { params }: RouteContext) {
       isCorrect,
     }
 
-    // Upsert answer (player can only answer once per round)
-    const others = br.roundAnswers.filter((a) => a.playerId !== playerId)
-    session.battleRoyaleData = { ...br, roundAnswers: [...others, newAnswer] }
+    const alivePlayerIds = session.players
+      .filter((p) => !br.eliminatedPlayers.includes(p.playerId))
+      .map((p) => p.playerId)
+
+    // Upsert answer and keep at most one answer per alive player for the current round.
+    session.battleRoyaleData = {
+      ...br,
+      roundAnswers: upsertRoundAnswer(br.roundAnswers, newAnswer, alivePlayerIds),
+    }
     await saveSession(session)
 
     await triggerGameEvent(pin, {
@@ -74,4 +89,17 @@ export async function POST(request: Request, { params }: RouteContext) {
     console.error(`[POST /api/sessions/${pin}/battle-royale/answer]`, err)
     return NextResponse.json({ error: 'Failed to submit answer' }, { status: 500 })
   }
+}
+
+function upsertRoundAnswer(
+  existing: BRAnswer[] | undefined,
+  answer: BRAnswer,
+  alivePlayerIds: string[]
+) {
+  const alive = new Set(alivePlayerIds)
+  const currentAnswers = (existing ?? []).filter(
+    (entry) => entry.playerId !== answer.playerId && alive.has(entry.playerId)
+  )
+
+  return [...currentAnswers, answer]
 }

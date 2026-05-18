@@ -25,6 +25,8 @@ import type { ReactNode } from 'react'
 import { Suspense } from 'react'
 import { useEffect, useRef, useState } from 'react'
 
+import { getPasswordPolicyError } from '@/lib/password-policy'
+
 interface Question {
   id: string
   text: string
@@ -593,6 +595,13 @@ function AccountTab() {
 
   const changePassword = async () => {
     if (!currentPassword || !newPassword || passwordSaving) return
+    const passwordError = getPasswordPolicyError(newPassword)
+    if (passwordError) {
+      setPasswordMessage(null)
+      setPasswordError(passwordError)
+      return
+    }
+
     setPasswordSaving(true)
     setPasswordMessage(null)
     setPasswordError(null)
@@ -869,7 +878,7 @@ function AccountTab() {
               type="password"
               value={newPassword}
               onChange={(event) => setNewPassword(event.target.value)}
-              placeholder="Nowe hasło"
+              placeholder="Nowe haslo: min. 10, Aa1!"
               className="bg-saloon-surface text-text-primary placeholder:text-text-muted rounded-xl border-2 px-4 py-3 text-sm transition-colors focus:outline-none"
               style={{ borderColor: newPassword ? 'var(--sheriff-pink)' : 'var(--saloon-border)' }}
             />

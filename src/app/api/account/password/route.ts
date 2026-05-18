@@ -3,11 +3,13 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 
 import { authOptions } from '@/lib/auth'
+import { getPasswordPolicyError } from '@/lib/password-policy'
 import { prisma } from '@/lib/prisma'
 import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
 import {
   INPUT_LIMITS,
   readLimitedJson,
+  RequestValidationError,
   requiredString,
   validationErrorResponse,
 } from '@/lib/request-validation'
@@ -53,10 +55,8 @@ export async function POST(request: Request) {
       INPUT_LIMITS.password
     )
     const newPassword = requiredString(body.newPassword, 'newPassword', INPUT_LIMITS.password)
-
-    if (newPassword.length < 6) {
-      return NextResponse.json({ error: 'Nowe hasło musi mieć minimum 6 znaków.' }, { status: 400 })
-    }
+    const passwordError = getPasswordPolicyError(newPassword)
+    if (passwordError) throw new RequestValidationError(passwordError)
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },

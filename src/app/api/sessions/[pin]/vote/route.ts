@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { triggerGameEvent as triggerSessionEvent } from '@/lib/appwrite/realtime'
+import type { SessionVote } from '@/lib/appwrite/sessions'
 import { getSession, saveSession } from '@/lib/appwrite/sessions'
 import {
   INPUT_LIMITS,
@@ -10,6 +11,7 @@ import {
   requiredString,
   validationErrorResponse,
 } from '@/lib/request-validation'
+import { enforceSessionActionRateLimit } from '@/lib/session-action-rate-limit'
 import { getAuthorizedPlayer } from '@/lib/session-player-auth'
 
 type RouteContext = { params: Promise<{ pin: string }> }
@@ -34,8 +36,14 @@ export async function POST(request: Request, { params }: RouteContext) {
 
     const player = getAuthorizedPlayer(request, session, playerId)
     if (!player) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    const rateLimitResponse = enforceSessionActionRateLimit('vote', pin, player.playerId)
+    if (rateLimitResponse) return rateLimitResponse
 
-    const vote = {
+    if (cardIndex !== session.cardIndex) {
+      return NextResponse.json({ error: 'Stale card vote' }, { status: 409 })
+    }
+
+    const vote: SessionVote = {
       playerId,
       playerName: player.playerName,
       teamId: player.teamId,
@@ -45,10 +53,13 @@ export async function POST(request: Request, { params }: RouteContext) {
       answerText,
     }
 
-    // Persist vote (upsert by playerId+cardIndex)
-    const existing = session.votes ?? []
-    const others = existing.filter((v) => !(v.playerId === playerId && v.cardIndex === cardIndex))
-    session.votes = [...others, vote]
+    // Keep only the current card's votes in the session document. Historical
+    // results are emitted through realtime events and stored in host state.
+    session.votes = upsertCurrentCardVote(
+      session.votes,
+      vote,
+      session.players.map((p) => p.playerId)
+    )
     await saveSession(session)
 
     // Broadcast via Appwrite Realtime
@@ -62,4 +73,20 @@ export async function POST(request: Request, { params }: RouteContext) {
     console.error(`[POST /api/sessions/${pin}/vote]`, err)
     return NextResponse.json({ error: 'Failed to cast vote' }, { status: 500 })
   }
+}
+
+function upsertCurrentCardVote(
+  existing: SessionVote[] | undefined,
+  vote: SessionVote,
+  playerIds: string[]
+) {
+  const activePlayerIds = new Set(playerIds)
+  const currentVotes = (existing ?? []).filter(
+    (entry) =>
+      entry.cardIndex === vote.cardIndex &&
+      entry.playerId !== vote.playerId &&
+      activePlayerIds.has(entry.playerId)
+  )
+
+  return [...currentVotes, vote]
 }

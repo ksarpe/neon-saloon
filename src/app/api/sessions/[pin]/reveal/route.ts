@@ -37,8 +37,8 @@ export async function POST(request: Request, { params }: RouteContext) {
     const correctAnswer =
       optionalString(body.correctAnswer, 'correctAnswer', INPUT_LIMITS.quizAnswer) ?? undefined
     const votes = sanitizeVotes(body.votes)
-    const scores = assertSmallArray<ScoreEntry>(body.scores, 'scores')
-    const teamScores = assertSmallArray<TeamScoreEntry>(body.teamScores, 'teamScores')
+    const scores = sanitizeScoreEntries(body.scores)
+    const teamScores = sanitizeTeamScoreEntries(body.teamScores)
 
     await triggerSessionEvent(pin, {
       event: 'votes-revealed',
@@ -85,11 +85,72 @@ function sanitizeVotes(value: unknown) {
   })
 }
 
-function assertSmallArray<T>(value: unknown, field: string): T[] {
+function sanitizeScoreEntries(value: unknown): ScoreEntry[] {
   if (value === undefined || value === null) return []
   if (!Array.isArray(value) || value.length > INPUT_LIMITS.scoreEntries) {
-    throw new RequestValidationError(`${field} is invalid`)
+    throw new RequestValidationError('scores is invalid')
   }
 
-  return value as T[]
+  return value.map((entry, index) => {
+    if (!entry || typeof entry !== 'object') {
+      throw new RequestValidationError(`scores[${index}] must be an object`)
+    }
+
+    const row = entry as Record<string, unknown>
+    return {
+      playerId: requiredString(row.playerId, `scores[${index}].playerId`, 80),
+      playerName: requiredString(
+        row.playerName,
+        `scores[${index}].playerName`,
+        INPUT_LIMITS.playerName
+      ),
+      score: finiteNumber(row.score, `scores[${index}].score`),
+      drinks:
+        row.drinks === undefined ? undefined : finiteNumber(row.drinks, `scores[${index}].drinks`),
+      playerTeamId:
+        optionalString(row.playerTeamId, `scores[${index}].playerTeamId`, 80) ?? undefined,
+      playerTeamName:
+        optionalString(
+          row.playerTeamName,
+          `scores[${index}].playerTeamName`,
+          INPUT_LIMITS.teamName
+        ) ?? undefined,
+    }
+  })
+}
+
+function sanitizeTeamScoreEntries(value: unknown): TeamScoreEntry[] {
+  if (value === undefined || value === null) return []
+  if (!Array.isArray(value) || value.length > INPUT_LIMITS.scoreEntries) {
+    throw new RequestValidationError('teamScores is invalid')
+  }
+
+  return value.map((entry, index) => {
+    if (!entry || typeof entry !== 'object') {
+      throw new RequestValidationError(`teamScores[${index}] must be an object`)
+    }
+
+    const row = entry as Record<string, unknown>
+    return {
+      teamId: requiredString(row.teamId, `teamScores[${index}].teamId`, 80),
+      teamName: requiredString(
+        row.teamName,
+        `teamScores[${index}].teamName`,
+        INPUT_LIMITS.teamName
+      ),
+      score: finiteNumber(row.score, `teamScores[${index}].score`),
+    }
+  })
+}
+
+function finiteNumber(value: unknown, field: string) {
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    throw new RequestValidationError(`${field} must be a finite number`)
+  }
+
+  if (value < -10_000 || value > 10_000) {
+    throw new RequestValidationError(`${field} is out of range`)
+  }
+
+  return value
 }

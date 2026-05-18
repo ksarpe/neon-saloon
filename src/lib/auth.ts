@@ -4,6 +4,8 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 
 import { prisma } from './prisma'
 
+const USER_REFRESH_INTERVAL_MS = 60 * 60 * 1000
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -47,11 +49,18 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id
         token.isPremium = user.isPremium ?? false
         token.sessionVersion = user.sessionVersion ?? 0
+        token.userCheckedAt = Date.now()
         delete token.sessionInvalid
         return token
       }
 
       if (!token.id || token.sessionInvalid) return token
+      if (
+        typeof token.userCheckedAt === 'number' &&
+        Date.now() - token.userCheckedAt < USER_REFRESH_INTERVAL_MS
+      ) {
+        return token
+      }
 
       const freshUser = await prisma.user.findUnique({
         where: { id: token.id },
@@ -64,6 +73,7 @@ export const authOptions: NextAuthOptions = {
         delete token.name
         delete token.isPremium
         delete token.sessionVersion
+        delete token.userCheckedAt
         token.sessionInvalid = true
         return token
       }
@@ -71,6 +81,7 @@ export const authOptions: NextAuthOptions = {
       token.email = freshUser.email
       token.isPremium = freshUser.isPremium
       token.name = freshUser.name ?? freshUser.email
+      token.userCheckedAt = Date.now()
 
       return token
     },

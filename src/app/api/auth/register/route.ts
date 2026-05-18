@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs'
 import { NextResponse } from 'next/server'
 
+import { getPasswordPolicyError } from '@/lib/password-policy'
 import { prisma } from '@/lib/prisma'
 import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
 import {
@@ -8,6 +9,7 @@ import {
   normalizeEmail,
   optionalString,
   readLimitedJson,
+  RequestValidationError,
   requiredString,
   validationErrorResponse,
 } from '@/lib/request-validation'
@@ -23,9 +25,8 @@ export async function POST(req: Request) {
     const normalizedEmail = normalizeEmail(body.email)
     const password = requiredString(body.password, 'password', INPUT_LIMITS.password)
     const name = optionalString(body.name, 'name', INPUT_LIMITS.accountName)
-    if (password.length < 6) {
-      return NextResponse.json({ error: 'Hasło musi mieć minimum 6 znaków' }, { status: 400 })
-    }
+    const passwordError = getPasswordPolicyError(password)
+    if (passwordError) throw new RequestValidationError(passwordError)
 
     const ipLimit = consumeRateLimit(`auth:register:ip:${getClientIp(req)}`, {
       limit: 5,

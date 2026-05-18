@@ -23,5 +23,6 @@ declare module 'next-auth/jwt' {
     isPremium?: boolean
     sessionVersion?: number
     sessionInvalid?: boolean
+    userCheckedAt?: number
   }
 }

@@ -60,10 +60,10 @@ export async function POST(request: Request, { params }: RouteContext) {
       return NextResponse.json({ error: 'Session not found' }, { status: 404 })
     }
     if (session.status === 'active') {
-      return NextResponse.json({ error: 'Game already started' }, { status: 423 })
+      return NextResponse.json({ error: 'Game already started' }, { status: 409 })
     }
     if (session.status === 'finished') {
-      return NextResponse.json({ error: 'Game already finished' }, { status: 410 })
+      return NextResponse.json({ error: 'Game already finished' }, { status: 409 })
     }
 
     const playerId = `player_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`

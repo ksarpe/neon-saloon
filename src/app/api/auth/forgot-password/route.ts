@@ -54,26 +54,35 @@ export async function POST(request: Request) {
       return NextResponse.json(genericResponse)
     }
 
-    await prisma.passwordResetToken.updateMany({
-      where: {
-        userId: user.id,
-        usedAt: null,
-        expiresAt: { gt: new Date() },
-      },
-      data: { usedAt: new Date() },
-    })
-
     const token = createPasswordResetToken()
     const tokenHash = hashPasswordResetToken(token)
+    const expiresAt = getPasswordResetExpiry()
     const resetUrl = `${getAppUrl()}/login?resetToken=${encodeURIComponent(token)}`
+    const now = new Date()
 
-    await prisma.passwordResetToken.create({
-      data: {
-        tokenHash,
-        expiresAt: getPasswordResetExpiry(),
-        userId: user.id,
-      },
-    })
+    await prisma.$transaction([
+      prisma.passwordResetToken.deleteMany({
+        where: {
+          userId: user.id,
+          OR: [{ expiresAt: { lte: now } }, { usedAt: { not: null } }],
+        },
+      }),
+      prisma.passwordResetToken.updateMany({
+        where: {
+          userId: user.id,
+          usedAt: null,
+          expiresAt: { gt: now },
+        },
+        data: { usedAt: now },
+      }),
+      prisma.passwordResetToken.create({
+        data: {
+          tokenHash,
+          expiresAt,
+          userId: user.id,
+        },
+      }),
+    ])
 
     const result = await sendPasswordResetEmail({
       to: user.email,

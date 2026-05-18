@@ -8,6 +8,7 @@ export const INPUT_LIMITS = {
   accountName: 40,
   resetToken: 256,
   stripePlan: 32,
+  questionPageSize: 100,
   questionText: 500,
   quizAnswer: 160,
   quizOption: 160,

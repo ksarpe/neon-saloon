@@ -19,6 +19,13 @@ import {
   STRIPE_PLAN_CONFIG,
 } from '@/lib/stripe'
 
+type CheckoutUser = {
+  id: string
+  email: string
+  name: string | null
+  stripeCustomerId: string | null
+}
+
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions)
@@ -61,20 +68,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Nie znaleziono użytkownika.' }, { status: 404 })
     }
 
-    let customerId = user.stripeCustomerId
-    if (!customerId) {
-      const customer = await createStripeCustomer({
-        email: user.email,
-        name: user.name,
-        userId: user.id,
-      })
-      customerId = customer.id
-
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { stripeCustomerId: customerId },
-      })
-    }
+    const customerId = await getOrCreateStripeCustomerId(user)
 
     const appUrl = getAppUrl()
     const checkoutSession = await createStripeCheckoutSession({
@@ -97,4 +91,33 @@ export async function POST(request: Request) {
     console.error('[POST /api/stripe/checkout]', error)
     return NextResponse.json({ error: 'Nie udało się rozpocząć płatności.' }, { status: 500 })
   }
+}
+
+async function getOrCreateStripeCustomerId(user: CheckoutUser) {
+  if (user.stripeCustomerId) return user.stripeCustomerId
+
+  const customer = await createStripeCustomer({
+    email: user.email,
+    name: user.name,
+    userId: user.id,
+  })
+
+  const update = await prisma.user.updateMany({
+    where: {
+      id: user.id,
+      stripeCustomerId: null,
+    },
+    data: { stripeCustomerId: customer.id },
+  })
+
+  if (update.count === 1) return customer.id
+
+  const freshUser = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: { stripeCustomerId: true },
+  })
+
+  if (freshUser?.stripeCustomerId) return freshUser.stripeCustomerId
+
+  throw new Error('Failed to persist Stripe customer id')
 }
