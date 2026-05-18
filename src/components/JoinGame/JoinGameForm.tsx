@@ -17,6 +17,7 @@ import type {
   TeamCreatedPayload,
   TeamUpdatedPayload,
 } from '@/lib/game-types'
+import { SESSION_PIN_LENGTH } from '@/lib/session-pin'
 import { getPlayerSecret, savePlayerSecret } from '@/lib/session-player-secret'
 
 import { ModeSelector } from './ModeSelector'
@@ -173,10 +174,10 @@ export default function JoinGameForm() {
   }, [])
 
   useEffect(() => {
-    const pinFromUrl = searchParams.get('pin')?.replace(/\D/g, '').slice(0, 4)
+    const pinFromUrl = searchParams.get('pin')?.replace(/\D/g, '').slice(0, SESSION_PIN_LENGTH)
     if (
       !pinFromUrl ||
-      pinFromUrl.length !== 4 ||
+      pinFromUrl.length !== SESSION_PIN_LENGTH ||
       step !== 'pin' ||
       loading ||
       autoSubmittedPinRef.current === pinFromUrl

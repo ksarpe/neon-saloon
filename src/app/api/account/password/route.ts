@@ -4,44 +4,88 @@ import { getServerSession } from 'next-auth'
 
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
+import {
+  INPUT_LIMITS,
+  readLimitedJson,
+  requiredString,
+  validationErrorResponse,
+} from '@/lib/request-validation'
 
 export async function POST(request: Request) {
-  const session = await getServerSession(authOptions)
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const ipLimit = consumeRateLimit(`auth:change-password:ip:${getClientIp(request)}`, {
+      limit: 10,
+      windowMs: 15 * 60_000,
+    })
+
+    if (!ipLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Za dużo prób. Spróbuj ponownie za chwilę.', retryAfter: ipLimit.retryAfter },
+        { status: 429, headers: rateLimitHeaders(ipLimit) }
+      )
+    }
+
+    const userLimit = consumeRateLimit(`auth:change-password:user:${session.user.id}`, {
+      limit: 5,
+      windowMs: 15 * 60_000,
+    })
+
+    if (!userLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Za dużo prób. Spróbuj ponownie za chwilę.', retryAfter: userLimit.retryAfter },
+        { status: 429, headers: rateLimitHeaders(userLimit) }
+      )
+    }
+
+    const body = await readLimitedJson<{
+      currentPassword?: unknown
+      newPassword?: unknown
+    }>(request)
+    const currentPassword = requiredString(
+      body.currentPassword,
+      'currentPassword',
+      INPUT_LIMITS.password
+    )
+    const newPassword = requiredString(body.newPassword, 'newPassword', INPUT_LIMITS.password)
+
+    if (newPassword.length < 6) {
+      return NextResponse.json({ error: 'Nowe hasło musi mieć minimum 6 znaków.' }, { status: 400 })
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { password: true },
+    })
+
+    if (!user?.password) {
+      return NextResponse.json(
+        { error: 'Nie można zmienić hasła dla tego konta.' },
+        { status: 400 }
+      )
+    }
+
+    const passwordValid = await bcrypt.compare(currentPassword, user.password)
+    if (!passwordValid) {
+      return NextResponse.json({ error: 'Obecne hasło jest nieprawidłowe.' }, { status: 400 })
+    }
+
+    const nextPasswordHash = await bcrypt.hash(newPassword, 12)
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: {
+        password: nextPasswordHash,
+        sessionVersion: { increment: 1 },
+      },
+    })
+
+    return NextResponse.json({ ok: true })
+  } catch (error) {
+    return validationErrorResponse(error) ?? NextResponse.json({ error: 'Failed' }, { status: 500 })
   }
-
-  const body = (await request.json().catch(() => ({}))) as {
-    currentPassword?: string
-    newPassword?: string
-  }
-
-  if (!body.currentPassword || !body.newPassword) {
-    return NextResponse.json({ error: 'Podaj obecne i nowe hasło.' }, { status: 400 })
-  }
-  if (body.newPassword.length < 6) {
-    return NextResponse.json({ error: 'Nowe hasło musi mieć minimum 6 znaków.' }, { status: 400 })
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { password: true },
-  })
-
-  if (!user?.password) {
-    return NextResponse.json({ error: 'Nie można zmienić hasła dla tego konta.' }, { status: 400 })
-  }
-
-  const passwordValid = await bcrypt.compare(body.currentPassword, user.password)
-  if (!passwordValid) {
-    return NextResponse.json({ error: 'Obecne hasło jest nieprawidłowe.' }, { status: 400 })
-  }
-
-  const nextPasswordHash = await bcrypt.hash(body.newPassword, 12)
-  await prisma.user.update({
-    where: { id: session.user.id },
-    data: { password: nextPasswordHash },
-  })
-
-  return NextResponse.json({ ok: true })
 }

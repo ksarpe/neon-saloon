@@ -126,9 +126,17 @@ export default function HostSetupPage() {
               maxLength={20}
               autoFocus
               placeholder={placeholder}
-              className="bg-saloon-surface text-text-primary placeholder:text-text-muted flex-1 rounded-xl border-2 p-4 text-lg font-bold transition-colors focus:outline-none"
+              className="bg-saloon-surface text-text-primary placeholder:text-text-muted flex-1 rounded-xl border-2 p-4 text-lg font-bold transition-all focus:outline-none"
               style={{
-                borderColor: hostName.trim() ? 'var(--sheriff-pink)' : 'var(--saloon-border)',
+                borderColor: hostName.trim()
+                  ? 'var(--sheriff-pink)'
+                  : selectedMode
+                    ? 'var(--neon-pink)'
+                    : 'var(--saloon-border)',
+                boxShadow:
+                  selectedMode && !hostName.trim()
+                    ? '0 0 0 3px rgba(255,16,240,0.15), 0 0 18px rgba(255,16,240,0.12)'
+                    : 'none',
               }}
             />
             <motion.button
@@ -252,6 +260,20 @@ export default function HostSetupPage() {
               <>Otwórz salon na dzikim zachodzie</>
             )}
           </Button>
+          {!creating && (!hostName.trim() || !selectedMode) && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="mt-3 text-center text-xs"
+              style={{ color: 'rgba(255,220,180,0.45)' }}
+            >
+              {!hostName.trim() && !selectedMode
+                ? 'Podaj imię i wybierz tryb gry, żeby zacząć'
+                : !hostName.trim()
+                  ? 'Jeszcze tylko podaj swoje imię kowboju'
+                  : 'Jeszcze tylko wybierz tryb gry'}
+            </motion.p>
+          )}
           {error && (
             <motion.p
               initial={{ opacity: 0 }}

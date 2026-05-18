@@ -11,23 +11,15 @@ export default function GrajPage() {
     <main className="relative -mt-14 flex h-dvh w-full flex-col items-center justify-center overflow-hidden px-6">
       <div className="relative z-10 flex w-full max-w-lg flex-col items-center gap-10 text-center">
         {/* Hero */}
-        <motion.h1
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+        <h1
           className="shimmer-text text-[clamp(2rem,14vw,7rem)] leading-[0.9] tracking-wide whitespace-nowrap uppercase"
           style={{ fontFamily: 'var(--font-logo)' }}
         >
           Last Rodeo
-        </motion.h1>
+        </h1>
 
         {/* Action buttons */}
-        <motion.div
-          className="flex w-full flex-col gap-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
+        <div className="flex w-full flex-col gap-4">
           {/* Host */}
           <motion.button
             id="host-game-btn"
@@ -110,7 +102,7 @@ export default function GrajPage() {
               style={{ color: 'rgba(255,220,180,0.5)' }}
             />
           </motion.button>
-        </motion.div>
+        </div>
       </div>
     </main>
   )

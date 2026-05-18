@@ -9,10 +9,6 @@ type ResendEmailResponse = {
   error?: { message?: string }
 }
 
-export function getAppUrl() {
-  return process.env.NEXT_PUBLIC_APP_URL ?? process.env.NEXTAUTH_URL ?? 'http://localhost:3000'
-}
-
 export function isEmailConfigured() {
   return Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM)
 }

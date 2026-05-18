@@ -10,6 +10,16 @@ import { Button } from '@/components/ui/button'
 
 type Tab = 'login' | 'register' | 'forgot'
 
+function getSafeCallbackUrl(searchParams: ReturnType<typeof useSearchParams>) {
+  const callbackUrl = searchParams.get('callbackUrl')
+  if (!callbackUrl) return '/graj/host'
+  if (!callbackUrl.startsWith('/') || callbackUrl.startsWith('//') || callbackUrl.includes('\\')) {
+    return '/graj/host'
+  }
+
+  return callbackUrl
+}
+
 function InputField({
   label,
   type,
@@ -137,7 +147,7 @@ function SuccessBanner({ message }: { message: string }) {
 function LoginForm({ onSwitch, onForgot }: { onSwitch: () => void; onForgot: () => void }) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') ?? '/graj/host'
+  const callbackUrl = getSafeCallbackUrl(searchParams)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -417,7 +427,7 @@ function ResetPasswordForm({ token, onDone }: { token: string; onDone: () => voi
 function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') ?? '/graj/host'
+  const callbackUrl = getSafeCallbackUrl(searchParams)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -562,16 +572,16 @@ function LoginPageInner() {
           transition={{ delay: 0.05 }}
         >
           <div className="mb-3 flex items-center justify-center gap-2">
-            <span
-              className="shimmer-text text-6xl tracking-widest"
-              style={{ fontFamily: 'var(--font-app)' }}
+            <motion.h1
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="shimmer-text text-[clamp(2rem,12vw,10rem)] leading-[0.9] tracking-wide whitespace-nowrap uppercase"
+              style={{ fontFamily: 'var(--font-logo)' }}
             >
-              last rodeo
-            </span>
+              Last Rodeo
+            </motion.h1>
           </div>
-          <p className="text-text-muted text-xs tracking-widest uppercase">
-            Zaloguj się, żeby prowadzić gry
-          </p>
         </motion.div>
 
         {/* Card */}

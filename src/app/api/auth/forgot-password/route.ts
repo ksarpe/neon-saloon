@@ -1,57 +1,80 @@
 import { NextResponse } from 'next/server'
 
-import { getAppUrl, sendPasswordResetEmail } from '@/lib/email'
+import { getAppUrl } from '@/lib/app-url'
+import { sendPasswordResetEmail } from '@/lib/email'
 import {
   createPasswordResetToken,
   getPasswordResetExpiry,
   hashPasswordResetToken,
 } from '@/lib/password-reset'
 import { prisma } from '@/lib/prisma'
+import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
+import { normalizeEmail, readLimitedJson, validationErrorResponse } from '@/lib/request-validation'
 
 export async function POST(request: Request) {
-  const body = (await request.json().catch(() => ({}))) as { email?: string }
-  const email = body.email?.toLowerCase().trim()
-
-  if (!email) {
-    return NextResponse.json({ error: 'Podaj adres e-mail.' }, { status: 400 })
-  }
-
-  const genericResponse = {
-    ok: true,
-    message: 'Jeśli konto istnieje, wysłaliśmy link do resetu hasła.',
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { email },
-    select: { id: true, email: true },
-  })
-
-  if (!user) {
-    return NextResponse.json(genericResponse)
-  }
-
-  await prisma.passwordResetToken.updateMany({
-    where: {
-      userId: user.id,
-      usedAt: null,
-      expiresAt: { gt: new Date() },
-    },
-    data: { usedAt: new Date() },
-  })
-
-  const token = createPasswordResetToken()
-  const tokenHash = hashPasswordResetToken(token)
-  const resetUrl = `${getAppUrl()}/login?resetToken=${encodeURIComponent(token)}`
-
-  await prisma.passwordResetToken.create({
-    data: {
-      tokenHash,
-      expiresAt: getPasswordResetExpiry(),
-      userId: user.id,
-    },
-  })
-
   try {
+    const body = await readLimitedJson<{ email?: unknown }>(request)
+    const email = normalizeEmail(body.email)
+
+    const ipLimit = consumeRateLimit(`auth:forgot-password:ip:${getClientIp(request)}`, {
+      limit: 5,
+      windowMs: 15 * 60_000,
+    })
+
+    if (!ipLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Za dużo prób. Spróbuj ponownie za chwilę.', retryAfter: ipLimit.retryAfter },
+        { status: 429, headers: rateLimitHeaders(ipLimit) }
+      )
+    }
+
+    const emailLimit = consumeRateLimit(`auth:forgot-password:email:${email}`, {
+      limit: 3,
+      windowMs: 60 * 60_000,
+    })
+
+    if (!emailLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Za dużo prób. Spróbuj ponownie za chwilę.', retryAfter: emailLimit.retryAfter },
+        { status: 429, headers: rateLimitHeaders(emailLimit) }
+      )
+    }
+
+    const genericResponse = {
+      ok: true,
+      message: 'Jeśli konto istnieje, wysłaliśmy link do resetu hasła.',
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true, email: true },
+    })
+
+    if (!user) {
+      return NextResponse.json(genericResponse)
+    }
+
+    await prisma.passwordResetToken.updateMany({
+      where: {
+        userId: user.id,
+        usedAt: null,
+        expiresAt: { gt: new Date() },
+      },
+      data: { usedAt: new Date() },
+    })
+
+    const token = createPasswordResetToken()
+    const tokenHash = hashPasswordResetToken(token)
+    const resetUrl = `${getAppUrl()}/login?resetToken=${encodeURIComponent(token)}`
+
+    await prisma.passwordResetToken.create({
+      data: {
+        tokenHash,
+        expiresAt: getPasswordResetExpiry(),
+        userId: user.id,
+      },
+    })
+
     const result = await sendPasswordResetEmail({
       to: user.email,
       resetUrl,
@@ -62,6 +85,9 @@ export async function POST(request: Request) {
       devResetUrl: result.devUrl,
     })
   } catch (error) {
+    const validationResponse = validationErrorResponse(error)
+    if (validationResponse) return validationResponse
+
     console.error('[POST /api/auth/forgot-password]', error)
     return NextResponse.json(
       { error: 'Nie udało się wysłać maila resetującego hasło.' },

@@ -3,6 +3,12 @@ import { getServerSession } from 'next-auth'
 
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import {
+  INPUT_LIMITS,
+  readLimitedJson,
+  requiredString,
+  validationErrorResponse,
+} from '@/lib/request-validation'
 
 const ACTIVE_SUBSCRIPTION_STATUSES = new Set(['active', 'trialing'])
 const INACTIVE_SUBSCRIPTION_STATUSES = new Set(['canceled', 'incomplete_expired', 'unpaid'])
@@ -67,36 +73,33 @@ export async function GET() {
 }
 
 export async function PATCH(request: Request) {
-  const session = await getServerSession(authOptions)
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const body = await readLimitedJson<{ name?: unknown }>(request)
+    const name = requiredString(body.name, 'name', INPUT_LIMITS.accountName)
+
+    const user = await prisma.user.update({
+      where: { id: session.user.id },
+      data: { name },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        updatedAt: true,
+      },
+    })
+
+    return NextResponse.json({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      updatedAt: user.updatedAt.toISOString(),
+    })
+  } catch (error) {
+    return validationErrorResponse(error) ?? NextResponse.json({ error: 'Failed' }, { status: 500 })
   }
-
-  const body = (await request.json().catch(() => ({}))) as { name?: string }
-  const name = body.name?.trim()
-
-  if (!name) {
-    return NextResponse.json({ error: 'Nazwa jest wymagana.' }, { status: 400 })
-  }
-  if (name.length > 40) {
-    return NextResponse.json({ error: 'Nazwa może mieć maksymalnie 40 znaków.' }, { status: 400 })
-  }
-
-  const user = await prisma.user.update({
-    where: { id: session.user.id },
-    data: { name },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      updatedAt: true,
-    },
-  })
-
-  return NextResponse.json({
-    id: user.id,
-    email: user.email,
-    name: user.name,
-    updatedAt: user.updatedAt.toISOString(),
-  })
 }

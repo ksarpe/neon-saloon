@@ -204,9 +204,9 @@ const sections: LegalSection[] = [
 ]
 
 export const metadata = {
-  title: 'Polityka prywatności – Last Rodeo',
+  title: 'Polityka prywatności',
   description:
-    'Polityka prywatności serwisu Last Rodeo — jak zbieramy i przetwarzamy dane osobowe.',
+    'Polityka prywatności serwisu Last Rodeo — jak zbieramy, przechowujemy i przetwarzamy dane osobowe zgodnie z RODO.',
 }
 
 export default function PolitykaPrywatnosci() {

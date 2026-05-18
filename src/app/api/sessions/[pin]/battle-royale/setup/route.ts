@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
+
 import { getSession, saveSession } from '@/lib/appwrite/sessions'
 import { QUESTION_CATEGORIES } from '@/lib/games/categories'
+import { readLimitedJson, requiredString, validationErrorResponse } from '@/lib/request-validation'
 import { isHostAuthorized } from '@/lib/session-host-auth'
 
 type RouteContext = { params: Promise<{ pin: string }> }
@@ -15,8 +17,8 @@ export async function POST(request: Request, { params }: RouteContext) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    const body = await request.json()
-    const { categoryId } = body as { categoryId: string }
+    const body = await readLimitedJson<{ categoryId?: unknown }>(request)
+    const categoryId = requiredString(body.categoryId, 'categoryId', 80)
     const category = QUESTION_CATEGORIES.find((c) => c.id === categoryId)
     if (!category) return NextResponse.json({ error: 'Invalid category' }, { status: 400 })
 
@@ -31,6 +33,9 @@ export async function POST(request: Request, { params }: RouteContext) {
 
     return NextResponse.json({ ok: true, categoryId, totalQuestions: category.questions.length })
   } catch (err) {
+    const validationResponse = validationErrorResponse(err)
+    if (validationResponse) return validationResponse
+
     console.error(`[POST /api/sessions/${pin}/battle-royale/setup]`, err)
     return NextResponse.json({ error: 'Failed to setup battle royale' }, { status: 500 })
   }

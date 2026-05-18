@@ -65,7 +65,7 @@ export function stripeTimestampToDate(timestamp: number | null | undefined) {
 export async function stripeApiRequest<T>(
   path: string,
   init: RequestInit = {},
-  secretKey = getStripeSecretKey(),
+  secretKey = getStripeSecretKey()
 ): Promise<T> {
   if (!secretKey) {
     throw new Error('Missing STRIPE_SECRET_KEY')
@@ -107,7 +107,7 @@ export async function createStripeCustomer(input: {
 
 export async function createStripeCheckoutSession(input: {
   customerId: string
-  origin: string
+  appUrl: string
   plan: StripePlanId
   priceId: string
   userId: string
@@ -121,8 +121,8 @@ export async function createStripeCheckoutSession(input: {
   body.set('line_items[0][price]', input.priceId)
   body.set('line_items[0][quantity]', '1')
   body.set('allow_promotion_codes', 'true')
-  body.set('success_url', `${input.origin}/panel?checkout=success`)
-  body.set('cancel_url', `${input.origin}/panel?checkout=cancelled`)
+  body.set('success_url', `${input.appUrl}/panel?checkout=success`)
+  body.set('cancel_url', `${input.appUrl}/panel?checkout=cancelled`)
   body.set('metadata[userId]', input.userId)
   body.set('metadata[plan]', input.plan)
 

@@ -2,7 +2,9 @@
 
 import { motion } from 'framer-motion'
 import { Loader2 } from 'lucide-react'
+
 import { Button } from '@/components/ui/button'
+import { SESSION_PIN_LENGTH } from '@/lib/session-pin'
 
 interface Props {
   value: string
@@ -20,8 +22,8 @@ export function PinInput({ value, onChange, onSubmit, loading, error }: Props) {
       </div>
 
       {/* Digit display */}
-      <div className="flex gap-2">
-        {[0, 1, 2, 3].map((i) => (
+      <div className="flex gap-1.5 sm:gap-2">
+        {Array.from({ length: SESSION_PIN_LENGTH }, (_, i) => (
           <motion.div
             key={i}
             animate={{
@@ -33,7 +35,7 @@ export function PinInput({ value, onChange, onSubmit, loading, error }: Props) {
               scale: i === value.length ? 1.08 : 1,
             }}
             transition={{ duration: 0.15 }}
-            className="flex h-20 w-16 items-center justify-center rounded-xl border-2 text-2xl font-bold"
+            className="flex h-16 w-11 items-center justify-center rounded-xl border-2 text-xl font-bold sm:h-20 sm:w-16 sm:text-2xl"
             style={{ backgroundColor: 'var(--saloon-surface)' }}
           >
             {value[i] ? (
@@ -64,10 +66,10 @@ export function PinInput({ value, onChange, onSubmit, loading, error }: Props) {
                 onChange(value.slice(0, -1))
                 return
               }
-              if (value.length < 4) {
+              if (value.length < SESSION_PIN_LENGTH) {
                 const n = value + String(k)
                 onChange(n)
-                if (n.length === 4) setTimeout(() => onSubmit(n), 100)
+                if (n.length === SESSION_PIN_LENGTH) setTimeout(() => onSubmit(n), 100)
               }
             }}
             className={`bg-saloon-surface border-saloon-border text-text-primary flex h-12 items-center justify-center rounded-xl border text-base font-bold ${
@@ -84,7 +86,7 @@ export function PinInput({ value, onChange, onSubmit, loading, error }: Props) {
       <Button
         id="pin-continue-btn"
         type="primary"
-        disabled={value.length < 4 || loading}
+        disabled={value.length < SESSION_PIN_LENGTH || loading}
         onClick={() => onSubmit(value)}
         className="w-full max-w-[240px]"
       >

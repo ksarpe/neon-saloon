@@ -1,8 +1,15 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 
+import { getAppUrl } from '@/lib/app-url'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import {
+  INPUT_LIMITS,
+  readLimitedJson,
+  requiredString,
+  validationErrorResponse,
+} from '@/lib/request-validation'
 import {
   createStripeCheckoutSession,
   createStripeCustomer,
@@ -22,8 +29,8 @@ export async function POST(request: Request) {
       )
     }
 
-    const body = await request.json().catch(() => ({}))
-    const plan: unknown = body.plan
+    const body = await readLimitedJson<{ plan?: unknown }>(request)
+    const plan = requiredString(body.plan, 'plan', INPUT_LIMITS.stripePlan)
     if (!isStripePlanId(plan)) {
       return NextResponse.json({ error: 'Nieprawidłowy plan.' }, { status: 400 })
     }
@@ -69,10 +76,10 @@ export async function POST(request: Request) {
       })
     }
 
-    const origin = getOrigin(request)
+    const appUrl = getAppUrl()
     const checkoutSession = await createStripeCheckoutSession({
       customerId,
-      origin,
+      appUrl,
       plan,
       priceId,
       userId: user.id,
@@ -84,15 +91,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ url: checkoutSession.url })
   } catch (error) {
+    const validationResponse = validationErrorResponse(error)
+    if (validationResponse) return validationResponse
+
     console.error('[POST /api/stripe/checkout]', error)
     return NextResponse.json({ error: 'Nie udało się rozpocząć płatności.' }, { status: 500 })
   }
-}
-
-function getOrigin(request: Request) {
-  const requestOrigin = request.headers.get('origin')
-  if (requestOrigin) return requestOrigin
-  if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL
-  if (process.env.NEXTAUTH_URL) return process.env.NEXTAUTH_URL
-  return new URL(request.url).origin
 }

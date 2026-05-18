@@ -7,12 +7,13 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  password  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(cuid())
+  email          String   @unique
+  name           String?
+  password       String?
+  sessionVersion Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   isPremium                Boolean   @default(false)
   //STRIPE
@@ -21,8 +22,8 @@ model User {
   stripeCurrentPeriodEnd   DateTime?
   stripeSubscriptionStatus String?
 
-  neverQuestions NeverQuestion[]
-  quizQuestions  QuizQuestion[]
+  neverQuestions      NeverQuestion[]
+  quizQuestions       QuizQuestion[]
   passwordResetTokens PasswordResetToken[]
 }
 

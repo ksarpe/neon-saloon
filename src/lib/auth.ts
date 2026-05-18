@@ -29,6 +29,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name ?? user.email,
           isPremium: user.isPremium ?? false,
+          sessionVersion: user.sessionVersion,
         }
       },
     }),
@@ -45,29 +46,44 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id
         token.isPremium = user.isPremium ?? false
+        token.sessionVersion = user.sessionVersion ?? 0
+        delete token.sessionInvalid
         return token
       }
 
-      if (token.id) {
-        const freshUser = await prisma.user.findUnique({
-          where: { id: token.id },
-          select: { email: true, isPremium: true, name: true },
-        })
+      if (!token.id || token.sessionInvalid) return token
 
-        if (freshUser) {
-          token.email = freshUser.email
-          token.isPremium = freshUser.isPremium
-          token.name = freshUser.name ?? freshUser.email
-        }
+      const freshUser = await prisma.user.findUnique({
+        where: { id: token.id },
+        select: { email: true, isPremium: true, name: true, sessionVersion: true },
+      })
+
+      if (!freshUser || freshUser.sessionVersion !== (token.sessionVersion ?? 0)) {
+        delete token.id
+        delete token.email
+        delete token.name
+        delete token.isPremium
+        delete token.sessionVersion
+        token.sessionInvalid = true
+        return token
       }
+
+      token.email = freshUser.email
+      token.isPremium = freshUser.isPremium
+      token.name = freshUser.name ?? freshUser.email
 
       return token
     },
     async session({ session, token }) {
-      if (token && session.user) {
+      if (!token.id || token.sessionInvalid) {
+        delete session.user
+        return session
+      }
+
+      if (session.user) {
         session.user.id = token.id
         session.user.email = token.email ?? session.user.email
-        session.user.isPremium = token.isPremium
+        session.user.isPremium = token.isPremium ?? false
         session.user.name = token.name ?? session.user.name
       }
       return session

@@ -19,6 +19,7 @@ test.describe("Pelny scenariusz gry Last Rodeo (E2E)", () => {
 
     const pin = hostPage.url().split("/").pop()?.split("?")[0];
     expect(pin).toBeDefined();
+    expect(pin).toMatch(/^\d{6}$/);
 
     await hostPage.locator('input[type="text"]').last().waitFor();
     await hostPage.locator('input[type="text"]').last().fill("Szeryf Testowy");

@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 
+import { getAppUrl } from '@/lib/app-url'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { createStripeBillingPortalSession, getStripeSecretKey } from '@/lib/stripe'
 
-export async function POST(request: Request) {
+export async function POST() {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user?.id) {
@@ -28,10 +29,10 @@ export async function POST(request: Request) {
       )
     }
 
-    const origin = getOrigin(request)
+    const appUrl = getAppUrl()
     const portalSession = await createStripeBillingPortalSession({
       customerId: user.stripeCustomerId,
-      returnUrl: `${origin}/panel?billing=return`,
+      returnUrl: `${appUrl}/panel?billing=return`,
     })
 
     return NextResponse.json({ url: portalSession.url })
@@ -45,12 +46,4 @@ export async function POST(request: Request) {
       { status: 500 }
     )
   }
-}
-
-function getOrigin(request: Request) {
-  const requestOrigin = request.headers.get('origin')
-  if (requestOrigin) return requestOrigin
-  if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL
-  if (process.env.NEXTAUTH_URL) return process.env.NEXTAUTH_URL
-  return new URL(request.url).origin
 }

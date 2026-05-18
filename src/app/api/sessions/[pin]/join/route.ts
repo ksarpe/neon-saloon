@@ -1,6 +1,15 @@
 import { NextResponse } from 'next/server'
-import { getSession, saveSession } from '@/lib/appwrite/sessions'
+
 import { triggerGameEvent as triggerSessionEvent } from '@/lib/appwrite/realtime'
+import { getSession, saveSession } from '@/lib/appwrite/sessions'
+import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
+import {
+  INPUT_LIMITS,
+  optionalString,
+  readLimitedJson,
+  requiredString,
+  validationErrorResponse,
+} from '@/lib/request-validation'
 import { createPlayerSecret, hashPlayerSecret } from '@/lib/session-player-auth'
 
 type RouteContext = { params: Promise<{ pin: string }> }
@@ -9,24 +18,42 @@ const PLAYER_AVATARS = ['🤠', '💃', '🌸', '✨', '🍾', '🎀', '👑', '
 
 export async function POST(request: Request, { params }: RouteContext) {
   const { pin } = await params
+  const clientIp = getClientIp(request)
+  const globalLimit = consumeRateLimit(`session-join:${clientIp}`, {
+    limit: 20,
+    windowMs: 60_000,
+  })
+
+  if (!globalLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests', retryAfter: globalLimit.retryAfter },
+      { status: 429, headers: rateLimitHeaders(globalLimit) }
+    )
+  }
+
+  const pinLimit = consumeRateLimit(`session-join:${clientIp}:${pin}`, {
+    limit: 8,
+    windowMs: 60_000,
+  })
+
+  if (!pinLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests', retryAfter: pinLimit.retryAfter },
+      { status: 429, headers: rateLimitHeaders(pinLimit) }
+    )
+  }
 
   try {
-    const body = await request.json()
-    const {
-      playerName,
-      avatar: chosenAvatar,
-      teamId,
-      newTeamName,
-    } = body as {
-      playerName: string
-      avatar?: string
-      teamId?: string
-      newTeamName?: string
-    }
-
-    if (!playerName?.trim()) {
-      return NextResponse.json({ error: 'playerName is required' }, { status: 400 })
-    }
+    const body = await readLimitedJson<{
+      playerName?: unknown
+      avatar?: unknown
+      teamId?: unknown
+      newTeamName?: unknown
+    }>(request)
+    const playerName = requiredString(body.playerName, 'playerName', INPUT_LIMITS.playerName)
+    const chosenAvatar = optionalString(body.avatar, 'avatar', INPUT_LIMITS.avatar)
+    const teamId = optionalString(body.teamId, 'teamId', 80)
+    const newTeamName = optionalString(body.newTeamName, 'newTeamName', INPUT_LIMITS.teamName)
 
     const session = await getSession(pin)
     if (!session) {
@@ -44,8 +71,8 @@ export async function POST(request: Request, { params }: RouteContext) {
     const avatar = chosenAvatar ?? PLAYER_AVATARS[Math.floor(Math.random() * PLAYER_AVATARS.length)]
 
     // Resolve team
-    let resolvedTeamId = teamId ?? null
-    let resolvedTeamName = newTeamName ?? null
+    let resolvedTeamId = teamId
+    const resolvedTeamName = newTeamName
 
     if (newTeamName && !teamId) {
       resolvedTeamId = `team_${Date.now()}`
@@ -69,7 +96,7 @@ export async function POST(request: Request, { params }: RouteContext) {
       {
         playerId,
         playerSecretHash: hashPlayerSecret(playerSecret),
-        playerName: playerName.trim(),
+        playerName,
         avatar,
         teamId: resolvedTeamId,
         teamName: resolvedTeamName,
@@ -82,7 +109,7 @@ export async function POST(request: Request, { params }: RouteContext) {
       event: 'player-joined',
       data: {
         playerId,
-        playerName: playerName.trim(),
+        playerName,
         avatar,
         teamId: resolvedTeamId,
         teamName: resolvedTeamName,
@@ -99,8 +126,14 @@ export async function POST(request: Request, { params }: RouteContext) {
       })
     }
 
-    return NextResponse.json({ playerId, playerSecret, teamId: resolvedTeamId, avatar }, { status: 200 })
+    return NextResponse.json(
+      { playerId, playerSecret, teamId: resolvedTeamId, avatar },
+      { status: 200 }
+    )
   } catch (err) {
+    const validationResponse = validationErrorResponse(err)
+    if (validationResponse) return validationResponse
+
     console.error(`[POST /api/sessions/${pin}/join]`, err)
     return NextResponse.json({ error: 'Failed to join session' }, { status: 500 })
   }

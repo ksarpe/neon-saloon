@@ -1,6 +1,6 @@
 'use client'
 
-import { AnimatePresence,motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Play, Users } from 'lucide-react'
 
 import { JoinQrCode } from '@/components/JoinQrCode'
@@ -16,50 +16,21 @@ interface Props {
   onStart: () => void
 }
 
-export function LobbyView({ pin, players, hostAvatar, hostName, onStart }: Props) {
+export function LobbyView({ pin, players, onStart }: Props) {
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-8">
-      <div className="text-center">
-        <motion.h1
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="shimmer-text text-[clamp(2rem,12vw,10rem)] leading-[1.1] tracking-wide whitespace-nowrap uppercase"
-          style={{ fontFamily: 'var(--font-logo)' }}
-        >
-          last rodeo
-        </motion.h1>
-      </div>
-
-      {/* Host identity */}
-      <div
-        className="flex items-center gap-3 rounded-2xl border px-5 py-3"
-        style={{ borderColor: 'var(--sheriff-pink)', backgroundColor: 'rgba(255,215,0,0.07)' }}
-      >
-        <span className="text-2xl">{hostAvatar}</span>
-        <div>
-          <p className="text-text-muted text-xs font-semibold tracking-widest uppercase">
-            Ty (organizator)
-          </p>
-          <p className="text-text-primary font-bold">{hostName}</p>
-        </div>
-      </div>
-
       {/* PIN */}
       <div className="flex flex-col items-center gap-3">
-        <div className="flex flex-col items-center gap-5 lg:flex-row lg:items-end">
+        <div className="flex flex-col items-center gap-5">
           <div className="flex flex-col items-center gap-3">
-            <p className="text-text-muted text-xs font-semibold tracking-widest uppercase">
-              KOD GRY
-            </p>
-            <div className="flex gap-3">
+            <div className="flex gap-1.5 sm:gap-2 lg:gap-3">
               {pin.split('').map((d, i) => (
                 <motion.div
                   key={i}
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: i * 0.1, type: 'spring', stiffness: 300 }}
-                  className="pulse-pink flex h-24 w-20 items-center justify-center rounded-2xl border-2 text-5xl font-bold sm:h-32 sm:w-28 sm:text-6xl"
+                  className="pulse-pink flex h-16 w-11 items-center justify-center rounded-xl border-2 text-3xl font-bold sm:h-24 sm:w-20 sm:rounded-2xl sm:text-5xl lg:h-32 lg:w-28 lg:text-6xl"
                   style={{
                     fontFamily: 'var(--font-app)',
                     color: 'var(--neon-pink)',

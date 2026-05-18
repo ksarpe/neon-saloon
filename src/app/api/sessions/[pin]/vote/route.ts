@@ -1,6 +1,15 @@
 import { NextResponse } from 'next/server'
-import { getSession, saveSession } from '@/lib/appwrite/sessions'
+
 import { triggerGameEvent as triggerSessionEvent } from '@/lib/appwrite/realtime'
+import { getSession, saveSession } from '@/lib/appwrite/sessions'
+import {
+  INPUT_LIMITS,
+  optionalString,
+  readLimitedJson,
+  requiredInteger,
+  requiredString,
+  validationErrorResponse,
+} from '@/lib/request-validation'
 import { getAuthorizedPlayer } from '@/lib/session-player-auth'
 
 type RouteContext = { params: Promise<{ pin: string }> }
@@ -9,17 +18,16 @@ export async function POST(request: Request, { params }: RouteContext) {
   const { pin } = await params
 
   try {
-    const body = await request.json()
-    const { playerId, cardIndex, answerIndex, answerText } = body as {
-      playerId: string
-      cardIndex: number
-      answerIndex: number
-      answerText: string
-    }
-
-    if (!playerId || cardIndex === undefined) {
-      return NextResponse.json({ error: 'playerId and cardIndex required' }, { status: 400 })
-    }
+    const body = await readLimitedJson<{
+      playerId?: unknown
+      cardIndex?: unknown
+      answerIndex?: unknown
+      answerText?: unknown
+    }>(request)
+    const playerId = requiredString(body.playerId, 'playerId', 80)
+    const cardIndex = requiredInteger(body.cardIndex, 'cardIndex', 0, 10_000)
+    const answerIndex = requiredInteger(body.answerIndex, 'answerIndex', -1, 20)
+    const answerText = optionalString(body.answerText, 'answerText', INPUT_LIMITS.answerText) ?? ''
 
     const session = await getSession(pin)
     if (!session) return NextResponse.json({ error: 'Session not found' }, { status: 404 })
@@ -48,6 +56,9 @@ export async function POST(request: Request, { params }: RouteContext) {
 
     return NextResponse.json({ ok: true })
   } catch (err) {
+    const validationResponse = validationErrorResponse(err)
+    if (validationResponse) return validationResponse
+
     console.error(`[POST /api/sessions/${pin}/vote]`, err)
     return NextResponse.json({ error: 'Failed to cast vote' }, { status: 500 })
   }

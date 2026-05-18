@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { prisma } from '@/lib/prisma'
+import { INPUT_LIMITS, readLimitedText, validationErrorResponse } from '@/lib/request-validation'
 import {
   getStripeObjectId,
   getStripeWebhookSecret,
@@ -26,7 +27,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Brakuje STRIPE_WEBHOOK_SECRET.' }, { status: 500 })
   }
 
-  const payload = await request.text()
+  let payload: string
+  try {
+    payload = await readLimitedText(request, INPUT_LIMITS.stripeWebhookBytes)
+  } catch (error) {
+    return (
+      validationErrorResponse(error) ??
+      NextResponse.json({ error: 'Invalid payload.' }, { status: 400 })
+    )
+  }
+
   const signatureHeader = request.headers.get('stripe-signature')
   if (!signatureHeader) {
     return NextResponse.json({ error: 'Brakuje podpisu Stripe.' }, { status: 400 })
@@ -42,14 +52,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Nieprawidłowy podpis Stripe.' }, { status: 400 })
   }
 
-  const event = JSON.parse(payload) as StripeWebhookEvent
-
   try {
+    const event = JSON.parse(payload) as StripeWebhookEvent
+
     if (event.type === 'checkout.session.completed') {
       await handleCheckoutCompleted(event.data.object as StripeCheckoutSession)
     }
 
-    if (event.type === 'customer.subscription.updated' || event.type === 'customer.subscription.deleted') {
+    if (
+      event.type === 'customer.subscription.updated' ||
+      event.type === 'customer.subscription.deleted'
+    ) {
       await syncSubscription(event.data.object as StripeSubscription)
     }
 

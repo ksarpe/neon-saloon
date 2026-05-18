@@ -21,15 +21,38 @@ const logoFont = Anton({
 })
 
 export const metadata: Metadata = {
-  title: 'last rodeo andżeliki – Bachelorette Party Game',
-  description:
-    'The wildest bachelorette party card game in the West. Kahoot-style trivia, charades & dares — powered by neon lights and pure chaos.',
-  keywords: ['bachelorette party', 'party game', 'card game', 'bridal shower', 'kahoot'],
-  openGraph: {
-    title: 'last rodeo andżeliki',
-    description: 'The wildest bachelorette party card game in the West.',
-    type: 'website',
+  metadataBase: new URL('https://lastrodeoandzeliki.pl'),
+  title: {
+    default: 'Last Rodeo – Gra na wieczór panieński',
+    template: '%s – Last Rodeo',
   },
+  description:
+    'Interaktywna gra imprezowa na wieczór panieński w stylu kahoota. Quiz o Pannie Młodej, Nigdy przenigdy, Battle Royale i więcej — bez aplikacji, wystarczy PIN.',
+  keywords: [
+    'wieczór panieński',
+    'gra na wieczór panieński',
+    'quiz o pannie młodej',
+    'nigdy przenigdy',
+    'gra imprezowa',
+    'kahoot po polsku',
+    'last rodeo',
+    'gra przez przeglądarkę',
+  ],
+  openGraph: {
+    title: 'Last Rodeo – Gra na wieczór panieński',
+    description:
+      'Quiz, Nigdy przenigdy i Battle Royale dla Panny Młodej i jej ekipy. Dołącz przez PIN — bez aplikacji.',
+    type: 'website',
+    url: 'https://lastrodeoandzeliki.pl',
+    siteName: 'Last Rodeo',
+    locale: 'pl_PL',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Last Rodeo – Gra na wieczór panieński',
+    description: 'Quiz, Nigdy przenigdy i Battle Royale dla Panny Młodej i jej ekipy.',
+  },
+  robots: { index: true, follow: true },
 }
 
 export const viewport: Viewport = {
@@ -42,7 +65,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`h-full ${font.variable} ${logoFont.variable}`}>
+    <html lang="pl" className={`h-full ${font.variable} ${logoFont.variable}`}>
       <body className="bg-saloon-dark text-text-primary h-full antialiased">
         {/* Global dark overlay */}
         <div

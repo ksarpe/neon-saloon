@@ -1,7 +1,16 @@
 import { NextResponse } from 'next/server'
-import { getSession, saveSession } from '@/lib/appwrite/sessions'
+
 import { triggerGameEvent } from '@/lib/appwrite/realtime'
+import { getSession, saveSession } from '@/lib/appwrite/sessions'
 import { QUESTION_CATEGORIES } from '@/lib/games/categories'
+import {
+  INPUT_LIMITS,
+  optionalString,
+  readLimitedJson,
+  requiredInteger,
+  requiredString,
+  validationErrorResponse,
+} from '@/lib/request-validation'
 import { getAuthorizedPlayer } from '@/lib/session-player-auth'
 
 type RouteContext = { params: Promise<{ pin: string }> }
@@ -10,14 +19,14 @@ export async function POST(request: Request, { params }: RouteContext) {
   const { pin } = await params
 
   try {
-    const body = await request.json()
-    const { playerId, answerIndex, answerText } = body as {
-      playerId: string
-      answerIndex: number
-      answerText: string
-    }
-
-    if (!playerId) return NextResponse.json({ error: 'playerId required' }, { status: 400 })
+    const body = await readLimitedJson<{
+      playerId?: unknown
+      answerIndex?: unknown
+      answerText?: unknown
+    }>(request)
+    const playerId = requiredString(body.playerId, 'playerId', 80)
+    const answerIndex = requiredInteger(body.answerIndex, 'answerIndex', -1, 20)
+    const answerText = optionalString(body.answerText, 'answerText', INPUT_LIMITS.answerText) ?? ''
 
     const session = await getSession(pin)
     if (!session) return NextResponse.json({ error: 'Session not found' }, { status: 404 })
@@ -59,6 +68,9 @@ export async function POST(request: Request, { params }: RouteContext) {
 
     return NextResponse.json({ ok: true })
   } catch (err) {
+    const validationResponse = validationErrorResponse(err)
+    if (validationResponse) return validationResponse
+
     console.error(`[POST /api/sessions/${pin}/battle-royale/answer]`, err)
     return NextResponse.json({ error: 'Failed to submit answer' }, { status: 500 })
   }

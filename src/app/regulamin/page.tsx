@@ -200,8 +200,9 @@ const sections: LegalSection[] = [
 ]
 
 export const metadata = {
-  title: 'Regulamin – Last Rodeo',
-  description: 'Regulamin serwisu Last Rodeo — zasady korzystania, plany, płatności.',
+  title: 'Regulamin',
+  description:
+    'Regulamin serwisu Last Rodeo — zasady korzystania, dostępne plany, warunki płatności i subskrypcji.',
 }
 
 export default function RegulaминPage() {
