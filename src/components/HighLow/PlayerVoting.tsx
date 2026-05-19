@@ -36,7 +36,7 @@ export function PlayerVoting({
         className="flex flex-col items-center gap-5 text-center"
       >
         <div
-          className="rounded-full border px-4 py-1.5 text-xs font-bold tracking-widest uppercase"
+          className="rounded-full border px-4 py-1.5 text-xs font-bold tracking-normal uppercase"
           style={{
             borderColor: 'rgba(167,139,250,0.5)',
             backgroundColor: 'rgba(167,139,250,0.1)',
@@ -50,7 +50,7 @@ export function PlayerVoting({
           className="w-full rounded-2xl border-2 p-5"
           style={{ borderColor: 'rgba(255,215,0,0.25)', backgroundColor: 'rgba(255,215,0,0.05)' }}
         >
-          <p className="text-text-muted mb-2 text-xs tracking-widest uppercase">Pytanie</p>
+          <p className="text-text-muted mb-2 text-xs tracking-normal uppercase">Pytanie</p>
           <p className="text-base leading-snug font-bold" style={{ color: 'var(--sheriff-pink)' }}>
             {roundData.questionText}
           </p>
@@ -81,7 +81,7 @@ export function PlayerVoting({
         className="flex w-full flex-col items-center gap-5 text-center"
       >
         <div
-          className="rounded-full border px-4 py-1.5 text-xs font-bold tracking-widest uppercase"
+          className="rounded-full border px-4 py-1.5 text-xs font-bold tracking-normal uppercase"
           style={{
             borderColor: 'rgba(167,139,250,0.5)',
             backgroundColor: 'rgba(167,139,250,0.1)',
@@ -102,7 +102,7 @@ export function PlayerVoting({
         </div>
 
         <div>
-          <p className="text-text-muted mb-1 text-xs tracking-widest uppercase">
+          <p className="text-text-muted mb-1 text-xs tracking-normal uppercase">
             Odpowiedź drużyny {roundData.guessingTeamName}
           </p>
           <p
@@ -193,7 +193,7 @@ export function PlayerVoting({
       className="flex flex-col items-center gap-5 text-center"
     >
       <div
-        className="rounded-full border px-4 py-1.5 text-xs font-bold tracking-widest uppercase"
+        className="rounded-full border px-4 py-1.5 text-xs font-bold tracking-normal uppercase"
         style={{
           borderColor: 'rgba(167,139,250,0.4)',
           backgroundColor: 'rgba(167,139,250,0.08)',

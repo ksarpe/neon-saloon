@@ -20,7 +20,7 @@ export function RevealedResults({ card, revealedVotes, scores, hostPlayerId, cou
       animate={{ opacity: 1, y: 0 }}
       className="flex w-full max-w-sm flex-col gap-2"
     >
-      <p className="text-text-muted text-center text-xs font-semibold tracking-widest uppercase">
+      <p className="text-text-muted text-center text-xs font-semibold tracking-normal uppercase">
         Wyniki
       </p>
 
@@ -77,7 +77,7 @@ export function RevealedResults({ card, revealedVotes, scores, hostPlayerId, cou
       {/* Mini ranking */}
       {scores.filter((s) => s.score > 0).length > 0 && (
         <div className="border-saloon-border mt-1 flex flex-col gap-1.5 border-t pt-3">
-          <p className="text-text-muted mb-1 flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase">
+          <p className="text-text-muted mb-1 flex items-center gap-1.5 text-[10px] font-bold tracking-normal uppercase">
             <Star size={10} fill="var(--sheriff-pink)" style={{ color: 'var(--sheriff-pink)' }} />
             Ranking
           </p>

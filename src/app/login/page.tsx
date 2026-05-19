@@ -40,7 +40,7 @@ function InputField({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-text-muted text-[11px] font-semibold tracking-widest uppercase">
+      <label className="text-text-muted text-[11px] font-semibold tracking-normal uppercase">
         {label}
       </label>
       <div className="relative">
@@ -611,7 +611,7 @@ function LoginPageInner() {
                   key={t}
                   type="button"
                   onClick={() => setTab(t)}
-                  className="flex-1 rounded-lg py-2 text-xs font-bold tracking-widest uppercase transition-all duration-200"
+                  className="flex-1 rounded-lg py-2 text-xs font-bold tracking-normal uppercase transition-all duration-200"
                   style={{
                     backgroundColor: tab === t ? 'rgba(255,16,240,0.15)' : 'transparent',
                     color: tab === t ? 'var(--neon-pink)' : 'rgba(255,220,180,0.45)',

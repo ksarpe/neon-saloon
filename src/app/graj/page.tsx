@@ -80,9 +80,7 @@ export default function GrajPage() {
           >
             <div className="pointer-events-none absolute inset-y-0 -left-[100%] z-0 w-full skew-x-[-20deg] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-all duration-700 ease-in-out group-hover:left-[100%]" />
 
-            <div
-              className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-full"
-            >
+            <div className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-full">
               <Image src="/icons/boots.png" alt="players icon" width={64} height={64} />
             </div>
             <div className="relative z-10 flex-1">

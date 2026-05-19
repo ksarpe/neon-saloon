@@ -34,7 +34,7 @@ export function PlayerGuessing({
         className="flex w-full flex-col items-center gap-5 text-center"
       >
         <div
-          className="rounded-full border px-4 py-1.5 text-xs font-bold tracking-widest uppercase"
+          className="rounded-full border px-4 py-1.5 text-xs font-bold tracking-normal uppercase"
           style={{
             borderColor: 'rgba(255,16,240,0.5)',
             backgroundColor: 'rgba(255,16,240,0.1)',
@@ -48,7 +48,7 @@ export function PlayerGuessing({
           className="w-full rounded-2xl border-2 p-5"
           style={{ borderColor: 'rgba(255,215,0,0.25)', backgroundColor: 'rgba(255,215,0,0.05)' }}
         >
-          <p className="text-text-muted mb-2 text-xs tracking-widest uppercase">Pytanie</p>
+          <p className="text-text-muted mb-2 text-xs tracking-normal uppercase">Pytanie</p>
           <p className="text-lg leading-snug font-bold" style={{ color: 'var(--sheriff-pink)' }}>
             {roundData.questionText}
           </p>
@@ -104,7 +104,7 @@ export function PlayerGuessing({
       className="flex flex-col items-center gap-5 text-center"
     >
       <div
-        className="rounded-full border px-4 py-1.5 text-xs font-bold tracking-widest uppercase"
+        className="rounded-full border px-4 py-1.5 text-xs font-bold tracking-normal uppercase"
         style={{
           borderColor: 'rgba(255,16,240,0.4)',
           backgroundColor: 'rgba(255,16,240,0.08)',
@@ -126,7 +126,7 @@ export function PlayerGuessing({
 
       {submittedNumber !== null ? (
         <div className="flex flex-col items-center gap-2">
-          <p className="text-text-muted text-xs tracking-widest uppercase">Wasza odpowiedź</p>
+          <p className="text-text-muted text-xs tracking-normal uppercase">Wasza odpowiedź</p>
           <p
             className="text-5xl font-black"
             style={{ color: 'var(--neon-pink)', fontFamily: 'var(--font-app)' }}

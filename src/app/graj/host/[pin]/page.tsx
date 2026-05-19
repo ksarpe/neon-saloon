@@ -83,7 +83,7 @@ function PickerShell({
           >
             {title}
           </h1>
-          <p className="text-text-muted mt-1 text-xs tracking-widest uppercase">{subtitle}</p>
+          <p className="text-text-muted mt-1 text-xs tracking-normal uppercase">{subtitle}</p>
         </motion.div>
 
         {children}
@@ -285,7 +285,7 @@ function TriviaDeckState({
               <button
                 type="button"
                 onClick={onPanel}
-                className="rounded-xl border-2 px-5 py-3 text-xs font-bold tracking-widest uppercase"
+                className="rounded-xl border-2 px-5 py-3 text-xs font-bold tracking-normal uppercase"
                 style={{
                   borderColor: 'var(--neon-pink)',
                   backgroundColor: 'rgba(255,16,240,0.12)',
@@ -297,7 +297,7 @@ function TriviaDeckState({
               <button
                 type="button"
                 onClick={onBack}
-                className="rounded-xl border px-5 py-3 text-xs font-bold tracking-widest uppercase"
+                className="rounded-xl border px-5 py-3 text-xs font-bold tracking-normal uppercase"
                 style={{
                   borderColor: 'rgba(255,220,180,0.15)',
                   color: 'rgba(255,220,180,0.7)',
@@ -362,7 +362,7 @@ function HighLowTeamSetup({
       >
         {/* Team 1 */}
         <div className="flex flex-col gap-2">
-          <label className="text-text-muted text-xs font-semibold tracking-widest uppercase">
+          <label className="text-text-muted text-xs font-semibold tracking-normal uppercase">
             Banda 1
           </label>
           <input
@@ -380,7 +380,7 @@ function HighLowTeamSetup({
 
         {/* Team 2 */}
         <div className="flex flex-col gap-2">
-          <label className="text-text-muted text-xs font-semibold tracking-widest uppercase">
+          <label className="text-text-muted text-xs font-semibold tracking-normal uppercase">
             Banda 2
           </label>
           <input

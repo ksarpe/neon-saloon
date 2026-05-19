@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Check, ChevronRight } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { useState } from 'react'
 
 import { IdentityForm } from '@/components/IdentityForm'
@@ -36,7 +36,7 @@ export function HostSetupView({ team1, team2, onContinue }: Props) {
 
       {/* Team picker */}
       <div className="flex w-full flex-col gap-3">
-        <p className="text-text-muted text-center text-[10px] font-semibold tracking-widest uppercase">
+        <p className="text-text-muted text-center text-[10px] font-semibold tracking-normal uppercase">
           Wybierz drużynę
         </p>
         <div className="grid grid-cols-2 gap-3">

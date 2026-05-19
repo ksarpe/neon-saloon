@@ -55,7 +55,6 @@ export const Button = ({
     boxShadow: '0 4px 40px rgba(221,84,162,0.55)',
     fontFamily: "var(--font-app)",
     fontSize: size === 'lg' ? '1.25rem' : '1.1rem',
-    letterSpacing: '0.12em',
   }
 
   // ── Outline ──────────────────────────────────────────────────────────────────

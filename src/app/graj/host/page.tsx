@@ -103,7 +103,7 @@ export default function HostSetupPage() {
           transition={{ delay: 0.2 }}
           className="w-full"
         >
-          <label className="text-text-muted mb-3 block text-xs font-semibold tracking-widest uppercase">
+          <label className="text-text-muted mb-3 block text-xs font-semibold tracking-normal uppercase">
             Wybierz tryb gry
           </label>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -131,7 +131,7 @@ export default function HostSetupPage() {
                   <div className="pointer-events-none absolute inset-y-0 -left-full z-0 w-full skew-x-[-20deg] bg-linear-to-r from-transparent via-white/20 to-transparent transition-all duration-700 ease-in-out group-hover:left-[100%]" />
 
                   {mode.isPremium && (
-                    <div className="absolute right-2 bottom-2 z-20 flex items-center gap-1 rounded-full border border-yellow-500/50 bg-black/60 px-2 py-0.5 text-[9px] font-bold tracking-widest text-yellow-400 uppercase">
+                    <div className="absolute right-2 bottom-2 z-20 flex items-center gap-1 rounded-full border border-yellow-500/50 bg-black/60 px-2 py-0.5 text-[9px] font-bold tracking-normal text-yellow-400 uppercase">
                       {!checkAccess({ type: 'premium' }, access).granted && (
                         <Lock size={10} aria-hidden />
                       )}

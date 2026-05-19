@@ -91,7 +91,7 @@ export function HostRound({
         className="flex w-full flex-col gap-4 rounded-3xl border-2 p-8"
         style={{ borderColor: 'rgba(255,215,0,0.25)', backgroundColor: 'rgba(255,215,0,0.05)' }}
       >
-        <p className="text-text-muted text-xs font-semibold tracking-widest uppercase">Pytanie</p>
+        <p className="text-text-muted text-xs font-semibold tracking-normal uppercase">Pytanie</p>
         <p
           className="text-2xl leading-snug font-bold sm:text-3xl"
           style={{ color: 'var(--sheriff-pink)' }}
@@ -120,7 +120,7 @@ export function HostRound({
           {isHostGuessingCaptain ? (
             <div className="flex w-full max-w-sm flex-col gap-3">
               <div
-                className="rounded-full border px-4 py-1.5 text-center text-xs font-bold tracking-widest uppercase"
+                className="rounded-full border px-4 py-1.5 text-center text-xs font-bold tracking-normal uppercase"
                 style={{
                   borderColor: 'rgba(255,16,240,0.5)',
                   backgroundColor: 'rgba(255,16,240,0.1)',
@@ -192,7 +192,7 @@ export function HostRound({
             className="rounded-2xl border-2 px-6 py-4 text-center"
             style={{ borderColor: 'rgba(255,215,0,0.4)', backgroundColor: 'rgba(255,215,0,0.06)' }}
           >
-            <p className="text-text-muted mb-1 text-xs tracking-widest uppercase">
+            <p className="text-text-muted mb-1 text-xs tracking-normal uppercase">
               Odpowiedź drużyny {guessingTeam.teamName}
             </p>
             <p
@@ -217,7 +217,7 @@ export function HostRound({
           {isHostVotingCaptain ? (
             <div className="flex w-full max-w-sm flex-col gap-3">
               <div
-                className="rounded-full border px-4 py-1.5 text-center text-xs font-bold tracking-widest uppercase"
+                className="rounded-full border px-4 py-1.5 text-center text-xs font-bold tracking-normal uppercase"
                 style={{
                   borderColor: 'rgba(167,139,250,0.5)',
                   backgroundColor: 'rgba(167,139,250,0.1)',

@@ -56,7 +56,7 @@ export function LobbyView({ pin, players, onStart }: Props) {
         <div className="mb-3 flex items-center justify-center gap-2">
           <Users size={14} style={{ color: 'var(--sheriff-pink)' }} />
           <span
-            className="text-xs font-semibold tracking-widest uppercase"
+            className="text-xs font-semibold tracking-normal uppercase"
             style={{ color: 'var(--sheriff-pink)' }}
           >
             {players.length} {players.length === 1 ? 'cowgirl' : 'cowgirls'} w salonie

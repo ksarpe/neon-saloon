@@ -31,8 +31,8 @@ export function TeamPicker({
       <div className="text-center">
         <span className="text-4xl">🏇</span>
         <h2
-          className="mt-2 text-3xl tracking-widest"
-          style={{ fontFamily: "var(--font-app)", color: 'var(--neon-pink)' }}
+          className="mt-2 text-3xl tracking-normal"
+          style={{ fontFamily: 'var(--font-app)', color: 'var(--neon-pink)' }}
         >
           Wybierz swoją bandę
         </h2>
@@ -40,7 +40,7 @@ export function TeamPicker({
 
       {/* Existing teams */}
       <div className="flex w-full max-w-xs flex-col gap-2">
-        <p className="text-text-muted text-[10px] font-semibold tracking-widest uppercase">
+        <p className="text-text-muted text-[10px] font-semibold tracking-normal uppercase">
           Obecne bandy
         </p>
         <AnimatePresence>
@@ -83,7 +83,7 @@ export function TeamPicker({
       {/* Create new team */}
       {!hideCreate && (
         <div className="flex w-full max-w-xs flex-col gap-2">
-          <p className="text-text-muted text-[10px] font-semibold tracking-widest uppercase">
+          <p className="text-text-muted text-[10px] font-semibold tracking-normal uppercase">
             Stwórz nową bandę
           </p>
           <div className="flex gap-2">

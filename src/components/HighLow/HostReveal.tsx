@@ -31,7 +31,7 @@ export function HostReveal({
       className="flex flex-col items-center gap-8 text-center"
     >
       <div className="flex w-full max-w-lg flex-col gap-4">
-        <p className="text-text-muted text-xs font-semibold tracking-widest uppercase">
+        <p className="text-text-muted text-xs font-semibold tracking-normal uppercase">
           Prawidłowa odpowiedź
         </p>
 
@@ -83,9 +83,9 @@ export function HostReveal({
           className="rounded-2xl border-2 p-5"
           style={{ borderColor: 'rgba(255,215,0,0.4)', backgroundColor: 'rgba(255,215,0,0.07)' }}
         >
-          <p className="text-text-muted mb-1 text-xs tracking-widest uppercase">Punkt dla</p>
+          <p className="text-text-muted mb-1 text-xs tracking-normal uppercase">Punkt dla</p>
           <p
-            className="text-3xl font-black tracking-widest"
+            className="text-3xl font-black tracking-normal"
             style={{ color: 'var(--sheriff-pink)', fontFamily: 'var(--font-app)' }}
           >
             {resultData.winningTeamName}

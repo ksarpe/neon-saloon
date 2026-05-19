@@ -30,7 +30,7 @@ export function PlayerResult({ resultData, teamId, myScore }: Props) {
         >
           <div className="text-5xl">🎉</div>
           <p
-            className="text-3xl font-black tracking-widest"
+            className="text-3xl font-black tracking-normal"
             style={{ color: '#10b981', fontFamily: 'var(--font-app)' }}
           >
             Wasza drużyna wygrywa!
@@ -47,7 +47,7 @@ export function PlayerResult({ resultData, teamId, myScore }: Props) {
         <div className="flex flex-col items-center gap-2">
           <div className="text-5xl">😬</div>
           <p
-            className="text-3xl font-black tracking-widest"
+            className="text-3xl font-black tracking-normal"
             style={{ color: '#ef4444', fontFamily: 'var(--font-app)' }}
           >
             Nie tym razem
@@ -59,7 +59,7 @@ export function PlayerResult({ resultData, teamId, myScore }: Props) {
         className="w-full rounded-2xl border-2 p-5"
         style={{ borderColor: 'rgba(16,185,129,0.35)', backgroundColor: 'rgba(16,185,129,0.05)' }}
       >
-        <p className="text-text-muted mb-1 text-xs tracking-widest uppercase">
+        <p className="text-text-muted mb-1 text-xs tracking-normal uppercase">
           Prawidłowa odpowiedź
         </p>
         <p

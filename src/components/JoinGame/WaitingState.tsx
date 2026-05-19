@@ -26,7 +26,7 @@ export function WaitingState({ playerName, teamName, avatar }: Props) {
 
       <div>
         <h2
-          className="text-4xl tracking-widest"
+          className="text-4xl tracking-normal"
           style={{ fontFamily: 'var(--font-app)', color: 'var(--sheriff-pink)' }}
         >
           Siodła w dłoń i otwieramy rodeo!

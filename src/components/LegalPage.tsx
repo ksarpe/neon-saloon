@@ -69,7 +69,7 @@ export function LegalPage({ title, subtitle, lastUpdated, sections }: Props) {
           className="mb-12"
         >
           <h1
-            className="text-5xl tracking-widest sm:text-6xl"
+            className="text-5xl tracking-normal sm:text-6xl"
             style={{ fontFamily: 'var(--font-logo)', color: 'var(--sheriff-pink)' }}
           >
             {title}
@@ -88,7 +88,7 @@ export function LegalPage({ title, subtitle, lastUpdated, sections }: Props) {
           <aside className="hidden w-52 shrink-0 lg:block">
             <nav className="sticky top-10 flex flex-col gap-0.5">
               <p
-                className="mb-3 text-[10px] font-bold tracking-widest uppercase"
+                className="mb-3 text-[10px] font-bold tracking-normal uppercase"
                 style={{ color: 'rgba(255,220,180,0.3)' }}
               >
                 Spis treści

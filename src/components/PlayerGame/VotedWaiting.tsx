@@ -25,8 +25,8 @@ export function VotedWaiting({ avatar }: Props) {
 
       <div className="flex flex-col gap-1">
         <h2
-          className="text-3xl tracking-widest"
-          style={{ fontFamily: "var(--font-app)", color: '#10b981' }}
+          className="text-3xl tracking-normal"
+          style={{ fontFamily: 'var(--font-app)', color: '#10b981' }}
         >
           Odpowiedź zapisana!
         </h2>

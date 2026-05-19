@@ -53,7 +53,7 @@ export function HostHeader({
         {/* Left: PIN */}
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <Zap size={14} style={{ color: 'var(--neon-pink)' }} />
-          <span className="text-text-muted truncate text-xs font-semibold tracking-widest uppercase">
+          <span className="text-text-muted truncate text-xs font-semibold tracking-normal uppercase">
             PIN: <span className="text-text-primary">{pin}</span>
           </span>
         </div>

@@ -124,7 +124,7 @@ function PanelModal({
       >
         <div className="mb-5 flex items-start justify-between gap-4">
           <div>
-            <p className="text-text-primary text-sm font-black tracking-widest uppercase">
+            <p className="text-text-primary text-sm font-black tracking-normal uppercase">
               {title}
             </p>
             {hint && <p className="text-text-muted mt-1 text-xs">{hint}</p>}
@@ -222,7 +222,7 @@ function NeverTab() {
             setError(null)
             setAddOpen(true)
           }}
-          className="flex items-center gap-2 rounded-xl border-2 px-4 py-2.5 text-xs font-bold tracking-widest uppercase"
+          className="flex items-center gap-2 rounded-xl border-2 px-4 py-2.5 text-xs font-bold tracking-normal uppercase"
           {...panelButtonHover(
             {
               borderColor: 'var(--neon-pink)',
@@ -267,7 +267,7 @@ function NeverTab() {
                 whileTap={{ scale: 0.98 }}
                 disabled={!text.trim() || adding}
                 onClick={handleAdd}
-                className="flex items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 text-xs font-bold tracking-widest uppercase disabled:opacity-30"
+                className="flex items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 text-xs font-bold tracking-normal uppercase disabled:opacity-30"
                 {...panelButtonHover(
                   {
                     borderColor: 'var(--neon-pink)',
@@ -402,7 +402,7 @@ function QuizTab() {
             setError(null)
             setAddOpen(true)
           }}
-          className="flex items-center gap-2 rounded-xl border-2 px-4 py-2.5 text-xs font-bold tracking-widest uppercase"
+          className="flex items-center gap-2 rounded-xl border-2 px-4 py-2.5 text-xs font-bold tracking-normal uppercase"
           {...panelButtonHover(
             {
               borderColor: 'var(--neon-pink)',
@@ -515,7 +515,7 @@ function QuizTab() {
                   type="button"
                   disabled={options.length >= 6}
                   onClick={() => setOptions((prev) => [...prev, ''])}
-                  className="flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-xs font-bold tracking-widest uppercase disabled:opacity-30"
+                  className="flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-xs font-bold tracking-normal uppercase disabled:opacity-30"
                   {...panelButtonHover(
                     {
                       borderColor: 'rgba(255,220,180,0.15)',
@@ -536,7 +536,7 @@ function QuizTab() {
                   whileTap={{ scale: 0.98 }}
                   disabled={adding}
                   onClick={handleAdd}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 text-xs font-bold tracking-widest uppercase disabled:opacity-30"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 text-xs font-bold tracking-normal uppercase disabled:opacity-30"
                   {...panelButtonHover(
                     {
                       borderColor: 'var(--neon-pink)',
@@ -657,7 +657,7 @@ function QuestionList<T extends Question>({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-        <p className="text-text-muted text-xs font-semibold tracking-widest uppercase">{label}</p>
+        <p className="text-text-muted text-xs font-semibold tracking-normal uppercase">{label}</p>
         {pageCount > 1 && (
           <p className="text-text-muted text-xs tabular-nums">
             {startIndex + 1}-{startIndex + pageQuestions.length} z {questions.length}
@@ -734,7 +734,7 @@ function QuestionList<T extends Question>({
             <ChevronLeft size={16} />
           </button>
 
-          <span className="text-text-muted text-xs font-semibold tracking-widest uppercase tabular-nums">
+          <span className="text-text-muted text-xs font-semibold tracking-normal uppercase tabular-nums">
             Strona {currentPage} / {pageCount}
           </span>
 
@@ -970,7 +970,7 @@ function AccountTab() {
                   : 'Możesz kupić dostęp PRO albo wrócić do płatności później.'}
               </p>
               {premium?.subscriptionStatus && (
-                <p className="mt-2 text-xs font-semibold tracking-widest text-white/45 uppercase">
+                <p className="mt-2 text-xs font-semibold tracking-normal text-white/45 uppercase">
                   Status subskrypcji: {premium.subscriptionStatus}
                 </p>
               )}
@@ -985,7 +985,7 @@ function AccountTab() {
           <button
             type="button"
             onClick={loadAccount}
-            className="flex items-center justify-center gap-2 rounded-xl border px-4 py-2 text-xs font-bold tracking-widest uppercase"
+            className="flex items-center justify-center gap-2 rounded-xl border px-4 py-2 text-xs font-bold tracking-normal uppercase"
             {...panelButtonHover(
               {
                 borderColor: 'rgba(255,220,180,0.15)',
@@ -1009,7 +1009,7 @@ function AccountTab() {
             type="button"
             disabled={checkoutPlan !== null || isLifetime}
             onClick={() => startCheckout('monthly')}
-            className="flex min-h-12 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-xs font-black tracking-widest uppercase disabled:opacity-35"
+            className="flex min-h-12 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-xs font-black tracking-normal uppercase disabled:opacity-35"
             {...panelButtonHover(
               {
                 borderColor: 'rgba(255,215,0,0.38)',
@@ -1034,7 +1034,7 @@ function AccountTab() {
             type="button"
             disabled={checkoutPlan !== null || isLifetime}
             onClick={() => startCheckout('lifetime')}
-            className="flex min-h-12 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-xs font-black tracking-widest uppercase disabled:opacity-35"
+            className="flex min-h-12 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-xs font-black tracking-normal uppercase disabled:opacity-35"
             {...panelButtonHover(
               {
                 borderColor: 'rgba(255,16,240,0.35)',
@@ -1059,7 +1059,7 @@ function AccountTab() {
             type="button"
             disabled={portalLoading || !premium?.canManageBilling}
             onClick={openBillingPortal}
-            className="flex min-h-12 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-xs font-black tracking-widest uppercase disabled:opacity-35"
+            className="flex min-h-12 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-xs font-black tracking-normal uppercase disabled:opacity-35"
             {...panelButtonHover(
               {
                 borderColor: 'rgba(255,220,180,0.18)',
@@ -1102,7 +1102,7 @@ function AccountTab() {
             <p className="text-text-primary text-sm font-black">Dane konta</p>
           </div>
           <div className="flex flex-col gap-3">
-            <label className="text-text-muted text-xs font-semibold tracking-widest uppercase">
+            <label className="text-text-muted text-xs font-semibold tracking-normal uppercase">
               Email
             </label>
             <input
@@ -1111,7 +1111,7 @@ function AccountTab() {
               className="bg-saloon-surface text-text-muted rounded-xl border px-4 py-3 text-sm"
               style={{ borderColor: 'rgba(255,220,180,0.12)' }}
             />
-            <label className="text-text-muted text-xs font-semibold tracking-widest uppercase">
+            <label className="text-text-muted text-xs font-semibold tracking-normal uppercase">
               Nazwa
             </label>
             <input
@@ -1125,7 +1125,7 @@ function AccountTab() {
               type="button"
               disabled={!name.trim() || profileSaving}
               onClick={saveProfile}
-              className="mt-1 flex items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 text-xs font-black tracking-widest uppercase disabled:opacity-35"
+              className="mt-1 flex items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 text-xs font-black tracking-normal uppercase disabled:opacity-35"
               {...panelButtonHover(
                 {
                   borderColor: 'var(--neon-pink)',
@@ -1181,7 +1181,7 @@ function AccountTab() {
               type="button"
               disabled={!currentPassword || !newPassword || passwordSaving}
               onClick={changePassword}
-              className="mt-1 flex items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 text-xs font-black tracking-widest uppercase disabled:opacity-35"
+              className="mt-1 flex items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 text-xs font-black tracking-normal uppercase disabled:opacity-35"
               {...panelButtonHover(
                 {
                   borderColor: 'var(--sheriff-pink)',
@@ -1360,7 +1360,7 @@ function PaymentStatusBanner({ checkoutState }: { checkoutState: CheckoutState }
             <p className="text-text-primary text-base font-black">{title}</p>
             <p className="text-text-muted mt-1 max-w-xl text-sm leading-snug">{description}</p>
             {paymentStatus.subscriptionStatus && (
-              <p className="mt-2 text-xs font-semibold tracking-widest text-white/45 uppercase">
+              <p className="mt-2 text-xs font-semibold tracking-normal text-white/45 uppercase">
                 Stripe: {paymentStatus.subscriptionStatus}
               </p>
             )}
@@ -1375,7 +1375,7 @@ function PaymentStatusBanner({ checkoutState }: { checkoutState: CheckoutState }
         <button
           type="button"
           onClick={clearCheckoutState}
-          className="rounded-xl border px-4 py-2 text-xs font-bold tracking-widest uppercase"
+          className="rounded-xl border px-4 py-2 text-xs font-bold tracking-normal uppercase"
           {...panelButtonHover(
             {
               borderColor: 'rgba(255,220,180,0.15)',
@@ -1533,7 +1533,7 @@ function GameSettingsTab() {
         style={{ borderColor: 'rgba(255,220,180,0.12)', backgroundColor: 'rgba(13,8,24,0.5)' }}
       >
         <p
-          className="mb-1 text-xs font-semibold tracking-widest uppercase"
+          className="mb-1 text-xs font-semibold tracking-normal uppercase"
           style={{ color: '#34d399' }}
         >
           Ustawienia gier
@@ -1601,7 +1601,7 @@ function GameSettingsTab() {
                 type="button"
                 onClick={handleSave}
                 disabled={saving}
-                className="flex items-center gap-2 rounded-xl border px-5 py-2.5 text-xs font-bold tracking-widest uppercase transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 rounded-xl border px-5 py-2.5 text-xs font-bold tracking-normal uppercase transition-colors disabled:opacity-50"
                 {...panelButtonHover(
                   {
                     borderColor: '#34d399',
@@ -1699,7 +1699,7 @@ function PanelContent() {
       >
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
           <h1
-            className="shimmer-text text-xl tracking-widest"
+            className="shimmer-text text-xl tracking-normal"
             style={{ fontFamily: 'var(--font-app)' }}
           >
             Panel szeryfa
@@ -1757,7 +1757,7 @@ function PanelContent() {
               >
                 <Icon size={17} style={{ color: tab.color }} />
                 <span className="min-w-0">
-                  <span className="text-text-primary block text-xs font-bold tracking-widest uppercase">
+                  <span className="text-text-primary block text-xs font-bold tracking-normal uppercase">
                     {tab.label}
                   </span>
                   <span className="text-text-muted block text-xs">{tab.description}</span>

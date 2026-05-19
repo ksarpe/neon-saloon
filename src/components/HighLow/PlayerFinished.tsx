@@ -23,7 +23,7 @@ export function PlayerFinished({ avatar, playerName, teamName, playerId, myScore
     >
       <Trophy size={48} style={{ color: 'var(--sheriff-pink)' }} />
       <h2
-        className="text-sheriff-pink text-4xl tracking-widest"
+        className="text-sheriff-pink text-4xl tracking-normal"
         style={{ fontFamily: 'var(--font-app)' }}
       >
         KONIEC GRY
@@ -63,7 +63,7 @@ export function PlayerFinished({ avatar, playerName, teamName, playerId, myScore
 
       {scores.length > 0 && (
         <div className="flex w-full flex-col gap-2">
-          <p className="text-text-muted text-xs tracking-widest uppercase">Wyniki końcowe</p>
+          <p className="text-text-muted text-xs tracking-normal uppercase">Wyniki końcowe</p>
           {[...scores]
             .sort((a, b) => b.score - a.score)
             .map((s, i) => (

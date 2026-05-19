@@ -1,11 +1,11 @@
 'use client'
 
-import { AnimatePresence,motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Play } from 'lucide-react'
 
 import { JoinQrCode } from '@/components/JoinQrCode'
 import { Button } from '@/components/ui/button'
-import type { SessionPlayer,SessionTeam } from '@/lib/appwrite/sessions'
+import type { SessionPlayer, SessionTeam } from '@/lib/appwrite/sessions'
 
 interface Props {
   pin: string
@@ -65,7 +65,7 @@ export function HostLobby({ pin, players, team1, team2, onStart }: Props) {
             className="flex flex-col gap-3 rounded-2xl border p-4"
             style={{ borderColor: `${accent}44`, backgroundColor: `${accent}0d` }}
           >
-            <p className="text-sm font-bold tracking-widest uppercase" style={{ color: accent }}>
+            <p className="text-sm font-bold tracking-normal uppercase" style={{ color: accent }}>
               {team.teamName}
             </p>
             <div className="flex flex-wrap gap-2">

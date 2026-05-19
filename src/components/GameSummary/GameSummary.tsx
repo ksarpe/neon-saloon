@@ -72,7 +72,7 @@ export function GameSummary({
           {hasPlayerPoints && (
             <button
               onClick={() => setTab('players')}
-              className="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-bold tracking-widest uppercase transition-all duration-200"
+              className="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-bold tracking-normal uppercase transition-all duration-200"
               style={{
                 backgroundColor: tab === 'players' ? 'rgba(255,16,240,0.12)' : 'transparent',
                 color: tab === 'players' ? 'var(--neon-pink)' : 'rgba(255,220,180,0.45)',
@@ -87,7 +87,7 @@ export function GameSummary({
           {hasTeams && (
             <button
               onClick={() => setTab('teams')}
-              className="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-bold tracking-widest uppercase transition-all duration-200"
+              className="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-bold tracking-normal uppercase transition-all duration-200"
               style={{
                 backgroundColor: tab === 'teams' ? 'rgba(249,74,255,0.12)' : 'transparent',
                 color: tab === 'teams' ? 'var(--sheriff-pink)' : 'rgba(255,220,180,0.45)',
@@ -102,7 +102,7 @@ export function GameSummary({
           {hasDrinks && (
             <button
               onClick={() => setTab('drinks')}
-              className="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-bold tracking-widest uppercase transition-all duration-200"
+              className="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-bold tracking-normal uppercase transition-all duration-200"
               style={{
                 backgroundColor: tab === 'drinks' ? 'rgba(255,215,0,0.12)' : 'transparent',
                 color: tab === 'drinks' ? '#ffd700' : 'rgba(255,220,180,0.45)',
@@ -116,7 +116,7 @@ export function GameSummary({
           {hasEgzekwo && (
             <button
               onClick={() => setTab('egzekwo')}
-              className="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-bold tracking-widest uppercase transition-all duration-200"
+              className="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-bold tracking-normal uppercase transition-all duration-200"
               style={{
                 backgroundColor: tab === 'egzekwo' ? 'rgba(239,68,68,0.12)' : 'transparent',
                 color: tab === 'egzekwo' ? '#f87171' : 'rgba(255,220,180,0.45)',

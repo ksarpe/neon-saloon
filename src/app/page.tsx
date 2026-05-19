@@ -3,7 +3,16 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { ChevronRight, Brain, Heart, BookOpen, TrendingUp, Check, Minus, type LucideIcon } from 'lucide-react'
+import {
+  ChevronRight,
+  Brain,
+  Heart,
+  BookOpen,
+  TrendingUp,
+  Check,
+  Minus,
+  type LucideIcon,
+} from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 
@@ -278,7 +287,7 @@ export default function LandingPage() {
           className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1"
           style={{ color: 'rgba(255,220,180,0.3)' }}
         >
-          <span className="text-[10px] tracking-widest uppercase">Scroll</span>
+          <span className="text-[10px] tracking-normal uppercase">Scroll</span>
           <motion.div
             animate={{ y: [0, 6, 0] }}
             transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
@@ -298,7 +307,7 @@ export default function LandingPage() {
           className="text-center"
         >
           <h2
-            className="shimmer-text text-5xl tracking-widest sm:text-6xl"
+            className="shimmer-text text-5xl tracking-normal sm:text-6xl"
             style={{ fontFamily: 'var(--font-app)' }}
           >
             Jak to działa?
@@ -356,7 +365,7 @@ export default function LandingPage() {
           className="px-6 text-center"
         >
           <h2
-            className="shimmer-text text-5xl tracking-widest sm:text-6xl"
+            className="shimmer-text text-5xl tracking-normal sm:text-6xl"
             style={{ fontFamily: 'var(--font-app)' }}
           >
             Tryby gry
@@ -455,7 +464,7 @@ export default function LandingPage() {
           className="text-center"
         >
           <h2
-            className="shimmer-text text-5xl tracking-widest sm:text-6xl"
+            className="shimmer-text text-5xl tracking-normal sm:text-6xl"
             style={{ fontFamily: 'var(--font-app)' }}
           >
             Plany
@@ -498,7 +507,7 @@ export default function LandingPage() {
               {/* Badge */}
               {plan.badge && (
                 <div
-                  className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-3 py-0.5 text-[10px] font-bold tracking-widest uppercase"
+                  className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-3 py-0.5 text-[10px] font-bold tracking-normal whitespace-nowrap uppercase"
                   style={{ background: 'var(--sheriff-gold)', color: '#0d0a0b' }}
                 >
                   {plan.badge}
@@ -507,7 +516,7 @@ export default function LandingPage() {
 
               {/* Plan name */}
               <p
-                className="mb-2 text-[10px] font-bold tracking-widest uppercase"
+                className="mb-2 text-[10px] font-bold tracking-normal uppercase"
                 style={{ color: plan.accent }}
               >
                 {plan.name}
@@ -518,7 +527,7 @@ export default function LandingPage() {
                 {plan.price ? (
                   <>
                     <span
-                      className="text-4xl font-black leading-none"
+                      className="text-4xl leading-none font-black"
                       style={{ color: 'rgba(240,223,192,0.92)', fontFamily: 'var(--font-app)' }}
                     >
                       {plan.price}
@@ -529,7 +538,7 @@ export default function LandingPage() {
                   </>
                 ) : (
                   <span
-                    className="text-4xl font-black leading-none"
+                    className="text-4xl leading-none font-black"
                     style={{ color: 'rgba(240,223,192,0.92)', fontFamily: 'var(--font-app)' }}
                   >
                     Bezpłatnie
@@ -609,7 +618,7 @@ export default function LandingPage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="shimmer-text text-5xl tracking-widest sm:text-7xl"
+          className="shimmer-text text-5xl tracking-normal sm:text-7xl"
           style={{ fontFamily: 'var(--font-app)' }}
         >
           Gotowe na

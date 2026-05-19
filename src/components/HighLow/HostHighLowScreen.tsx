@@ -8,7 +8,12 @@ import { useBackButton } from '@/lib/back-button-context'
 import { GameSummary } from '@/components/GameSummary'
 import { HIGHLOW_QUESTIONS } from '@/lib/games/highlow'
 import { QUESTIONS_PER_GAME, limitQuestions } from '@/lib/games/question-limit'
-import { getHostSession, hostAuthHeaders, hostJsonHeaders, updateHostSession } from '@/lib/session-host-secret'
+import {
+  getHostSession,
+  hostAuthHeaders,
+  hostJsonHeaders,
+  updateHostSession,
+} from '@/lib/session-host-secret'
 import { playerJsonHeaders, savePlayerSecret } from '@/lib/session-player-secret'
 import { HostSetupView } from './HostSetupView'
 import { HostLobby } from './HostLobby'
@@ -334,14 +339,14 @@ export default function HostHighLowScreen({
           <div className="mx-auto grid max-w-5xl grid-cols-3 items-center px-6 py-4">
             <div className="flex items-center gap-2">
               <Zap size={14} style={{ color: 'var(--neon-pink)' }} />
-              <span className="text-text-muted text-xs font-semibold tracking-widest uppercase">
+              <span className="text-text-muted text-xs font-semibold tracking-normal uppercase">
                 PIN: <span className="text-text-primary">{pin}</span>
               </span>
             </div>
             <div className="flex justify-center">
               {phase !== 'lobby' && phase !== 'finished' && (
                 <span
-                  className="rounded-full border px-3 py-1 text-[10px] font-bold tracking-widest uppercase"
+                  className="rounded-full border px-3 py-1 text-[10px] font-bold tracking-normal uppercase"
                   style={{
                     color: 'var(--sheriff-pink)',
                     borderColor: 'rgba(255,215,0,0.35)',

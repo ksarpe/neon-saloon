@@ -64,8 +64,10 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
   })
   useEffect(() => {
     fetch('/api/settings')
-      .then((r) => r.ok ? r.json() : null)
-      .then((d) => { if (d) setGameSettings(d) })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d) setGameSettings(d)
+      })
       .catch(() => {})
   }, [])
 
@@ -144,7 +146,9 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
           }
           if (typeof br.questionIndex === 'number') setQuestionIndex(br.questionIndex)
           if (Array.isArray(br.roundAnswers)) {
-            setAnsweredIds(new Set<string>(br.roundAnswers.map((a: { playerId: string }) => a.playerId)))
+            setAnsweredIds(
+              new Set<string>(br.roundAnswers.map((a: { playerId: string }) => a.playerId))
+            )
           }
           // Reconstruct timer from roundStartTime so the reveal button becomes
           // available correctly after a refresh during a round.
@@ -420,7 +424,7 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span
-                        className="text-xs font-semibold tracking-widest uppercase"
+                        className="text-xs font-semibold tracking-normal uppercase"
                         style={{ color: '#ef4444' }}
                       >
                         BATTLE ROYALE
@@ -534,7 +538,7 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
 
                   {/* Player avatars */}
                   <div>
-                    <p className="text-text-muted mb-3 text-xs font-semibold tracking-widest uppercase">
+                    <p className="text-text-muted mb-3 text-xs font-semibold tracking-normal uppercase">
                       Gracze ({answeredIds.size}/{alivePlayers.length} odpowiedziało)
                     </p>
                     <div className="flex flex-wrap gap-3">
@@ -604,7 +608,7 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
                 <div className="flex flex-col gap-6">
                   <div className="text-center">
                     <h2
-                      className="text-sheriff-pink text-4xl tracking-widest"
+                      className="text-sheriff-pink text-4xl tracking-normal"
                       style={{ fontFamily: 'var(--font-app)' }}
                     >
                       Wyniki rundy
@@ -627,7 +631,7 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
                       }}
                     >
                       <p
-                        className="text-sm font-bold tracking-widest uppercase"
+                        className="text-sm font-bold tracking-normal uppercase"
                         style={{ color: '#ef4444' }}
                       >
                         <Skull size={14} className="mr-1 inline" />
@@ -648,25 +652,25 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
                       <thead>
                         <tr style={{ backgroundColor: 'var(--saloon-surface)' }}>
                           <th
-                            className="px-4 py-3 text-left text-xs font-semibold tracking-widest uppercase"
+                            className="px-4 py-3 text-left text-xs font-semibold tracking-normal uppercase"
                             style={{ color: 'var(--text-muted)' }}
                           >
                             Gracz
                           </th>
                           <th
-                            className="px-4 py-3 text-left text-xs font-semibold tracking-widest uppercase"
+                            className="px-4 py-3 text-left text-xs font-semibold tracking-normal uppercase"
                             style={{ color: 'var(--text-muted)' }}
                           >
                             Odpowiedź
                           </th>
                           <th
-                            className="px-4 py-3 text-right text-xs font-semibold tracking-widest uppercase"
+                            className="px-4 py-3 text-right text-xs font-semibold tracking-normal uppercase"
                             style={{ color: 'var(--text-muted)' }}
                           >
                             Czas
                           </th>
                           <th
-                            className="px-4 py-3 text-right text-xs font-semibold tracking-widest uppercase"
+                            className="px-4 py-3 text-right text-xs font-semibold tracking-normal uppercase"
                             style={{ color: 'var(--text-muted)' }}
                           >
                             Status
@@ -785,7 +789,7 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
                   </motion.div>
                   <div>
                     <h1
-                      className="text-sheriff-pink text-6xl tracking-widest"
+                      className="text-sheriff-pink text-6xl tracking-normal"
                       style={{ fontFamily: 'var(--font-app)' }}
                     >
                       Koniec gry!

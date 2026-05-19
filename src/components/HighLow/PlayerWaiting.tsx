@@ -25,8 +25,8 @@ export function PlayerWaiting({ avatar, teamName }: Props) {
       </div>
       <div>
         <h1
-          className="text-sheriff-pink text-5xl tracking-widest"
-          style={{ fontFamily: "var(--font-app)" }}
+          className="text-sheriff-pink text-5xl tracking-normal"
+          style={{ fontFamily: 'var(--font-app)' }}
         >
           mniej czy więcej
         </h1>
@@ -36,9 +36,7 @@ export function PlayerWaiting({ avatar, teamName }: Props) {
           </p>
         )}
       </div>
-      <div
-        className="bg-saloon-surface border-saloon-border flex w-full flex-col items-center gap-3 rounded-2xl border px-6 py-5"
-      >
+      <div className="bg-saloon-surface border-saloon-border flex w-full flex-col items-center gap-3 rounded-2xl border px-6 py-5">
         <PulsingDots color="var(--neon-pink)" />
         <p className="text-text-muted text-sm font-medium">Czekaj na hosta…</p>
         <p className="text-text-muted text-[10px] opacity-50">

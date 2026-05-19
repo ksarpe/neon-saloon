@@ -1,8 +1,8 @@
 'use client'
 
-import { AnimatePresence,motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useSearchParams } from 'next/navigation'
-import { useCallback, useEffect,useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import BattleRoyalePlayer from '@/components/BattleRoyale/BattleRoyalePlayer'
 import PlayerHighLowScreen from '@/components/HighLow/PlayerHighLowScreen'
@@ -30,7 +30,7 @@ import { ModeSelector } from './ModeSelector'
 import { NameInput } from './NameInput'
 import { PinInput } from './PinInput'
 import { TeamPicker } from './TeamPicker'
-import type { LiveTeam, PlayerInfo,Step } from './types'
+import type { LiveTeam, PlayerInfo, Step } from './types'
 import { slide } from './types'
 import { WaitingState } from './WaitingState'
 
@@ -68,10 +68,7 @@ export default function JoinGameForm() {
   const [resumeChecking, setResumeChecking] = useState(() => {
     if (typeof window === 'undefined') return false
     try {
-      const pinFromUrl = searchParams
-        .get('pin')
-        ?.replace(/\D/g, '')
-        .slice(0, SESSION_PIN_LENGTH)
+      const pinFromUrl = searchParams.get('pin')?.replace(/\D/g, '').slice(0, SESSION_PIN_LENGTH)
       if (!pinFromUrl || pinFromUrl.length !== SESSION_PIN_LENGTH) return false
       return Boolean(getPlayerSession(pinFromUrl))
     } catch {
@@ -198,7 +195,13 @@ export default function JoinGameForm() {
     (
       submittedPin: string,
       data: {
-        player: { playerId: string; playerName: string; avatar: string; teamId: string | null; teamName: string | null }
+        player: {
+          playerId: string
+          playerName: string
+          avatar: string
+          teamId: string | null
+          teamName: string | null
+        }
         session: { status: string; gameMode: string }
         classic?: { cardIndex: number; card: WireCard; hasVoted: boolean }
         battleRoyale?: {
@@ -489,7 +492,7 @@ export default function JoinGameForm() {
             }}
           />
           <p
-            className="text-xs tracking-widest uppercase"
+            className="text-xs tracking-normal uppercase"
             style={{ color: 'rgba(255,220,180,0.6)' }}
           >
             Wracam do gry…

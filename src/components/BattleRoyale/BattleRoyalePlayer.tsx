@@ -167,7 +167,7 @@ export default function BattleRoyalePlayer({
           )}
         </div>
         <span
-          className="text-xs font-semibold tracking-widest uppercase"
+          className="text-xs font-semibold tracking-normal uppercase"
           style={{ color: '#ef4444' }}
         >
           BATTLE ROYALE
@@ -216,7 +216,7 @@ export default function BattleRoyalePlayer({
 
                 {/* Timer */}
                 <div className="flex items-center justify-between">
-                  <p className="text-text-muted text-xs font-semibold tracking-widest uppercase">
+                  <p className="text-text-muted text-xs font-semibold tracking-normal uppercase">
                     {isEliminated
                       ? 'Obserwujesz'
                       : `Odpowiedź (${answeredCount} z ${roundData.alivePlayers.length})`}
@@ -361,7 +361,7 @@ export default function BattleRoyalePlayer({
                   }}
                 >
                   <p
-                    className="text-xs font-semibold tracking-widest uppercase"
+                    className="text-xs font-semibold tracking-normal uppercase"
                     style={{ color: 'var(--text-muted)' }}
                   >
                     Twoja odpowiedź
@@ -437,7 +437,7 @@ export default function BattleRoyalePlayer({
                   }}
                 >
                   <p
-                    className="text-xs font-semibold tracking-widest uppercase"
+                    className="text-xs font-semibold tracking-normal uppercase"
                     style={{ color: 'var(--text-muted)' }}
                   >
                     Poprawna odpowiedź
@@ -470,7 +470,7 @@ export default function BattleRoyalePlayer({
                     </motion.div>
                     <div>
                       <p
-                        className="text-sheriff-pink text-5xl tracking-widest"
+                        className="text-sheriff-pink text-5xl tracking-normal"
                         style={{ fontFamily: 'var(--font-app)' }}
                       >
                         Wygrałeś!

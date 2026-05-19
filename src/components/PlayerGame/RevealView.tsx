@@ -16,7 +16,7 @@ export function RevealView({ data, countdown }: Props) {
       animate={{ opacity: 1, y: 0 }}
       className="mx-auto flex w-full max-w-sm flex-col gap-3"
     >
-      <p className="text-text-muted text-center text-xs font-semibold tracking-widest uppercase">
+      <p className="text-text-muted text-center text-xs font-semibold tracking-normal uppercase">
         OTO WYNIKI
       </p>
 

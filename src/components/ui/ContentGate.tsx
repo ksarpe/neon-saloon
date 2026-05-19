@@ -23,11 +23,7 @@ export function ContentGate({ gate, children, fallback, className }: ContentGate
   if (result.granted) return <>{children}</>
   if (fallback !== undefined) return <>{fallback}</>
 
-  return (
-    <LockedOverlay className={className}>
-      {children}
-    </LockedOverlay>
-  )
+  return <LockedOverlay className={className}>{children}</LockedOverlay>
 }
 
 function LockedOverlay({ children, className }: { children: React.ReactNode; className?: string }) {
@@ -41,12 +37,12 @@ function LockedOverlay({ children, className }: { children: React.ReactNode; cla
         role="button"
         aria-label="Odblokuj zawartość PRO"
       >
-        <div className="pointer-events-none select-none blur-sm" aria-hidden>
+        <div className="pointer-events-none blur-sm select-none" aria-hidden>
           {children}
         </div>
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 rounded-xl bg-black/50 transition-colors group-hover:bg-black/60">
           <Lock className="text-yellow-400" size={30} aria-hidden />
-          <span className="text-xs font-bold tracking-widest text-yellow-400 uppercase">PRO</span>
+          <span className="text-xs font-bold tracking-normal text-yellow-400 uppercase">PRO</span>
         </div>
       </div>
 
@@ -86,7 +82,7 @@ export function ProModal({ onClose }: { onClose: () => void }) {
       setError(
         checkoutError instanceof Error
           ? checkoutError.message
-          : 'Nie udało się rozpocząć płatności.',
+          : 'Nie udało się rozpocząć płatności.'
       )
       setLoadingPlan(null)
     }
@@ -128,9 +124,7 @@ export function ProModal({ onClose }: { onClose: () => void }) {
           >
             <Crown size={24} aria-hidden />
           </div>
-          <h2 className="shimmer-text text-3xl tracking-wide">
-            Odblokuj Last Rodeo PRO
-          </h2>
+          <h2 className="shimmer-text text-3xl tracking-wide">Odblokuj Last Rodeo PRO</h2>
           <p className="text-text-muted mt-2 max-w-2xl text-sm leading-relaxed">
             Wybierz dostęp miesięczny albo jednorazowy plan dożywotni. Oba odblokowują tryby
             premium, w tym Mniej czy więcej.
@@ -159,7 +153,7 @@ export function ProModal({ onClose }: { onClose: () => void }) {
                   </div>
                   {plan.badge && (
                     <span
-                      className="rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-widest uppercase"
+                      className="rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-normal uppercase"
                       style={{
                         borderColor: 'rgba(249,74,255,0.4)',
                         background: 'rgba(249,74,255,0.1)',
@@ -223,7 +217,7 @@ export function ProModal({ onClose }: { onClose: () => void }) {
           className="mt-5 rounded-2xl border p-4"
           style={{ borderColor: 'var(--saloon-border)', background: 'rgba(13,8,24,0.42)' }}
         >
-          <p className="text-text-muted mb-3 text-xs font-bold tracking-widest uppercase">
+          <p className="text-text-muted mb-3 text-xs font-bold tracking-normal uppercase">
             Porównanie
           </p>
           <div className="text-text-primary grid gap-2 text-sm sm:grid-cols-3">
