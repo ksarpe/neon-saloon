@@ -137,7 +137,7 @@ function ModeCardContent({ mode, isActive }: { mode: GameModeCard; isActive: boo
     <>
       {/* PRO badge */}
       {mode.isPremium && (
-        <div className="absolute top-4 right-4 z-20 flex items-center gap-1 rounded-full border border-yellow-500/50 bg-black/60 px-2.5 py-1 text-[10px] font-bold tracking-widest text-yellow-400 uppercase backdrop-blur-sm">
+        <div className="absolute top-4 right-4 z-20 flex items-center gap-1 rounded-full border border-yellow-500/50 bg-black/60 px-2.5 py-1 text-[10px] font-bold tracking-normal text-yellow-400 uppercase backdrop-blur-sm">
           🔒 PRO
         </div>
       )}

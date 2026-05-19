@@ -1,13 +1,12 @@
 'use client'
 
-import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ChevronRight, Dices, Check } from 'lucide-react'
-import type { SessionTeam } from '@/lib/appwrite/sessions'
-import { FUNNY_NAMES } from '@/lib/games/data'
-import { Button } from '@/components/ui/button'
+import { Check, ChevronRight } from 'lucide-react'
+import { useState } from 'react'
 
-const AVATAR_LIST = ['🤠', '💃', '🌸', '✨', '🍾', '🎀', '👑', '🦋', '🌺', '🎉']
+import { IdentityForm } from '@/components/IdentityForm'
+import { Button } from '@/components/ui/button'
+import type { SessionTeam } from '@/lib/appwrite/sessions'
 
 interface Props {
   team1: SessionTeam
@@ -19,76 +18,21 @@ export function HostSetupView({ team1, team2, onContinue }: Props) {
   const [name, setName] = useState('')
   const [avatar, setAvatar] = useState<string | null>(null)
   const [teamId, setTeamId] = useState<string | null>(null)
-  const [placeholder] = useState(
-    () => `np. ${FUNNY_NAMES[Math.floor(Math.random() * FUNNY_NAMES.length)]}`
-  )
 
-  const canContinue = name.trim() && avatar && teamId
+  const canContinue = Boolean(name.trim() && avatar && teamId)
+  const submit = () => {
+    if (canContinue) onContinue(name.trim(), avatar!, teamId!)
+  }
 
   return (
-    <div className="mx-auto flex w-full max-w-sm flex-col items-center gap-8">
-      <div className="text-center">
-        <h1
-          className="shimmer-text text-5xl tracking-widest"
-          style={{ fontFamily: 'var(--font-app)' }}
-        >
-          mniej czy więcej
-        </h1>
-        <p className="text-text-muted mt-1 text-xs tracking-widest uppercase">
-          Najpierw wybierz swój awatar i drużynę
-        </p>
-      </div>
-
-      {/* Avatar picker */}
-      <div className="w-full">
-        <p className="text-text-muted mb-3 text-center text-[10px] font-semibold tracking-widest uppercase">
-          Wybierz awatar
-        </p>
-        <div className="grid grid-cols-5 gap-2">
-          {AVATAR_LIST.map((emoji) => (
-            <motion.button
-              key={emoji}
-              whileTap={{ scale: 0.88 }}
-              onClick={() => setAvatar(emoji)}
-              className="flex h-12 items-center justify-center rounded-xl border-2 text-2xl transition-colors"
-              style={{
-                borderColor: avatar === emoji ? 'var(--neon-pink)' : 'var(--saloon-border)',
-                backgroundColor:
-                  avatar === emoji ? 'rgba(255,16,240,0.15)' : 'var(--saloon-surface)',
-                boxShadow: avatar === emoji ? '0 0 12px rgba(255,16,240,0.3)' : 'none',
-              }}
-            >
-              {emoji}
-            </motion.button>
-          ))}
-        </div>
-      </div>
-
-      {/* Name input */}
-      <div className="flex w-full gap-2">
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onKeyDown={(e) =>
-            e.key === 'Enter' && canContinue && onContinue(name.trim(), avatar!, teamId!)
-          }
-          maxLength={20}
-          autoFocus
-          placeholder={placeholder}
-          className="bg-saloon-surface text-text-primary placeholder:text-text-muted flex-1 rounded-xl border-2 px-4 py-4 text-center text-lg font-bold transition-colors focus:outline-none"
-          style={{ borderColor: name.trim() ? 'var(--neon-pink)' : 'var(--saloon-border)' }}
-        />
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setName(FUNNY_NAMES[Math.floor(Math.random() * FUNNY_NAMES.length)])}
-          className="bg-saloon-surface flex items-center justify-center rounded-xl border-2 px-4"
-          style={{ borderColor: 'var(--saloon-border)' }}
-          title="Losuj imię"
-        >
-          <Dices size={22} className="text-text-muted" />
-        </motion.button>
-      </div>
+    <div className="mx-auto flex w-full max-w-xs flex-col items-center gap-6">
+      <IdentityForm
+        name={name}
+        onNameChange={setName}
+        avatar={avatar}
+        onAvatarChange={setAvatar}
+        onEnter={submit}
+      />
 
       {/* Team picker */}
       <div className="flex w-full flex-col gap-3">
@@ -130,13 +74,8 @@ export function HostSetupView({ team1, team2, onContinue }: Props) {
         </div>
       </div>
 
-      <Button
-        type="primary"
-        disabled={!canContinue}
-        onClick={() => canContinue && onContinue(name.trim(), avatar!, teamId!)}
-        className="w-full"
-      >
-        Dalej <ChevronRight size={18} />
+      <Button type="primary" disabled={!canContinue} onClick={submit} className="w-full">
+        Dalej
       </Button>
     </div>
   )

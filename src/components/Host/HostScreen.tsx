@@ -5,7 +5,7 @@ import { useBackButton } from '@/lib/back-button-context'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
 import { GameSummary } from '@/components/GameSummary'
-import { hostAuthHeaders, hostJsonHeaders } from '@/lib/session-host-secret'
+import { getHostSession, hostAuthHeaders, hostJsonHeaders, updateHostSession } from '@/lib/session-host-secret'
 import { playerJsonHeaders, savePlayerSecret } from '@/lib/session-player-secret'
 import type {
   PlayerJoinedPayload,
@@ -65,15 +65,47 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
   const currentCard: GameCard | undefined = initialCards[cardIndex]
 
   // ── Hydrate on mount ─────────────────────────────────────────────────────────
+  // Full restore: identity from localStorage, game state (scores, reveal snapshot,
+  // current votes) from /host-resume. Lets the host refresh mid-game without losing
+  // accumulated points or having to re-enter name/avatar.
   useEffect(() => {
-    fetch(`/api/sessions/${pin}`, { headers: hostAuthHeaders(pin) })
+    const stored = getHostSession(pin)
+    if (stored?.hostName) setHostName(stored.hostName)
+    if (stored?.hostAvatar) setHostAvatar(stored.hostAvatar)
+    if (stored?.hostPlayerId) setHostPlayerId(stored.hostPlayerId)
+
+    fetch(`/api/sessions/${pin}/host-resume`, { headers: hostAuthHeaders(pin) })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        if (!data) return
-        if (data.players?.length) setPlayers(data.players)
-        if (data.status === 'active') setPhase('active')
-        if (data.status === 'finished') setPhase('finished')
+        if (!data?.ok) return
+        if (Array.isArray(data.players) && data.players.length) setPlayers(data.players)
         if (typeof data.cardIndex === 'number') setCardIndex(data.cardIndex)
+        if (Array.isArray(data.scores)) setScores(data.scores)
+        if (Array.isArray(data.teamScores)) setTeamScores(data.teamScores)
+
+        // Phase: setup unless we already have identity, then lobby/active/finished
+        const hasIdentity = Boolean(stored?.hostName && stored?.hostAvatar)
+        if (data.status === 'finished') setPhase('finished')
+        else if (data.status === 'active') setPhase('active')
+        else if (hasIdentity) setPhase('lobby')
+
+        // Restore reveal snapshot if host left mid-reveal
+        if (data.currentReveal && data.currentReveal.cardIndex === data.cardIndex) {
+          setIsRevealed(true)
+          setRevealedVotes(data.currentReveal.votes ?? [])
+        }
+
+        // Restore unrevealed votes-in-progress
+        if (Array.isArray(data.votes) && data.votes.length) {
+          setCurrentVotes(data.votes)
+        }
+
+        // Did the host already cast their own vote for the current card?
+        if (stored?.hostPlayerId && Array.isArray(data.votes)) {
+          if (data.votes.some((v: { playerId: string }) => v.playerId === stored.hostPlayerId)) {
+            setHostHasVoted(true)
+          }
+        }
       })
       .catch(() => {})
   }, [pin])
@@ -148,8 +180,9 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
 
   const handleSetupComplete = useCallback(() => {
     if (!hostName.trim() || !hostAvatar) return
+    updateHostSession(pin, { hostName: hostName.trim(), hostAvatar })
     setPhase('lobby')
-  }, [hostName, hostAvatar])
+  }, [pin, hostName, hostAvatar])
 
   const handleStart = useCallback(async () => {
     const firstCard = initialCards[0]
@@ -167,6 +200,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
         if (typeof data.playerSecret === 'string') {
           savePlayerSecret(pin, data.playerId, data.playerSecret)
         }
+        updateHostSession(pin, { hostPlayerId: data.playerId })
         setHostPlayerId(data.playerId)
         setPlayers((p) => {
           if (p.some((x) => x.playerId === data.playerId)) return p

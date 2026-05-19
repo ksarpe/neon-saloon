@@ -16,9 +16,15 @@ import type {
   HighLowRoundStartPayload,
   TeamCreatedPayload,
   TeamUpdatedPayload,
+  WireCard,
 } from '@/lib/game-types'
 import { SESSION_PIN_LENGTH } from '@/lib/session-pin'
-import { getPlayerSecret, savePlayerSecret } from '@/lib/session-player-secret'
+import {
+  clearPlayerSession,
+  getPlayerSession,
+  playerAuthHeaders,
+  savePlayerSession,
+} from '@/lib/session-player-secret'
 
 import { ModeSelector } from './ModeSelector'
 import { NameInput } from './NameInput'
@@ -50,31 +56,66 @@ export default function JoinGameForm() {
   // Battle Royale: store first round data so BattleRoyalePlayer can initialize immediately
   const [brRoundData, setBrRoundData] = useState<BRRoundStartPayload | null>(null)
 
+  // Resume-time supplemental state (mid-game catch-up)
+  const [classicHasVoted, setClassicHasVoted] = useState(false)
+  const [brIsEliminated, setBrIsEliminated] = useState(false)
+  const [brHasAnswered, setBrHasAnswered] = useState(false)
+  const [hlSubmittedNumber, setHlSubmittedNumber] = useState<string | null>(null)
+
+  // Resume status — drives the brief "Wracam do gry…" splash so the form doesn't flash.
+  // Initial value is computed synchronously: only show the splash if we have a stored
+  // session for the URL pin (otherwise there's nothing to resume and we render immediately).
+  const [resumeChecking, setResumeChecking] = useState(() => {
+    if (typeof window === 'undefined') return false
+    try {
+      const pinFromUrl = searchParams
+        .get('pin')
+        ?.replace(/\D/g, '')
+        .slice(0, SESSION_PIN_LENGTH)
+      if (!pinFromUrl || pinFromUrl.length !== SESSION_PIN_LENGTH) return false
+      return Boolean(getPlayerSession(pinFromUrl))
+    } catch {
+      return false
+    }
+  })
+  const resumeAttemptedRef = useRef(false)
+
   const { setHidden: setBackHidden } = useBackButton()
 
   useEffect(() => {
     setBackHidden(step === 'waiting' || step === 'playing')
   }, [step, setBackHidden])
 
-  // Track pin + playerId in refs so the unload handler can read current values
+  // Track pin + playerId + step in refs so the unload handler can read current values
   const pinRef = useRef(pin)
   const playerIdRef = useRef<string | null>(null)
+  const stepRef = useRef<Step>(step)
   useEffect(() => {
     pinRef.current = pin
   }, [pin])
   useEffect(() => {
     playerIdRef.current = playerInfo?.playerId ?? null
   }, [playerInfo])
+  useEffect(() => {
+    stepRef.current = step
+  }, [step])
 
-  // Send beacon on tab close / component unmount
+  // Auto-leave on unload — only while still in the lobby (waiting/team). Once the
+  // game starts, we keep the player in the session so they can resume after a
+  // refresh or accidental tab close. Stored credentials in localStorage let them
+  // come back.
   useEffect(() => {
     function leave() {
       const pid = playerIdRef.current
       const p = pinRef.current
+      const s = stepRef.current
       if (!pid || !p) return
+      if (s !== 'waiting' && s !== 'team' && s !== 'mode') return
+      const stored = getPlayerSession(p)
+      const secret = stored?.playerId === pid ? stored.playerSecret : null
       navigator.sendBeacon(
         `/api/sessions/${p}/leave`,
-        new Blob([JSON.stringify({ playerId: pid, playerSecret: getPlayerSecret(p, pid) })], {
+        new Blob([JSON.stringify({ playerId: pid, playerSecret: secret })], {
           type: 'application/json',
         })
       )
@@ -152,28 +193,180 @@ export default function JoinGameForm() {
 
   // ── Step handlers ────────────────────────────────────────────────────────────
 
-  const handlePinSubmit = useCallback(async (submittedPin: string) => {
-    setPin(submittedPin)
-    setLoading(true)
-    setError(null)
-    try {
-      const res = await fetch(`/api/sessions/${submittedPin}`)
-      if (!res.ok) throw new Error('not_found')
-      const data = await res.json()
-      if (data.status === 'active' || data.status === 'finished') {
-        setError('Ta gra już trwa. Nie możesz teraz dołączyć.')
+  // Apply a successful /resume payload to local state and jump straight into the game.
+  const applyResume = useCallback(
+    (
+      submittedPin: string,
+      data: {
+        player: { playerId: string; playerName: string; avatar: string; teamId: string | null; teamName: string | null }
+        session: { status: string; gameMode: string }
+        classic?: { cardIndex: number; card: WireCard; hasVoted: boolean }
+        battleRoyale?: {
+          questionIndex: number
+          totalQuestions: number
+          questionText: string
+          options: string[]
+          timerDuration: number
+          roundStartTime: number
+          alivePlayers: string[]
+          isEliminated: boolean
+          hasAnswered: boolean
+        }
+        highlow?: {
+          roundIndex: number
+          questionText: string
+          questionUnit: string
+          guessingTeamId: string
+          guessingTeamName: string
+          votingTeamId: string
+          votingTeamName: string
+          guessingCaptainId: string
+          votingCaptainId: string
+          submittedNumber: string | null
+        }
+      }
+    ) => {
+      setPin(submittedPin)
+      setPlayerName(data.player.playerName)
+      setAvatar(data.player.avatar)
+      setGameMode(data.session.gameMode)
+      setPlayerInfo({
+        playerId: data.player.playerId,
+        avatar: data.player.avatar,
+        teamId: data.player.teamId,
+        teamName: data.player.teamName,
+      })
+
+      if (data.session.status === 'waiting') {
+        // Host hasn't started yet — drop back into the waiting room
+        setStep('waiting')
         return
       }
-      setGameMode(data.gameMode ?? 'trivia')
-      setStep('name')
-    } catch {
-      setError('Nie znaleziono salonu. Sprawdź kod i spróbuj ponownie.')
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+      if (data.session.status === 'finished') {
+        clearPlayerSession(submittedPin)
+        setError('Ta gra już się zakończyła.')
+        setStep('pin')
+        return
+      }
+
+      if (data.battleRoyale) {
+        setBrRoundData({
+          questionIndex: data.battleRoyale.questionIndex,
+          totalQuestions: data.battleRoyale.totalQuestions,
+          questionText: data.battleRoyale.questionText,
+          options: data.battleRoyale.options,
+          timerDuration: data.battleRoyale.timerDuration,
+          roundStartTime: data.battleRoyale.roundStartTime,
+          alivePlayers: data.battleRoyale.alivePlayers,
+        })
+        setBrIsEliminated(data.battleRoyale.isEliminated)
+        setBrHasAnswered(data.battleRoyale.hasAnswered)
+        setStep('playing')
+      } else if (data.highlow) {
+        setHlRoundData({
+          roundIndex: data.highlow.roundIndex,
+          questionText: data.highlow.questionText,
+          questionUnit: data.highlow.questionUnit,
+          guessingTeamId: data.highlow.guessingTeamId,
+          guessingTeamName: data.highlow.guessingTeamName,
+          votingTeamId: data.highlow.votingTeamId,
+          votingTeamName: data.highlow.votingTeamName,
+          guessingCaptainId: data.highlow.guessingCaptainId,
+          votingCaptainId: data.highlow.votingCaptainId,
+        })
+        setHlSubmittedNumber(data.highlow.submittedNumber)
+        setStep('playing')
+      } else if (data.classic) {
+        setGameStartData({ cardIndex: data.classic.cardIndex, card: data.classic.card })
+        setClassicHasVoted(data.classic.hasVoted)
+        setStep('playing')
+      } else {
+        // Active session but server couldn't reconstruct game state (e.g. mid-game between rounds).
+        // Park player in 'waiting' — they'll auto-advance when the next round/card event fires.
+        setStep('waiting')
+      }
+    },
+    []
+  )
+
+  const tryResume = useCallback(
+    async (submittedPin: string) => {
+      const stored = getPlayerSession(submittedPin)
+      if (!stored) return false
+      try {
+        const res = await fetch(`/api/sessions/${submittedPin}/resume`, {
+          headers: playerAuthHeaders(submittedPin, stored.playerId),
+        })
+        if (!res.ok) {
+          if (res.status === 401 || res.status === 404) clearPlayerSession(submittedPin)
+          return false
+        }
+        const data = await res.json()
+        // Persist any refreshed identity fields (e.g. avatar/team changes)
+        savePlayerSession(submittedPin, {
+          playerId: data.player.playerId,
+          playerSecret: stored.playerSecret,
+          playerName: data.player.playerName,
+          avatar: data.player.avatar,
+          teamId: data.player.teamId,
+          teamName: data.player.teamName,
+          gameMode: data.session.gameMode,
+        })
+        applyResume(submittedPin, data)
+        return true
+      } catch {
+        return false
+      }
+    },
+    [applyResume]
+  )
+
+  const handlePinSubmit = useCallback(
+    async (submittedPin: string) => {
+      setPin(submittedPin)
+      setLoading(true)
+      setError(null)
+      try {
+        // First — if we have stored creds for this PIN, try to resume regardless of status.
+        if (await tryResume(submittedPin)) return
+
+        const res = await fetch(`/api/sessions/${submittedPin}`)
+        if (!res.ok) throw new Error('not_found')
+        const data = await res.json()
+        if (data.status === 'active' || data.status === 'finished') {
+          setError('Ta gra już trwa. Nie możesz teraz dołączyć.')
+          return
+        }
+        setGameMode(data.gameMode ?? 'trivia')
+        setStep('name')
+      } catch {
+        setError('Nie znaleziono salonu. Sprawdź kod i spróbuj ponownie.')
+      } finally {
+        setLoading(false)
+      }
+    },
+    [tryResume]
+  )
+
+  // Auto-resume on mount: if we have stored creds for the URL pin, try /resume.
+  // resumeChecking was already initialized synchronously above based on the same
+  // condition, so reaching this effect implies we have something to try.
+  useEffect(() => {
+    if (resumeAttemptedRef.current) return
+    resumeAttemptedRef.current = true
+    if (!resumeChecking) return
+
+    const pinFromUrl = searchParams.get('pin')?.replace(/\D/g, '').slice(0, SESSION_PIN_LENGTH)
+    const targetPin = pinFromUrl && pinFromUrl.length === SESSION_PIN_LENGTH ? pinFromUrl : null
+    if (!targetPin) return
+
+    // tryResume is async — the setState happens after the fetch settles, not synchronously.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    tryResume(targetPin).finally(() => setResumeChecking(false))
+  }, [resumeChecking, searchParams, tryResume])
 
   useEffect(() => {
+    if (resumeChecking) return
     const pinFromUrl = searchParams.get('pin')?.replace(/\D/g, '').slice(0, SESSION_PIN_LENGTH)
     if (
       !pinFromUrl ||
@@ -188,7 +381,7 @@ export default function JoinGameForm() {
     autoSubmittedPinRef.current = pinFromUrl
     setPin(pinFromUrl)
     void handlePinSubmit(pinFromUrl)
-  }, [handlePinSubmit, loading, searchParams, step])
+  }, [handlePinSubmit, loading, resumeChecking, searchParams, step])
 
   const doJoin = useCallback(
     async (teamId: string | null, teamName: string | null) => {
@@ -208,7 +401,15 @@ export default function JoinGameForm() {
         if (!res.ok) throw new Error()
         const data = await res.json()
         if (typeof data.playerSecret === 'string') {
-          savePlayerSecret(pin, data.playerId, data.playerSecret)
+          savePlayerSession(pin, {
+            playerId: data.playerId,
+            playerSecret: data.playerSecret,
+            playerName,
+            avatar: data.avatar,
+            teamId: data.teamId ?? null,
+            teamName,
+            gameMode,
+          })
         }
         setPlayerInfo({
           playerId: data.playerId,
@@ -224,7 +425,7 @@ export default function JoinGameForm() {
         joiningRef.current = false
       }
     },
-    [pin, playerName, avatar]
+    [pin, playerName, avatar, gameMode]
   )
 
   // ── Playing: hand off to the appropriate game screen ────────────────────────
@@ -240,6 +441,7 @@ export default function JoinGameForm() {
           teamName={playerInfo.teamName}
           avatar={playerInfo.avatar}
           initialRoundData={hlRoundData}
+          initialSubmittedNumber={hlSubmittedNumber}
         />
       )
     }
@@ -251,6 +453,8 @@ export default function JoinGameForm() {
           playerName={playerName}
           avatar={playerInfo.avatar}
           initialRoundData={brRoundData}
+          initialIsEliminated={brIsEliminated}
+          initialHasAnswered={brHasAnswered}
         />
       )
     }
@@ -265,12 +469,35 @@ export default function JoinGameForm() {
           avatar={playerInfo.avatar}
           initialCard={gameStartData.card}
           initialCardIndex={gameStartData.cardIndex}
+          initialHasVoted={classicHasVoted}
         />
       )
     }
   }
 
   // ── Join / waiting flow ──────────────────────────────────────────────────────
+
+  if (resumeChecking) {
+    return (
+      <div className="flex h-dvh w-full flex-col items-center justify-center px-6">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <div
+            className="h-10 w-10 animate-spin rounded-full border-2"
+            style={{
+              borderColor: 'rgba(255,220,180,0.18)',
+              borderTopColor: 'var(--neon-pink)',
+            }}
+          />
+          <p
+            className="text-xs tracking-widest uppercase"
+            style={{ color: 'rgba(255,220,180,0.6)' }}
+          >
+            Wracam do gry…
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex h-dvh w-full flex-col items-center justify-center overflow-hidden px-6">

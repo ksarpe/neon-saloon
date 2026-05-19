@@ -1,0 +1,150 @@
+import { NextResponse } from 'next/server'
+
+import { getSession } from '@/lib/appwrite/sessions'
+import { QUESTION_CATEGORIES } from '@/lib/games/categories'
+import { getLimitedQuestionTotal, getOrderedQuestion } from '@/lib/games/question-limit'
+import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
+import {
+  hashPlayerSecret,
+  PLAYER_SECRET_HEADER,
+  publicPlayer,
+} from '@/lib/session-player-auth'
+
+type RouteContext = { params: Promise<{ pin: string }> }
+
+// Resume an existing player session after a refresh / browser crash / network drop.
+// The client sends the player's secret in the x-player-secret header; we identify the
+// player by hash match, then return enough state for the player UI to rehydrate to
+// the current game phase without missing any realtime events.
+
+export async function GET(request: Request, { params }: RouteContext) {
+  const { pin } = await params
+  const limit = consumeRateLimit(`session-resume:${getClientIp(request)}`, {
+    limit: 60,
+    windowMs: 60_000,
+  })
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests', retryAfter: limit.retryAfter },
+      { status: 429, headers: rateLimitHeaders(limit) }
+    )
+  }
+
+  const secret = request.headers.get(PLAYER_SECRET_HEADER)
+  if (!secret) {
+    return NextResponse.json({ error: 'Missing player secret' }, { status: 401 })
+  }
+
+  const session = await getSession(pin)
+  if (!session) {
+    return NextResponse.json({ error: 'Session not found' }, { status: 404 })
+  }
+
+  // Find the player whose secret matches — we don't trust a client-supplied playerId.
+  const providedHash = hashPlayerSecret(secret)
+  const matchedPlayer = session.players.find(
+    (p) => p.playerSecretHash && p.playerSecretHash === providedHash
+  )
+  if (!matchedPlayer) {
+    return NextResponse.json({ error: 'Unknown player or stale credentials' }, { status: 401 })
+  }
+
+  const player = publicPlayer(matchedPlayer)
+  const gameMode = session.gameMode ?? 'classic'
+
+  type ResumeResponse = {
+    ok: true
+    player: typeof player
+    session: { pin: string; status: typeof session.status; gameMode: string }
+    classic?: {
+      cardIndex: number
+      card: NonNullable<typeof session.currentCard> | null
+      hasVoted: boolean
+    }
+    battleRoyale?: {
+      questionIndex: number
+      totalQuestions: number
+      questionText: string
+      options: string[]
+      timerDuration: number
+      roundStartTime: number
+      alivePlayers: string[]
+      isEliminated: boolean
+      hasAnswered: boolean
+    }
+    highlow?: {
+      roundIndex: number
+      questionText: string
+      questionUnit: string
+      guessingTeamId: string
+      guessingTeamName: string
+      votingTeamId: string
+      votingTeamName: string
+      guessingCaptainId: string
+      votingCaptainId: string
+      submittedNumber: string | null
+    }
+  }
+
+  const response: ResumeResponse = {
+    ok: true,
+    player,
+    session: { pin: session.pin, status: session.status, gameMode },
+  }
+
+  if (session.status !== 'active') {
+    // Either still in lobby ('waiting') or already 'finished' — caller decides UX.
+    return NextResponse.json(response)
+  }
+
+  if (gameMode === 'battle-royale' && session.battleRoyaleData) {
+    const br = session.battleRoyaleData
+    const category = QUESTION_CATEGORIES.find((c) => c.id === br.categoryId)
+    const question = category
+      ? getOrderedQuestion(category.questions, br.questionIndex, br.questionOrder)
+      : null
+    if (category && question) {
+      const alivePlayers = session.players
+        .filter((p) => !br.eliminatedPlayers.includes(p.playerId))
+        .map((p) => p.playerId)
+      response.battleRoyale = {
+        questionIndex: br.questionIndex,
+        totalQuestions: getLimitedQuestionTotal(category.questions.length, br.questionOrder),
+        questionText: question.text,
+        options: question.options,
+        timerDuration: br.timerDuration,
+        roundStartTime: br.roundStartTime ?? Date.now(),
+        alivePlayers,
+        isEliminated: br.eliminatedPlayers.includes(matchedPlayer.playerId),
+        hasAnswered: br.roundAnswers.some((a) => a.playerId === matchedPlayer.playerId),
+      }
+    }
+  } else if (gameMode === 'highlow' && session.highlowData) {
+    const hl = session.highlowData
+    if (hl.questionText && hl.questionUnit && hl.guessingTeamName && hl.votingTeamName) {
+      response.highlow = {
+        roundIndex: hl.questionIndex,
+        questionText: hl.questionText,
+        questionUnit: hl.questionUnit,
+        guessingTeamId: hl.guessingTeamId,
+        guessingTeamName: hl.guessingTeamName,
+        votingTeamId: hl.votingTeamId,
+        votingTeamName: hl.votingTeamName,
+        guessingCaptainId: hl.guessingCaptainId,
+        votingCaptainId: hl.votingCaptainId,
+        submittedNumber: hl.currentNumber ?? null,
+      }
+    }
+  } else if (session.currentCard) {
+    const hasVoted = (session.votes ?? []).some(
+      (v) => v.playerId === matchedPlayer.playerId && v.cardIndex === session.cardIndex
+    )
+    response.classic = {
+      cardIndex: session.cardIndex,
+      card: session.currentCard,
+      hasVoted,
+    }
+  }
+
+  return NextResponse.json(response)
+}

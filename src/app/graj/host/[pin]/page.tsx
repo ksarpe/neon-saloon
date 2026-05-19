@@ -8,6 +8,7 @@ import { useEffect, useMemo, useState } from 'react'
 import BattleRoyaleHost from '@/components/BattleRoyale/BattleRoyaleHost'
 import HostHighLowScreen from '@/components/HighLow/HostHighLowScreen'
 import HostScreen from '@/components/Host'
+import { Button } from '@/components/ui/button'
 import type { SessionTeam } from '@/lib/appwrite/sessions'
 import { useBackButton } from '@/lib/back-button-context'
 import { QUESTION_CATEGORIES } from '@/lib/games/categories'
@@ -24,6 +25,18 @@ type QuizApiQuestion = {
   answer: string
   options: string[]
 }
+
+const ALL_CATEGORIES_ID = 'all-categories'
+
+const ALL_CATEGORIES_OPTION = {
+  id: ALL_CATEGORIES_ID,
+  name: 'Wszystko na raz',
+  description: 'Losuje pytania ze wszystkich kategorii w jednej grze',
+  color: '#22c55e',
+  border: 'rgba(34,197,94,0.5)',
+  bg: 'rgba(34,197,94,0.07)',
+  questions: QUESTION_CATEGORIES.flatMap((cat) => cat.questions),
+} satisfies (typeof QUESTION_CATEGORIES)[number]
 
 // ─── Shared picker shell ───────────────────────────────────────────────────────
 
@@ -62,7 +75,7 @@ function PickerShell({
           transition={{ duration: 0.5 }}
         >
           <h1
-            className="shimmer-text text-5xl tracking-widest"
+            className="text-sheriff-pink text-5xl"
             style={{
               fontFamily: 'var(--font-app)',
               textShadow: `0 0 28px ${glowColor}`,
@@ -85,11 +98,17 @@ function CategoryPicker({
   onSelect,
   onBack,
   loading = false,
+  includeAllOption = false,
 }: {
   onSelect: (id: string) => void
   onBack: () => void
   loading?: boolean
+  includeAllOption?: boolean
 }) {
+  const categories = includeAllOption
+    ? [...QUESTION_CATEGORIES, ALL_CATEGORIES_OPTION]
+    : QUESTION_CATEGORIES
+
   return (
     <PickerShell
       title="Wybierz kategorię"
@@ -98,7 +117,7 @@ function CategoryPicker({
       onBack={onBack}
     >
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {QUESTION_CATEGORIES.map((cat, i) => (
+        {categories.map((cat, i) => (
           <motion.button
             key={cat.id}
             initial={{ opacity: 0, y: 20 }}
@@ -305,8 +324,8 @@ function HighLowTeamSetup({
   onSetup: (t1: SessionTeam, t2: SessionTeam) => void
   onBack: () => void
 }) {
-  const [name1, setName1] = useState('Drużyna Alfa')
-  const [name2, setName2] = useState('Drużyna Beta')
+  const [name1, setName1] = useState('Dziewice')
+  const [name2, setName2] = useState('Zdziry')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -331,9 +350,8 @@ function HighLowTeamSetup({
 
   return (
     <PickerShell
-      title="Utwórz drużyny"
-      subtitle="Gracze dołączą do jednej z dwóch drużyn przed rozpoczęciem gry"
-      glowColor="#10b981"
+      title="Utwórz bandy"
+      subtitle="Gracze dołączą do jednej z dwóch band przed rozpoczęciem gry"
       onBack={onBack}
     >
       <motion.div
@@ -345,14 +363,14 @@ function HighLowTeamSetup({
         {/* Team 1 */}
         <div className="flex flex-col gap-2">
           <label className="text-text-muted text-xs font-semibold tracking-widest uppercase">
-            Drużyna 1
+            Banda 1
           </label>
           <input
             type="text"
             value={name1}
             onChange={(e) => setName1(e.target.value)}
             maxLength={20}
-            placeholder="np. Drużyna Alfa"
+            placeholder="np. Dziewice"
             className="bg-saloon-surface text-text-primary placeholder:text-text-muted w-full rounded-xl border-2 px-4 py-3 text-base font-bold transition-colors focus:outline-none"
             style={{
               borderColor: name1.trim() ? 'var(--neon-pink)' : 'var(--saloon-border)',
@@ -363,14 +381,14 @@ function HighLowTeamSetup({
         {/* Team 2 */}
         <div className="flex flex-col gap-2">
           <label className="text-text-muted text-xs font-semibold tracking-widest uppercase">
-            Drużyna 2
+            Banda 2
           </label>
           <input
             type="text"
             value={name2}
             onChange={(e) => setName2(e.target.value)}
             maxLength={20}
-            placeholder="np. Drużyna Beta"
+            placeholder="np. Zdziry"
             className="bg-saloon-surface text-text-primary placeholder:text-text-muted w-full rounded-xl border-2 px-4 py-3 text-base font-bold transition-colors focus:outline-none"
             style={{
               borderColor: name2.trim() ? 'var(--sheriff-pink)' : 'var(--saloon-border)',
@@ -380,25 +398,19 @@ function HighLowTeamSetup({
 
         {error && <p className="text-center text-xs text-red-400">{error}</p>}
 
-        <motion.button
+        <Button
+          type="primary"
+          size="lg"
           disabled={!name1.trim() || !name2.trim() || loading}
-          whileTap={{ scale: 0.97 }}
           onClick={handleSetup}
-          className="flex w-full items-center justify-center gap-3 rounded-2xl py-4 text-white disabled:opacity-30"
-          style={{
-            background: 'linear-gradient(135deg,#10b981,#059669)',
-            boxShadow: '0 4px 30px rgba(16,185,129,0.4)',
-            fontFamily: 'var(--font-app)',
-            fontSize: '1.1rem',
-            letterSpacing: '0.15em',
-          }}
+          className="w-full"
         >
           {loading ? (
             <Loader2 size={18} className="animate-spin" />
           ) : (
-            'Utwórz drużyny i otwórz lobby'
+            'Utwórz bandy i otwórz poczekalnie'
           )}
-        </motion.button>
+        </Button>
       </motion.div>
     </PickerShell>
   )
@@ -426,8 +438,10 @@ export default function HostPage() {
   useEffect(() => {
     if (mode !== 'battle-royale') return
     fetch('/api/settings')
-      .then((r) => r.ok ? r.json() : null)
-      .then((d) => { if (d?.brTimerSeconds) setBrTimerSeconds(d.brTimerSeconds) })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d?.brTimerSeconds) setBrTimerSeconds(d.brTimerSeconds)
+      })
       .catch(() => {})
   }, [mode])
 
@@ -453,17 +467,21 @@ export default function HostPage() {
   const appNeverCards = useMemo(() => fullDeck.filter((c) => c.type === 'NEVER'), [fullDeck])
   const categoryCards = useMemo<GameCard[]>(() => {
     if (mode !== 'categories' || !selectedCategory) return []
-    const cat = QUESTION_CATEGORIES.find((c) => c.id === selectedCategory)
-    if (!cat) return []
+    const selectedCategories =
+      selectedCategory === ALL_CATEGORIES_ID
+        ? QUESTION_CATEGORIES
+        : QUESTION_CATEGORIES.filter((cat) => cat.id === selectedCategory)
 
-    return cat.questions.map((q, i) => ({
-      id: `cat-${selectedCategory}-${i}`,
-      type: 'QUIZ' as const,
-      title: cat.name,
-      description: q.text,
-      answer: q.answer,
-      options: q.options,
-    }))
+    return selectedCategories.flatMap((cat) =>
+      cat.questions.map((q, i) => ({
+        id: `cat-${cat.id}-${i}`,
+        type: 'QUIZ' as const,
+        title: cat.name,
+        description: q.text,
+        answer: q.answer,
+        options: q.options,
+      }))
+    )
   }, [mode, selectedCategory])
 
   // "trivia" mode: Quiz o Pannie Młodej uses only the user's panel questions.
@@ -527,7 +545,11 @@ export default function HostPage() {
 
   if (mode === 'categories' && !selectedCategory) {
     return (
-      <CategoryPicker onSelect={setSelectedCategory} onBack={() => router.push('/graj/host')} />
+      <CategoryPicker
+        onSelect={setSelectedCategory}
+        onBack={() => router.push('/graj/host')}
+        includeAllOption
+      />
     )
   }
 

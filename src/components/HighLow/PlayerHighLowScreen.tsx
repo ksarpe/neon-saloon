@@ -34,15 +34,21 @@ interface Props {
   teamName: string | null
   avatar: string
   initialRoundData?: HighLowRoundStartPayload | null
+  initialSubmittedNumber?: string | null
 }
 
 function derivePhase(
   data: HighLowRoundStartPayload,
   playerId: string,
-  teamId: string | null
+  teamId: string | null,
+  hasSubmittedNumber: boolean
 ): PlayerHLPhase {
-  if (playerId === data.guessingCaptainId) return 'guessing-captain'
-  if (playerId === data.votingCaptainId) return 'voting-captain-waiting'
+  if (playerId === data.guessingCaptainId) {
+    return hasSubmittedNumber ? 'guessing-member' : 'guessing-captain'
+  }
+  if (playerId === data.votingCaptainId) {
+    return hasSubmittedNumber ? 'voting-captain-ready' : 'voting-captain-waiting'
+  }
   if (teamId === data.guessingTeamId) return 'guessing-member'
   if (teamId === data.votingTeamId) return 'voting-member'
   return 'guessing-member'
@@ -56,14 +62,19 @@ export default function PlayerHighLowScreen({
   teamName,
   avatar,
   initialRoundData,
+  initialSubmittedNumber,
 }: Props) {
   const [phase, setPhase] = useState<PlayerHLPhase>(
-    initialRoundData ? derivePhase(initialRoundData, playerId, teamId) : 'waiting'
+    initialRoundData
+      ? derivePhase(initialRoundData, playerId, teamId, Boolean(initialSubmittedNumber))
+      : 'waiting'
   )
   const [roundData, setRoundData] = useState<HighLowRoundStartPayload | null>(
     initialRoundData ?? null
   )
-  const [submittedNumber, setSubmittedNumber] = useState<string | null>(null)
+  const [submittedNumber, setSubmittedNumber] = useState<string | null>(
+    initialSubmittedNumber ?? null
+  )
   const [resultData, setResultData] = useState<HighLowRoundResultPayload | null>(null)
   const [scores, setScores] = useState<ScoreEntry[]>([])
   const [numberInput, setNumberInput] = useState('')
@@ -83,7 +94,7 @@ export default function PlayerHighLowScreen({
         setVoted(false)
         setVotedChoice(null)
         setSubmitting(false)
-        setPhase(derivePhase(d, playerId, teamId))
+        setPhase(derivePhase(d, playerId, teamId, false))
       },
       [playerId, teamId]
     ),

@@ -27,14 +27,16 @@ export default function PlayerGameScreen({
   avatar,
   initialCard,
   initialCardIndex,
+  initialHasVoted,
 }: PlayerGameScreenProps) {
-  const [phase, setPhase] = useState<Phase>('playing')
-  const [isFlipped, setIsFlipped] = useState(false)
+  const [phase, setPhase] = useState<Phase>(initialHasVoted ? 'voted' : 'playing')
+  const [isFlipped, setIsFlipped] = useState(Boolean(initialHasVoted))
   const [currentCard, setCurrentCard] = useState<WireCard>(initialCard)
   const [currentCardIndex, setCurrentCardIndex] = useState(initialCardIndex)
   const [revealData, setRevealData] = useState<VotesRevealedPayload | null>(null)
   const [finishData, setFinishData] = useState<GameFinishedPayload | null>(null)
   const [loading, setLoading] = useState(false)
+  const [voteError, setVoteError] = useState<string | null>(null)
   const [countdown, setCountdown] = useState<number | null>(null)
 
   // Visual countdown after reveal — host sends the actual next-card event
@@ -58,12 +60,14 @@ export default function PlayerGameScreen({
   useGameSocket(pin, {
     onVotesRevealed: useCallback((d: VotesRevealedPayload) => {
       setRevealData(d)
+      setVoteError(null)
       setPhase('reveal')
     }, []),
     onNextCard: useCallback((d: NextCardPayload) => {
       setCurrentCard(d.card)
       setCurrentCardIndex(d.cardIndex)
       setRevealData(null)
+      setVoteError(null)
       setIsFlipped(false)
       setPhase('playing')
     }, []),
@@ -77,8 +81,9 @@ export default function PlayerGameScreen({
     async (answerIndex: number, answerText: string) => {
       if (loading) return
       setLoading(true)
+      setVoteError(null)
       try {
-        await fetch(`/api/sessions/${pin}/vote`, {
+        const response = await fetch(`/api/sessions/${pin}/vote`, {
           method: 'POST',
           headers: playerJsonHeaders(pin, playerId),
           body: JSON.stringify({
@@ -91,6 +96,14 @@ export default function PlayerGameScreen({
             answerText,
           }),
         })
+        if (!response.ok) {
+          setVoteError(
+            response.status === 409
+              ? 'Ta runda już się zmieniła. Poczekaj na następną kartę.'
+              : 'Nie udało się zapisać głosu. Spróbuj jeszcze raz.'
+          )
+          return
+        }
         setPhase('voted')
       } finally {
         setLoading(false)
@@ -123,6 +136,11 @@ export default function PlayerGameScreen({
                   loading={loading}
                   castVote={castVote}
                 />
+                {voteError && (
+                  <p className="max-w-md text-center text-xs font-semibold text-red-300">
+                    {voteError}
+                  </p>
+                )}
               </motion.div>
             )}
 

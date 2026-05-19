@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Home, Users, User } from 'lucide-react'
+import { Users, User } from 'lucide-react'
 import { RankingList } from './RankingList'
 import type { SummaryScore, Tab } from './types'
 import { Button } from '@/components/ui/button'
@@ -22,11 +22,23 @@ export function GameSummary({
   egzekwoScores,
   homeHref = '/graj',
 }: Props) {
-  const hasTeams = !!teamScores && teamScores.length > 0
+  const hasPlayerPoints = scores.some((s) => s.score > 0)
+  const hasTeams = !!teamScores && teamScores.length > 0 && teamScores.some((s) => s.score > 0)
   const hasDrinks = !!drinksScores && drinksScores.length > 0
   const hasEgzekwo = !!egzekwoScores && egzekwoScores.length > 0
-  const showTabs = hasTeams || hasDrinks || hasEgzekwo
-  const [tab, setTab] = useState<Tab>('players')
+  const tabCount =
+    Number(hasPlayerPoints) + Number(hasTeams) + Number(hasDrinks) + Number(hasEgzekwo)
+  const showTabs = tabCount > 1
+  const defaultTab: Tab = hasPlayerPoints
+    ? 'players'
+    : hasTeams
+      ? 'teams'
+      : hasDrinks
+        ? 'drinks'
+        : hasEgzekwo
+          ? 'egzekwo'
+          : 'players'
+  const [tab, setTab] = useState<Tab>(defaultTab)
 
   return (
     <div className="mx-auto flex w-full max-w-md flex-col items-center gap-6 text-center">
@@ -40,15 +52,12 @@ export function GameSummary({
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="shimmer-text text-[clamp(2rem,12vw,6rem)] leading-[1.1] tracking-wide whitespace-nowrap uppercase"
+          className="text-sheriff-pink text-[clamp(2rem,12vw,6rem)] leading-[1.1] tracking-wide whitespace-nowrap uppercase"
           style={{ fontFamily: 'var(--font-logo)' }}
         >
           Game Over,
           <br /> Cowgirls!
         </motion.h1>
-        <p className="text-text-muted mt-2 text-xs tracking-widest uppercase">
-          Końcowy ranking kowbojek
-        </p>
       </motion.div>
 
       {/* Tab switcher */}
@@ -60,18 +69,20 @@ export function GameSummary({
           className="flex gap-1 self-stretch rounded-xl p-1"
           style={{ backgroundColor: 'rgba(255,220,180,0.05)' }}
         >
-          <button
-            onClick={() => setTab('players')}
-            className="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-bold tracking-widest uppercase transition-all duration-200"
-            style={{
-              backgroundColor: tab === 'players' ? 'rgba(255,16,240,0.12)' : 'transparent',
-              color: tab === 'players' ? 'var(--neon-pink)' : 'rgba(255,220,180,0.45)',
-              boxShadow: tab === 'players' ? 'inset 0 0 0 1px rgba(255,16,240,0.2)' : 'none',
-            }}
-          >
-            <User size={13} />
-            Gracze
-          </button>
+          {hasPlayerPoints && (
+            <button
+              onClick={() => setTab('players')}
+              className="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-bold tracking-widest uppercase transition-all duration-200"
+              style={{
+                backgroundColor: tab === 'players' ? 'rgba(255,16,240,0.12)' : 'transparent',
+                color: tab === 'players' ? 'var(--neon-pink)' : 'rgba(255,220,180,0.45)',
+                boxShadow: tab === 'players' ? 'inset 0 0 0 1px rgba(255,16,240,0.2)' : 'none',
+              }}
+            >
+              <User size={13} />
+              Gracze
+            </button>
+          )}
 
           {hasTeams && (
             <button
@@ -119,7 +130,7 @@ export function GameSummary({
       )}
 
       {/* Ranking */}
-      {tab === 'players' && <RankingList scores={scores} unit="pkt" />}
+      {tab === 'players' && hasPlayerPoints && <RankingList scores={scores} unit="pkt" />}
       {tab === 'teams' && hasTeams && <RankingList scores={teamScores!} unit="pkt" />}
       {tab === 'drinks' && hasDrinks && (
         <RankingList scores={drinksScores!} unit="łyków" icon="🍺" />
@@ -136,7 +147,6 @@ export function GameSummary({
         className="mt-2 w-full"
       >
         <Button type="primary" href={homeHref} className="w-full">
-          <Home size={18} />
           Wróć do menu głównego
         </Button>
       </motion.div>

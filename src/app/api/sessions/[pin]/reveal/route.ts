@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { triggerGameEvent as triggerSessionEvent } from '@/lib/appwrite/realtime'
-import { getSession } from '@/lib/appwrite/sessions'
+import { getSession, updateSession } from '@/lib/appwrite/sessions'
 import type { ScoreEntry, TeamScoreEntry } from '@/lib/game-types'
 import {
   INPUT_LIMITS,
@@ -39,6 +39,25 @@ export async function POST(request: Request, { params }: RouteContext) {
     const votes = sanitizeVotes(body.votes)
     const scores = sanitizeScoreEntries(body.scores)
     const teamScores = sanitizeTeamScoreEntries(body.teamScores)
+
+    // Persist scores + reveal snapshot so the host can refresh mid-game without
+    // losing accumulated points or the reveal view.
+    await updateSession(pin, {
+      scores,
+      teamScores,
+      currentReveal: {
+        cardIndex,
+        correctAnswer,
+        votes: votes.map((v) => ({
+          playerId: v.playerId,
+          playerName: v.playerName,
+          teamId: v.teamId ?? null,
+          teamName: v.teamName ?? null,
+          answerIndex: v.answerIndex,
+          answerText: v.answerText,
+        })),
+      },
+    })
 
     await triggerSessionEvent(pin, {
       event: 'votes-revealed',
@@ -78,7 +97,7 @@ function sanitizeVotes(value: unknown) {
       ),
       teamId: optionalString(row.teamId, `votes[${index}].teamId`, 80),
       teamName: optionalString(row.teamName, `votes[${index}].teamName`, INPUT_LIMITS.teamName),
-      answerIndex: requiredInteger(row.answerIndex, `votes[${index}].answerIndex`, -1, 20),
+      answerIndex: requiredInteger(row.answerIndex, `votes[${index}].answerIndex`, -2, 20),
       answerText:
         optionalString(row.answerText, `votes[${index}].answerText`, INPUT_LIMITS.answerText) ?? '',
     }

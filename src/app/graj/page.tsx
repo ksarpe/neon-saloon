@@ -1,7 +1,8 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ChevronRight, Smartphone, Tv } from 'lucide-react'
+import { ChevronRight, Smartphone } from 'lucide-react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
 export default function GrajPage() {
@@ -39,11 +40,8 @@ export default function GrajPage() {
           >
             <div className="pointer-events-none absolute inset-y-0 -left-[100%] z-0 w-full skew-x-[-20deg] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-all duration-700 ease-in-out group-hover:left-[100%]" />
 
-            <div
-              className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full"
-              style={{ backgroundColor: 'rgba(255,215,0,0.15)' }}
-            >
-              <Tv size={22} style={{ color: 'var(--sheriff-pink)' }} />
+            <div className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center">
+              <Image src="/icons/sheriff.png" alt="sheriff icon" width={64} height={64} />
             </div>
             <div className="relative z-10 flex-1">
               <p
@@ -53,7 +51,7 @@ export default function GrajPage() {
                 Chcę być szeryfem.
               </p>
               <p className="mt-0.5 text-xs" style={{ color: 'rgba(255,220,180,0.6)' }}>
-                Wyświetl na dużym ekranie / TV
+                Zarządzaj grą.
               </p>
             </div>
             <ChevronRight
@@ -83,17 +81,16 @@ export default function GrajPage() {
             <div className="pointer-events-none absolute inset-y-0 -left-[100%] z-0 w-full skew-x-[-20deg] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-all duration-700 ease-in-out group-hover:left-[100%]" />
 
             <div
-              className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full"
-              style={{ backgroundColor: 'rgba(255,16,240,0.15)' }}
+              className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-full"
             >
-              <Smartphone size={22} style={{ color: 'var(--neon-pink)' }} />
+              <Image src="/icons/boots.png" alt="players icon" width={64} height={64} />
             </div>
             <div className="relative z-10 flex-1">
               <p className="text-base font-bold" style={{ color: 'var(--neon-pink)' }}>
                 Dołącz do rozgrywki kowbojko.
               </p>
               <p className="mt-0.5 text-xs" style={{ color: 'rgba(255,220,180,0.6)' }}>
-                Wpisz kod szeryfa na telefonie.
+                Wpisz PIN lub zeskanuj kod QR.
               </p>
             </div>
             <ChevronRight

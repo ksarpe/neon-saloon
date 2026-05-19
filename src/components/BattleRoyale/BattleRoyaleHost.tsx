@@ -9,7 +9,7 @@ import { LobbyView } from '@/components/Host/LobbyView'
 import { Play, Skull, CheckCircle2, Clock, Trophy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { SessionPlayer } from '@/lib/appwrite/sessions'
-import { hostAuthHeaders } from '@/lib/session-host-secret'
+import { getHostSession, hostAuthHeaders, updateHostSession } from '@/lib/session-host-secret'
 import { playerJsonHeaders, savePlayerSecret } from '@/lib/session-player-secret'
 import type {
   PlayerJoinedPayload,
@@ -123,6 +123,45 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
     },
     []
   )
+
+  // Hydrate on mount — restore identity + game state so a refresh during BR
+  // doesn't bounce the host back to setup or lose track of eliminations.
+  useEffect(() => {
+    const stored = getHostSession(pin)
+    if (stored?.hostName) setHostName(stored.hostName)
+    if (stored?.hostAvatar) setHostAvatar(stored.hostAvatar)
+    if (stored?.hostPlayerId) setHostPlayerId(stored.hostPlayerId)
+
+    fetch(`/api/sessions/${pin}/host-resume`, { headers: hostAuthHeaders(pin) })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!data?.ok) return
+        if (Array.isArray(data.players) && data.players.length) setPlayers(data.players)
+        if (data.battleRoyaleData) {
+          const br = data.battleRoyaleData
+          if (Array.isArray(br.eliminatedPlayers)) {
+            setEliminatedIds(new Set<string>(br.eliminatedPlayers))
+          }
+          if (typeof br.questionIndex === 'number') setQuestionIndex(br.questionIndex)
+          if (Array.isArray(br.roundAnswers)) {
+            setAnsweredIds(new Set<string>(br.roundAnswers.map((a: { playerId: string }) => a.playerId)))
+          }
+          // Reconstruct timer from roundStartTime so the reveal button becomes
+          // available correctly after a refresh during a round.
+          if (typeof br.roundStartTime === 'number' && typeof br.timerDuration === 'number') {
+            const elapsed = Math.floor((Date.now() - br.roundStartTime) / 1000)
+            const remaining = Math.max(0, br.timerDuration - elapsed)
+            setTimerLeft(remaining)
+            if (remaining === 0) setTimerDone(true)
+          }
+        }
+        const hasIdentity = Boolean(stored?.hostName && stored?.hostAvatar)
+        if (data.status === 'finished') setPhase('gameover')
+        else if (data.status === 'active') setPhase('question')
+        else if (hasIdentity) setPhase('lobby')
+      })
+      .catch(() => {})
+  }, [pin])
 
   // Poll for players in lobby
   useEffect(() => {
@@ -248,8 +287,9 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
   // Actions
   const handleSetupComplete = useCallback(() => {
     if (!hostName.trim() || !hostAvatar) return
+    updateHostSession(pin, { hostName: hostName.trim(), hostAvatar })
     setPhase('lobby')
-  }, [hostName, hostAvatar])
+  }, [pin, hostName, hostAvatar])
 
   const handleStart = useCallback(async () => {
     if (!hostName.trim() || !hostAvatar) return
@@ -266,6 +306,7 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
         if (typeof joinData.playerSecret === 'string') {
           savePlayerSecret(pin, joinData.playerId, joinData.playerSecret)
         }
+        updateHostSession(pin, { hostPlayerId: joinData.playerId })
         setHostPlayerId(joinData.playerId)
         setPlayers((p) => {
           if (p.some((x) => x.playerId === joinData.playerId)) return p
@@ -563,7 +604,7 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
                 <div className="flex flex-col gap-6">
                   <div className="text-center">
                     <h2
-                      className="shimmer-text text-4xl tracking-widest"
+                      className="text-sheriff-pink text-4xl tracking-widest"
                       style={{ fontFamily: 'var(--font-app)' }}
                     >
                       Wyniki rundy
@@ -744,7 +785,7 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
                   </motion.div>
                   <div>
                     <h1
-                      className="shimmer-text text-6xl tracking-widest"
+                      className="text-sheriff-pink text-6xl tracking-widest"
                       style={{ fontFamily: 'var(--font-app)' }}
                     >
                       Koniec gry!

@@ -28,7 +28,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     }>(request)
     const playerId = requiredString(body.playerId, 'playerId', 80)
     const cardIndex = requiredInteger(body.cardIndex, 'cardIndex', 0, 10_000)
-    const answerIndex = requiredInteger(body.answerIndex, 'answerIndex', -1, 20)
+    const answerIndex = requiredInteger(body.answerIndex, 'answerIndex', -2, 20)
     const answerText = optionalString(body.answerText, 'answerText', INPUT_LIMITS.answerText) ?? ''
 
     const session = await getSession(pin)

@@ -1,7 +1,5 @@
 import type { GameCard } from '@/lib/store'
 
-export const AVATAR_LIST = ['🤠', '💃', '🌸', '✨', '🍾', '🎀', '👑', '🦋', '🌺', '🎉']
-
 export const ACCENT: Record<string, string> = {
   trivia: '#8b2be2',
   QUIZ: '#8b2be2',

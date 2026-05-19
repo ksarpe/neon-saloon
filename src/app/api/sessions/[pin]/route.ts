@@ -85,7 +85,7 @@ export async function POST(request: Request, { params }: RouteContext) {
 
     if (action === 'start') {
       const card = sanitizeWireCard(body.card)
-      await updateSession(pin, { status: 'active', cardIndex: 0, votes: [] })
+      await updateSession(pin, { status: 'active', cardIndex: 0, currentCard: card, votes: [] })
       await triggerSessionEvent(pin, {
         event: 'game-started',
         data: { cardIndex: 0, card },

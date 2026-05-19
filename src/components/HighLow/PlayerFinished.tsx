@@ -23,7 +23,7 @@ export function PlayerFinished({ avatar, playerName, teamName, playerId, myScore
     >
       <Trophy size={48} style={{ color: 'var(--sheriff-pink)' }} />
       <h2
-        className="shimmer-text text-4xl tracking-widest"
+        className="text-sheriff-pink text-4xl tracking-widest"
         style={{ fontFamily: 'var(--font-app)' }}
       >
         KONIEC GRY

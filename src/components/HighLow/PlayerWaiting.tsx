@@ -25,7 +25,7 @@ export function PlayerWaiting({ avatar, teamName }: Props) {
       </div>
       <div>
         <h1
-          className="shimmer-text text-5xl tracking-widest"
+          className="text-sheriff-pink text-5xl tracking-widest"
           style={{ fontFamily: "var(--font-app)" }}
         >
           mniej czy więcej

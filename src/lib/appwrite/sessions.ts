@@ -40,6 +40,51 @@ export type HighLowSessionData = {
   guessingCaptainId: string
   votingCaptainId: string
   currentNumber?: string
+  // Persisted so reconnecting players can rebuild the round view without realtime
+  questionText?: string
+  questionUnit?: string
+  guessingTeamName?: string
+  votingTeamName?: string
+}
+
+export type StoredCard = {
+  id: string
+  type: 'QUIZ' | 'TEST' | 'NEVER'
+  title?: string
+  description: string
+  emoji?: string
+  options?: string[]
+}
+
+export type StoredScoreEntry = {
+  playerId: string
+  playerName: string
+  score: number
+  drinks?: number
+  egzekwo?: number
+  playerTeamId?: string
+  playerTeamName?: string
+}
+
+export type StoredTeamScoreEntry = {
+  teamId: string
+  teamName: string
+  score: number
+}
+
+export type StoredVoteRecord = {
+  playerId: string
+  playerName: string
+  teamId: string | null
+  teamName: string | null
+  answerIndex: number
+  answerText: string
+}
+
+export type CurrentRevealSnapshot = {
+  cardIndex: number
+  correctAnswer?: string
+  votes: StoredVoteRecord[]
 }
 
 export type BRAnswer = {
@@ -71,7 +116,12 @@ export type SessionData = {
   players: SessionPlayer[]
   teams: SessionTeam[]
   cardIndex: number
+  currentCard?: StoredCard
   votes: SessionVote[]
+  // Persisted scores so the host can refresh mid-game without losing accumulated points
+  scores?: StoredScoreEntry[]
+  teamScores?: StoredTeamScoreEntry[]
+  currentReveal?: CurrentRevealSnapshot
   gameMode?: string
   highlowData?: HighLowSessionData
   battleRoyaleData?: BattleRoyaleData

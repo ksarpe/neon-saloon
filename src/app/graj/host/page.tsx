@@ -1,53 +1,49 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { BookOpen, Brain, Dices, Heart, Loader2, Lock, Swords, TrendingUp } from 'lucide-react'
+import { Loader2, Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-
 import { Button } from '@/components/ui/button'
 import { ProModal } from '@/components/ui/ContentGate'
 import { useContentAccess } from '@/hooks/useContentAccess'
 import { checkAccess } from '@/lib/content-access'
-import { FUNNY_NAMES } from '@/lib/games/data'
 import { saveHostSecret } from '@/lib/session-host-secret'
+import Image from 'next/image'
 
 const GAME_MODES = [
   {
     id: 'trivia',
-    icon: Brain,
+    icon: 'icons/veil-icon.png',
     label: 'Quiz o Pannie Młodej',
-    description: 'Kto zna Pannę Młodą najlepiej? Uczestniczki odpowiadają i głosują jednocześnie.',
+    description: 'Kto tu zna pannę najlepiej? Strzelaj i głosuj. Czas pokaże.',
     color: 'var(--neon-pink)',
     border: 'rgba(255,16,240,0.5)',
     bg: 'rgba(255,16,240,0.07)',
   },
   {
     id: 'categories',
-    icon: BookOpen,
+    icon: 'icons/groins.png',
     label: 'Skategoryzowane pytania',
-    description:
-      'Wybierz kategorię — anatomia, historia, kultura popularna i więcej. Pytania punktowane dla całej ekipy.',
+    description: 'Seks? Anatomia? Kto jest ekspertem? Sprawdźcie to!',
     color: '#a78bfa',
     border: 'rgba(167,139,250,0.5)',
     bg: 'rgba(167,139,250,0.07)',
   },
   {
     id: 'never',
-    icon: Heart,
+    icon: 'icons/plug.png',
     label: 'Nigdy przenigdy',
-    description:
-      'Karty z wyznaniami — brak odpowiedzi, brak punktów. Host przechodzi dalej kiedy uzna że już.',
+    description: 'Masz coś do ukrycia, kowboju? Tu nic nie zostaje w siodle.',
     color: 'rgba(255,215,0,0.5)',
     border: 'rgba(255,215,0,0.5)',
     bg: 'rgba(255,215,0,0.07)',
   },
   {
     id: 'highlow',
-    icon: TrendingUp,
+    icon: 'icons/breast.png',
     label: 'Mniej czy więcej',
-    description:
-      'Dwie drużyny, kapitan i głosowanie. Drużyna A podaje liczbę, drużyna B zgaduje — mniej czy więcej?',
+    description: 'Dwie bandy, jeden strzał. Zgadnij — wyżej czy niżej. Bez drugiej szansy.',
     color: '#10b981',
     border: 'rgba(16,185,129,0.5)',
     bg: 'rgba(16,185,129,0.07)',
@@ -55,10 +51,10 @@ const GAME_MODES = [
   },
   {
     id: 'battle-royale',
-    icon: Swords,
-    label: 'Battle Royale',
+    icon: 'icons/pistols.png',
+    label: 'Dead or alive',
     description:
-      'Wszyscy odpowiadają naraz. Kto się pomyli — odpada. Jeśli wszyscy dobrze — odpada najwolniejszy. Ostatni ocalały wygrywa.',
+      'Wszyscy strzelają naraz. Pomylisz się — odpadasz. Najwolniejszy też ginie. Jeden ocaleje.',
     color: '#ef4444',
     border: 'rgba(239,68,68,0.5)',
     bg: 'rgba(239,68,68,0.07)',
@@ -67,19 +63,14 @@ const GAME_MODES = [
 
 export default function HostSetupPage() {
   const router = useRouter()
-  const [hostName, setHostName] = useState('')
   const [selectedMode, setSelectedMode] = useState<string | null>(null)
   const [creating, setCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [proModalOpen, setProModalOpen] = useState(false)
-  const [placeholder] = useState(() => {
-    const randomName = FUNNY_NAMES[Math.floor(Math.random() * FUNNY_NAMES.length)]
-    return `np. ${randomName}`
-  })
   const access = useContentAccess()
 
   const handleCreate = async () => {
-    if (!hostName.trim() || !selectedMode) return
+    if (!selectedMode) return
     setCreating(true)
     setError(null)
     try {
@@ -87,7 +78,6 @@ export default function HostSetupPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          hostName: hostName.trim(),
           gameMode: selectedMode,
         }),
       })
@@ -106,54 +96,6 @@ export default function HostSetupPage() {
   return (
     <div className="flex min-h-dvh w-full flex-col items-center justify-center overflow-y-auto p-6">
       <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col gap-8 sm:gap-10">
-        {/* Host name */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.1 }}
-          className="w-full max-w-xl self-center"
-        >
-          <label className="text-text-muted mb-2 block text-xs font-semibold tracking-widest uppercase">
-            Jak się chcesz nazywać kowboju?
-          </label>
-          <div className="flex gap-2">
-            <input
-              id="host-name-input"
-              type="text"
-              value={hostName}
-              onChange={(e) => setHostName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && hostName.trim() && handleCreate()}
-              maxLength={20}
-              autoFocus
-              placeholder={placeholder}
-              className="bg-saloon-surface text-text-primary placeholder:text-text-muted flex-1 rounded-xl border-2 p-4 text-lg font-bold transition-all focus:outline-none"
-              style={{
-                borderColor: hostName.trim()
-                  ? 'var(--sheriff-pink)'
-                  : selectedMode
-                    ? 'var(--neon-pink)'
-                    : 'var(--saloon-border)',
-                boxShadow:
-                  selectedMode && !hostName.trim()
-                    ? '0 0 0 3px rgba(255,16,240,0.15), 0 0 18px rgba(255,16,240,0.12)'
-                    : 'none',
-              }}
-            />
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={() => {
-                const randomName = FUNNY_NAMES[Math.floor(Math.random() * FUNNY_NAMES.length)]
-                setHostName(randomName)
-              }}
-              className="bg-saloon-surface flex items-center justify-center rounded-xl border-2 px-4 transition-colors"
-              style={{ borderColor: 'var(--saloon-border)' }}
-              title="Losuj imię"
-            >
-              <Dices size={24} className="text-text-muted" />
-            </motion.button>
-          </div>
-        </motion.div>
-
         {/* Game mode selector */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -198,13 +140,20 @@ export default function HostSetupPage() {
                   )}
 
                   <div
-                    className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+                    className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-xl"
                     style={{
                       backgroundColor: active ? mode.bg : 'var(--saloon-surface)',
                       border: `1px solid ${mode.border}`,
                     }}
                   >
-                    <mode.icon size={20} style={{ color: mode.color }} />
+                    {mode.icon ? (
+                      <Image src={`/${mode.icon}`} alt="" width={64} height={64} aria-hidden />
+                    ) : (
+                      <span
+                        className="h-2.5 w-2.5 rounded-full"
+                        style={{ backgroundColor: mode.color }}
+                      />
+                    )}
                   </div>
 
                   <div className="relative z-10 flex-1">
@@ -216,7 +165,7 @@ export default function HostSetupPage() {
                     >
                       {mode.label}
                     </p>
-                    <p className="text-text-muted mt-0.5 text-[11px] leading-snug">
+                    <p className="text-text-muted mt-0.5 text-[12px] leading-snug">
                       {mode.description}
                     </p>
                   </div>
@@ -247,7 +196,7 @@ export default function HostSetupPage() {
           <Button
             id="create-lobby-btn"
             type="primary"
-            disabled={!hostName.trim() || !selectedMode || creating}
+            disabled={!selectedMode || creating}
             onClick={handleCreate}
             className="w-full"
             size="lg"
@@ -260,18 +209,14 @@ export default function HostSetupPage() {
               <>Otwórz salon na dzikim zachodzie</>
             )}
           </Button>
-          {!creating && (!hostName.trim() || !selectedMode) && (
+          {!creating && !selectedMode && (
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="mt-3 text-center text-xs"
               style={{ color: 'rgba(255,220,180,0.45)' }}
             >
-              {!hostName.trim() && !selectedMode
-                ? 'Podaj imię i wybierz tryb gry, żeby zacząć'
-                : !hostName.trim()
-                  ? 'Jeszcze tylko podaj swoje imię kowboju'
-                  : 'Jeszcze tylko wybierz tryb gry'}
+              Wybierz tryb gry, żeby zacząć
             </motion.p>
           )}
           {error && (

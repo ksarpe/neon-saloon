@@ -8,7 +8,7 @@ import { useBackButton } from '@/lib/back-button-context'
 import { GameSummary } from '@/components/GameSummary'
 import { HIGHLOW_QUESTIONS } from '@/lib/games/highlow'
 import { QUESTIONS_PER_GAME, limitQuestions } from '@/lib/games/question-limit'
-import { hostAuthHeaders, hostJsonHeaders } from '@/lib/session-host-secret'
+import { getHostSession, hostAuthHeaders, hostJsonHeaders, updateHostSession } from '@/lib/session-host-secret'
 import { playerJsonHeaders, savePlayerSecret } from '@/lib/session-player-secret'
 import { HostSetupView } from './HostSetupView'
 import { HostLobby } from './HostLobby'
@@ -91,6 +91,33 @@ export default function HostHighLowScreen({
   const isHostGuessingCaptain = hostPlayerId !== null && guessingCaptain?.playerId === hostPlayerId
   const isHostVotingCaptain = hostPlayerId !== null && votingCaptain?.playerId === hostPlayerId
 
+  // Hydrate on mount — pick up identity + persisted scores + current round state
+  // so a refresh during HL doesn't bounce the host back to setup.
+  useEffect(() => {
+    const stored = getHostSession(pin)
+    if (stored?.hostPlayerId) setHostPlayerId(stored.hostPlayerId)
+
+    fetch(`/api/sessions/${pin}/host-resume`, { headers: hostAuthHeaders(pin) })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!data?.ok) return
+        if (Array.isArray(data.players) && data.players.length) setPlayers(data.players)
+        if (Array.isArray(data.scores)) setScores(data.scores)
+        if (data.highlowData) {
+          const hl = data.highlowData
+          if (typeof hl.questionIndex === 'number') setRoundIndex(hl.questionIndex)
+          if (typeof hl.guessingTeamId === 'string') setGuessingTeamId(hl.guessingTeamId)
+          if (typeof hl.currentNumber === 'string') setSubmittedNumber(hl.currentNumber)
+        }
+        const hasIdentity = Boolean(stored?.hostPlayerId)
+        if (data.status === 'finished') setPhase('finished')
+        else if (data.status === 'active') {
+          setPhase(data.highlowData?.currentNumber ? 'voting' : 'guessing')
+        } else if (hasIdentity) setPhase('lobby')
+      })
+      .catch(() => {})
+  }, [pin])
+
   useEffect(() => {
     if (phase !== 'lobby') return
     const id = setInterval(() => {
@@ -145,6 +172,11 @@ export default function HostHighLowScreen({
           if (typeof data.playerSecret === 'string') {
             savePlayerSecret(pin, data.playerId, data.playerSecret)
           }
+          updateHostSession(pin, {
+            hostName: name,
+            hostAvatar: avatar,
+            hostPlayerId: data.playerId,
+          })
           setHostPlayerId(data.playerId)
           setPlayers((p) => {
             if (p.some((x) => x.playerId === data.playerId)) return p

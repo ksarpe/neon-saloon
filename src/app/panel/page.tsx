@@ -6,6 +6,8 @@ import {
   BookOpen,
   Brain,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   CreditCard,
   Crown,
   KeyRound,
@@ -22,7 +24,7 @@ import {
 } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
-import type { ReactNode } from 'react'
+import type { CSSProperties, MouseEvent, ReactNode } from 'react'
 import { Suspense } from 'react'
 import { useEffect, useRef, useState } from 'react'
 
@@ -39,6 +41,8 @@ interface QuizQuestion extends Question {
   answer: string
   options: string[]
 }
+
+const QUESTION_PAGE_SIZE = 10
 
 type PanelTab = 'quiz' | 'never' | 'account' | 'settings'
 type CheckoutState = 'success' | 'cancelled' | null
@@ -75,9 +79,87 @@ function formatAccountDate(value: string) {
   }).format(new Date(value))
 }
 
+function panelButtonHover(base: CSSProperties, hover: CSSProperties) {
+  return {
+    style: base,
+    onMouseEnter: (event: MouseEvent<HTMLButtonElement>) => {
+      if (!event.currentTarget.disabled) Object.assign(event.currentTarget.style, hover)
+    },
+    onMouseLeave: (event: MouseEvent<HTMLButtonElement>) => {
+      Object.assign(event.currentTarget.style, base)
+    },
+  }
+}
+
+function PanelModal({
+  title,
+  hint,
+  onClose,
+  children,
+}: {
+  title: string
+  hint?: string
+  onClose: () => void
+  children: ReactNode
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.96, y: 12 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.96, y: 12 }}
+        transition={{ duration: 0.18 }}
+        className="max-h-[calc(100dvh-48px)] w-full max-w-2xl overflow-y-auto rounded-2xl border p-5 shadow-2xl"
+        style={{
+          borderColor: 'rgba(255,220,180,0.16)',
+          backgroundColor: 'rgba(13,8,24,0.96)',
+        }}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="mb-5 flex items-start justify-between gap-4">
+          <div>
+            <p className="text-text-primary text-sm font-black tracking-widest uppercase">
+              {title}
+            </p>
+            {hint && <p className="text-text-muted mt-1 text-xs">{hint}</p>}
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border"
+            {...panelButtonHover(
+              {
+                borderColor: 'rgba(255,220,180,0.14)',
+                color: 'rgba(255,220,180,0.7)',
+                backgroundColor: 'rgba(255,220,180,0.05)',
+              },
+              {
+                borderColor: 'rgba(255,220,180,0.26)',
+                color: 'rgba(255,220,180,0.92)',
+                backgroundColor: 'rgba(255,220,180,0.1)',
+              }
+            )}
+            aria-label="Zamknij"
+          >
+            <X size={16} />
+          </button>
+        </div>
+        {children}
+      </motion.div>
+    </motion.div>
+  )
+}
+
 function NeverTab() {
   const [questions, setQuestions] = useState<Question[]>([])
   const [loading, setLoading] = useState(true)
+  const [addOpen, setAddOpen] = useState(false)
   const [text, setText] = useState('')
   const [adding, setAdding] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
@@ -113,6 +195,7 @@ function NeverTab() {
       const created = await res.json()
       setQuestions((prev) => [created, ...prev])
       setText('')
+      setAddOpen(false)
     } catch {
       setError('Nie udało się dodać pytania.')
     } finally {
@@ -131,49 +214,81 @@ function NeverTab() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div
-        className="flex flex-col gap-3 rounded-2xl border p-5"
-        style={{
-          borderColor: 'rgba(255,220,180,0.12)',
-          backgroundColor: 'rgba(13,8,24,0.5)',
-        }}
-      >
-        <p
-          className="text-xs font-semibold tracking-widest uppercase"
-          style={{ color: 'var(--neon-pink)' }}
-        >
-          Nowe wyznanie
-        </p>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && !adding && handleAdd()}
-            maxLength={200}
-            placeholder="Nigdy przenigdy nie..."
-            className="bg-saloon-surface text-text-primary placeholder:text-text-muted flex-1 rounded-xl border-2 px-4 py-3 text-sm transition-colors focus:outline-none"
-            style={{
-              borderColor: text.trim() ? 'var(--neon-pink)' : 'var(--saloon-border)',
-            }}
-          />
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            disabled={!text.trim() || adding}
-            onClick={handleAdd}
-            className="flex shrink-0 items-center justify-center rounded-xl border-2 px-4 disabled:opacity-30"
-            style={{
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={() => {
+            setError(null)
+            setAddOpen(true)
+          }}
+          className="flex items-center gap-2 rounded-xl border-2 px-4 py-2.5 text-xs font-bold tracking-widest uppercase"
+          {...panelButtonHover(
+            {
               borderColor: 'var(--neon-pink)',
               backgroundColor: 'rgba(255,16,240,0.1)',
               color: 'var(--neon-pink)',
+            },
+            {
+              borderColor: 'var(--neon-pink)',
+              backgroundColor: 'rgba(255,16,240,0.16)',
+              color: 'var(--text-primary)',
+            }
+          )}
+        >
+          <Plus size={14} />
+          Dodaj wyznanie
+        </button>
+      </div>
+
+      <AnimatePresence>
+        {addOpen && (
+          <PanelModal
+            title="Nowe wyznanie"
+            hint="Dodaj wpis do swojej talii Nigdy przenigdy."
+            onClose={() => {
+              if (!adding) setAddOpen(false)
             }}
           >
-            {adding ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
-          </motion.button>
-        </div>
-        {error && <p className="text-xs text-red-400">{error}</p>}
-      </div>
+            <div className="flex flex-col gap-3">
+              <input
+                type="text"
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && !adding && handleAdd()}
+                maxLength={200}
+                placeholder="Nigdy przenigdy nie..."
+                className="bg-saloon-surface text-text-primary placeholder:text-text-muted w-full rounded-xl border-2 px-4 py-3 text-sm transition-colors focus:outline-none"
+                style={{
+                  borderColor: text.trim() ? 'var(--neon-pink)' : 'var(--saloon-border)',
+                }}
+              />
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                disabled={!text.trim() || adding}
+                onClick={handleAdd}
+                className="flex items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 text-xs font-bold tracking-widest uppercase disabled:opacity-30"
+                {...panelButtonHover(
+                  {
+                    borderColor: 'var(--neon-pink)',
+                    backgroundColor: 'rgba(255,16,240,0.1)',
+                    color: 'var(--neon-pink)',
+                  },
+                  {
+                    borderColor: 'var(--neon-pink)',
+                    backgroundColor: 'rgba(255,16,240,0.16)',
+                    color: 'var(--text-primary)',
+                  }
+                )}
+              >
+                {adding ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
+                Dodaj wyznanie
+              </motion.button>
+              {error && <p className="text-xs text-red-400">{error}</p>}
+            </div>
+          </PanelModal>
+        )}
+      </AnimatePresence>
 
       <QuestionList
         emptyText="Nie masz jeszcze żadnych własnych wyznań."
@@ -191,6 +306,7 @@ function NeverTab() {
 function QuizTab() {
   const [questions, setQuestions] = useState<QuizQuestion[]>([])
   const [loading, setLoading] = useState(true)
+  const [addOpen, setAddOpen] = useState(false)
   const [text, setText] = useState('')
   const [options, setOptions] = useState(['', '', '', ''])
   const [correctIndex, setCorrectIndex] = useState(0)
@@ -259,6 +375,7 @@ function QuizTab() {
       setText('')
       setOptions(['', '', '', ''])
       setCorrectIndex(0)
+      setAddOpen(false)
     } catch {
       setError('Nie udało się dodać pytania quizowego.')
     } finally {
@@ -277,116 +394,171 @@ function QuizTab() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div
-        className="flex flex-col gap-4 rounded-2xl border p-5"
-        style={{
-          borderColor: 'rgba(255,16,240,0.18)',
-          backgroundColor: 'rgba(13,8,24,0.5)',
-        }}
-      >
-        <div className="flex items-center justify-between gap-3">
-          <p
-            className="text-xs font-semibold tracking-widest uppercase"
-            style={{ color: 'var(--neon-pink)' }}
-          >
-            Nowe pytanie o Pannie Młodej
-          </p>
-          <span className="text-text-muted text-[11px]">zaznacz poprawną odpowiedź</span>
-        </div>
-
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          maxLength={240}
-          placeholder="Np. Gdzie Panna Młoda poznała przyszłego męża?"
-          className="bg-saloon-surface text-text-primary placeholder:text-text-muted min-h-[96px] w-full resize-none rounded-xl border-2 px-4 py-3 text-sm leading-snug transition-colors focus:outline-none"
-          style={{
-            borderColor: text.trim() ? 'var(--neon-pink)' : 'var(--saloon-border)',
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={() => {
+            setError(null)
+            setAddOpen(true)
           }}
-        />
+          className="flex items-center gap-2 rounded-xl border-2 px-4 py-2.5 text-xs font-bold tracking-widest uppercase"
+          {...panelButtonHover(
+            {
+              borderColor: 'var(--neon-pink)',
+              backgroundColor: 'rgba(255,16,240,0.1)',
+              color: 'var(--neon-pink)',
+            },
+            {
+              borderColor: 'var(--neon-pink)',
+              backgroundColor: 'rgba(255,16,240,0.16)',
+              color: 'var(--text-primary)',
+            }
+          )}
+        >
+          <Plus size={14} />
+          Dodaj pytanie
+        </button>
+      </div>
 
-        <div className="flex flex-col gap-2">
-          {options.map((option, idx) => {
-            const active = correctIndex === idx
-            return (
-              <div key={idx} className="flex items-center gap-2">
+      <AnimatePresence>
+        {addOpen && (
+          <PanelModal
+            title="Nowe pytanie quizowe"
+            hint="Zaznacz poprawną odpowiedź przed zapisaniem pytania."
+            onClose={() => {
+              if (!adding) setAddOpen(false)
+            }}
+          >
+            <div className="flex flex-col gap-4">
+              <textarea
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                maxLength={240}
+                placeholder="Np. Gdzie Panna Młoda poznała przyszłego męża?"
+                className="bg-saloon-surface text-text-primary placeholder:text-text-muted min-h-[96px] w-full resize-none rounded-xl border-2 px-4 py-3 text-sm leading-snug transition-colors focus:outline-none"
+                style={{
+                  borderColor: text.trim() ? 'var(--neon-pink)' : 'var(--saloon-border)',
+                }}
+              />
+
+              <div className="flex flex-col gap-2">
+                {options.map((option, idx) => {
+                  const active = correctIndex === idx
+                  return (
+                    <div key={idx} className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setCorrectIndex(idx)}
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-2 transition-colors"
+                        {...panelButtonHover(
+                          {
+                            borderColor: active ? 'var(--sheriff-pink)' : 'var(--saloon-border)',
+                            backgroundColor: active ? 'rgba(255,215,0,0.1)' : 'rgba(13,8,24,0.4)',
+                            color: active ? 'var(--sheriff-pink)' : 'var(--text-muted)',
+                          },
+                          {
+                            borderColor: active ? 'var(--sheriff-pink)' : 'rgba(255,220,180,0.32)',
+                            backgroundColor: active
+                              ? 'rgba(255,215,0,0.16)'
+                              : 'rgba(255,220,180,0.08)',
+                            color: active ? 'var(--sheriff-pink)' : 'var(--text-primary)',
+                          }
+                        )}
+                        title="Prawidłowa odpowiedź"
+                      >
+                        {active ? <CheckCircle2 size={17} /> : String.fromCharCode(65 + idx)}
+                      </button>
+                      <input
+                        type="text"
+                        value={option}
+                        onChange={(e) => updateOption(idx, e.target.value)}
+                        maxLength={90}
+                        placeholder={`Odpowiedź ${String.fromCharCode(65 + idx)}`}
+                        className="bg-saloon-surface text-text-primary placeholder:text-text-muted min-w-0 flex-1 rounded-xl border-2 px-4 py-2.5 text-sm transition-colors focus:outline-none"
+                        style={{
+                          borderColor:
+                            active && option.trim()
+                              ? 'var(--sheriff-pink)'
+                              : 'var(--saloon-border)',
+                        }}
+                      />
+                      {options.length > 2 && (
+                        <button
+                          type="button"
+                          onClick={() => removeOption(idx)}
+                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border"
+                          {...panelButtonHover(
+                            {
+                              borderColor: 'rgba(239,68,68,0.2)',
+                              backgroundColor: 'rgba(239,68,68,0.08)',
+                              color: '#f87171',
+                            },
+                            {
+                              borderColor: 'rgba(239,68,68,0.38)',
+                              backgroundColor: 'rgba(239,68,68,0.14)',
+                              color: '#fecaca',
+                            }
+                          )}
+                          title="Usuń odpowiedź"
+                        >
+                          <X size={15} />
+                        </button>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+
+              <div className="flex flex-col gap-2 sm:flex-row">
                 <button
                   type="button"
-                  onClick={() => setCorrectIndex(idx)}
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-2 transition-colors"
-                  style={{
-                    borderColor: active ? 'var(--sheriff-pink)' : 'var(--saloon-border)',
-                    backgroundColor: active ? 'rgba(255,215,0,0.1)' : 'rgba(13,8,24,0.4)',
-                    color: active ? 'var(--sheriff-pink)' : 'var(--text-muted)',
-                  }}
-                  title="Prawidłowa odpowiedź"
+                  disabled={options.length >= 6}
+                  onClick={() => setOptions((prev) => [...prev, ''])}
+                  className="flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-xs font-bold tracking-widest uppercase disabled:opacity-30"
+                  {...panelButtonHover(
+                    {
+                      borderColor: 'rgba(255,220,180,0.15)',
+                      color: 'rgba(255,220,180,0.7)',
+                      backgroundColor: 'transparent',
+                    },
+                    {
+                      borderColor: 'rgba(255,220,180,0.28)',
+                      color: 'rgba(255,220,180,0.92)',
+                      backgroundColor: 'rgba(255,220,180,0.07)',
+                    }
+                  )}
                 >
-                  {active ? <CheckCircle2 size={17} /> : String.fromCharCode(65 + idx)}
+                  <Plus size={14} />
+                  Odpowiedź
                 </button>
-                <input
-                  type="text"
-                  value={option}
-                  onChange={(e) => updateOption(idx, e.target.value)}
-                  maxLength={90}
-                  placeholder={`Odpowiedź ${String.fromCharCode(65 + idx)}`}
-                  className="bg-saloon-surface text-text-primary placeholder:text-text-muted min-w-0 flex-1 rounded-xl border-2 px-4 py-2.5 text-sm transition-colors focus:outline-none"
-                  style={{
-                    borderColor:
-                      active && option.trim() ? 'var(--sheriff-pink)' : 'var(--saloon-border)',
-                  }}
-                />
-                {options.length > 2 && (
-                  <button
-                    type="button"
-                    onClick={() => removeOption(idx)}
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border"
-                    style={{
-                      borderColor: 'rgba(239,68,68,0.2)',
-                      backgroundColor: 'rgba(239,68,68,0.08)',
-                      color: '#f87171',
-                    }}
-                    title="Usuń odpowiedź"
-                  >
-                    <X size={15} />
-                  </button>
-                )}
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  disabled={adding}
+                  onClick={handleAdd}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 text-xs font-bold tracking-widest uppercase disabled:opacity-30"
+                  {...panelButtonHover(
+                    {
+                      borderColor: 'var(--neon-pink)',
+                      backgroundColor: 'rgba(255,16,240,0.12)',
+                      color: 'var(--neon-pink)',
+                    },
+                    {
+                      borderColor: 'var(--neon-pink)',
+                      backgroundColor: 'rgba(255,16,240,0.18)',
+                      color: 'var(--text-primary)',
+                    }
+                  )}
+                >
+                  {adding ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
+                  Dodaj pytanie
+                </motion.button>
               </div>
-            )
-          })}
-        </div>
-
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <button
-            type="button"
-            disabled={options.length >= 6}
-            onClick={() => setOptions((prev) => [...prev, ''])}
-            className="flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-xs font-bold tracking-widest uppercase disabled:opacity-30"
-            style={{
-              borderColor: 'rgba(255,220,180,0.15)',
-              color: 'rgba(255,220,180,0.7)',
-            }}
-          >
-            <Plus size={14} />
-            Odpowiedź
-          </button>
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            disabled={adding}
-            onClick={handleAdd}
-            className="flex flex-1 items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 text-xs font-bold tracking-widest uppercase disabled:opacity-30"
-            style={{
-              borderColor: 'var(--neon-pink)',
-              backgroundColor: 'rgba(255,16,240,0.12)',
-              color: 'var(--neon-pink)',
-            }}
-          >
-            {adding ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
-            Dodaj pytanie
-          </motion.button>
-        </div>
-        {error && <p className="text-xs text-red-400">{error}</p>}
-      </div>
+              {error && <p className="text-xs text-red-400">{error}</p>}
+            </div>
+          </PanelModal>
+        )}
+      </AnimatePresence>
 
       <QuestionList
         emptyText="Nie masz jeszcze pytań do quizu. Dodaj kilka przed uruchomieniem gry."
@@ -438,6 +610,25 @@ function QuestionList<T extends Question>({
   onDelete: (id: string) => void
   renderDetails?: (question: T) => ReactNode
 }) {
+  const [page, setPage] = useState(1)
+  const previousQuestionCountRef = useRef(questions.length)
+  const pageCount = Math.max(1, Math.ceil(questions.length / QUESTION_PAGE_SIZE))
+  const currentPage = Math.min(page, pageCount)
+  const startIndex = (currentPage - 1) * QUESTION_PAGE_SIZE
+  const pageQuestions = questions.slice(startIndex, startIndex + QUESTION_PAGE_SIZE)
+
+  useEffect(() => {
+    const previousQuestionCount = previousQuestionCountRef.current
+    previousQuestionCountRef.current = questions.length
+
+    if (questions.length > previousQuestionCount) {
+      setPage(1)
+      return
+    }
+
+    setPage((prev) => Math.min(prev, pageCount))
+  }, [pageCount, questions.length])
+
   if (loading) {
     return (
       <div className="flex justify-center py-12">
@@ -464,10 +655,17 @@ function QuestionList<T extends Question>({
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <p className="text-text-muted text-xs font-semibold tracking-widest uppercase">{label}</p>
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+        <p className="text-text-muted text-xs font-semibold tracking-widest uppercase">{label}</p>
+        {pageCount > 1 && (
+          <p className="text-text-muted text-xs tabular-nums">
+            {startIndex + 1}-{startIndex + pageQuestions.length} z {questions.length}
+          </p>
+        )}
+      </div>
       <AnimatePresence initial={false}>
-        {questions.map((q) => (
+        {pageQuestions.map((q) => (
           <motion.div
             key={q.id}
             layout
@@ -488,11 +686,18 @@ function QuestionList<T extends Question>({
                 onClick={() => onDelete(q.id)}
                 disabled={deletingId === q.id}
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg opacity-0 transition-opacity group-hover:opacity-100 disabled:opacity-50"
-                style={{
-                  backgroundColor: 'rgba(239,68,68,0.1)',
-                  color: '#f87171',
-                  border: '1px solid rgba(239,68,68,0.2)',
-                }}
+                {...panelButtonHover(
+                  {
+                    backgroundColor: 'rgba(239,68,68,0.1)',
+                    color: '#f87171',
+                    border: '1px solid rgba(239,68,68,0.2)',
+                  },
+                  {
+                    backgroundColor: 'rgba(239,68,68,0.16)',
+                    color: '#fecaca',
+                    border: '1px solid rgba(239,68,68,0.38)',
+                  }
+                )}
               >
                 {deletingId === q.id ? (
                   <Loader2 size={13} className="animate-spin" />
@@ -505,6 +710,57 @@ function QuestionList<T extends Question>({
           </motion.div>
         ))}
       </AnimatePresence>
+      {pageCount > 1 && (
+        <div className="mt-2 flex items-center justify-between gap-3">
+          <button
+            type="button"
+            disabled={currentPage === 1}
+            onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+            className="flex h-9 w-9 items-center justify-center rounded-lg border disabled:opacity-30"
+            {...panelButtonHover(
+              {
+                borderColor: 'rgba(255,220,180,0.14)',
+                color: 'rgba(255,220,180,0.72)',
+                backgroundColor: 'rgba(13,8,24,0.35)',
+              },
+              {
+                borderColor: 'rgba(255,220,180,0.3)',
+                color: 'rgba(255,220,180,0.95)',
+                backgroundColor: 'rgba(255,220,180,0.08)',
+              }
+            )}
+            aria-label="Poprzednia strona"
+          >
+            <ChevronLeft size={16} />
+          </button>
+
+          <span className="text-text-muted text-xs font-semibold tracking-widest uppercase tabular-nums">
+            Strona {currentPage} / {pageCount}
+          </span>
+
+          <button
+            type="button"
+            disabled={currentPage === pageCount}
+            onClick={() => setPage((prev) => Math.min(pageCount, prev + 1))}
+            className="flex h-9 w-9 items-center justify-center rounded-lg border disabled:opacity-30"
+            {...panelButtonHover(
+              {
+                borderColor: 'rgba(255,220,180,0.14)',
+                color: 'rgba(255,220,180,0.72)',
+                backgroundColor: 'rgba(13,8,24,0.35)',
+              },
+              {
+                borderColor: 'rgba(255,220,180,0.3)',
+                color: 'rgba(255,220,180,0.95)',
+                backgroundColor: 'rgba(255,220,180,0.08)',
+              }
+            )}
+            aria-label="Następna strona"
+          >
+            <ChevronRight size={16} />
+          </button>
+        </div>
+      )}
     </div>
   )
 }
@@ -730,10 +986,18 @@ function AccountTab() {
             type="button"
             onClick={loadAccount}
             className="flex items-center justify-center gap-2 rounded-xl border px-4 py-2 text-xs font-bold tracking-widest uppercase"
-            style={{
-              borderColor: 'rgba(255,220,180,0.15)',
-              color: 'rgba(255,220,180,0.7)',
-            }}
+            {...panelButtonHover(
+              {
+                borderColor: 'rgba(255,220,180,0.15)',
+                color: 'rgba(255,220,180,0.7)',
+                backgroundColor: 'transparent',
+              },
+              {
+                borderColor: 'rgba(255,220,180,0.28)',
+                color: 'rgba(255,220,180,0.92)',
+                backgroundColor: 'rgba(255,220,180,0.07)',
+              }
+            )}
           >
             <RefreshCw size={13} />
             Odśwież
@@ -746,11 +1010,18 @@ function AccountTab() {
             disabled={checkoutPlan !== null || isLifetime}
             onClick={() => startCheckout('monthly')}
             className="flex min-h-12 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-xs font-black tracking-widest uppercase disabled:opacity-35"
-            style={{
-              borderColor: 'rgba(255,215,0,0.38)',
-              backgroundColor: 'rgba(255,215,0,0.08)',
-              color: 'var(--sheriff-pink)',
-            }}
+            {...panelButtonHover(
+              {
+                borderColor: 'rgba(255,215,0,0.38)',
+                backgroundColor: 'rgba(255,215,0,0.08)',
+                color: 'var(--sheriff-pink)',
+              },
+              {
+                borderColor: 'rgba(255,215,0,0.52)',
+                backgroundColor: 'rgba(255,215,0,0.14)',
+                color: '#fde68a',
+              }
+            )}
           >
             {checkoutPlan === 'monthly' ? (
               <Loader2 size={15} className="animate-spin" />
@@ -764,11 +1035,18 @@ function AccountTab() {
             disabled={checkoutPlan !== null || isLifetime}
             onClick={() => startCheckout('lifetime')}
             className="flex min-h-12 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-xs font-black tracking-widest uppercase disabled:opacity-35"
-            style={{
-              borderColor: 'rgba(255,16,240,0.35)',
-              backgroundColor: 'rgba(255,16,240,0.08)',
-              color: 'var(--neon-pink)',
-            }}
+            {...panelButtonHover(
+              {
+                borderColor: 'rgba(255,16,240,0.35)',
+                backgroundColor: 'rgba(255,16,240,0.08)',
+                color: 'var(--neon-pink)',
+              },
+              {
+                borderColor: 'rgba(255,16,240,0.5)',
+                backgroundColor: 'rgba(255,16,240,0.14)',
+                color: 'var(--text-primary)',
+              }
+            )}
           >
             {checkoutPlan === 'lifetime' ? (
               <Loader2 size={15} className="animate-spin" />
@@ -782,10 +1060,18 @@ function AccountTab() {
             disabled={portalLoading || !premium?.canManageBilling}
             onClick={openBillingPortal}
             className="flex min-h-12 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-xs font-black tracking-widest uppercase disabled:opacity-35"
-            style={{
-              borderColor: 'rgba(255,220,180,0.18)',
-              color: 'rgba(255,220,180,0.82)',
-            }}
+            {...panelButtonHover(
+              {
+                borderColor: 'rgba(255,220,180,0.18)',
+                color: 'rgba(255,220,180,0.82)',
+                backgroundColor: 'transparent',
+              },
+              {
+                borderColor: 'rgba(255,220,180,0.3)',
+                color: 'rgba(255,220,180,0.96)',
+                backgroundColor: 'rgba(255,220,180,0.07)',
+              }
+            )}
           >
             {portalLoading ? (
               <Loader2 size={15} className="animate-spin" />
@@ -840,11 +1126,18 @@ function AccountTab() {
               disabled={!name.trim() || profileSaving}
               onClick={saveProfile}
               className="mt-1 flex items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 text-xs font-black tracking-widest uppercase disabled:opacity-35"
-              style={{
-                borderColor: 'var(--neon-pink)',
-                backgroundColor: 'rgba(255,16,240,0.1)',
-                color: 'var(--neon-pink)',
-              }}
+              {...panelButtonHover(
+                {
+                  borderColor: 'var(--neon-pink)',
+                  backgroundColor: 'rgba(255,16,240,0.1)',
+                  color: 'var(--neon-pink)',
+                },
+                {
+                  borderColor: 'var(--neon-pink)',
+                  backgroundColor: 'rgba(255,16,240,0.16)',
+                  color: 'var(--text-primary)',
+                }
+              )}
             >
               {profileSaving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
               Zapisz dane
@@ -889,11 +1182,18 @@ function AccountTab() {
               disabled={!currentPassword || !newPassword || passwordSaving}
               onClick={changePassword}
               className="mt-1 flex items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 text-xs font-black tracking-widest uppercase disabled:opacity-35"
-              style={{
-                borderColor: 'var(--sheriff-pink)',
-                backgroundColor: 'rgba(255,215,0,0.08)',
-                color: 'var(--sheriff-pink)',
-              }}
+              {...panelButtonHover(
+                {
+                  borderColor: 'var(--sheriff-pink)',
+                  backgroundColor: 'rgba(255,215,0,0.08)',
+                  color: 'var(--sheriff-pink)',
+                },
+                {
+                  borderColor: 'var(--sheriff-pink)',
+                  backgroundColor: 'rgba(255,215,0,0.14)',
+                  color: '#fde68a',
+                }
+              )}
             >
               {passwordSaving ? (
                 <Loader2 size={15} className="animate-spin" />
@@ -1076,10 +1376,18 @@ function PaymentStatusBanner({ checkoutState }: { checkoutState: CheckoutState }
           type="button"
           onClick={clearCheckoutState}
           className="rounded-xl border px-4 py-2 text-xs font-bold tracking-widest uppercase"
-          style={{
-            borderColor: 'rgba(255,220,180,0.15)',
-            color: 'rgba(255,220,180,0.7)',
-          }}
+          {...panelButtonHover(
+            {
+              borderColor: 'rgba(255,220,180,0.15)',
+              color: 'rgba(255,220,180,0.7)',
+              backgroundColor: 'transparent',
+            },
+            {
+              borderColor: 'rgba(255,220,180,0.28)',
+              color: 'rgba(255,220,180,0.92)',
+              backgroundColor: 'rgba(255,220,180,0.07)',
+            }
+          )}
         >
           Zamknij
         </button>
@@ -1094,29 +1402,80 @@ const SETTING_LIMITS = {
   brAutoNextSeconds: { min: 3, max: 30, step: 1 },
 }
 
+type GameSettingsValues = {
+  revealCountdownSeconds: number
+  brTimerSeconds: number
+  brAutoNextSeconds: number
+}
+
+const DEFAULT_GAME_SETTINGS: GameSettingsValues = {
+  revealCountdownSeconds: REVEAL_COUNTDOWN_SECONDS,
+  brTimerSeconds: BR_TIMER_SECONDS,
+  brAutoNextSeconds: BR_AUTO_NEXT_SECONDS,
+}
+
+let gameSettingsCache: GameSettingsValues | null = null
+
+function SettingsSkeleton() {
+  return (
+    <div className="flex flex-col gap-6 py-1" aria-hidden="true">
+      {Array.from({ length: 3 }).map((_, index) => (
+        <div key={index} className="flex flex-col gap-2">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex flex-1 flex-col gap-2">
+              <div className="h-3 w-36 rounded-full bg-white/10" />
+              <div className="h-3 w-full max-w-md rounded-full bg-white/5" />
+            </div>
+            <div className="h-7 w-14 rounded-lg bg-white/10" />
+          </div>
+          <div className="h-1 w-full rounded-full bg-white/10" />
+          <div className="flex justify-between">
+            <div className="h-3 w-7 rounded-full bg-white/5" />
+            <div className="h-3 w-7 rounded-full bg-white/5" />
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function GameSettingsTab() {
-  const [values, setValues] = useState({
-    revealCountdownSeconds: REVEAL_COUNTDOWN_SECONDS,
-    brTimerSeconds: BR_TIMER_SECONDS,
-    brAutoNextSeconds: BR_AUTO_NEXT_SECONDS,
-  })
-  const [loading, setLoading] = useState(true)
+  const [values, setValues] = useState<GameSettingsValues>(
+    () => gameSettingsCache ?? DEFAULT_GAME_SETTINGS
+  )
+  const [loading, setLoading] = useState(() => gameSettingsCache === null)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    let cancelled = false
+
+    if (gameSettingsCache) {
+      setLoading(false)
+      return
+    }
+
     fetch('/api/settings')
       .then((r) => r.json())
       .then((data) => {
-        setValues({
+        if (cancelled) return
+        const nextValues = {
           revealCountdownSeconds: data.revealCountdownSeconds,
           brTimerSeconds: data.brTimerSeconds,
           brAutoNextSeconds: data.brAutoNextSeconds,
-        })
+        }
+        gameSettingsCache = nextValues
+        setValues(nextValues)
       })
       .catch(() => {})
-      .finally(() => setLoading(false))
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   const handleSave = async () => {
@@ -1130,6 +1489,7 @@ function GameSettingsTab() {
         body: JSON.stringify(values),
       })
       if (!res.ok) throw new Error()
+      gameSettingsCache = values
       setSaved(true)
       setTimeout(() => setSaved(false), 2500)
     } catch {
@@ -1148,7 +1508,8 @@ function GameSettingsTab() {
     {
       key: 'revealCountdownSeconds',
       label: 'Przerwa między rundami',
-      description: 'Sekund odliczania po odsłonięciu wyników, zanim pojawi się następna karta (tryb standardowy)',
+      description:
+        'Sekund odliczania po odsłonięciu wyników, zanim pojawi się następna karta (tryb standardowy)',
       color: 'var(--neon-pink)',
     },
     {
@@ -1171,17 +1532,21 @@ function GameSettingsTab() {
         className="rounded-2xl border p-5"
         style={{ borderColor: 'rgba(255,220,180,0.12)', backgroundColor: 'rgba(13,8,24,0.5)' }}
       >
-        <p className="mb-1 text-xs font-semibold tracking-widest uppercase" style={{ color: '#34d399' }}>
+        <p
+          className="mb-1 text-xs font-semibold tracking-widest uppercase"
+          style={{ color: '#34d399' }}
+        >
           Ustawienia gier
         </p>
         <p className="text-text-muted mb-6 text-xs">
-          Globalne domyślne wartości dla wszystkich Twoich gier. Zmiany obowiązują od następnej sesji.
+          Globalne domyślne wartości dla wszystkich Twoich gier. Zmiany obowiązują od następnej
+          sesji.
         </p>
 
         {loading ? (
-          <div className="flex items-center gap-2 py-4">
-            <Loader2 size={14} className="animate-spin" style={{ color: 'rgba(255,220,180,0.4)' }} />
-            <span className="text-text-muted text-xs">Ładowanie…</span>
+          <div className="block py-1">
+            <SettingsSkeleton />
+            <span className="sr-only">Ładowanie ustawień</span>
           </div>
         ) : (
           <div className="flex flex-col gap-6">
@@ -1237,13 +1602,27 @@ function GameSettingsTab() {
                 onClick={handleSave}
                 disabled={saving}
                 className="flex items-center gap-2 rounded-xl border px-5 py-2.5 text-xs font-bold tracking-widest uppercase transition-colors disabled:opacity-50"
-                style={{ borderColor: '#34d399', color: '#34d399' }}
+                {...panelButtonHover(
+                  {
+                    borderColor: '#34d399',
+                    color: '#34d399',
+                    backgroundColor: 'transparent',
+                  },
+                  {
+                    borderColor: '#34d399',
+                    color: '#d1fae5',
+                    backgroundColor: 'rgba(52,211,153,0.1)',
+                  }
+                )}
               >
                 {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
                 {saving ? 'Zapisywanie…' : 'Zapisz'}
               </button>
               {saved && (
-                <span className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: '#34d399' }}>
+                <span
+                  className="flex items-center gap-1.5 text-xs font-semibold"
+                  style={{ color: '#34d399' }}
+                >
                   <CheckCircle2 size={13} />
                   Zapisano
                 </span>
@@ -1266,9 +1645,14 @@ function PanelContent() {
   const { data: session } = useSession()
   const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState<PanelTab>('quiz')
+  const [visitedTabs, setVisitedTabs] = useState<PanelTab[]>(['quiz'])
   const checkoutState = ['success', 'cancelled'].includes(searchParams.get('checkout') ?? '')
     ? (searchParams.get('checkout') as CheckoutState)
     : null
+  const openTab = (tab: PanelTab) => {
+    setActiveTab(tab)
+    setVisitedTabs((prev) => (prev.includes(tab) ? prev : [...prev, tab]))
+  }
 
   const tabs: Array<{
     id: PanelTab
@@ -1327,15 +1711,18 @@ function PanelContent() {
             <button
               onClick={() => signOut({ callbackUrl: '/' })}
               className="flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors"
-              style={{ borderColor: 'rgba(255,220,180,0.15)', color: 'rgba(255,220,180,0.55)' }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(239,68,68,0.4)'
-                e.currentTarget.style.color = '#f87171'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(255,220,180,0.15)'
-                e.currentTarget.style.color = 'rgba(255,220,180,0.55)'
-              }}
+              {...panelButtonHover(
+                {
+                  borderColor: 'rgba(255,220,180,0.15)',
+                  color: 'rgba(255,220,180,0.55)',
+                  backgroundColor: 'transparent',
+                },
+                {
+                  borderColor: 'rgba(239,68,68,0.35)',
+                  color: '#fca5a5',
+                  backgroundColor: 'rgba(239,68,68,0.08)',
+                }
+              )}
             >
               <LogOut size={12} />
               Wyloguj
@@ -1355,12 +1742,18 @@ function PanelContent() {
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => openTab(tab.id)}
                 className="flex items-center gap-3 rounded-xl border-2 px-4 py-3 text-left transition-colors"
-                style={{
-                  backgroundColor: active ? 'rgba(255,16,240,0.1)' : 'rgba(13,8,24,0.35)',
-                  borderColor: active ? tab.color : 'rgba(255,220,180,0.12)',
-                }}
+                {...panelButtonHover(
+                  {
+                    backgroundColor: active ? 'rgba(255,16,240,0.1)' : 'rgba(13,8,24,0.35)',
+                    borderColor: active ? tab.color : 'rgba(255,220,180,0.12)',
+                  },
+                  {
+                    backgroundColor: active ? 'rgba(255,16,240,0.14)' : 'rgba(255,220,180,0.07)',
+                    borderColor: active ? tab.color : 'rgba(255,220,180,0.24)',
+                  }
+                )}
               >
                 <Icon size={17} style={{ color: tab.color }} />
                 <span className="min-w-0">
@@ -1374,10 +1767,26 @@ function PanelContent() {
           })}
         </div>
 
-        {activeTab === 'quiz' && <QuizTab />}
-        {activeTab === 'never' && <NeverTab />}
-        {activeTab === 'account' && <AccountTab />}
-        {activeTab === 'settings' && <GameSettingsTab />}
+        {visitedTabs.includes('quiz') && (
+          <div className={activeTab === 'quiz' ? 'block' : 'hidden'}>
+            <QuizTab />
+          </div>
+        )}
+        {visitedTabs.includes('never') && (
+          <div className={activeTab === 'never' ? 'block' : 'hidden'}>
+            <NeverTab />
+          </div>
+        )}
+        {visitedTabs.includes('account') && (
+          <div className={activeTab === 'account' ? 'block' : 'hidden'}>
+            <AccountTab />
+          </div>
+        )}
+        {visitedTabs.includes('settings') && (
+          <div className={activeTab === 'settings' ? 'block' : 'hidden'}>
+            <GameSettingsTab />
+          </div>
+        )}
       </div>
     </div>
   )

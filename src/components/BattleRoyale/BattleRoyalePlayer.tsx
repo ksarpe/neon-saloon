@@ -21,6 +21,8 @@ interface Props {
   playerName: string
   avatar: string
   initialRoundData: BRRoundStartPayload
+  initialIsEliminated?: boolean
+  initialHasAnswered?: boolean
 }
 
 export default function BattleRoyalePlayer({
@@ -29,15 +31,19 @@ export default function BattleRoyalePlayer({
   playerName,
   avatar,
   initialRoundData,
+  initialIsEliminated,
+  initialHasAnswered,
 }: Props) {
-  const [phase, setPhase] = useState<BRPlayerPhase>('answering')
+  const [phase, setPhase] = useState<BRPlayerPhase>(
+    initialIsEliminated ? 'eliminated-reveal' : initialHasAnswered ? 'answered' : 'answering'
+  )
   const [roundData, setRoundData] = useState<BRRoundStartPayload>(initialRoundData)
   const [revealData, setRevealData] = useState<BRRoundRevealPayload | null>(null)
   const [gameOver, setGameOver] = useState<BRGameOverPayload | null>(null)
   const [timerLeft, setTimerLeft] = useState(0)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
   const [loading, setLoading] = useState(false)
-  const [isEliminated, setIsEliminated] = useState(false)
+  const [isEliminated, setIsEliminated] = useState(Boolean(initialIsEliminated))
   const [answeredCount, setAnsweredCount] = useState(0)
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -464,7 +470,7 @@ export default function BattleRoyalePlayer({
                     </motion.div>
                     <div>
                       <p
-                        className="shimmer-text text-5xl tracking-widest"
+                        className="text-sheriff-pink text-5xl tracking-widest"
                         style={{ fontFamily: 'var(--font-app)' }}
                       >
                         Wygrałeś!
