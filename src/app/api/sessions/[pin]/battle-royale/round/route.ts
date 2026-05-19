@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getSession, saveSession } from '@/lib/appwrite/sessions'
 import { triggerGameEvent } from '@/lib/appwrite/realtime'
 import { QUESTION_CATEGORIES } from '@/lib/games/categories'
+import { getLimitedQuestionTotal, getOrderedQuestion } from '@/lib/games/question-limit'
 import { isHostAuthorized } from '@/lib/session-host-auth'
 
 type RouteContext = { params: Promise<{ pin: string }> }
@@ -22,7 +23,11 @@ export async function POST(request: Request, { params }: RouteContext) {
     const category = QUESTION_CATEGORIES.find((c) => c.id === br.categoryId)
     if (!category) return NextResponse.json({ error: 'Category not found' }, { status: 400 })
 
-    const question = category.questions[br.questionIndex]
+    if (br.questionIndex >= getLimitedQuestionTotal(category.questions.length, br.questionOrder)) {
+      return NextResponse.json({ error: 'No more questions' }, { status: 400 })
+    }
+
+    const question = getOrderedQuestion(category.questions, br.questionIndex, br.questionOrder)
     if (!question) return NextResponse.json({ error: 'No more questions' }, { status: 400 })
 
     const roundStartTime = Date.now()
@@ -43,6 +48,7 @@ export async function POST(request: Request, { params }: RouteContext) {
       event: 'br-round-start',
       data: {
         questionIndex: br.questionIndex,
+        totalQuestions: getLimitedQuestionTotal(category.questions.length, br.questionOrder),
         questionText: question.text,
         options: question.options,
         timerDuration: br.timerDuration,

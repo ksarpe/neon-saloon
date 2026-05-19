@@ -54,6 +54,7 @@ export type BRAnswer = {
 
 export type BattleRoyaleData = {
   categoryId: string
+  questionOrder?: number[]
   questionIndex: number
   eliminatedPlayers: string[] // playerIds eliminated so far
   roundAnswers: BRAnswer[] // answers for the current round (cleared each round)

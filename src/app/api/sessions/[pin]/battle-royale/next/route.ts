@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getSession, saveSession } from '@/lib/appwrite/sessions'
 import { QUESTION_CATEGORIES } from '@/lib/games/categories'
+import { getLimitedQuestionTotal } from '@/lib/games/question-limit'
 import { isHostAuthorized } from '@/lib/session-host-auth'
 
 type RouteContext = { params: Promise<{ pin: string }> }
@@ -20,7 +21,9 @@ export async function POST(request: Request, { params }: RouteContext) {
 
     const category = QUESTION_CATEGORIES.find((c) => c.id === br.categoryId)
     const nextIndex = br.questionIndex + 1
-    const hasMore = category ? nextIndex < category.questions.length : false
+    const hasMore = category
+      ? nextIndex < getLimitedQuestionTotal(category.questions.length, br.questionOrder)
+      : false
 
     if (!hasMore) {
       session.status = 'finished'

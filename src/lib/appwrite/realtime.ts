@@ -1,12 +1,8 @@
 // Server-only: re-exports server.ts which uses APPWRITE_API_KEY.
-import { AppwriteException } from "node-appwrite";
+import { AppwriteException } from 'node-appwrite'
 
-import {
-  APPWRITE_DATABASE_ID,
-  APPWRITE_TABLE_GAME_SESSIONS,
-  getTablesDB,
-} from "./server";
-import type { SessionRow } from "./sessions";
+import { APPWRITE_DATABASE_ID, APPWRITE_TABLE_GAME_SESSIONS, getTablesDB } from './server'
+import type { SessionRow } from './sessions'
 
 // ─── Per-row Realtime broadcast design ──────────────────────────────────────
 //
@@ -29,66 +25,53 @@ import type { SessionRow } from "./sessions";
 //   • Bounded array (kept to last EVENTS_KEEP entries) so the column doesn't
 //     grow unbounded for long-running sessions.
 
-const EVENTS_KEEP = 50;
+const EVENTS_KEEP = 50
 
 type StoredEvent = {
-  seq: number;
-  type: string;
-  payload: unknown;
-  ts: string;
-};
+  seq: number
+  type: string
+  payload: unknown
+  ts: string
+}
 
 /**
  * Append an event to the session's `events` array on the `game-sessions` row.
  * Subscribers to the per-row Realtime channel receive the row update and
  * dispatch the new event(s) to their handlers.
  */
-export async function triggerGameEvent(
-  pin: string,
-  event: SessionEvent
-): Promise<void> {
-  const db = getTablesDB();
+export async function triggerGameEvent(pin: string, event: SessionEvent): Promise<void> {
+  const db = getTablesDB()
 
   // Read current events to compute the next seq number and preserve history
-  let existing: StoredEvent[] = [];
+  let existing: StoredEvent[] = []
   try {
-    const row = await db.getRow<SessionRow>(
-      APPWRITE_DATABASE_ID,
-      APPWRITE_TABLE_GAME_SESSIONS,
-      pin
-    );
-    existing = JSON.parse(row.events ?? "[]") as StoredEvent[];
+    const row = await db.getRow<SessionRow>(APPWRITE_DATABASE_ID, APPWRITE_TABLE_GAME_SESSIONS, pin)
+    existing = JSON.parse(row.events ?? '[]') as StoredEvent[]
   } catch (err) {
     if (err instanceof AppwriteException && err.code === 404) {
       // Row doesn't exist yet — host hasn't created the session, or it was
       // deleted. Nothing to broadcast to; silently no-op.
-      console.warn(`[Appwrite RT] triggerGameEvent: row ${pin} not found, skipping`);
-      return;
+      console.warn(`[Appwrite RT] triggerGameEvent: row ${pin} not found, skipping`)
+      return
     }
-    throw err;
+    throw err
   }
 
-  const nextSeq =
-    existing.length > 0 ? Math.max(...existing.map((e) => e.seq)) + 1 : 0;
+  const nextSeq = existing.length > 0 ? Math.max(...existing.map((e) => e.seq)) + 1 : 0
 
   const next: StoredEvent = {
     seq: nextSeq,
     type: event.event,
     payload: event.data,
     ts: new Date().toISOString(),
-  };
+  }
 
-  const updated = [...existing, next].slice(-EVENTS_KEEP);
+  const updated = [...existing, next].slice(-EVENTS_KEEP)
 
-  await db.updateRow<SessionRow>(
-    APPWRITE_DATABASE_ID,
-    APPWRITE_TABLE_GAME_SESSIONS,
-    pin,
-    {
-      events: JSON.stringify(updated),
-      updatedAt: next.ts,
-    }
-  );
+  await db.updateRow<SessionRow>(APPWRITE_DATABASE_ID, APPWRITE_TABLE_GAME_SESSIONS, pin, {
+    events: JSON.stringify(updated),
+    updatedAt: next.ts,
+  })
 }
 
 /**
@@ -102,193 +85,194 @@ export async function cleanupSessionEvents(pin: string): Promise<void> {
       APPWRITE_DATABASE_ID,
       APPWRITE_TABLE_GAME_SESSIONS,
       pin,
-      { events: "[]" }
-    );
+      { events: '[]' }
+    )
   } catch (err) {
-    if (err instanceof AppwriteException && err.code === 404) return;
-    console.warn(`[Appwrite] cleanupSessionEvents(${pin}) failed:`, err);
+    if (err instanceof AppwriteException && err.code === 404) return
+    console.warn(`[Appwrite] cleanupSessionEvents(${pin}) failed:`, err)
   }
 }
 
 // ─── Shared card shape ────────────────────────────────────────────────────────
 export type WireCard = {
-  id: string;
-  type: "QUIZ" | "TEST" | "NEVER";
-  title?: string;
-  description: string;
-  emoji?: string;
-  options?: string[]; // Added for A, B, C, D support
-};
+  id: string
+  type: 'QUIZ' | 'TEST' | 'NEVER'
+  title?: string
+  description: string
+  emoji?: string
+  options?: string[] // Added for A, B, C, D support
+}
 
 // ─── Event payloads ──────────────────────────────────────────────────────────
 
 export type PlayerJoinedPayload = {
-  playerId: string;
-  playerName: string;
-  avatar: string;
-  teamId: string | null;
-  teamName: string | null;
-};
+  playerId: string
+  playerName: string
+  avatar: string
+  teamId: string | null
+  teamName: string | null
+}
 
 export type TeamCreatedPayload = {
-  teamId: string;
-  teamName: string;
-  color: string;
-  emoji: string;
-};
+  teamId: string
+  teamName: string
+  color: string
+  emoji: string
+}
 
 export type TeamUpdatedPayload = {
-  teamId: string;
-  teamName: string;
-  memberCount: number;
-};
+  teamId: string
+  teamName: string
+  memberCount: number
+}
 
 export type VoteCastPayload = {
-  playerId: string;
-  playerName: string;
-  teamId: string | null;
-  teamName: string | null;
-  cardIndex: number;
-  answerIndex: number;
-  answerText: string;
-};
+  playerId: string
+  playerName: string
+  teamId: string | null
+  teamName: string | null
+  cardIndex: number
+  answerIndex: number
+  answerText: string
+}
 
 export type ScoreEntry = {
-  playerId: string;
-  playerName: string;
-  score: number;
-  drinks?: number;
-  playerTeamId?: string;
-  playerTeamName?: string;
-};
+  playerId: string
+  playerName: string
+  score: number
+  drinks?: number
+  playerTeamId?: string
+  playerTeamName?: string
+}
 
 export type TeamScoreEntry = {
-  teamId: string;
-  teamName: string;
-  score: number;
-};
+  teamId: string
+  teamName: string
+  score: number
+}
 
 export type VotesRevealedPayload = {
-  cardIndex: number;
-  correctAnswer?: string; // undefined for NEVER cards (no scoring)
+  cardIndex: number
+  correctAnswer?: string // undefined for NEVER cards (no scoring)
   votes: Array<{
-    playerId: string;
-    playerName: string;
-    teamId: string | null;
-    teamName: string | null;
-    answerIndex: number;
-    answerText: string;
-  }>;
-  scores: ScoreEntry[];
-  teamScores: TeamScoreEntry[];
-};
+    playerId: string
+    playerName: string
+    teamId: string | null
+    teamName: string | null
+    answerIndex: number
+    answerText: string
+  }>
+  scores: ScoreEntry[]
+  teamScores: TeamScoreEntry[]
+}
 
 export type NextCardPayload = {
-  cardIndex: number;
-  card: WireCard;
-};
+  cardIndex: number
+  card: WireCard
+}
 
 export type GameStartedPayload = {
-  cardIndex: number;
-  card: WireCard;
-};
+  cardIndex: number
+  card: WireCard
+}
 
 export type GameFinishedPayload = {
-  scores: ScoreEntry[];
-  teamScores: TeamScoreEntry[];
-};
+  scores: ScoreEntry[]
+  teamScores: TeamScoreEntry[]
+}
 
 export type PlayerLeftPayload = {
-  playerId: string;
-};
+  playerId: string
+}
 
 // ─── High-Low event payloads ─────────────────────────────────────────────────
 
 export type HighLowRoundStartPayload = {
-  roundIndex: number;
-  questionText: string;
-  questionUnit: string;
-  guessingTeamId: string;
-  guessingTeamName: string;
-  votingTeamId: string;
-  votingTeamName: string;
-  guessingCaptainId: string;
-  votingCaptainId: string;
-};
+  roundIndex: number
+  questionText: string
+  questionUnit: string
+  guessingTeamId: string
+  guessingTeamName: string
+  votingTeamId: string
+  votingTeamName: string
+  guessingCaptainId: string
+  votingCaptainId: string
+}
 
 export type HighLowNumberSubmittedPayload = {
-  number: string;
-};
+  number: string
+}
 
 export type HighLowRoundResultPayload = {
-  correctAnswer: number;
-  unit: string;
-  guessingTeamGuess: number;
-  correctVote: "mniej" | "wiecej";
-  captainVote: "mniej" | "wiecej";
-  winningTeamId: string;
-  winningTeamName: string;
-  scores: ScoreEntry[];
-};
+  correctAnswer: number
+  unit: string
+  guessingTeamGuess: number
+  correctVote: 'mniej' | 'wiecej'
+  captainVote: 'mniej' | 'wiecej'
+  winningTeamId: string
+  winningTeamName: string
+  scores: ScoreEntry[]
+}
 
 // ─── Battle Royale event payloads ────────────────────────────────────────────
 
 export type BRRoundStartPayload = {
-  questionIndex: number;
-  questionText: string;
-  options: string[];
-  timerDuration: number;
-  roundStartTime: number;
-  alivePlayers: string[];  // playerIds still in game
-};
+  questionIndex: number
+  totalQuestions?: number
+  questionText: string
+  options: string[]
+  timerDuration: number
+  roundStartTime: number
+  alivePlayers: string[] // playerIds still in game
+}
 
 export type BRAnswerSubmittedPayload = {
-  playerId: string;
-  playerName: string;
-};
+  playerId: string
+  playerName: string
+}
 
 export type BRAnswerResult = {
-  playerId: string;
-  playerName: string;
-  avatar: string;
-  answerIndex: number;
-  answerText: string;
-  answeredAt: number;
-  isCorrect: boolean;
-  isEliminated: boolean;
-};
+  playerId: string
+  playerName: string
+  avatar: string
+  answerIndex: number
+  answerText: string
+  answeredAt: number
+  isCorrect: boolean
+  isEliminated: boolean
+}
 
 export type BRRoundRevealPayload = {
-  questionText: string;
-  correctAnswer: string;
-  answers: BRAnswerResult[];
-  eliminatedThisRound: string[];  // playerIds
-  survivingPlayers: string[];     // playerIds still alive after this round
-  gameOver: boolean;
-  winner?: string;                // playerName if only 1 remains
-};
+  questionText: string
+  correctAnswer: string
+  answers: BRAnswerResult[]
+  eliminatedThisRound: string[] // playerIds
+  survivingPlayers: string[] // playerIds still alive after this round
+  gameOver: boolean
+  winner?: string // playerName if only 1 remains
+}
 
 export type BRGameOverPayload = {
-  winner?: string;
-  survivingPlayers: string[];
-};
+  winner?: string
+  survivingPlayers: string[]
+}
 
 export type SessionEvent =
-  | { event: "player-joined"; data: PlayerJoinedPayload }
-  | { event: "player-left"; data: PlayerLeftPayload }
-  | { event: "team-created"; data: TeamCreatedPayload }
-  | { event: "team-updated"; data: TeamUpdatedPayload }
-  | { event: "vote-cast"; data: VoteCastPayload }
-  | { event: "votes-revealed"; data: VotesRevealedPayload }
-  | { event: "next-card"; data: NextCardPayload }
-  | { event: "game-started"; data: GameStartedPayload }
-  | { event: "game-finished"; data: GameFinishedPayload }
-  | { event: "highlow-round-start"; data: HighLowRoundStartPayload }
-  | { event: "highlow-number-submitted"; data: HighLowNumberSubmittedPayload }
-  | { event: "highlow-round-result"; data: HighLowRoundResultPayload }
-  | { event: "br-round-start"; data: BRRoundStartPayload }
-  | { event: "br-answer-submitted"; data: BRAnswerSubmittedPayload }
-  | { event: "br-round-reveal"; data: BRRoundRevealPayload }
-  | { event: "br-game-over"; data: BRGameOverPayload };
+  | { event: 'player-joined'; data: PlayerJoinedPayload }
+  | { event: 'player-left'; data: PlayerLeftPayload }
+  | { event: 'team-created'; data: TeamCreatedPayload }
+  | { event: 'team-updated'; data: TeamUpdatedPayload }
+  | { event: 'vote-cast'; data: VoteCastPayload }
+  | { event: 'votes-revealed'; data: VotesRevealedPayload }
+  | { event: 'next-card'; data: NextCardPayload }
+  | { event: 'game-started'; data: GameStartedPayload }
+  | { event: 'game-finished'; data: GameFinishedPayload }
+  | { event: 'highlow-round-start'; data: HighLowRoundStartPayload }
+  | { event: 'highlow-number-submitted'; data: HighLowNumberSubmittedPayload }
+  | { event: 'highlow-round-result'; data: HighLowRoundResultPayload }
+  | { event: 'br-round-start'; data: BRRoundStartPayload }
+  | { event: 'br-answer-submitted'; data: BRAnswerSubmittedPayload }
+  | { event: 'br-round-reveal'; data: BRRoundRevealPayload }
+  | { event: 'br-game-over'; data: BRGameOverPayload }
 
-export const sessionChannel = (pin: string) => `session-${pin}`;
+export const sessionChannel = (pin: string) => `session-${pin}`

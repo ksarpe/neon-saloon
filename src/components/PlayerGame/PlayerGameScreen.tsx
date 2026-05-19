@@ -11,6 +11,7 @@ import type {
   GameFinishedPayload,
 } from '@/lib/game-types'
 import type { Phase, PlayerGameScreenProps } from './types'
+import { REVEAL_COUNTDOWN_SECONDS } from '@/lib/game-config'
 import { PlayerHeader } from './PlayerHeader'
 import { PlayingView } from './PlayingView'
 import { VotedWaiting } from './VotedWaiting'
@@ -38,13 +39,18 @@ export default function PlayerGameScreen({
 
   // Visual countdown after reveal — host sends the actual next-card event
   useEffect(() => {
-    if (phase !== 'reveal') { setCountdown(null); return }
-    setCountdown(4)
-    let n = 4
+    if (phase !== 'reveal') {
+      setCountdown(null)
+      return
+    }
+    setCountdown(REVEAL_COUNTDOWN_SECONDS)
+    let n = REVEAL_COUNTDOWN_SECONDS
     const tick = setInterval(() => {
       n -= 1
-      if (n <= 0) { clearInterval(tick); setCountdown(null) }
-      else setCountdown(n)
+      if (n <= 0) {
+        clearInterval(tick)
+        setCountdown(null)
+      } else setCountdown(n)
     }, 1000)
     return () => clearInterval(tick)
   }, [phase, currentCardIndex])
@@ -98,7 +104,7 @@ export default function PlayerGameScreen({
       <PlayerHeader pin={pin} avatar={avatar} playerName={playerName} teamName={teamName} />
 
       <div className="relative z-10 flex flex-1 flex-col items-center justify-center overflow-y-auto px-4 py-6">
-        <div className="mx-auto flex w-full max-w-sm flex-col items-center gap-6">
+        <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-6">
           <AnimatePresence mode="wait">
             {/* Playing */}
             {phase === 'playing' && (

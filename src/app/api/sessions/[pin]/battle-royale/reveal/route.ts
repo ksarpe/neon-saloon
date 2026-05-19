@@ -5,6 +5,7 @@ import { triggerGameEvent } from '@/lib/appwrite/realtime'
 import type { BRAnswer } from '@/lib/appwrite/sessions'
 import { getSession, saveSession } from '@/lib/appwrite/sessions'
 import { QUESTION_CATEGORIES } from '@/lib/games/categories'
+import { getOrderedQuestion } from '@/lib/games/question-limit'
 import { isHostAuthorized } from '@/lib/session-host-auth'
 
 type RouteContext = { params: Promise<{ pin: string }> }
@@ -32,7 +33,9 @@ export async function POST(_request: Request, { params }: RouteContext) {
     if (!br) return NextResponse.json({ error: 'Not a battle-royale session' }, { status: 400 })
 
     const category = QUESTION_CATEGORIES.find((c) => c.id === br.categoryId)
-    const question = category?.questions[br.questionIndex]
+    const question = category
+      ? getOrderedQuestion(category.questions, br.questionIndex, br.questionOrder)
+      : undefined
     if (!question) return NextResponse.json({ error: 'No question found' }, { status: 400 })
 
     const alivePlayers = session.players.filter((p) => !br.eliminatedPlayers.includes(p.playerId))

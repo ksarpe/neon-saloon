@@ -11,6 +11,7 @@ import HostScreen from '@/components/Host'
 import type { SessionTeam } from '@/lib/appwrite/sessions'
 import { useBackButton } from '@/lib/back-button-context'
 import { QUESTION_CATEGORIES } from '@/lib/games/categories'
+import { QUESTIONS_PER_GAME, shuffleAndLimitQuestions } from '@/lib/games/question-limit'
 import { hostAuthHeaders, hostJsonHeaders } from '@/lib/session-host-secret'
 import type { GameCard } from '@/lib/store'
 import { buildDeck } from '@/lib/store'
@@ -22,15 +23,6 @@ type QuizApiQuestion = {
   text: string
   answer: string
   options: string[]
-}
-
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr]
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
-  }
-  return a
 }
 
 // ─── Shared picker shell ───────────────────────────────────────────────────────
@@ -132,7 +124,7 @@ function CategoryPicker({
             </p>
             <p className="text-text-muted text-xs leading-snug">{cat.description}</p>
             <p className="mt-1 text-xs font-semibold" style={{ color: cat.color, opacity: 0.6 }}>
-              {cat.questions.length} pytań
+              {Math.min(cat.questions.length, QUESTIONS_PER_GAME)} pytań w grze
             </p>
           </motion.button>
         ))}
@@ -428,7 +420,16 @@ export default function HostPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [neverSource, setNeverSource] = useState<NeverSource | null>(null)
   const [brCategoryId, setBrCategoryId] = useState<string | null>(null)
+  const [brQuestionOrder, setBrQuestionOrder] = useState<number[] | null>(null)
   const [brSetupLoading, setBrSetupLoading] = useState(false)
+  const [brTimerSeconds, setBrTimerSeconds] = useState(20)
+  useEffect(() => {
+    if (mode !== 'battle-royale') return
+    fetch('/api/settings')
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => { if (d?.brTimerSeconds) setBrTimerSeconds(d.brTimerSeconds) })
+      .catch(() => {})
+  }, [mode])
 
   // HighLow teams (null = not yet set up)
   const [hlTeam1, setHlTeam1] = useState<SessionTeam | null>(null)
@@ -511,12 +512,12 @@ export default function HostPage() {
 
   // Assemble final deck
   const deck = useMemo(() => {
-    if (mode === 'trivia') return shuffle(quizCards)
-    if (mode === 'categories') return categoryCards
+    if (mode === 'trivia') return shuffleAndLimitQuestions(quizCards)
+    if (mode === 'categories') return shuffleAndLimitQuestions(categoryCards)
     if (mode === 'never') {
-      if (neverSource === 'app') return shuffle(appNeverCards)
-      if (neverSource === 'own') return shuffle(customCards)
-      if (neverSource === 'all') return shuffle([...appNeverCards, ...customCards])
+      if (neverSource === 'app') return shuffleAndLimitQuestions(appNeverCards)
+      if (neverSource === 'own') return shuffleAndLimitQuestions(customCards)
+      if (neverSource === 'all') return shuffleAndLimitQuestions([...appNeverCards, ...customCards])
       return []
     }
     return []
@@ -553,11 +554,13 @@ export default function HostPage() {
           onSelect={async (catId) => {
             setBrSetupLoading(true)
             try {
-              await fetch(`/api/sessions/${pin}/battle-royale/setup`, {
+              const res = await fetch(`/api/sessions/${pin}/battle-royale/setup`, {
                 method: 'POST',
                 headers: hostJsonHeaders(pin),
-                body: JSON.stringify({ categoryId: catId }),
+                body: JSON.stringify({ categoryId: catId, timerDuration: brTimerSeconds }),
               })
+              const data = await res.json()
+              setBrQuestionOrder(Array.isArray(data.questionOrder) ? data.questionOrder : null)
               setBrCategoryId(catId)
             } finally {
               setBrSetupLoading(false)
@@ -568,7 +571,7 @@ export default function HostPage() {
         />
       )
     }
-    return <BattleRoyaleHost pin={pin} categoryId={brCategoryId} />
+    return <BattleRoyaleHost pin={pin} categoryId={brCategoryId} questionOrder={brQuestionOrder} />
   }
 
   // ── HighLow: team setup step then lobby ──────────────────────────────────
@@ -586,7 +589,15 @@ export default function HostPage() {
         />
       )
     }
-    return <HostHighLowScreen pin={pin} team1={hlTeam1} team2={hlTeam2} initialPlayers={[]} />
+    return (
+      <HostHighLowScreen
+        pin={pin}
+        team1={hlTeam1}
+        team2={hlTeam2}
+        initialPlayers={[]}
+        questionLimit={QUESTIONS_PER_GAME}
+      />
+    )
   }
 
   return <HostScreen pin={pin} initialCards={deck} gameMode={mode} />

@@ -21,11 +21,16 @@ export function GameCardStack({
   onFlip,
 }: Props) {
   const shadows = Math.min((cardsLeft ?? 1) - 1, 3)
+  const stackPadding = 20
 
   return (
     <div
       className="relative flex items-center justify-center"
-      style={{ perspective: '1200px', width: CARD_W + 20, height: CARD_H + 20 }}
+      style={{
+        perspective: '1200px',
+        width: `min(calc(100vw - 32px), ${CARD_W + stackPadding}px)`,
+        aspectRatio: `${CARD_W + stackPadding} / ${CARD_H + stackPadding}`,
+      }}
     >
       {/* Shadow cards */}
       {Array.from({ length: shadows }).map((_, i) => (
@@ -33,8 +38,8 @@ export function GameCardStack({
           key={i}
           className="absolute overflow-hidden rounded-2xl"
           style={{
-            width: CARD_W,
-            height: CARD_H,
+            width: `calc(100% - ${stackPadding}px)`,
+            height: `calc(100% - ${stackPadding}px)`,
             backgroundImage: "url('/bg/card1.png')",
             backgroundSize: 'cover',
             backgroundPosition: 'center',
@@ -47,7 +52,12 @@ export function GameCardStack({
       {/* Active card — 3D flip */}
       <motion.div
         className="absolute cursor-pointer"
-        style={{ zIndex: 10, width: CARD_W, height: CARD_H, transformStyle: 'preserve-3d' }}
+        style={{
+          zIndex: 10,
+          width: `calc(100% - ${stackPadding}px)`,
+          height: `calc(100% - ${stackPadding}px)`,
+          transformStyle: 'preserve-3d',
+        }}
         animate={{
           rotateY: isRevealed ? 360 : isFlipped ? 180 : 0,
           rotate: isFlipped || isRevealed ? -5 : 0,
@@ -63,7 +73,7 @@ export function GameCardStack({
           {!isRevealed ? (
             <div className="flex h-full w-full items-center justify-center">
               <p
-                className="text-sm font-bold tracking-[0.25em] uppercase"
+                className="text-sm font-bold tracking-[0.25em] uppercase sm:text-base"
                 style={{
                   color: 'var(--neon-pink)',
                   textShadow: '0 0 12px var(--neon-pink), 0 0 30px rgba(221,84,162,0.5)',
@@ -76,7 +86,7 @@ export function GameCardStack({
             <div className="flex h-full w-full flex-col items-center justify-center gap-3 px-6 text-center">
               <span className="text-3xl">🎉</span>
               <p
-                className="text-base leading-snug font-bold"
+                className="text-base leading-snug font-bold sm:text-lg"
                 style={{ color: 'var(--sheriff-pink)' }}
               >
                 {card.answer ?? 'Czas minął!'}
@@ -87,8 +97,8 @@ export function GameCardStack({
 
         {/* FRONT face */}
         <CardFace flipped>
-          <div className="flex h-full w-full flex-col items-center justify-center p-5 text-center">
-            <p className="text-lg leading-snug font-bold" style={{ color: '#1a1a1a' }}>
+          <div className="flex h-full w-full flex-col items-center justify-center p-5 text-center sm:p-7">
+            <p className="text-lg leading-snug font-bold sm:text-xl" style={{ color: '#1a1a1a' }}>
               {card.description}
             </p>
           </div>

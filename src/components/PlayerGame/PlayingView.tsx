@@ -27,7 +27,7 @@ export function PlayingView({ card, isFlipped, onFlip, loading, castVote }: Prop
             className="w-full"
           >
             {card.options && card.options.length > 0 ? (
-              <div className="flex w-full flex-col gap-2.5">
+              <div className="grid w-full grid-cols-1 gap-2.5 sm:grid-cols-2">
                 {card.options.map((opt, idx) => {
                   const letter = String.fromCharCode(65 + idx)
                   return (
@@ -36,7 +36,7 @@ export function PlayingView({ card, isFlipped, onFlip, loading, castVote }: Prop
                       whileTap={{ scale: 0.98 }}
                       disabled={loading}
                       onClick={() => castVote(idx, `${letter}: ${opt}`)}
-                      className="group relative flex w-full items-center gap-3 overflow-hidden rounded-2xl border-2 px-4 py-3.5 text-left"
+                      className="group relative flex min-h-[72px] w-full items-center gap-3 overflow-hidden rounded-2xl border-2 px-4 py-3.5 text-left"
                       style={{
                         borderColor: 'rgba(255,220,180,0.15)',
                         backgroundColor: 'rgba(255,220,180,0.05)',
@@ -52,14 +52,14 @@ export function PlayingView({ card, isFlipped, onFlip, loading, castVote }: Prop
                         style={{
                           backgroundColor: 'rgba(255,16,240,0.15)',
                           color: 'var(--neon-pink)',
-                          fontFamily: "var(--font-app)",
+                          fontFamily: 'var(--font-app)',
                           letterSpacing: '0.05em',
                           fontSize: '1rem',
                         }}
                       >
                         {letter}
                       </span>
-                      <span className="text-text-primary text-sm font-semibold leading-snug">
+                      <span className="text-text-primary text-sm leading-snug font-semibold">
                         {opt}
                       </span>
                     </motion.button>
@@ -108,7 +108,7 @@ export function PlayingView({ card, isFlipped, onFlip, loading, castVote }: Prop
                 borderColor: 'rgba(255,220,180,0.25)',
                 backgroundColor: 'rgba(255,220,180,0.06)',
                 color: 'rgba(255,220,180,0.8)',
-                fontFamily: "var(--font-app)",
+                fontFamily: 'var(--font-app)',
                 letterSpacing: '0.08em',
                 fontSize: '1rem',
               }}
@@ -126,7 +126,7 @@ export function PlayingView({ card, isFlipped, onFlip, loading, castVote }: Prop
                 backgroundColor: 'rgba(255,16,240,0.1)',
                 color: 'var(--neon-pink)',
                 boxShadow: '0 0 20px rgba(255,16,240,0.2)',
-                fontFamily: "var(--font-app)",
+                fontFamily: 'var(--font-app)',
                 letterSpacing: '0.08em',
                 fontSize: '1rem',
               }}

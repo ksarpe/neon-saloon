@@ -25,9 +25,22 @@ model User {
   neverQuestions      NeverQuestion[]
   quizQuestions       QuizQuestion[]
   passwordResetTokens PasswordResetToken[]
+  gameSettings        GameSettings?
 
   @@index([email])
   @@index([stripeCustomerId])
+}
+
+model GameSettings {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  revealCountdownSeconds Int @default(4)
+  brTimerSeconds         Int @default(20)
+  brAutoNextSeconds      Int @default(10)
+
+  updatedAt DateTime @updatedAt
 }
 
 model NeverQuestion {

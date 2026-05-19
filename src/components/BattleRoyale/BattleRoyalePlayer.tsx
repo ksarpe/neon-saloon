@@ -262,7 +262,7 @@ export default function BattleRoyalePlayer({
                 </div>
 
                 {/* Options */}
-                <div className="flex flex-col gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {roundData.options.map((opt, i) => (
                     <motion.button
                       key={i}

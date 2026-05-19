@@ -5,11 +5,9 @@ import { Flag, Menu, X, Zap } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 import type { VoteCastPayload } from '@/lib/game-types'
-import { BRIDAL_QUIZ_TITLE, NEVER_TITLE } from '@/lib/games/default-deck'
 import type { GameCard } from '@/lib/store'
 
 import type { HostPhase, LivePlayer } from './types'
-import { ACCENT } from './types'
 
 interface Props {
   phase: HostPhase
@@ -34,13 +32,6 @@ export function HostHeader({
 }: Props) {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
-  const cardTypeLabel =
-    currentCard?.title ??
-    (currentCard?.type === 'QUIZ'
-      ? BRIDAL_QUIZ_TITLE
-      : currentCard?.type === 'NEVER'
-        ? NEVER_TITLE
-        : currentCard?.type)
 
   useEffect(() => {
     if (!menuOpen) return
@@ -58,40 +49,24 @@ export function HostHeader({
       className="relative z-20 shrink-0 border-b"
       style={{ borderColor: 'rgba(255,220,180,0.1)' }}
     >
-      <div className="mx-auto grid max-w-5xl grid-cols-3 items-center px-6 py-4">
+      <div className="mx-auto flex max-w-5xl items-center gap-3 px-3 py-3 sm:px-6 sm:py-4">
         {/* Left: PIN */}
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
           <Zap size={14} style={{ color: 'var(--neon-pink)' }} />
-          <span className="text-text-muted text-xs font-semibold tracking-widest uppercase">
+          <span className="text-text-muted truncate text-xs font-semibold tracking-widest uppercase">
             PIN: <span className="text-text-primary">{pin}</span>
           </span>
         </div>
 
-        {/* Center: card type + progress */}
-        <div className="flex items-center justify-center gap-2">
+        {/* Right: progress + vote count + menu */}
+        <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3">
           {phase === 'active' && currentCard && (
-            <>
-              <span
-                className="max-w-[180px] truncate rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-widest uppercase"
-                style={{
-                  color: ACCENT[currentCard.type] ?? 'var(--neon-pink)',
-                  borderColor: `${ACCENT[currentCard.type] ?? 'var(--neon-pink)'}55`,
-                  backgroundColor: `${ACCENT[currentCard.type] ?? 'var(--neon-pink)'}15`,
-                }}
-              >
-                {cardTypeLabel}
-              </span>
-              <span className="text-text-muted text-xs font-semibold tabular-nums">
-                {cardIndex + 1} / {totalCards}
-              </span>
-            </>
+            <span className="text-text-muted text-xs font-semibold whitespace-nowrap tabular-nums">
+              {cardIndex + 1} / {totalCards}
+            </span>
           )}
-        </div>
-
-        {/* Right: vote count + LIVE + menu */}
-        <div className="flex items-center justify-end gap-3">
           {phase === 'active' && (
-            <span className="text-text-muted text-xs font-semibold tabular-nums">
+            <span className="text-text-muted text-xs font-semibold whitespace-nowrap tabular-nums">
               <span className="text-text-primary">{currentVotes.length}</span>
               {' / '}
               <span className="text-text-primary">{players.length}</span>

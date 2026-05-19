@@ -18,9 +18,9 @@ import type {
   BRRoundRevealPayload,
 } from '@/lib/game-types'
 import { QUESTION_CATEGORIES } from '@/lib/games/categories'
-
-const TIMER_SECONDS = 20
-const AUTO_NEXT_SECONDS = 10
+import { getLimitedQuestionTotal, getOrderedQuestion } from '@/lib/games/question-limit'
+import { BR_TIMER_SECONDS, BR_AUTO_NEXT_SECONDS } from '@/lib/game-config'
+import type { GameSettingsPayload } from '@/app/api/settings/route'
 
 type BRPhase = 'setup' | 'lobby' | 'question' | 'reveal' | 'gameover'
 
@@ -46,14 +46,28 @@ interface BRRevealResult {
 interface Props {
   pin: string
   categoryId: string
+  questionOrder?: number[] | null
 }
 
-export default function BattleRoyaleHost({ pin, categoryId }: Props) {
+export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Props) {
   const { setHidden: setBackHidden } = useBackButton()
   useEffect(() => {
     setBackHidden(true)
     return () => setBackHidden(false)
   }, [setBackHidden])
+
+  // Game settings (fetched once; falls back to global defaults)
+  const [gameSettings, setGameSettings] = useState<GameSettingsPayload>({
+    revealCountdownSeconds: 4,
+    brTimerSeconds: BR_TIMER_SECONDS,
+    brAutoNextSeconds: BR_AUTO_NEXT_SECONDS,
+  })
+  useEffect(() => {
+    fetch('/api/settings')
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => { if (d) setGameSettings(d) })
+      .catch(() => {})
+  }, [])
 
   // Host identity
   const [hostName, setHostName] = useState('')
@@ -69,7 +83,7 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
   const [eliminatedIds, setEliminatedIds] = useState<Set<string>>(new Set())
   const [answeredIds, setAnsweredIds] = useState<Set<string>>(new Set())
   const [questionIndex, setQuestionIndex] = useState(0)
-  const [timerLeft, setTimerLeft] = useState(TIMER_SECONDS)
+  const [timerLeft, setTimerLeft] = useState(BR_TIMER_SECONDS)
   const [timerDone, setTimerDone] = useState(false)
   const [revealData, setRevealData] = useState<BRRevealResult | null>(null)
   const [winner, setWinner] = useState<string | undefined>()
@@ -77,13 +91,18 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
   const [nextCountdown, setNextCountdown] = useState<number | null>(null)
 
   const category = QUESTION_CATEGORIES.find((c) => c.id === categoryId)
-  const question = category?.questions[questionIndex]
+  const question = category
+    ? getOrderedQuestion(category.questions, questionIndex, questionOrder ?? undefined)
+    : undefined
+  const totalQuestions = category
+    ? getLimitedQuestionTotal(category.questions.length, questionOrder ?? undefined)
+    : 0
 
   // Question timer
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const startTimer = useCallback(() => {
-    setTimerLeft(TIMER_SECONDS)
+    setTimerLeft(gameSettings.brTimerSeconds)
     setTimerDone(false)
     if (timerRef.current) clearInterval(timerRef.current)
     timerRef.current = setInterval(() => {
@@ -96,7 +115,7 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
         return t - 1
       })
     }, 1000)
-  }, [])
+  }, [gameSettings.brTimerSeconds])
 
   useEffect(
     () => () => {
@@ -211,7 +230,7 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
       setNextCountdown(null)
       return
     }
-    let n = AUTO_NEXT_SECONDS
+    let n = gameSettings.brAutoNextSeconds
     setNextCountdown(n)
     const tick = setInterval(() => {
       n -= 1
@@ -224,7 +243,7 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
       }
     }, 1000)
     return () => clearInterval(tick)
-  }, [phase, questionIndex])
+  }, [phase, questionIndex, gameSettings.brAutoNextSeconds])
 
   // Actions
   const handleSetupComplete = useCallback(() => {
@@ -303,7 +322,7 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
     [hostPlayerId, hostHasAnswered, hostAnswerLoading, pin, hostName, hostAvatar]
   )
 
-  const timerPct = (timerLeft / TIMER_SECONDS) * 100
+  const timerPct = (timerLeft / gameSettings.brTimerSeconds) * 100
   const hostIsEliminated = hostPlayerId ? eliminatedIds.has(hostPlayerId) : false
 
   return (
@@ -367,7 +386,7 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
                       </span>
                       <span className="text-text-muted text-xs">•</span>
                       <span className="text-text-muted text-xs">
-                        Pytanie {questionIndex + 1} / {category?.questions.length}
+                        Pytanie {questionIndex + 1} / {totalQuestions}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
@@ -417,7 +436,7 @@ export default function BattleRoyaleHost({ pin, categoryId }: Props) {
                   </div>
 
                   {/* Options — host can click to answer */}
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     {question.options.map((opt, i) => {
                       const isSelected = selectedOptionIndex === i
                       const canAnswer = !hostHasAnswered && !hostIsEliminated && !hostAnswerLoading

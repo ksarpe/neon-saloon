@@ -29,7 +29,7 @@ export function HostVoteButtons({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
-          className="w-full max-w-sm"
+          className="w-full max-w-2xl"
         >
           {/* Already voted */}
           {hostHasVoted ? (
@@ -42,7 +42,6 @@ export function HostVoteButtons({
                 Twój głos zapisany
               </span>
             </div>
-
           ) : card.type === 'NEVER' ? (
             /* NEVER: Nie piję / Piję */
             <div className="flex gap-3">
@@ -55,7 +54,7 @@ export function HostVoteButtons({
                   borderColor: 'rgba(255,220,180,0.25)',
                   backgroundColor: 'rgba(255,220,180,0.06)',
                   color: 'rgba(255,220,180,0.8)',
-                  fontFamily: "var(--font-app)",
+                  fontFamily: 'var(--font-app)',
                   letterSpacing: '0.08em',
                   fontSize: '0.95rem',
                 }}
@@ -73,7 +72,7 @@ export function HostVoteButtons({
                   backgroundColor: 'rgba(255,16,240,0.1)',
                   color: 'var(--neon-pink)',
                   boxShadow: '0 0 20px rgba(255,16,240,0.2)',
-                  fontFamily: "var(--font-app)",
+                  fontFamily: 'var(--font-app)',
                   letterSpacing: '0.08em',
                   fontSize: '0.95rem',
                 }}
@@ -82,10 +81,9 @@ export function HostVoteButtons({
                 PIJĘ
               </motion.button>
             </div>
-
           ) : card.options && card.options.length > 0 ? (
             /* Multiple choice options */
-            <div className="flex flex-col gap-2">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {card.options.map((opt, idx) => {
                 const letter = String.fromCharCode(65 + idx)
                 return (
@@ -94,7 +92,7 @@ export function HostVoteButtons({
                     whileTap={{ scale: 0.98 }}
                     disabled={hostLoading}
                     onClick={() => onHostVote(idx, `${letter}: ${opt}`)}
-                    className="flex w-full items-center gap-3 rounded-2xl border-2 px-4 py-3 text-left disabled:opacity-40"
+                    className="flex min-h-16 w-full items-center gap-3 rounded-2xl border-2 px-4 py-3 text-left disabled:opacity-40"
                     style={{
                       borderColor: 'rgba(255,220,180,0.15)',
                       backgroundColor: 'rgba(255,220,180,0.05)',
@@ -110,7 +108,7 @@ export function HostVoteButtons({
                       style={{
                         backgroundColor: 'rgba(255,16,240,0.15)',
                         color: 'var(--neon-pink)',
-                        fontFamily: "var(--font-app)",
+                        fontFamily: 'var(--font-app)',
                       }}
                     >
                       {letter}
@@ -122,7 +120,6 @@ export function HostVoteButtons({
                 )
               })}
             </div>
-
           ) : (
             /* Boolean yes / no */
             <div className="flex gap-3">

@@ -43,7 +43,7 @@ export function ActiveCardView({
   const isHostPlayer = hostPlayerId !== null && players.some((p) => p.playerId === hostPlayerId)
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col items-center justify-center gap-6">
+    <div className="mx-auto flex w-full max-w-3xl flex-col items-center justify-center gap-6">
       {/* Card — always face-up on host screen */}
       <GameCardStack
         card={card}
@@ -63,9 +63,7 @@ export function ActiveCardView({
               <motion.div
                 animate={{
                   borderColor: hasVoted ? 'var(--neon-pink)' : 'var(--saloon-border)',
-                  backgroundColor: hasVoted
-                    ? 'rgba(255,16,240,0.12)'
-                    : 'rgba(255,220,180,0.07)',
+                  backgroundColor: hasVoted ? 'rgba(255,16,240,0.12)' : 'rgba(255,220,180,0.07)',
                 }}
                 transition={{ duration: 0.3 }}
                 className="flex h-12 w-12 items-center justify-center rounded-full border-2 text-2xl"

@@ -4,6 +4,7 @@ import { triggerGameEvent } from '@/lib/appwrite/realtime'
 import type { BRAnswer } from '@/lib/appwrite/sessions'
 import { getSession, saveSession } from '@/lib/appwrite/sessions'
 import { QUESTION_CATEGORIES } from '@/lib/games/categories'
+import { getOrderedQuestion } from '@/lib/games/question-limit'
 import {
   INPUT_LIMITS,
   optionalString,
@@ -51,7 +52,9 @@ export async function POST(request: Request, { params }: RouteContext) {
     }
 
     const category = QUESTION_CATEGORIES.find((c) => c.id === br.categoryId)
-    const question = category?.questions[br.questionIndex]
+    const question = category
+      ? getOrderedQuestion(category.questions, br.questionIndex, br.questionOrder)
+      : undefined
     const isCorrect = question ? question.options[answerIndex] === question.answer : false
 
     const answeredAt = Date.now()

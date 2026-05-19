@@ -15,6 +15,8 @@ import type {
   NextCardPayload,
 } from '@/lib/game-types'
 import type { GameCard } from '@/lib/store'
+import { REVEAL_COUNTDOWN_SECONDS } from '@/lib/game-config'
+import type { GameSettingsPayload } from '@/app/api/settings/route'
 import type { LivePlayer, ScoreEntry, TeamScoreEntry, HostPhase, HostScreenProps, VoteRecord } from './types'
 import { computeTeamScores } from './types'
 import { SetupView } from './SetupView'
@@ -28,6 +30,19 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
     setBackHidden(true)
     return () => setBackHidden(false)
   }, [setBackHidden])
+
+  // ── Game settings (fetched once; falls back to global defaults) ─────────────
+  const [gameSettings, setGameSettings] = useState<GameSettingsPayload>({
+    revealCountdownSeconds: REVEAL_COUNTDOWN_SECONDS,
+    brTimerSeconds: 20,
+    brAutoNextSeconds: 10,
+  })
+  useEffect(() => {
+    fetch('/api/settings')
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => { if (d) setGameSettings(d) })
+      .catch(() => {})
+  }, [])
 
   // ── Host identity ────────────────────────────────────────────────────────────
   const [hostName, setHostName] = useState('')
@@ -319,8 +334,9 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
   useEffect(() => { handleNextCardRef.current = handleNextCard })
   useEffect(() => {
     if (!isRevealed) { setCountdown(null); return }
-    setCountdown(4)
-    let n = 4
+    const secs = gameSettings.revealCountdownSeconds
+    setCountdown(secs)
+    let n = secs
     const tick = setInterval(() => {
       n -= 1
       if (n <= 0) {
@@ -332,7 +348,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
       }
     }, 1000)
     return () => clearInterval(tick)
-  }, [isRevealed, cardIndex])
+  }, [isRevealed, cardIndex, gameSettings.revealCountdownSeconds])
 
   // ── Derived scores ────────────────────────────────────────────────────────────
   const drinksScores = scores

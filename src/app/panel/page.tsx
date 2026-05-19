@@ -16,6 +16,7 @@ import {
   Save,
   Send,
   Settings,
+  SlidersHorizontal,
   Trash2,
   X,
 } from 'lucide-react'
@@ -26,6 +27,7 @@ import { Suspense } from 'react'
 import { useEffect, useRef, useState } from 'react'
 
 import { getPasswordPolicyError } from '@/lib/password-policy'
+import { REVEAL_COUNTDOWN_SECONDS, BR_TIMER_SECONDS, BR_AUTO_NEXT_SECONDS } from '@/lib/game-config'
 
 interface Question {
   id: string
@@ -38,7 +40,7 @@ interface QuizQuestion extends Question {
   options: string[]
 }
 
-type PanelTab = 'quiz' | 'never' | 'account'
+type PanelTab = 'quiz' | 'never' | 'account' | 'settings'
 type CheckoutState = 'success' | 'cancelled' | null
 type PaymentStatusKind = 'checking' | 'active' | 'pending' | 'failed' | 'cancelled'
 type PlanId = 'monthly' | 'lifetime'
@@ -1086,6 +1088,180 @@ function PaymentStatusBanner({ checkoutState }: { checkoutState: CheckoutState }
   )
 }
 
+const SETTING_LIMITS = {
+  revealCountdownSeconds: { min: 2, max: 15, step: 1 },
+  brTimerSeconds: { min: 5, max: 60, step: 5 },
+  brAutoNextSeconds: { min: 3, max: 30, step: 1 },
+}
+
+function GameSettingsTab() {
+  const [values, setValues] = useState({
+    revealCountdownSeconds: REVEAL_COUNTDOWN_SECONDS,
+    brTimerSeconds: BR_TIMER_SECONDS,
+    brAutoNextSeconds: BR_AUTO_NEXT_SECONDS,
+  })
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then((r) => r.json())
+      .then((data) => {
+        setValues({
+          revealCountdownSeconds: data.revealCountdownSeconds,
+          brTimerSeconds: data.brTimerSeconds,
+          brAutoNextSeconds: data.brAutoNextSeconds,
+        })
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [])
+
+  const handleSave = async () => {
+    setSaving(true)
+    setError(null)
+    setSaved(false)
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      })
+      if (!res.ok) throw new Error()
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2500)
+    } catch {
+      setError('Nie udało się zapisać ustawień.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const fields: Array<{
+    key: keyof typeof values
+    label: string
+    description: string
+    color: string
+  }> = [
+    {
+      key: 'revealCountdownSeconds',
+      label: 'Przerwa między rundami',
+      description: 'Sekund odliczania po odsłonięciu wyników, zanim pojawi się następna karta (tryb standardowy)',
+      color: 'var(--neon-pink)',
+    },
+    {
+      key: 'brTimerSeconds',
+      label: 'Czas na odpowiedź — Battle Royale',
+      description: 'Sekund na odpowiedź w każdej rundzie Battle Royale',
+      color: 'var(--sheriff-pink)',
+    },
+    {
+      key: 'brAutoNextSeconds',
+      label: 'Przerwa po rewolacji — Battle Royale',
+      description: 'Sekund po pokazaniu wyników rundy, zanim automatycznie startuje kolejna',
+      color: '#a78bfa',
+    },
+  ]
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div
+        className="rounded-2xl border p-5"
+        style={{ borderColor: 'rgba(255,220,180,0.12)', backgroundColor: 'rgba(13,8,24,0.5)' }}
+      >
+        <p className="mb-1 text-xs font-semibold tracking-widest uppercase" style={{ color: '#34d399' }}>
+          Ustawienia gier
+        </p>
+        <p className="text-text-muted mb-6 text-xs">
+          Globalne domyślne wartości dla wszystkich Twoich gier. Zmiany obowiązują od następnej sesji.
+        </p>
+
+        {loading ? (
+          <div className="flex items-center gap-2 py-4">
+            <Loader2 size={14} className="animate-spin" style={{ color: 'rgba(255,220,180,0.4)' }} />
+            <span className="text-text-muted text-xs">Ładowanie…</span>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-6">
+            {fields.map((f) => {
+              const limits = SETTING_LIMITS[f.key]
+              const value = values[f.key]
+              const pct = ((value - limits.min) / (limits.max - limits.min)) * 100
+              return (
+                <div key={f.key} className="flex flex-col gap-2">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <div>
+                      <p className="text-xs font-semibold tracking-wide" style={{ color: f.color }}>
+                        {f.label}
+                      </p>
+                      <p className="text-text-muted mt-0.5 text-xs">{f.description}</p>
+                    </div>
+                    <span
+                      className="shrink-0 rounded-lg px-3 py-1 text-sm font-bold tabular-nums"
+                      style={{ backgroundColor: 'rgba(255,220,180,0.08)', color: f.color }}
+                    >
+                      {value}s
+                    </span>
+                  </div>
+                  <div className="relative pt-1">
+                    <input
+                      type="range"
+                      min={limits.min}
+                      max={limits.max}
+                      step={limits.step}
+                      value={value}
+                      onChange={(e) =>
+                        setValues((prev) => ({ ...prev, [f.key]: Number(e.target.value) }))
+                      }
+                      className="w-full cursor-pointer appearance-none rounded-full"
+                      style={{
+                        height: '4px',
+                        background: `linear-gradient(to right, ${f.color} ${pct}%, rgba(255,220,180,0.12) ${pct}%)`,
+                        accentColor: f.color,
+                      }}
+                    />
+                    <div className="mt-1 flex justify-between">
+                      <span className="text-text-muted text-xs">{limits.min}s</span>
+                      <span className="text-text-muted text-xs">{limits.max}s</span>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+
+            <div className="mt-2 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={saving}
+                className="flex items-center gap-2 rounded-xl border px-5 py-2.5 text-xs font-bold tracking-widest uppercase transition-colors disabled:opacity-50"
+                style={{ borderColor: '#34d399', color: '#34d399' }}
+              >
+                {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
+                {saving ? 'Zapisywanie…' : 'Zapisz'}
+              </button>
+              {saved && (
+                <span className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: '#34d399' }}>
+                  <CheckCircle2 size={13} />
+                  Zapisano
+                </span>
+              )}
+              {error && (
+                <span className="flex items-center gap-1.5 text-xs" style={{ color: '#f87171' }}>
+                  <AlertCircle size={13} />
+                  {error}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function PanelContent() {
   const { data: session } = useSession()
   const searchParams = useSearchParams()
@@ -1121,6 +1297,13 @@ function PanelContent() {
       description: 'subskrypcja, dane i hasło',
       icon: Settings,
       color: '#a78bfa',
+    },
+    {
+      id: 'settings',
+      label: 'Ustawienia gier',
+      description: 'czasy, timery i globalne wartości',
+      icon: SlidersHorizontal,
+      color: '#34d399',
     },
   ]
 
@@ -1164,7 +1347,7 @@ function PanelContent() {
       <div className="relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-6 py-8">
         <PaymentStatusBanner checkoutState={checkoutState} />
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {tabs.map((tab) => {
             const active = activeTab === tab.id
             const Icon = tab.icon
@@ -1194,6 +1377,7 @@ function PanelContent() {
         {activeTab === 'quiz' && <QuizTab />}
         {activeTab === 'never' && <NeverTab />}
         {activeTab === 'account' && <AccountTab />}
+        {activeTab === 'settings' && <GameSettingsTab />}
       </div>
     </div>
   )

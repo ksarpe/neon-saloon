@@ -7,6 +7,7 @@ import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
 import { useBackButton } from '@/lib/back-button-context'
 import { GameSummary } from '@/components/GameSummary'
 import { HIGHLOW_QUESTIONS } from '@/lib/games/highlow'
+import { QUESTIONS_PER_GAME, limitQuestions } from '@/lib/games/question-limit'
 import { hostAuthHeaders, hostJsonHeaders } from '@/lib/session-host-secret'
 import { playerJsonHeaders, savePlayerSecret } from '@/lib/session-player-secret'
 import { HostSetupView } from './HostSetupView'
@@ -23,9 +24,16 @@ interface Props {
   team1: SessionTeam
   team2: SessionTeam
   initialPlayers: SessionPlayer[]
+  questionLimit?: number
 }
 
-export default function HostHighLowScreen({ pin, team1, team2, initialPlayers }: Props) {
+export default function HostHighLowScreen({
+  pin,
+  team1,
+  team2,
+  initialPlayers,
+  questionLimit = QUESTIONS_PER_GAME,
+}: Props) {
   const { setHidden: setBackHidden } = useBackButton()
   useEffect(() => {
     setBackHidden(true)
@@ -54,6 +62,10 @@ export default function HostHighLowScreen({ pin, team1, team2, initialPlayers }:
   const votingTeamId = guessingTeamId === team1.teamId ? team2.teamId : team1.teamId
   const guessingTeam = guessingTeamId === team1.teamId ? team1 : team2
   const votingTeam = votingTeamId === team1.teamId ? team1 : team2
+  const highLowQuestions = useMemo(
+    () => limitQuestions(HIGHLOW_QUESTIONS, questionLimit),
+    [questionLimit]
+  )
 
   const teamPlayers = useCallback(
     (teamId: string) => players.filter((p) => p.teamId === teamId),
@@ -70,8 +82,8 @@ export default function HostHighLowScreen({ pin, team1, team2, initialPlayers }:
   )
 
   const currentQuestion = useMemo(
-    () => HIGHLOW_QUESTIONS[roundIndex % HIGHLOW_QUESTIONS.length],
-    [roundIndex]
+    () => highLowQuestions[roundIndex % highLowQuestions.length],
+    [highLowQuestions, roundIndex]
   )
 
   const guessingCaptain = currentCaptain(guessingTeamId)
@@ -170,7 +182,7 @@ export default function HostHighLowScreen({ pin, team1, team2, initialPlayers }:
       const vCaptain = currentCaptain(vTeamId)
       if (!gCaptain || !vCaptain) return
 
-      const q = HIGHLOW_QUESTIONS[rIdx % HIGHLOW_QUESTIONS.length]
+      const q = highLowQuestions[rIdx % highLowQuestions.length]
       const gTeam = gTeamId === team1.teamId ? team1 : team2
       const vTeam = vTeamId === team1.teamId ? team1 : team2
 
@@ -195,13 +207,23 @@ export default function HostHighLowScreen({ pin, team1, team2, initialPlayers }:
       resetCaptainState()
       setPhase('guessing')
     },
-    [currentCaptain, pin, team1, team2, resetCaptainState]
+    [currentCaptain, highLowQuestions, pin, team1, team2, resetCaptainState]
   )
 
   const handleStart = useCallback(() => startRound(0, team1.teamId), [startRound, team1.teamId])
 
   const handleNextRound = useCallback(async () => {
     const nextRoundIndex = roundIndex + 1
+    if (nextRoundIndex >= highLowQuestions.length) {
+      await fetch(`/api/sessions/${pin}`, {
+        method: 'POST',
+        headers: hostJsonHeaders(pin),
+        body: JSON.stringify({ action: 'finish', scores, teamScores: [] }),
+      })
+      setPhase('finished')
+      return
+    }
+
     const nextGuessingTeamId = votingTeamId
     const newCaptainIndices = {
       ...captainIndices,
@@ -212,7 +234,16 @@ export default function HostHighLowScreen({ pin, team1, team2, initialPlayers }:
     setGuessingTeamId(nextGuessingTeamId)
     setCaptainIndices(newCaptainIndices)
     await startRound(nextRoundIndex, nextGuessingTeamId)
-  }, [roundIndex, votingTeamId, guessingTeamId, captainIndices, startRound])
+  }, [
+    roundIndex,
+    highLowQuestions.length,
+    pin,
+    scores,
+    votingTeamId,
+    guessingTeamId,
+    captainIndices,
+    startRound,
+  ])
 
   const handleFinish = useCallback(async () => {
     setMenuOpen(false)
@@ -285,7 +316,7 @@ export default function HostHighLowScreen({ pin, team1, team2, initialPlayers }:
                     backgroundColor: 'rgba(255,215,0,0.08)',
                   }}
                 >
-                  Runda {roundIndex + 1}
+                  Runda {roundIndex + 1} / {highLowQuestions.length}
                 </span>
               )}
             </div>
