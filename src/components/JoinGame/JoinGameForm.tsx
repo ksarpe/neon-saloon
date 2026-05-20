@@ -403,22 +403,27 @@ export default function JoinGameForm() {
         })
         if (!res.ok) throw new Error()
         const data = await res.json()
+        const resolvedPlayerName =
+          typeof data.playerName === 'string' ? data.playerName : playerName
+        const resolvedTeamName =
+          typeof data.teamName === 'string' ? data.teamName : (teamName ?? null)
         if (typeof data.playerSecret === 'string') {
           savePlayerSession(pin, {
             playerId: data.playerId,
             playerSecret: data.playerSecret,
-            playerName,
+            playerName: resolvedPlayerName,
             avatar: data.avatar,
             teamId: data.teamId ?? null,
-            teamName,
+            teamName: resolvedTeamName,
             gameMode,
           })
         }
+        setPlayerName(resolvedPlayerName)
         setPlayerInfo({
           playerId: data.playerId,
           avatar: data.avatar,
           teamId: data.teamId,
-          teamName,
+          teamName: resolvedTeamName,
         })
         setStep('waiting')
       } catch {

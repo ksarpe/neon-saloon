@@ -2,6 +2,8 @@
 
 import { motion } from 'framer-motion'
 
+import { PlayerAvatar } from '@/components/PlayerAvatar'
+
 import { PulsingDots } from './PulsingDots'
 
 interface Props {
@@ -19,10 +21,10 @@ export function PlayerWaiting({ avatar, teamName }: Props) {
       className="flex flex-col items-center gap-6 text-center"
     >
       <div
-        className="flex h-24 w-24 items-center justify-center rounded-full border-2 text-5xl"
+        className="flex h-24 w-24 items-center justify-center rounded-full border-2"
         style={{ borderColor: 'rgba(255,215,0,0.4)', backgroundColor: 'rgba(255,215,0,0.06)' }}
       >
-        {avatar}
+        <PlayerAvatar avatar={avatar} size={56} />
       </div>
       <div>
         <h1

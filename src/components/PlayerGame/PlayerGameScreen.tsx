@@ -1,10 +1,11 @@
-'use client'
+﻿'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 
+import { useAutoCountdown } from '@/hooks/useAutoCountdown'
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
-import { REVEAL_COUNTDOWN_SECONDS } from '@/lib/game-config'
+import { REVEAL_COUNTDOWN_SECONDS } from '@/config/game'
 import type {
   GameFinishedPayload,
   NextCardPayload,
@@ -39,25 +40,11 @@ export default function PlayerGameScreen({
   const [finishData, setFinishData] = useState<GameFinishedPayload | null>(null)
   const [loading, setLoading] = useState(false)
   const [voteError, setVoteError] = useState<string | null>(null)
-  const [countdown, setCountdown] = useState<number | null>(null)
-
-  // Visual countdown after reveal — host sends the actual next-card event
-  useEffect(() => {
-    if (phase !== 'reveal') {
-      setCountdown(null)
-      return
-    }
-    setCountdown(REVEAL_COUNTDOWN_SECONDS)
-    let n = REVEAL_COUNTDOWN_SECONDS
-    const tick = setInterval(() => {
-      n -= 1
-      if (n <= 0) {
-        clearInterval(tick)
-        setCountdown(null)
-      } else setCountdown(n)
-    }, 1000)
-    return () => clearInterval(tick)
-  }, [phase, currentCardIndex])
+  const countdown = useAutoCountdown({
+    active: phase === 'reveal',
+    seconds: REVEAL_COUNTDOWN_SECONDS,
+    resetKey: currentCardIndex,
+  })
 
   useGameSocket(pin, {
     onVotesRevealed: useCallback((d: VotesRevealedPayload) => {
@@ -190,3 +177,4 @@ export default function PlayerGameScreen({
     </div>
   )
 }
+

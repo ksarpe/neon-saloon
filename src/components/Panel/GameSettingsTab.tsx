@@ -1,9 +1,9 @@
-'use client'
+﻿'use client'
 
 import { AlertCircle, CheckCircle2, Loader2, Save } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-import { BR_AUTO_NEXT_SECONDS, BR_TIMER_SECONDS, REVEAL_COUNTDOWN_SECONDS } from '@/lib/game-config'
+import { BR_AUTO_NEXT_SECONDS, BR_TIMER_SECONDS, REVEAL_COUNTDOWN_SECONDS } from '@/config/game'
 
 import { panelButtonHover } from './shared'
 
@@ -251,3 +251,4 @@ export function GameSettingsTab() {
     </div>
   )
 }
+

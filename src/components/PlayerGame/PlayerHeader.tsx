@@ -1,5 +1,7 @@
 'use client'
 
+import { PlayerAvatar } from '@/components/PlayerAvatar'
+
 interface Props {
   pin: string
   avatar: string
@@ -12,7 +14,7 @@ export function PlayerHeader({ pin, avatar, playerName, teamName }: Props) {
     <div className="border-saloon-border relative z-10 flex shrink-0 items-center justify-between border-b px-4 py-3">
       {/* Player identity */}
       <div className="flex items-center gap-2">
-        <span className="text-xl">{avatar}</span>
+        <PlayerAvatar avatar={avatar} size={24} />
         <div>
           <p className="text-text-primary text-xs leading-none font-bold">{playerName}</p>
           {teamName && (

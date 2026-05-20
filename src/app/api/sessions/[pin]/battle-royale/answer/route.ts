@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server'
 
 import { triggerGameEvent } from '@/lib/appwrite/realtime'
 import type { BRAnswer } from '@/lib/appwrite/sessions'
-import { getSession, saveSession } from '@/lib/appwrite/sessions'
-import { QUESTION_CATEGORIES } from '@/lib/games/categories'
+import { saveSession } from '@/lib/appwrite/sessions'
+import { QUESTION_CATEGORIES } from '@/config/games/categories'
 import { getOrderedQuestion } from '@/lib/games/question-limit'
 import {
   INPUT_LIMITS,
@@ -14,7 +14,7 @@ import {
   validationErrorResponse,
 } from '@/lib/request-validation'
 import { enforceSessionActionRateLimit } from '@/lib/session-action-rate-limit'
-import { getAuthorizedPlayer } from '@/lib/session-player-auth'
+import { requirePlayerSession } from '@/lib/session-api'
 
 type RouteContext = { params: Promise<{ pin: string }> }
 
@@ -31,10 +31,10 @@ export async function POST(request: Request, { params }: RouteContext) {
     const answerIndex = requiredInteger(body.answerIndex, 'answerIndex', -1, 20)
     const answerText = optionalString(body.answerText, 'answerText', INPUT_LIMITS.answerText) ?? ''
 
-    const session = await getSession(pin)
-    if (!session) return NextResponse.json({ error: 'Session not found' }, { status: 404 })
-    const player = getAuthorizedPlayer(request, session, playerId)
-    if (!player) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    const playerSession = await requirePlayerSession(request, pin, playerId)
+    if (!playerSession.ok) return playerSession.response
+    const { player, session } = playerSession.value
+
     const rateLimitResponse = enforceSessionActionRateLimit(
       'battleRoyaleAnswer',
       pin,

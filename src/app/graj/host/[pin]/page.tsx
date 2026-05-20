@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
@@ -15,7 +15,7 @@ import {
   TriviaDeckState,
 } from '@/components/HostSetup/HostPickers'
 import type { SessionTeam } from '@/lib/appwrite/sessions'
-import { QUESTION_CATEGORIES } from '@/lib/games/categories'
+import { QUESTION_CATEGORIES } from '@/config/games/categories'
 import { QUESTIONS_PER_GAME, shuffleAndLimitQuestions } from '@/lib/games/question-limit'
 import { hostAuthHeaders, hostJsonHeaders } from '@/lib/session-host-secret'
 import type { GameCard } from '@/lib/store'

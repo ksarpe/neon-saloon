@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server'
 
 import { triggerGameEvent as triggerSessionEvent } from '@/lib/appwrite/realtime'
-import { getSession, updateSession } from '@/lib/appwrite/sessions'
+import { updateSession } from '@/lib/appwrite/sessions'
 import {
   INPUT_LIMITS,
   readLimitedJson,
   requiredString,
   validationErrorResponse,
 } from '@/lib/request-validation'
-import { getAuthorizedPlayer } from '@/lib/session-player-auth'
+import { requirePlayerSession } from '@/lib/session-api'
 
 type RouteContext = { params: Promise<{ pin: string }> }
 
@@ -19,10 +19,9 @@ export async function POST(request: Request, { params }: RouteContext) {
     const playerId = requiredString(body.playerId, 'playerId', 80)
     const number = requiredString(body.number, 'number', INPUT_LIMITS.highlowNumber)
 
-    const session = await getSession(pin)
-    if (!session) return NextResponse.json({ error: 'Session not found' }, { status: 404 })
-    const player = getAuthorizedPlayer(request, session, playerId)
-    if (!player) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    const playerSession = await requirePlayerSession(request, pin, playerId)
+    if (!playerSession.ok) return playerSession.response
+    const { player, session } = playerSession.value
 
     if (!session.highlowData)
       return NextResponse.json({ error: 'No active round' }, { status: 400 })

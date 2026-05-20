@@ -1,4 +1,4 @@
-import { DEFAULT_CARDS } from "@/lib/games/default-deck";
+﻿import { DEFAULT_CARDS } from "@/config/games/default-deck";
 
 export type CardType = "QUIZ" | "NEVER";
 
@@ -25,3 +25,4 @@ export const buildDeck = (): GameCard[] =>
   shuffleArray(
     DEFAULT_CARDS.map((c, i) => ({ ...c, id: `card-${i}-${Date.now()}` })),
   );
+

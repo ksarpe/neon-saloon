@@ -2,6 +2,8 @@
 
 import { motion } from 'framer-motion'
 
+import { PlayerAvatar } from '@/components/PlayerAvatar'
+
 interface Props {
   playerName: string
   teamName: string | null
@@ -15,13 +17,13 @@ export function WaitingState({ playerName, teamName, avatar }: Props) {
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-        className="flex h-20 w-20 items-center justify-center rounded-full text-4xl"
+        className="flex h-20 w-20 items-center justify-center rounded-full"
         style={{
           backgroundColor: 'rgba(16,185,129,0.15)',
           border: '2px solid #10b981',
         }}
       >
-        {avatar}
+        <PlayerAvatar avatar={avatar} size={48} />
       </motion.div>
 
       <div>

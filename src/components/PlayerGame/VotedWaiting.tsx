@@ -2,6 +2,8 @@
 
 import { motion } from 'framer-motion'
 
+import { PlayerAvatar } from '@/components/PlayerAvatar'
+
 interface Props {
   avatar: string
 }
@@ -20,7 +22,7 @@ export function VotedWaiting({ avatar }: Props) {
           boxShadow: '0 0 24px rgba(16,185,129,0.3)',
         }}
       >
-        {avatar}
+        <PlayerAvatar avatar={avatar} size={48} />
       </motion.div>
 
       <div className="flex flex-col gap-1">

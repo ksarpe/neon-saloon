@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server'
 
-import { getSession, saveSession } from '@/lib/appwrite/sessions'
-import { BR_TIMER_SECONDS } from '@/lib/game-config'
-import { QUESTION_CATEGORIES } from '@/lib/games/categories'
+import { saveSession } from '@/lib/appwrite/sessions'
+import { BR_TIMER_SECONDS } from '@/config/game'
+import { QUESTION_CATEGORIES } from '@/config/games/categories'
 import { createQuestionOrder } from '@/lib/games/question-limit'
 import { readLimitedJson, requiredString, validationErrorResponse } from '@/lib/request-validation'
-import { isHostAuthorized } from '@/lib/session-host-auth'
+import { requireHostSession } from '@/lib/session-api'
 
 type RouteContext = { params: Promise<{ pin: string }> }
 
@@ -13,11 +13,9 @@ export async function POST(request: Request, { params }: RouteContext) {
   const { pin } = await params
 
   try {
-    const session = await getSession(pin)
-    if (!session) return NextResponse.json({ error: 'Session not found' }, { status: 404 })
-    if (!isHostAuthorized(request, session)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const hostSession = await requireHostSession(request, pin)
+    if (!hostSession.ok) return hostSession.response
+    const session = hostSession.value
 
     const body = await readLimitedJson<{ categoryId?: unknown; timerDuration?: unknown }>(request)
     const categoryId = requiredString(body.categoryId, 'categoryId', 80)

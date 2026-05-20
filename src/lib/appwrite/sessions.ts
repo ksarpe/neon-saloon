@@ -193,10 +193,16 @@ function buildSessionRowData(data: SessionData) {
  * Fetch a session by PIN.
  * Uses the PIN directly as the Appwrite row `$id` — O(1) primary key lookup.
  */
-export async function getSession(pin: string): Promise<SessionData | null> {
+export async function getSession(pin: string, transactionId?: string): Promise<SessionData | null> {
   try {
     const db = getTablesDB()
-    const row = await db.getRow<SessionRow>(APPWRITE_DATABASE_ID, APPWRITE_TABLE_GAME_SESSIONS, pin)
+    const row = await db.getRow<SessionRow>(
+      APPWRITE_DATABASE_ID,
+      APPWRITE_TABLE_GAME_SESSIONS,
+      pin,
+      undefined,
+      transactionId
+    )
     return rowToSession(row)
   } catch (err) {
     if (err instanceof AppwriteException && err.code === 404) return null
@@ -261,7 +267,7 @@ export async function cleanupOldSessions(options?: {
  * Persist a session. Uses the PIN as the row ID so the call is idempotent:
  * create on first call, update-or-create on subsequent calls.
  */
-export async function saveSession(data: SessionData): Promise<void> {
+export async function saveSession(data: SessionData, transactionId?: string): Promise<void> {
   const db = getTablesDB()
   const rowData = buildSessionRowData(data)
   // We deliberately omit `events` here — it's owned by triggerGameEvent
@@ -274,7 +280,9 @@ export async function saveSession(data: SessionData): Promise<void> {
       APPWRITE_DATABASE_ID,
       APPWRITE_TABLE_GAME_SESSIONS,
       data.pin,
-      rowData
+      rowData,
+      undefined,
+      transactionId
     )
   } catch (err) {
     if (err instanceof AppwriteException && err.code === 404) {
@@ -283,7 +291,9 @@ export async function saveSession(data: SessionData): Promise<void> {
         APPWRITE_DATABASE_ID,
         APPWRITE_TABLE_GAME_SESSIONS,
         ID.custom(data.pin),
-        rowData
+        rowData,
+        undefined,
+        transactionId
       )
     } else {
       throw err
@@ -303,6 +313,33 @@ export async function updateSession(
   const updated = { ...existing, ...patch }
   await saveSession(updated)
   return updated
+}
+
+export async function withSessionTransaction<T>(
+  callback: (store: {
+    getSession: (pin: string) => Promise<SessionData | null>
+    saveSession: (data: SessionData) => Promise<void>
+  }) => Promise<T>
+): Promise<T> {
+  const db = getTablesDB()
+  const transaction = await db.createTransaction()
+  const transactionId = transaction.$id
+
+  try {
+    const result = await callback({
+      getSession: (pin) => getSession(pin, transactionId),
+      saveSession: (data) => saveSession(data, transactionId),
+    })
+    await db.updateTransaction(transactionId, true)
+    return result
+  } catch (err) {
+    try {
+      await db.updateTransaction(transactionId, false, true)
+    } catch {
+      // Ignore rollback errors so callers receive the original failure.
+    }
+    throw err
+  }
 }
 
 /**

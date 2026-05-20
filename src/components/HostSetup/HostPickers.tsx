@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { motion } from 'framer-motion'
 import { Loader2 } from 'lucide-react'
@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import type { SessionTeam } from '@/lib/appwrite/sessions'
 import { useBackButton } from '@/lib/back-button-context'
-import { QUESTION_CATEGORIES } from '@/lib/games/categories'
+import { QUESTION_CATEGORIES } from '@/config/games/categories'
 import { QUESTIONS_PER_GAME } from '@/lib/games/question-limit'
 import { hostJsonHeaders } from '@/lib/session-host-secret'
 
@@ -405,3 +405,4 @@ export function HighLowTeamSetup({
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
+

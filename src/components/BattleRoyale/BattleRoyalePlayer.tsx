@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { CheckCircle2, Clock, Skull, Trophy } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { PlayerAvatar } from '@/components/PlayerAvatar'
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
 import type { BRGameOverPayload, BRRoundRevealPayload, BRRoundStartPayload } from '@/lib/game-types'
 import { playerJsonHeaders } from '@/lib/session-player-secret'
@@ -154,7 +155,7 @@ export default function BattleRoyalePlayer({
         style={{ borderColor: 'var(--saloon-border)', backgroundColor: 'var(--saloon-bg)' }}
       >
         <div className="flex items-center gap-2">
-          <span className="text-xl">{avatar}</span>
+          <PlayerAvatar avatar={avatar} size={24} />
           <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
             {playerName}
           </span>

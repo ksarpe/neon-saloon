@@ -3,6 +3,8 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { Play } from 'lucide-react'
 
+import { PlayerAvatar } from '@/components/PlayerAvatar'
+
 import { JoinQrCode } from '@/components/JoinQrCode'
 import { Button } from '@/components/ui/button'
 import type { SessionPlayer, SessionTeam } from '@/lib/appwrite/sessions'
@@ -84,7 +86,7 @@ export function HostLobby({ pin, players, team1, team2, onStart }: Props) {
                       color: accent,
                     }}
                   >
-                    <span>{p.avatar}</span>
+                    <PlayerAvatar avatar={p.avatar} size={20} />
                     <span>{p.playerName}</span>
                   </motion.div>
                 ))}

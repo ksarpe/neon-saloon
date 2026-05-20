@@ -4,19 +4,19 @@ import {
   cleanupSessionEvents,
   triggerGameEvent as triggerSessionEvent,
 } from '@/lib/appwrite/realtime'
-import { getSession, updateSession } from '@/lib/appwrite/sessions'
-import type { ScoreEntry, TeamScoreEntry, WireCard } from '@/lib/game-types'
+import { updateSession } from '@/lib/appwrite/sessions'
+import type { ScoreEntry, TeamScoreEntry } from '@/lib/game-types'
 import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
 import {
-  boundedStringArray,
   INPUT_LIMITS,
-  optionalString,
   readLimitedJson,
   RequestValidationError,
   requiredString,
   validationErrorResponse,
 } from '@/lib/request-validation'
+import { requireHostSession, requireSession } from '@/lib/session-api'
 import { isHostAuthorized } from '@/lib/session-host-auth'
+import { sanitizeWireCard } from '@/lib/session-payloads'
 import { publicPlayer } from '@/lib/session-player-auth'
 
 type RouteContext = { params: Promise<{ pin: string }> }
@@ -35,10 +35,9 @@ export async function GET(request: Request, { params }: RouteContext) {
     )
   }
 
-  const session = await getSession(pin)
-  if (!session) {
-    return NextResponse.json({ error: 'Session not found' }, { status: 404 })
-  }
+  const sessionResult = await requireSession(pin)
+  if (!sessionResult.ok) return sessionResult.response
+  const session = sessionResult.value
 
   if (!isHostAuthorized(request, session)) {
     return NextResponse.json({
@@ -67,13 +66,8 @@ export async function GET(request: Request, { params }: RouteContext) {
 export async function POST(request: Request, { params }: RouteContext) {
   const { pin } = await params
   try {
-    const session = await getSession(pin)
-    if (!session) {
-      return NextResponse.json({ error: 'Session not found' }, { status: 404 })
-    }
-    if (!isHostAuthorized(request, session)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const hostSession = await requireHostSession(request, pin)
+    if (!hostSession.ok) return hostSession.response
 
     const body = await readLimitedJson<{
       action?: unknown
@@ -110,37 +104,6 @@ export async function POST(request: Request, { params }: RouteContext) {
 
     console.error(`[POST /api/sessions/${pin}]`, err)
     return NextResponse.json({ error: 'Failed' }, { status: 500 })
-  }
-}
-
-function sanitizeWireCard(value: unknown): WireCard {
-  if (!value || typeof value !== 'object') {
-    throw new RequestValidationError('card is required')
-  }
-
-  const card = value as Record<string, unknown>
-  const type = requiredString(card.type, 'card.type', 12)
-  if (type !== 'QUIZ' && type !== 'TEST' && type !== 'NEVER') {
-    throw new RequestValidationError('Invalid card type')
-  }
-
-  const options =
-    card.options === undefined
-      ? undefined
-      : boundedStringArray(
-          card.options,
-          'card.options',
-          INPUT_LIMITS.cardOptions,
-          INPUT_LIMITS.quizOption
-        )
-
-  return {
-    id: requiredString(card.id, 'card.id', INPUT_LIMITS.cardId),
-    type,
-    title: optionalString(card.title, 'card.title', INPUT_LIMITS.cardTitle) ?? undefined,
-    description: requiredString(card.description, 'card.description', INPUT_LIMITS.cardDescription),
-    emoji: optionalString(card.emoji, 'card.emoji', INPUT_LIMITS.avatar) ?? undefined,
-    options,
   }
 }
 

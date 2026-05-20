@@ -3,11 +3,12 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import type { GameSettingsPayload } from '@/app/api/settings/route'
 import { GameSummary } from '@/components/GameSummary'
+import { useAutoCountdown } from '@/hooks/useAutoCountdown'
+import { useGameSettings } from '@/hooks/useGameSettings'
+import { useLobbyPlayersPolling } from '@/hooks/useLobbyPlayersPolling'
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
 import { useBackButton } from '@/lib/back-button-context'
-import { REVEAL_COUNTDOWN_SECONDS } from '@/lib/game-config'
 import type {
   NextCardPayload,
   PlayerJoinedPayload,
@@ -46,19 +47,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
   }, [setBackHidden])
 
   // ── Game settings (fetched once; falls back to global defaults) ─────────────
-  const [gameSettings, setGameSettings] = useState<GameSettingsPayload>({
-    revealCountdownSeconds: REVEAL_COUNTDOWN_SECONDS,
-    brTimerSeconds: 20,
-    brAutoNextSeconds: 10,
-  })
-  useEffect(() => {
-    fetch('/api/settings')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (d) setGameSettings(d)
-      })
-      .catch(() => {})
-  }, [])
+  const gameSettings = useGameSettings()
 
   // ── Host identity ────────────────────────────────────────────────────────────
   const [hostName, setHostName] = useState('')
@@ -76,8 +65,6 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
   const [revealedVotes, setRevealedVotes] = useState<VoteRecord[]>([])
   const [scores, setScores] = useState<ScoreEntry[]>([])
   const [teamScores, setTeamScores] = useState<TeamScoreEntry[]>([])
-  const [countdown, setCountdown] = useState<number | null>(null)
-
   const currentCard: GameCard | undefined = initialCards[cardIndex]
 
   // ── Hydrate on mount ─────────────────────────────────────────────────────────
@@ -127,18 +114,11 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
   }, [pin])
 
   // ── Poll in lobby ────────────────────────────────────────────────────────────
-  useEffect(() => {
-    if (phase !== 'lobby') return
-    const id = setInterval(() => {
-      fetch(`/api/sessions/${pin}`, { headers: hostAuthHeaders(pin) })
-        .then((r) => (r.ok ? r.json() : null))
-        .then((data) => {
-          if (data?.players) setPlayers(data.players)
-        })
-        .catch(() => {})
-    }, 5000)
-    return () => clearInterval(id)
-  }, [phase, pin])
+  useLobbyPlayersPolling<LivePlayer>({
+    active: phase === 'lobby',
+    pin,
+    onPlayers: setPlayers,
+  })
 
   // ── Poll during active — fallback for missed Realtime events ─────────────────
   useEffect(() => {
@@ -187,7 +167,6 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
       setCurrentVotes([])
       setIsRevealed(false)
       setRevealedVotes([])
-      setCountdown(null)
       setHostHasVoted(false)
     }, []),
     onGameStarted: useCallback(() => setPhase('active'), []),
@@ -215,10 +194,13 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
       })
       if (res.ok) {
         const data = await res.json()
+        const resolvedHostName =
+          typeof data.playerName === 'string' ? data.playerName : hostName.trim()
         if (typeof data.playerSecret === 'string') {
           savePlayerSecret(pin, data.playerId, data.playerSecret)
         }
-        updateHostSession(pin, { hostPlayerId: data.playerId })
+        updateHostSession(pin, { hostName: resolvedHostName, hostPlayerId: data.playerId })
+        setHostName(resolvedHostName)
         setHostPlayerId(data.playerId)
         setPlayers((p) => {
           if (p.some((x) => x.playerId === data.playerId)) return p
@@ -226,7 +208,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
             ...p,
             {
               playerId: data.playerId,
-              playerName: hostName.trim(),
+              playerName: resolvedHostName,
               avatar: hostAvatar,
               teamId: null,
               teamName: null,
@@ -331,7 +313,6 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
     setCurrentVotes([])
     setIsRevealed(false)
     setRevealedVotes([])
-    setCountdown(null)
     setHostHasVoted(false)
   }, [pin, cardIndex, initialCards, scores, teamScores])
 
@@ -391,26 +372,12 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
   useEffect(() => {
     handleNextCardRef.current = handleNextCard
   })
-  useEffect(() => {
-    if (!isRevealed) {
-      setCountdown(null)
-      return
-    }
-    const secs = gameSettings.revealCountdownSeconds
-    setCountdown(secs)
-    let n = secs
-    const tick = setInterval(() => {
-      n -= 1
-      if (n <= 0) {
-        clearInterval(tick)
-        setCountdown(null)
-        handleNextCardRef.current()
-      } else {
-        setCountdown(n)
-      }
-    }, 1000)
-    return () => clearInterval(tick)
-  }, [isRevealed, cardIndex, gameSettings.revealCountdownSeconds])
+  const countdown = useAutoCountdown({
+    active: isRevealed,
+    seconds: gameSettings.revealCountdownSeconds,
+    resetKey: cardIndex,
+    onComplete: () => handleNextCardRef.current(),
+  })
 
   // ── Derived scores ────────────────────────────────────────────────────────────
   const drinksScores = scores

@@ -1,15 +1,16 @@
-'use client'
+﻿'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
 import { Flag, Menu, X, Zap } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { GameSummary } from '@/components/GameSummary'
+import { useLobbyPlayersPolling } from '@/hooks/useLobbyPlayersPolling'
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
 import type { SessionPlayer, SessionTeam } from '@/lib/appwrite/sessions'
 import { useBackButton } from '@/lib/back-button-context'
 import type { HighLowRoundResultPayload, PlayerJoinedPayload, ScoreEntry } from '@/lib/game-types'
-import { HIGHLOW_QUESTIONS } from '@/lib/games/highlow'
+import { HIGHLOW_QUESTIONS } from '@/config/games/highlow'
 import { limitQuestions, QUESTIONS_PER_GAME } from '@/lib/games/question-limit'
 import {
   getHostSession,
@@ -125,18 +126,11 @@ export default function HostHighLowScreen({
       .catch(() => {})
   }, [pin])
 
-  useEffect(() => {
-    if (phase !== 'lobby') return
-    const id = setInterval(() => {
-      fetch(`/api/sessions/${pin}`, { headers: hostAuthHeaders(pin) })
-        .then((r) => r.json())
-        .then((d) => {
-          if (d.players) setPlayers(d.players)
-        })
-        .catch(() => {})
-    }, 5000)
-    return () => clearInterval(id)
-  }, [phase, pin])
+  useLobbyPlayersPolling<SessionPlayer>({
+    active: phase === 'lobby',
+    pin,
+    onPlayers: setPlayers,
+  })
 
   useGameSocket(pin, {
     onPlayerJoined: useCallback((d: PlayerJoinedPayload) => {
@@ -176,11 +170,14 @@ export default function HostHighLowScreen({
         })
         if (res.ok) {
           const data = await res.json()
+          const resolvedHostName = typeof data.playerName === 'string' ? data.playerName : name
+          const resolvedTeamName =
+            typeof data.teamName === 'string' ? data.teamName : chosenTeam.teamName
           if (typeof data.playerSecret === 'string') {
             savePlayerSecret(pin, data.playerId, data.playerSecret)
           }
           updateHostSession(pin, {
-            hostName: name,
+            hostName: resolvedHostName,
             hostAvatar: avatar,
             hostPlayerId: data.playerId,
           })
@@ -191,10 +188,10 @@ export default function HostHighLowScreen({
               ...p,
               {
                 playerId: data.playerId,
-                playerName: name,
+                playerName: resolvedHostName,
                 avatar,
                 teamId: chosenTeam.teamId,
-                teamName: chosenTeam.teamName,
+                teamName: resolvedTeamName,
               },
             ]
           })
@@ -515,3 +512,4 @@ export default function HostHighLowScreen({
     </div>
   )
 }
+

@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Play, Users } from 'lucide-react'
 
 import { JoinQrCode } from '@/components/JoinQrCode'
+import { PlayerAvatar } from '@/components/PlayerAvatar'
 import { Button } from '@/components/ui/button'
 
 import type { LivePlayer } from './types'
@@ -78,7 +79,7 @@ export function LobbyView({ pin, players, onStart }: Props) {
                   backgroundColor: p.teamId ? 'rgba(255,16,240,0.08)' : 'var(--saloon-surface)',
                 }}
               >
-                <span className="text-lg">{p.avatar}</span>
+                <PlayerAvatar avatar={p.avatar} size={22} />
                 <p className="text-text-primary text-sm leading-snug font-bold">{p.playerName}</p>
               </motion.div>
             ))}

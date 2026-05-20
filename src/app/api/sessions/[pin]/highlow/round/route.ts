@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { triggerGameEvent as triggerSessionEvent } from '@/lib/appwrite/realtime'
-import { getSession, updateSession } from '@/lib/appwrite/sessions'
+import { updateSession } from '@/lib/appwrite/sessions'
 import {
   INPUT_LIMITS,
   readLimitedJson,
@@ -9,18 +9,15 @@ import {
   requiredString,
   validationErrorResponse,
 } from '@/lib/request-validation'
-import { isHostAuthorized } from '@/lib/session-host-auth'
+import { requireHostSession } from '@/lib/session-api'
 
 type RouteContext = { params: Promise<{ pin: string }> }
 
 export async function POST(request: Request, { params }: RouteContext) {
   const { pin } = await params
   try {
-    const session = await getSession(pin)
-    if (!session) return NextResponse.json({ error: 'Session not found' }, { status: 404 })
-    if (!isHostAuthorized(request, session)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const hostSession = await requireHostSession(request, pin)
+    if (!hostSession.ok) return hostSession.response
 
     const body = await readLimitedJson<Record<string, unknown>>(request)
     const roundIndex = requiredInteger(body.roundIndex, 'roundIndex', 0, 10_000)

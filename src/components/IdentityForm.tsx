@@ -1,12 +1,13 @@
-'use client'
+﻿'use client'
 
 import { motion } from 'framer-motion'
 import { Dices } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-import { FUNNY_NAMES } from '@/lib/games/data'
+import { PLAYER_AVATARS } from '@/config/player-avatars'
+import { FUNNY_NAMES } from '@/config/player-names'
 
-export const AVATAR_LIST = ['🤠', '💃', '🌸', '✨', '🍾', '🎀', '👑', '🦋', '🌺', '🎉']
+import { PlayerAvatar } from './PlayerAvatar'
 
 interface Props {
   name: string
@@ -26,7 +27,7 @@ export function IdentityForm({ name, onNameChange, avatar, onAvatarChange, onEnt
   const canSubmit = Boolean(name.trim() && avatar)
 
   return (
-    <div className="flex w-full max-w-xs flex-col items-center gap-6">
+    <div className="flex w-full flex-col items-center gap-6">
       <h2
         className="text-center text-3xl"
         style={{ fontFamily: 'var(--font-app)', color: 'var(--sheriff-pink)' }}
@@ -34,24 +35,29 @@ export function IdentityForm({ name, onNameChange, avatar, onAvatarChange, onEnt
         Przedstaw się kowboju
       </h2>
 
-      <div className="grid w-full grid-cols-5 gap-2">
-        {AVATAR_LIST.map((emoji) => (
-          <motion.button
-            key={emoji}
-            type="button"
-            whileTap={{ scale: 0.88 }}
-            onClick={() => onAvatarChange(emoji)}
-            className="flex h-12 items-center justify-center rounded-xl border-2 text-2xl transition-colors"
-            style={{
-              borderColor: avatar === emoji ? 'var(--neon-pink)' : 'var(--saloon-border)',
-              backgroundColor: avatar === emoji ? 'rgba(255,16,240,0.15)' : 'var(--saloon-surface)',
-              boxShadow: avatar === emoji ? '0 0 12px rgba(255,16,240,0.3)' : 'none',
-            }}
-          >
-            {emoji}
-          </motion.button>
-        ))}
-      </div>
+      {PLAYER_AVATARS.length > 0 ? (
+        <div className="grid w-full grid-cols-5 gap-2">
+          {PLAYER_AVATARS.map((filename) => (
+            <motion.button
+              key={filename}
+              type="button"
+              whileTap={{ scale: 0.88 }}
+              onClick={() => onAvatarChange(filename)}
+              className="flex h-14 items-center justify-center rounded-xl border-2 transition-colors"
+              style={{
+                borderColor: avatar === filename ? 'var(--neon-pink)' : 'var(--saloon-border)',
+                backgroundColor:
+                  avatar === filename ? 'rgba(255,16,240,0.15)' : 'var(--saloon-surface)',
+                boxShadow: avatar === filename ? '0 0 12px rgba(255,16,240,0.3)' : 'none',
+              }}
+            >
+              <PlayerAvatar avatar={filename} size={36} />
+            </motion.button>
+          ))}
+        </div>
+      ) : (
+        <p className="text-text-muted text-center text-xs opacity-60">Brak awatarów</p>
+      )}
 
       <div className="grid w-full grid-cols-5 gap-2">
         <input
@@ -64,7 +70,7 @@ export function IdentityForm({ name, onNameChange, avatar, onAvatarChange, onEnt
           maxLength={20}
           autoFocus
           placeholder={placeholder}
-          className="col-span-4 bg-saloon-surface text-text-primary placeholder:text-text-muted h-14 flex-1 rounded-xl border-2 px-4 py-0 text-center text-lg font-bold transition-colors focus:outline-none"
+          className="bg-saloon-surface text-text-primary placeholder:text-text-muted col-span-4 h-14 flex-1 rounded-xl border-2 px-4 py-0 text-center text-lg font-bold transition-colors focus:outline-none"
           style={{ borderColor: name.trim() ? 'var(--neon-pink)' : 'var(--saloon-border)' }}
         />
         <motion.button
@@ -81,3 +87,4 @@ export function IdentityForm({ name, onNameChange, avatar, onAvatarChange, onEnt
     </div>
   )
 }
+

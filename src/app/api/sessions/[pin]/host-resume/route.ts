@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server'
 
-import { getSession } from '@/lib/appwrite/sessions'
 import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
-import { isHostAuthorized } from '@/lib/session-host-auth'
+import { requireHostSession } from '@/lib/session-api'
 import { publicPlayer } from '@/lib/session-player-auth'
 
 type RouteContext = { params: Promise<{ pin: string }> }
@@ -24,13 +23,9 @@ export async function GET(request: Request, { params }: RouteContext) {
     )
   }
 
-  const session = await getSession(pin)
-  if (!session) {
-    return NextResponse.json({ error: 'Session not found' }, { status: 404 })
-  }
-  if (!isHostAuthorized(request, session)) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-  }
+  const hostSession = await requireHostSession(request, pin)
+  if (!hostSession.ok) return hostSession.response
+  const session = hostSession.value
 
   return NextResponse.json({
     ok: true,

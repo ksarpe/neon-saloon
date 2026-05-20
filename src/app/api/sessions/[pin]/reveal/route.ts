@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { triggerGameEvent as triggerSessionEvent } from '@/lib/appwrite/realtime'
-import { getSession, updateSession } from '@/lib/appwrite/sessions'
-import type { ScoreEntry, TeamScoreEntry } from '@/lib/game-types'
+import { updateSession } from '@/lib/appwrite/sessions'
 import {
   INPUT_LIMITS,
   optionalString,
@@ -12,7 +11,8 @@ import {
   requiredString,
   validationErrorResponse,
 } from '@/lib/request-validation'
-import { isHostAuthorized } from '@/lib/session-host-auth'
+import { requireHostSession } from '@/lib/session-api'
+import { sanitizeScoreEntries, sanitizeTeamScoreEntries } from '@/lib/session-payloads'
 
 type RouteContext = { params: Promise<{ pin: string }> }
 
@@ -20,11 +20,8 @@ export async function POST(request: Request, { params }: RouteContext) {
   const { pin } = await params
 
   try {
-    const session = await getSession(pin)
-    if (!session) return NextResponse.json({ error: 'Session not found' }, { status: 404 })
-    if (!isHostAuthorized(request, session)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const hostSession = await requireHostSession(request, pin)
+    if (!hostSession.ok) return hostSession.response
 
     const body = await readLimitedJson<{
       cardIndex?: unknown
@@ -102,74 +99,4 @@ function sanitizeVotes(value: unknown) {
         optionalString(row.answerText, `votes[${index}].answerText`, INPUT_LIMITS.answerText) ?? '',
     }
   })
-}
-
-function sanitizeScoreEntries(value: unknown): ScoreEntry[] {
-  if (value === undefined || value === null) return []
-  if (!Array.isArray(value) || value.length > INPUT_LIMITS.scoreEntries) {
-    throw new RequestValidationError('scores is invalid')
-  }
-
-  return value.map((entry, index) => {
-    if (!entry || typeof entry !== 'object') {
-      throw new RequestValidationError(`scores[${index}] must be an object`)
-    }
-
-    const row = entry as Record<string, unknown>
-    return {
-      playerId: requiredString(row.playerId, `scores[${index}].playerId`, 80),
-      playerName: requiredString(
-        row.playerName,
-        `scores[${index}].playerName`,
-        INPUT_LIMITS.playerName
-      ),
-      score: finiteNumber(row.score, `scores[${index}].score`),
-      drinks:
-        row.drinks === undefined ? undefined : finiteNumber(row.drinks, `scores[${index}].drinks`),
-      playerTeamId:
-        optionalString(row.playerTeamId, `scores[${index}].playerTeamId`, 80) ?? undefined,
-      playerTeamName:
-        optionalString(
-          row.playerTeamName,
-          `scores[${index}].playerTeamName`,
-          INPUT_LIMITS.teamName
-        ) ?? undefined,
-    }
-  })
-}
-
-function sanitizeTeamScoreEntries(value: unknown): TeamScoreEntry[] {
-  if (value === undefined || value === null) return []
-  if (!Array.isArray(value) || value.length > INPUT_LIMITS.scoreEntries) {
-    throw new RequestValidationError('teamScores is invalid')
-  }
-
-  return value.map((entry, index) => {
-    if (!entry || typeof entry !== 'object') {
-      throw new RequestValidationError(`teamScores[${index}] must be an object`)
-    }
-
-    const row = entry as Record<string, unknown>
-    return {
-      teamId: requiredString(row.teamId, `teamScores[${index}].teamId`, 80),
-      teamName: requiredString(
-        row.teamName,
-        `teamScores[${index}].teamName`,
-        INPUT_LIMITS.teamName
-      ),
-      score: finiteNumber(row.score, `teamScores[${index}].score`),
-    }
-  })
-}
-
-function finiteNumber(value: unknown, field: string) {
-  if (typeof value !== 'number' || !Number.isFinite(value)) {
-    throw new RequestValidationError(`${field} must be a finite number`)
-  }
-
-  if (value < -10_000 || value > 10_000) {
-    throw new RequestValidationError(`${field} is out of range`)
-  }
-
-  return value
 }

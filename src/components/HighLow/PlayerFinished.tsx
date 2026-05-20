@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { Star, Trophy } from 'lucide-react'
 
+import { PlayerAvatar } from '@/components/PlayerAvatar'
 import type { ScoreEntry } from '@/lib/game-types'
 
 interface Props {
@@ -31,10 +32,10 @@ export function PlayerFinished({ avatar, playerName, teamName, playerId, myScore
       </h2>
 
       <div
-        className="flex h-20 w-20 items-center justify-center rounded-full border-2 text-4xl"
+        className="flex h-20 w-20 items-center justify-center rounded-full border-2"
         style={{ borderColor: 'rgba(255,215,0,0.4)', backgroundColor: 'rgba(255,215,0,0.06)' }}
       >
-        {avatar}
+        <PlayerAvatar avatar={avatar} size={48} />
       </div>
       <div>
         <p className="text-text-muted text-sm">{playerName}</p>

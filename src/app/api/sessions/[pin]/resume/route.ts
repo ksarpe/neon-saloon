@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server'
 
 import { getSession } from '@/lib/appwrite/sessions'
-import { QUESTION_CATEGORIES } from '@/lib/games/categories'
+import { QUESTION_CATEGORIES } from '@/config/games/categories'
 import { getLimitedQuestionTotal, getOrderedQuestion } from '@/lib/games/question-limit'
 import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
 import {

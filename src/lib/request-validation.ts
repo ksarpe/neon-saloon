@@ -15,7 +15,7 @@ export const INPUT_LIMITS = {
   quizOptions: 6,
   playerName: 24,
   teamName: 24,
-  avatar: 16,
+  avatar: 64,
   answerText: 240,
   cardId: 80,
   cardTitle: 120,

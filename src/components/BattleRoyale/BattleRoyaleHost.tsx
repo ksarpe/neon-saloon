@@ -1,24 +1,27 @@
-'use client'
+﻿'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
 import { CheckCircle2, Clock, Play, Skull, Trophy } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import type { GameSettingsPayload } from '@/app/api/settings/route'
 import { LobbyView } from '@/components/Host/LobbyView'
 import { SetupView } from '@/components/Host/SetupView'
+import { PlayerAvatar } from '@/components/PlayerAvatar'
 import { Button } from '@/components/ui/button'
+import { useAutoCountdown } from '@/hooks/useAutoCountdown'
+import { useGameSettings } from '@/hooks/useGameSettings'
+import { useLobbyPlayersPolling } from '@/hooks/useLobbyPlayersPolling'
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
 import type { SessionPlayer } from '@/lib/appwrite/sessions'
 import { useBackButton } from '@/lib/back-button-context'
-import { BR_AUTO_NEXT_SECONDS, BR_TIMER_SECONDS } from '@/lib/game-config'
+import { BR_AUTO_NEXT_SECONDS, BR_TIMER_SECONDS } from '@/config/game'
 import type {
   BRAnswerSubmittedPayload,
   BRRoundRevealPayload,
   PlayerJoinedPayload,
   PlayerLeftPayload,
 } from '@/lib/game-types'
-import { QUESTION_CATEGORIES } from '@/lib/games/categories'
+import { QUESTION_CATEGORIES } from '@/config/games/categories'
 import { getLimitedQuestionTotal, getOrderedQuestion } from '@/lib/games/question-limit'
 import { getHostSession, hostAuthHeaders, updateHostSession } from '@/lib/session-host-secret'
 import { playerJsonHeaders, savePlayerSecret } from '@/lib/session-player-secret'
@@ -57,20 +60,11 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
     return () => setBackHidden(false)
   }, [setBackHidden])
 
-  // Game settings (fetched once; falls back to global defaults)
-  const [gameSettings, setGameSettings] = useState<GameSettingsPayload>({
+  const gameSettings = useGameSettings({
     revealCountdownSeconds: 4,
     brTimerSeconds: BR_TIMER_SECONDS,
     brAutoNextSeconds: BR_AUTO_NEXT_SECONDS,
   })
-  useEffect(() => {
-    fetch('/api/settings')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (d) setGameSettings(d)
-      })
-      .catch(() => {})
-  }, [])
 
   // Host identity
   const [hostName, setHostName] = useState('')
@@ -91,7 +85,6 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
   const [revealData, setRevealData] = useState<BRRevealResult | null>(null)
   const [winner, setWinner] = useState<string | undefined>()
   const [loading, setLoading] = useState(false)
-  const [nextCountdown, setNextCountdown] = useState<number | null>(null)
 
   const category = QUESTION_CATEGORIES.find((c) => c.id === categoryId)
   const question = category
@@ -168,19 +161,11 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
       .catch(() => {})
   }, [pin])
 
-  // Poll for players in lobby
-  useEffect(() => {
-    if (phase !== 'lobby') return
-    const id = setInterval(() => {
-      fetch(`/api/sessions/${pin}`, { headers: hostAuthHeaders(pin) })
-        .then((r) => (r.ok ? r.json() : null))
-        .then((d) => {
-          if (d?.players) setPlayers(d.players)
-        })
-        .catch(() => {})
-    }, 5000)
-    return () => clearInterval(id)
-  }, [phase, pin])
+  useLobbyPlayersPolling<SessionPlayer>({
+    active: phase === 'lobby',
+    pin,
+    onPlayers: setPlayers,
+  })
 
   // Realtime
   useGameSocket(pin, {
@@ -269,25 +254,12 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
     handleNextRoundRef.current = handleNextRound
   }, [handleNextRound])
 
-  useEffect(() => {
-    if (phase !== 'reveal') {
-      setNextCountdown(null)
-      return
-    }
-    let n = gameSettings.brAutoNextSeconds
-    setNextCountdown(n)
-    const tick = setInterval(() => {
-      n -= 1
-      if (n <= 0) {
-        clearInterval(tick)
-        setNextCountdown(null)
-        handleNextRoundRef.current?.()
-      } else {
-        setNextCountdown(n)
-      }
-    }, 1000)
-    return () => clearInterval(tick)
-  }, [phase, questionIndex, gameSettings.brAutoNextSeconds])
+  const nextCountdown = useAutoCountdown({
+    active: phase === 'reveal',
+    seconds: gameSettings.brAutoNextSeconds,
+    resetKey: questionIndex,
+    onComplete: () => handleNextRoundRef.current?.(),
+  })
 
   // Actions
   const handleSetupComplete = useCallback(() => {
@@ -308,10 +280,13 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
       })
       if (joinRes.ok) {
         const joinData = await joinRes.json()
+        const resolvedHostName =
+          typeof joinData.playerName === 'string' ? joinData.playerName : hostName.trim()
         if (typeof joinData.playerSecret === 'string') {
           savePlayerSecret(pin, joinData.playerId, joinData.playerSecret)
         }
-        updateHostSession(pin, { hostPlayerId: joinData.playerId })
+        updateHostSession(pin, { hostName: resolvedHostName, hostPlayerId: joinData.playerId })
+        setHostName(resolvedHostName)
         setHostPlayerId(joinData.playerId)
         setPlayers((p) => {
           if (p.some((x) => x.playerId === joinData.playerId)) return p
@@ -319,7 +294,7 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
             ...p,
             {
               playerId: joinData.playerId,
-              playerName: hostName.trim(),
+              playerName: resolvedHostName,
               avatar: hostAvatar,
               teamId: null,
               teamName: null,
@@ -566,7 +541,7 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
                               opacity: isEliminated ? 0.5 : 1,
                             }}
                           >
-                            <span className="text-base">{p.avatar}</span>
+                            <PlayerAvatar avatar={p.avatar} size={20} />
                             <span
                               className="text-xs font-bold"
                               style={{ color: 'var(--text-primary)' }}
@@ -702,7 +677,7 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
                             >
                               <td className="px-4 py-3">
                                 <div className="flex items-center gap-2">
-                                  <span>{a.avatar}</span>
+                                  <PlayerAvatar avatar={a.avatar} size={20} />
                                   <span
                                     className="font-bold"
                                     style={{ color: 'var(--text-primary)' }}
@@ -820,7 +795,7 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
                               opacity: survived ? 1 : 0.4,
                             }}
                           >
-                            <span>{p.avatar}</span>
+                            <PlayerAvatar avatar={p.avatar} size={20} />
                             <span
                               className="text-sm font-bold"
                               style={{
@@ -856,3 +831,4 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
     </div>
   )
 }
+

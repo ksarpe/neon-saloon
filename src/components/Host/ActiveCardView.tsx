@@ -3,6 +3,8 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { Check } from 'lucide-react'
 
+import { PlayerAvatar } from '@/components/PlayerAvatar'
+
 import { GameCardStack } from '@/components/Card'
 import type { VoteCastPayload } from '@/lib/game-types'
 import type { GameCard } from '@/lib/store'
@@ -68,9 +70,9 @@ export function ActiveCardView({
                   backgroundColor: hasVoted ? 'rgba(255,16,240,0.12)' : 'rgba(255,220,180,0.07)',
                 }}
                 transition={{ duration: 0.3 }}
-                className="flex h-12 w-12 items-center justify-center rounded-full border-2 text-2xl"
+                className="flex h-12 w-12 items-center justify-center rounded-full border-2"
               >
-                {p.avatar}
+                <PlayerAvatar avatar={p.avatar} size={28} />
               </motion.div>
               {isHost && (
                 <span className="text-text-muted text-[8px] font-bold tracking-wider uppercase">
