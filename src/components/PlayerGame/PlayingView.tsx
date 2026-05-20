@@ -1,6 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
+import { Clock3 } from 'lucide-react'
 
 import { GameCardStack } from '@/components/Card'
 import type { WireCard } from '@/lib/game-types'
@@ -10,13 +11,35 @@ interface Props {
   isFlipped: boolean
   onFlip: () => void
   loading: boolean
+  answerCountdown: number | null
   castVote: (answerIndex: number, answerText: string) => void
 }
 
-export function PlayingView({ card, isFlipped, onFlip, loading, castVote }: Props) {
+export function PlayingView({
+  card,
+  isFlipped,
+  onFlip,
+  loading,
+  answerCountdown,
+  castVote,
+}: Props) {
   return (
     <div className="flex w-full flex-col items-center gap-6">
       <GameCardStack card={card} isFlipped={isFlipped} onFlip={onFlip} />
+
+      {answerCountdown !== null && (
+        <div
+          className="flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold tabular-nums"
+          style={{
+            borderColor: answerCountdown <= 10 ? 'rgba(239,68,68,0.45)' : 'rgba(255,215,0,0.35)',
+            backgroundColor: answerCountdown <= 10 ? 'rgba(239,68,68,0.1)' : 'rgba(255,215,0,0.08)',
+            color: answerCountdown <= 10 ? '#f87171' : 'var(--sheriff-pink)',
+          }}
+        >
+          <Clock3 size={15} />
+          {formatCountdown(answerCountdown)}
+        </div>
+      )}
 
       <AnimatePresence>
         {/* Multiple-choice or yes/no options */}
@@ -140,4 +163,10 @@ export function PlayingView({ card, isFlipped, onFlip, loading, castVote }: Prop
       </AnimatePresence>
     </div>
   )
+}
+
+function formatCountdown(seconds: number) {
+  const minutes = Math.floor(seconds / 60)
+  const rest = seconds % 60
+  return `${minutes}:${rest.toString().padStart(2, '0')}`
 }

@@ -3,34 +3,47 @@
 import { AlertCircle, CheckCircle2, Loader2, Save } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-import { BR_AUTO_NEXT_SECONDS, BR_TIMER_SECONDS, REVEAL_COUNTDOWN_SECONDS } from '@/config/game'
+import {
+  ANSWER_TIME_LIMIT_SECONDS,
+  BR_AUTO_NEXT_SECONDS,
+  BR_TIMER_SECONDS,
+  REVEAL_COUNTDOWN_SECONDS,
+} from '@/config/game'
 
 import { panelButtonHover } from './shared'
 
 const SETTING_LIMITS = {
   revealCountdownSeconds: { min: 2, max: 15, step: 1 },
+  answerTimeLimitSeconds: { min: 15, max: 300, step: 15 },
   brTimerSeconds: { min: 5, max: 60, step: 5 },
   brAutoNextSeconds: { min: 3, max: 30, step: 1 },
 }
 
 type GameSettingsValues = {
   revealCountdownSeconds: number
+  answerTimeLimitSeconds: number
   brTimerSeconds: number
   brAutoNextSeconds: number
 }
 
 const DEFAULT_GAME_SETTINGS: GameSettingsValues = {
   revealCountdownSeconds: REVEAL_COUNTDOWN_SECONDS,
+  answerTimeLimitSeconds: ANSWER_TIME_LIMIT_SECONDS,
   brTimerSeconds: BR_TIMER_SECONDS,
   brAutoNextSeconds: BR_AUTO_NEXT_SECONDS,
 }
 
 let gameSettingsCache: GameSettingsValues | null = null
 
+function formatDuration(seconds: number) {
+  if (seconds >= 60 && seconds % 60 === 0) return `${seconds / 60} min`
+  return `${seconds}s`
+}
+
 function SettingsSkeleton() {
   return (
     <div className="flex flex-col gap-6 py-1" aria-hidden="true">
-      {Array.from({ length: 3 }).map((_, index) => (
+      {Array.from({ length: 4 }).map((_, index) => (
         <div key={index} className="flex flex-col gap-2">
           <div className="flex items-start justify-between gap-3">
             <div className="flex flex-1 flex-col gap-2">
@@ -72,9 +85,12 @@ export function GameSettingsTab() {
       .then((data) => {
         if (cancelled) return
         const nextValues = {
-          revealCountdownSeconds: data.revealCountdownSeconds,
-          brTimerSeconds: data.brTimerSeconds,
-          brAutoNextSeconds: data.brAutoNextSeconds,
+          revealCountdownSeconds:
+            data.revealCountdownSeconds ?? DEFAULT_GAME_SETTINGS.revealCountdownSeconds,
+          answerTimeLimitSeconds:
+            data.answerTimeLimitSeconds ?? DEFAULT_GAME_SETTINGS.answerTimeLimitSeconds,
+          brTimerSeconds: data.brTimerSeconds ?? DEFAULT_GAME_SETTINGS.brTimerSeconds,
+          brAutoNextSeconds: data.brAutoNextSeconds ?? DEFAULT_GAME_SETTINGS.brAutoNextSeconds,
         }
         gameSettingsCache = nextValues
         setValues(nextValues)
@@ -124,6 +140,13 @@ export function GameSettingsTab() {
       color: 'var(--neon-pink)',
     },
     {
+      key: 'answerTimeLimitSeconds',
+      label: 'Limit czasu na odpowiedź',
+      description:
+        'Sekund na odpowiedź w standardowych trybach kart: classic, trivia, kategorie i nigdy przenigdy',
+      color: '#34d399',
+    },
+    {
       key: 'brTimerSeconds',
       label: 'Czas na odpowiedź — Battle Royale',
       description: 'Sekund na odpowiedź w każdej rundzie Battle Royale',
@@ -138,18 +161,18 @@ export function GameSettingsTab() {
   ]
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-7">
       <div
-        className="rounded-2xl border p-5"
+        className="rounded-2xl border p-6 sm:p-7"
         style={{ borderColor: 'rgba(255,220,180,0.12)', backgroundColor: 'rgba(13,8,24,0.5)' }}
       >
         <p
-          className="mb-1 text-xs font-semibold tracking-normal uppercase"
+          className="mb-2 text-sm font-semibold tracking-normal uppercase"
           style={{ color: '#34d399' }}
         >
           Ustawienia gier
         </p>
-        <p className="text-text-muted mb-6 text-xs">
+        <p className="text-text-muted mb-7 text-sm leading-relaxed">
           Globalne domyślne wartości dla wszystkich Twoich gier. Zmiany obowiązują od następnej
           sesji.
         </p>
@@ -160,25 +183,28 @@ export function GameSettingsTab() {
             <span className="sr-only">Ładowanie ustawień</span>
           </div>
         ) : (
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-8">
             {fields.map((f) => {
               const limits = SETTING_LIMITS[f.key]
               const value = values[f.key]
               const pct = ((value - limits.min) / (limits.max - limits.min)) * 100
               return (
-                <div key={f.key} className="flex flex-col gap-2">
-                  <div className="flex items-baseline justify-between gap-2">
+                <div key={f.key} className="flex flex-col gap-3">
+                  <div className="flex items-baseline justify-between gap-3">
                     <div>
-                      <p className="text-xs font-semibold tracking-wide" style={{ color: f.color }}>
+                      <p
+                        className="text-base font-semibold tracking-wide"
+                        style={{ color: f.color }}
+                      >
                         {f.label}
                       </p>
-                      <p className="text-text-muted mt-0.5 text-xs">{f.description}</p>
+                      <p className="text-text-muted mt-1 text-sm leading-snug">{f.description}</p>
                     </div>
                     <span
-                      className="shrink-0 rounded-lg px-3 py-1 text-sm font-bold tabular-nums"
+                      className="shrink-0 rounded-xl px-4 py-2 text-base font-bold tabular-nums"
                       style={{ backgroundColor: 'rgba(255,220,180,0.08)', color: f.color }}
                     >
-                      {value}s
+                      {formatDuration(value)}
                     </span>
                   </div>
                   <div className="relative pt-1">
@@ -193,26 +219,26 @@ export function GameSettingsTab() {
                       }
                       className="w-full cursor-pointer appearance-none rounded-full"
                       style={{
-                        height: '4px',
+                        height: '8px',
                         background: `linear-gradient(to right, ${f.color} ${pct}%, rgba(255,220,180,0.12) ${pct}%)`,
                         accentColor: f.color,
                       }}
                     />
-                    <div className="mt-1 flex justify-between">
-                      <span className="text-text-muted text-xs">{limits.min}s</span>
-                      <span className="text-text-muted text-xs">{limits.max}s</span>
+                    <div className="mt-2 flex justify-between">
+                      <span className="text-text-muted text-sm">{formatDuration(limits.min)}</span>
+                      <span className="text-text-muted text-sm">{formatDuration(limits.max)}</span>
                     </div>
                   </div>
                 </div>
               )
             })}
 
-            <div className="mt-2 flex items-center gap-3">
+            <div className="mt-2 flex flex-wrap items-center gap-4">
               <button
                 type="button"
                 onClick={handleSave}
                 disabled={saving}
-                className="flex items-center gap-2 rounded-xl border px-5 py-2.5 text-xs font-bold tracking-normal uppercase transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 rounded-xl border px-6 py-3 text-sm font-bold tracking-normal uppercase transition-colors disabled:opacity-50"
                 {...panelButtonHover(
                   {
                     borderColor: '#34d399',
@@ -226,21 +252,21 @@ export function GameSettingsTab() {
                   }
                 )}
               >
-                {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
+                {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
                 {saving ? 'Zapisywanie…' : 'Zapisz'}
               </button>
               {saved && (
                 <span
-                  className="flex items-center gap-1.5 text-xs font-semibold"
+                  className="flex items-center gap-2 text-sm font-semibold"
                   style={{ color: '#34d399' }}
                 >
-                  <CheckCircle2 size={13} />
+                  <CheckCircle2 size={16} />
                   Zapisano
                 </span>
               )}
               {error && (
-                <span className="flex items-center gap-1.5 text-xs" style={{ color: '#f87171' }}>
-                  <AlertCircle size={13} />
+                <span className="flex items-center gap-2 text-sm" style={{ color: '#f87171' }}>
+                  <AlertCircle size={16} />
                   {error}
                 </span>
               )}
@@ -251,4 +277,3 @@ export function GameSettingsTab() {
     </div>
   )
 }
-

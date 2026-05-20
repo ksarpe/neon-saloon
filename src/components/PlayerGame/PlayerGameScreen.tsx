@@ -4,8 +4,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useCallback, useState } from 'react'
 
 import { useAutoCountdown } from '@/hooks/useAutoCountdown'
+import { DEFAULT_GAME_SETTINGS } from '@/hooks/useGameSettings'
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
-import { REVEAL_COUNTDOWN_SECONDS } from '@/config/game'
 import type {
   GameFinishedPayload,
   NextCardPayload,
@@ -31,6 +31,7 @@ export default function PlayerGameScreen({
   initialCard,
   initialCardIndex,
   initialHasVoted,
+  initialSettings,
 }: PlayerGameScreenProps) {
   const [phase, setPhase] = useState<Phase>(initialHasVoted ? 'voted' : 'playing')
   const [isFlipped, setIsFlipped] = useState(Boolean(initialHasVoted))
@@ -40,9 +41,18 @@ export default function PlayerGameScreen({
   const [finishData, setFinishData] = useState<GameFinishedPayload | null>(null)
   const [loading, setLoading] = useState(false)
   const [voteError, setVoteError] = useState<string | null>(null)
+  const [gameSettings, setGameSettings] = useState(() => ({
+    ...DEFAULT_GAME_SETTINGS,
+    ...initialSettings,
+  }))
   const countdown = useAutoCountdown({
     active: phase === 'reveal',
-    seconds: REVEAL_COUNTDOWN_SECONDS,
+    seconds: gameSettings.revealCountdownSeconds,
+    resetKey: currentCardIndex,
+  })
+  const answerCountdown = useAutoCountdown({
+    active: phase === 'playing' || phase === 'voted',
+    seconds: gameSettings.answerTimeLimitSeconds,
     resetKey: currentCardIndex,
   })
 
@@ -55,6 +65,7 @@ export default function PlayerGameScreen({
     onNextCard: useCallback((d: NextCardPayload) => {
       setCurrentCard(d.card)
       setCurrentCardIndex(d.cardIndex)
+      if (d.settings) setGameSettings((prev) => ({ ...prev, ...d.settings }))
       setRevealData(null)
       setVoteError(null)
       setIsFlipped(false)
@@ -123,6 +134,7 @@ export default function PlayerGameScreen({
                   isFlipped={isFlipped}
                   onFlip={() => setIsFlipped(true)}
                   loading={loading}
+                  answerCountdown={answerCountdown}
                   castVote={castVote}
                 />
                 {voteError && (
@@ -143,7 +155,7 @@ export default function PlayerGameScreen({
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.3 }}
               >
-                <VotedWaiting avatar={avatar} />
+                <VotedWaiting avatar={avatar} answerCountdown={answerCountdown} />
               </motion.div>
             )}
 
@@ -177,4 +189,3 @@ export default function PlayerGameScreen({
     </div>
   )
 }
-

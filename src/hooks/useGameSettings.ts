@@ -3,10 +3,16 @@
 import { useEffect, useState } from 'react'
 
 import type { GameSettingsPayload } from '@/app/api/settings/route'
-import { BR_AUTO_NEXT_SECONDS, BR_TIMER_SECONDS, REVEAL_COUNTDOWN_SECONDS } from '@/config/game'
+import {
+  ANSWER_TIME_LIMIT_SECONDS,
+  BR_AUTO_NEXT_SECONDS,
+  BR_TIMER_SECONDS,
+  REVEAL_COUNTDOWN_SECONDS,
+} from '@/config/game'
 
 export const DEFAULT_GAME_SETTINGS: GameSettingsPayload = {
   revealCountdownSeconds: REVEAL_COUNTDOWN_SECONDS,
+  answerTimeLimitSeconds: ANSWER_TIME_LIMIT_SECONDS,
   brTimerSeconds: BR_TIMER_SECONDS,
   brAutoNextSeconds: BR_AUTO_NEXT_SECONDS,
 }
@@ -31,4 +37,3 @@ export function useGameSettings(defaults: GameSettingsPayload = DEFAULT_GAME_SET
 
   return gameSettings
 }
-

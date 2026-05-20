@@ -4,6 +4,9 @@
 /** Seconds the host waits after a reveal before auto-advancing to the next card (standard mode). */
 export const REVEAL_COUNTDOWN_SECONDS = 4
 
+/** Seconds players have to answer a standard card before results are revealed. */
+export const ANSWER_TIME_LIMIT_SECONDS = 120
+
 /** Seconds players have to answer each question in Battle Royale mode. */
 export const BR_TIMER_SECONDS = 20
 

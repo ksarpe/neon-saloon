@@ -11,6 +11,8 @@ interface Props {
 }
 
 export function RevealView({ data, countdown }: Props) {
+  const correctAnswer = data.correctAnswer?.trim()
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -21,11 +23,24 @@ export function RevealView({ data, countdown }: Props) {
         OTO WYNIKI
       </p>
 
+      {correctAnswer && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="border-saloon-border bg-saloon-card rounded-2xl border p-4 text-center shadow-lg"
+        >
+          <p className="text-text-muted text-[11px] font-bold tracking-normal uppercase">
+            Prawidłowa odpowiedź
+          </p>
+          <p className="mt-1 text-lg leading-snug font-black text-emerald-300">{correctAnswer}</p>
+        </motion.div>
+      )}
+
       {/* Per-player vote rows */}
       {data.votes.map((v, i) => {
-        const hasCorrectAnswer = !!data.correctAnswer
-        const rawAnswerText = v.answerText.replace(/^[A-Z]: /, '')
-        const isCorrect = hasCorrectAnswer && rawAnswerText === data.correctAnswer
+        const hasCorrectAnswer = !!correctAnswer
+        const rawAnswerText = v.answerText.replace(/^[A-Z]: /, '').trim()
+        const isCorrect = hasCorrectAnswer && rawAnswerText === correctAnswer
         const isWrong = hasCorrectAnswer && !isCorrect
         const isDrinking = !hasCorrectAnswer && v.answerIndex === -1
         const isNotDrinking = !hasCorrectAnswer && v.answerIndex === -2

@@ -4,6 +4,7 @@ import {
   cleanupSessionEvents,
   triggerGameEvent as triggerSessionEvent,
 } from '@/lib/appwrite/realtime'
+import { ANSWER_TIME_LIMIT_SECONDS, REVEAL_COUNTDOWN_SECONDS } from '@/config/game'
 import { updateSession } from '@/lib/appwrite/sessions'
 import type { ScoreEntry, TeamScoreEntry } from '@/lib/game-types'
 import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
@@ -72,6 +73,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     const body = await readLimitedJson<{
       action?: unknown
       card?: unknown
+      settings?: unknown
       scores?: unknown
       teamScores?: unknown
     }>(request)
@@ -79,10 +81,18 @@ export async function POST(request: Request, { params }: RouteContext) {
 
     if (action === 'start') {
       const card = sanitizeWireCard(body.card)
-      await updateSession(pin, { status: 'active', cardIndex: 0, currentCard: card, votes: [] })
+      const settings = sanitizeStandardSettings(body.settings)
+      await updateSession(pin, {
+        status: 'active',
+        cardIndex: 0,
+        currentCard: card,
+        votes: [],
+        currentReveal: undefined,
+        settings,
+      })
       await triggerSessionEvent(pin, {
         event: 'game-started',
-        data: { cardIndex: 0, card },
+        data: { cardIndex: 0, card, settings },
       })
     } else if (action === 'finish') {
       const scores = assertSmallArray<ScoreEntry>(body.scores, 'scores')
@@ -105,6 +115,31 @@ export async function POST(request: Request, { params }: RouteContext) {
     console.error(`[POST /api/sessions/${pin}]`, err)
     return NextResponse.json({ error: 'Failed' }, { status: 500 })
   }
+}
+
+function sanitizeStandardSettings(value: unknown) {
+  if (!value || typeof value !== 'object') {
+    return {
+      revealCountdownSeconds: REVEAL_COUNTDOWN_SECONDS,
+      answerTimeLimitSeconds: ANSWER_TIME_LIMIT_SECONDS,
+    }
+  }
+
+  const row = value as Record<string, unknown>
+  return {
+    revealCountdownSeconds:
+      typeof row.revealCountdownSeconds === 'number'
+        ? clamp(row.revealCountdownSeconds, 2, 15)
+        : REVEAL_COUNTDOWN_SECONDS,
+    answerTimeLimitSeconds:
+      typeof row.answerTimeLimitSeconds === 'number'
+        ? clamp(row.answerTimeLimitSeconds, 15, 300)
+        : ANSWER_TIME_LIMIT_SECONDS,
+  }
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, Math.round(value)))
 }
 
 function assertSmallArray<T>(value: unknown, field: string): T[] {

@@ -223,13 +223,22 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
     await fetch(`/api/sessions/${pin}`, {
       method: 'POST',
       headers: hostJsonHeaders(pin),
-      body: JSON.stringify({ action: 'start', card: firstCard }),
+      body: JSON.stringify({
+        action: 'start',
+        card: firstCard,
+        settings: {
+          revealCountdownSeconds: gameSettings.revealCountdownSeconds,
+          answerTimeLimitSeconds: gameSettings.answerTimeLimitSeconds,
+        },
+      }),
     })
     setPhase('active')
-  }, [pin, initialCards, hostName, hostAvatar])
+  }, [pin, initialCards, hostName, hostAvatar, gameSettings])
 
   const handleReveal = useCallback(async () => {
     const card = initialCards[cardIndex]
+    if (!card || isRevealed) return
+
     const votes = [...currentVotes]
     const updatedScores = [...scores]
 
@@ -291,7 +300,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
     setRevealedVotes(votes)
     setScores(updatedScores)
     setTeamScores(updatedTeamScores)
-  }, [pin, cardIndex, currentVotes, scores, initialCards])
+  }, [pin, cardIndex, currentVotes, scores, initialCards, isRevealed])
 
   const handleNextCard = useCallback(async () => {
     const next = cardIndex + 1
@@ -366,6 +375,13 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
     const timer = setTimeout(() => handleRevealRef.current(), 600)
     return () => clearTimeout(timer)
   }, [currentVotes.length, players.length, phase, isRevealed])
+
+  const answerCountdown = useAutoCountdown({
+    active: phase === 'active' && !isRevealed && Boolean(currentCard) && players.length > 0,
+    seconds: gameSettings.answerTimeLimitSeconds,
+    resetKey: cardIndex,
+    onComplete: () => handleRevealRef.current(),
+  })
 
   // ── Auto-next with countdown ──────────────────────────────────────────────────
   const handleNextCardRef = useRef(handleNextCard)
@@ -463,6 +479,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
                   isRevealed={isRevealed}
                   revealedVotes={revealedVotes}
                   scores={scores}
+                  answerCountdown={answerCountdown}
                   countdown={countdown}
                   hostPlayerId={hostPlayerId}
                   hostHasVoted={hostHasVoted}

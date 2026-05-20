@@ -41,6 +41,9 @@ export async function POST(request: Request, { params }: RouteContext) {
     if (cardIndex !== session.cardIndex) {
       return NextResponse.json({ error: 'Stale card vote' }, { status: 409 })
     }
+    if (session.currentReveal?.cardIndex === cardIndex) {
+      return NextResponse.json({ error: 'Card already revealed' }, { status: 409 })
+    }
 
     const vote: SessionVote = {
       playerId,

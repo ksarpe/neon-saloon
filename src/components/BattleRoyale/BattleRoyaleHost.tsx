@@ -14,7 +14,7 @@ import { useLobbyPlayersPolling } from '@/hooks/useLobbyPlayersPolling'
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
 import type { SessionPlayer } from '@/lib/appwrite/sessions'
 import { useBackButton } from '@/lib/back-button-context'
-import { BR_AUTO_NEXT_SECONDS, BR_TIMER_SECONDS } from '@/config/game'
+import { ANSWER_TIME_LIMIT_SECONDS, BR_AUTO_NEXT_SECONDS, BR_TIMER_SECONDS } from '@/config/game'
 import type {
   BRAnswerSubmittedPayload,
   BRRoundRevealPayload,
@@ -62,6 +62,7 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
 
   const gameSettings = useGameSettings({
     revealCountdownSeconds: 4,
+    answerTimeLimitSeconds: ANSWER_TIME_LIMIT_SECONDS,
     brTimerSeconds: BR_TIMER_SECONDS,
     brAutoNextSeconds: BR_AUTO_NEXT_SECONDS,
   })
@@ -831,4 +832,3 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
     </div>
   )
 }
-

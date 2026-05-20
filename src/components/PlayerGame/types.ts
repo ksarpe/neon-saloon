@@ -1,4 +1,4 @@
-import type { WireCard } from '@/lib/game-types'
+import type { StandardGameSettings, WireCard } from '@/lib/game-types'
 
 export type Phase = 'playing' | 'voted' | 'reveal' | 'finished'
 
@@ -13,4 +13,5 @@ export interface PlayerGameScreenProps {
   initialCardIndex: number
   // Set on resume when the player has already voted for the current card
   initialHasVoted?: boolean
+  initialSettings?: StandardGameSettings
 }

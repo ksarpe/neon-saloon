@@ -17,6 +17,7 @@ export type {
   PlayerLeftPayload,
   ScoreEntry,
   SessionEvent,
+  StandardGameSettings,
   TeamCreatedPayload,
   TeamScoreEntry,
   TeamUpdatedPayload,

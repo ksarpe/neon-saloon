@@ -2,18 +2,25 @@
 import { getServerSession } from 'next-auth'
 
 import { authOptions } from '@/lib/auth'
-import { BR_AUTO_NEXT_SECONDS, BR_TIMER_SECONDS, REVEAL_COUNTDOWN_SECONDS } from '@/config/game'
+import {
+  ANSWER_TIME_LIMIT_SECONDS,
+  BR_AUTO_NEXT_SECONDS,
+  BR_TIMER_SECONDS,
+  REVEAL_COUNTDOWN_SECONDS,
+} from '@/config/game'
 import { prisma } from '@/lib/prisma'
 import { readLimitedJson, validationErrorResponse } from '@/lib/request-validation'
 
 export type GameSettingsPayload = {
   revealCountdownSeconds: number
+  answerTimeLimitSeconds: number
   brTimerSeconds: number
   brAutoNextSeconds: number
 }
 
 const LIMITS = {
   revealCountdownSeconds: { min: 2, max: 15 },
+  answerTimeLimitSeconds: { min: 15, max: 300 },
   brTimerSeconds: { min: 5, max: 60 },
   brAutoNextSeconds: { min: 3, max: 30 },
 }
@@ -25,6 +32,7 @@ function clamp(value: number, min: number, max: number) {
 function defaultSettings(): GameSettingsPayload {
   return {
     revealCountdownSeconds: REVEAL_COUNTDOWN_SECONDS,
+    answerTimeLimitSeconds: ANSWER_TIME_LIMIT_SECONDS,
     brTimerSeconds: BR_TIMER_SECONDS,
     brAutoNextSeconds: BR_AUTO_NEXT_SECONDS,
   }
@@ -44,6 +52,7 @@ export async function GET() {
     settings
       ? {
           revealCountdownSeconds: settings.revealCountdownSeconds,
+          answerTimeLimitSeconds: settings.answerTimeLimitSeconds,
           brTimerSeconds: settings.brTimerSeconds,
           brAutoNextSeconds: settings.brAutoNextSeconds,
         }
@@ -66,6 +75,13 @@ export async function PATCH(request: Request) {
         body.revealCountdownSeconds,
         LIMITS.revealCountdownSeconds.min,
         LIMITS.revealCountdownSeconds.max
+      )
+    }
+    if (typeof body.answerTimeLimitSeconds === 'number') {
+      data.answerTimeLimitSeconds = clamp(
+        body.answerTimeLimitSeconds,
+        LIMITS.answerTimeLimitSeconds.min,
+        LIMITS.answerTimeLimitSeconds.max
       )
     }
     if (typeof body.brTimerSeconds === 'number') {
@@ -91,6 +107,7 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json({
       revealCountdownSeconds: updated.revealCountdownSeconds,
+      answerTimeLimitSeconds: updated.answerTimeLimitSeconds,
       brTimerSeconds: updated.brTimerSeconds,
       brAutoNextSeconds: updated.brAutoNextSeconds,
     })
@@ -98,4 +115,3 @@ export async function PATCH(request: Request) {
     return validationErrorResponse(err) ?? NextResponse.json({ error: 'Failed' }, { status: 500 })
   }
 }
-

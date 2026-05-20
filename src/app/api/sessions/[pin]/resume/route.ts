@@ -4,11 +4,7 @@ import { getSession } from '@/lib/appwrite/sessions'
 import { QUESTION_CATEGORIES } from '@/config/games/categories'
 import { getLimitedQuestionTotal, getOrderedQuestion } from '@/lib/games/question-limit'
 import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
-import {
-  hashPlayerSecret,
-  PLAYER_SECRET_HEADER,
-  publicPlayer,
-} from '@/lib/session-player-auth'
+import { hashPlayerSecret, PLAYER_SECRET_HEADER, publicPlayer } from '@/lib/session-player-auth'
 
 type RouteContext = { params: Promise<{ pin: string }> }
 
@@ -60,6 +56,7 @@ export async function GET(request: Request, { params }: RouteContext) {
       cardIndex: number
       card: NonNullable<typeof session.currentCard> | null
       hasVoted: boolean
+      settings: typeof session.settings | null
     }
     battleRoyale?: {
       questionIndex: number
@@ -143,6 +140,7 @@ export async function GET(request: Request, { params }: RouteContext) {
       cardIndex: session.cardIndex,
       card: session.currentCard,
       hasVoted,
+      settings: session.settings ?? null,
     }
   }
 

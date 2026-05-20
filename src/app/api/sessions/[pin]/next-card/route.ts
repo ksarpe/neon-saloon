@@ -13,6 +13,7 @@ export async function POST(request: Request, { params }: RouteContext) {
   try {
     const hostSession = await requireHostSession(request, pin)
     if (!hostSession.ok) return hostSession.response
+    const session = hostSession.value
 
     const body = await readLimitedJson<{ cardIndex?: unknown; card?: unknown }>(request)
     const cardIndex = requiredInteger(body.cardIndex, 'cardIndex', 0, 10_000)
@@ -22,7 +23,7 @@ export async function POST(request: Request, { params }: RouteContext) {
 
     await triggerSessionEvent(pin, {
       event: 'next-card',
-      data: { cardIndex, card },
+      data: { cardIndex, card, settings: session.settings },
     })
 
     return NextResponse.json({ ok: true })

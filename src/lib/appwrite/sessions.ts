@@ -87,6 +87,11 @@ export type CurrentRevealSnapshot = {
   votes: StoredVoteRecord[]
 }
 
+export type StandardSessionSettings = {
+  revealCountdownSeconds: number
+  answerTimeLimitSeconds: number
+}
+
 export type BRAnswer = {
   playerId: string
   playerName: string
@@ -122,6 +127,7 @@ export type SessionData = {
   scores?: StoredScoreEntry[]
   teamScores?: StoredTeamScoreEntry[]
   currentReveal?: CurrentRevealSnapshot
+  settings?: StandardSessionSettings
   gameMode?: string
   highlowData?: HighLowSessionData
   battleRoyaleData?: BattleRoyaleData

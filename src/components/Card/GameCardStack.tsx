@@ -90,7 +90,7 @@ export function GameCardStack({
                 className="text-base leading-snug font-bold sm:text-lg"
                 style={{ color: 'var(--sheriff-pink)' }}
               >
-                {card.answer ?? 'Czas minął!'}
+                {card.answer ?? 'Last Rodeo'}
               </p>
             </div>
           )}

@@ -151,6 +151,11 @@ export type TeamScoreEntry = {
   score: number
 }
 
+export type StandardGameSettings = {
+  revealCountdownSeconds: number
+  answerTimeLimitSeconds: number
+}
+
 export type VotesRevealedPayload = {
   cardIndex: number
   correctAnswer?: string // undefined for NEVER cards (no scoring)
@@ -169,11 +174,13 @@ export type VotesRevealedPayload = {
 export type NextCardPayload = {
   cardIndex: number
   card: WireCard
+  settings?: StandardGameSettings
 }
 
 export type GameStartedPayload = {
   cardIndex: number
   card: WireCard
+  settings?: StandardGameSettings
 }
 
 export type GameFinishedPayload = {

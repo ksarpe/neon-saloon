@@ -66,20 +66,14 @@ export function PanelContent() {
         className="relative z-10 shrink-0 border-b"
         style={{ borderColor: 'rgba(255,220,180,0.1)' }}
       >
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
-          <h1
-            className="shimmer-text text-xl tracking-normal"
-            style={{ fontFamily: 'var(--font-app)' }}
-          >
-            Panel szeryfa
-          </h1>
-          <div className="flex items-center gap-3">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-2">
+          <div className="flex flex-1 items-center justify-end gap-2">
             {session?.user?.name && (
-              <span className="text-text-muted hidden text-xs sm:block">{session.user.name}</span>
+              <span className="text-text-muted hidden text-sm sm:block">{session.user.name}</span>
             )}
             <button
               onClick={() => signOut({ callbackUrl: '/' })}
-              className="flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors"
+              className="flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition-colors"
               {...panelButtonHover(
                 {
                   borderColor: 'rgba(255,220,180,0.15)',
@@ -93,17 +87,17 @@ export function PanelContent() {
                 }
               )}
             >
-              <LogOut size={12} />
+              <LogOut size={15} />
               Wyloguj
             </button>
           </div>
         </div>
       </div>
 
-      <div className="relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-6 py-8">
+      <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col gap-7 px-6 py-9">
         <PaymentStatusBanner checkoutState={checkoutState} />
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {tabs.map((tab) => {
             const active = activeTab === tab.id
             const Icon = tab.icon
@@ -112,7 +106,7 @@ export function PanelContent() {
                 key={tab.id}
                 type="button"
                 onClick={() => openTab(tab.id)}
-                className="flex items-center gap-3 rounded-xl border-2 px-4 py-3 text-left transition-colors"
+                className="flex items-center gap-4 rounded-2xl border-2 px-5 py-4 text-left transition-colors"
                 {...panelButtonHover(
                   {
                     backgroundColor: active ? 'rgba(255,16,240,0.1)' : 'rgba(13,8,24,0.35)',
@@ -124,12 +118,14 @@ export function PanelContent() {
                   }
                 )}
               >
-                <Icon size={17} style={{ color: tab.color }} />
+                <Icon size={22} style={{ color: tab.color }} />
                 <span className="min-w-0">
-                  <span className="text-text-primary block text-xs font-bold tracking-normal uppercase">
+                  <span className="text-text-primary block text-sm font-bold tracking-normal uppercase">
                     {tab.label}
                   </span>
-                  <span className="text-text-muted block text-xs">{tab.description}</span>
+                  <span className="text-text-muted block text-sm leading-snug">
+                    {tab.description}
+                  </span>
                 </span>
               </button>
             )

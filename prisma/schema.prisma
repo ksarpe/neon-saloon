@@ -37,6 +37,7 @@ model GameSettings {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   revealCountdownSeconds Int @default(4)
+  answerTimeLimitSeconds Int @default(120)
   brTimerSeconds         Int @default(20)
   brAutoNextSeconds      Int @default(10)
 

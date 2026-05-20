@@ -1,14 +1,16 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { Clock3 } from 'lucide-react'
 
 import { PlayerAvatar } from '@/components/PlayerAvatar'
 
 interface Props {
   avatar: string
+  answerCountdown: number | null
 }
 
-export function VotedWaiting({ avatar }: Props) {
+export function VotedWaiting({ avatar, answerCountdown }: Props) {
   return (
     <div className="flex flex-col items-center gap-6 py-6 text-center">
       <motion.div
@@ -35,6 +37,20 @@ export function VotedWaiting({ avatar }: Props) {
         <p className="text-text-muted text-sm">Czekaj na wyniki…</p>
       </div>
 
+      {answerCountdown !== null && (
+        <div
+          className="flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold tabular-nums"
+          style={{
+            borderColor: answerCountdown <= 10 ? 'rgba(239,68,68,0.45)' : 'rgba(255,215,0,0.35)',
+            backgroundColor: answerCountdown <= 10 ? 'rgba(239,68,68,0.1)' : 'rgba(255,215,0,0.08)',
+            color: answerCountdown <= 10 ? '#f87171' : 'var(--sheriff-pink)',
+          }}
+        >
+          <Clock3 size={15} />
+          {formatCountdown(answerCountdown)}
+        </div>
+      )}
+
       <div className="mt-1 flex gap-2">
         {[0, 1, 2].map((i) => (
           <motion.span
@@ -48,4 +64,10 @@ export function VotedWaiting({ avatar }: Props) {
       </div>
     </div>
   )
+}
+
+function formatCountdown(seconds: number) {
+  const minutes = Math.floor(seconds / 60)
+  const rest = seconds % 60
+  return `${minutes}:${rest.toString().padStart(2, '0')}`
 }

@@ -14,6 +14,7 @@ import type {
   BRRoundStartPayload,
   GameStartedPayload,
   HighLowRoundStartPayload,
+  StandardGameSettings,
   TeamCreatedPayload,
   TeamUpdatedPayload,
   WireCard,
@@ -203,7 +204,12 @@ export default function JoinGameForm() {
           teamName: string | null
         }
         session: { status: string; gameMode: string }
-        classic?: { cardIndex: number; card: WireCard; hasVoted: boolean }
+        classic?: {
+          cardIndex: number
+          card: WireCard
+          hasVoted: boolean
+          settings?: StandardGameSettings | null
+        }
         battleRoyale?: {
           questionIndex: number
           totalQuestions: number
@@ -280,7 +286,11 @@ export default function JoinGameForm() {
         setHlSubmittedNumber(data.highlow.submittedNumber)
         setStep('playing')
       } else if (data.classic) {
-        setGameStartData({ cardIndex: data.classic.cardIndex, card: data.classic.card })
+        setGameStartData({
+          cardIndex: data.classic.cardIndex,
+          card: data.classic.card,
+          settings: data.classic.settings ?? undefined,
+        })
         setClassicHasVoted(data.classic.hasVoted)
         setStep('playing')
       } else {
@@ -478,6 +488,7 @@ export default function JoinGameForm() {
           initialCard={gameStartData.card}
           initialCardIndex={gameStartData.cardIndex}
           initialHasVoted={classicHasVoted}
+          initialSettings={gameStartData.settings}
         />
       )
     }

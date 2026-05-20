@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { Check } from 'lucide-react'
+import { Check, Clock3 } from 'lucide-react'
 
 import { PlayerAvatar } from '@/components/PlayerAvatar'
 
@@ -22,6 +22,7 @@ interface Props {
   isRevealed: boolean
   revealedVotes: VoteRecord[]
   scores: ScoreEntry[]
+  answerCountdown: number | null
   countdown: number | null
   hostPlayerId: string | null
   hostHasVoted: boolean
@@ -38,6 +39,7 @@ export function ActiveCardView({
   isRevealed,
   revealedVotes,
   scores,
+  answerCountdown,
   countdown,
   hostPlayerId,
   hostHasVoted,
@@ -56,6 +58,20 @@ export function ActiveCardView({
         isRevealed={isRevealed}
         onFlip={() => {}}
       />
+
+      {!isRevealed && answerCountdown !== null && (
+        <div
+          className="flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold tabular-nums"
+          style={{
+            borderColor: answerCountdown <= 10 ? 'rgba(239,68,68,0.45)' : 'rgba(255,215,0,0.35)',
+            backgroundColor: answerCountdown <= 10 ? 'rgba(239,68,68,0.1)' : 'rgba(255,215,0,0.08)',
+            color: answerCountdown <= 10 ? '#f87171' : 'var(--sheriff-pink)',
+          }}
+        >
+          <Clock3 size={15} />
+          {formatCountdown(answerCountdown)}
+        </div>
+      )}
 
       {/* Avatar vote grid */}
       <div className="flex max-w-sm flex-wrap justify-center gap-3">
@@ -134,4 +150,10 @@ export function ActiveCardView({
       )}
     </div>
   )
+}
+
+function formatCountdown(seconds: number) {
+  const minutes = Math.floor(seconds / 60)
+  const rest = seconds % 60
+  return `${minutes}:${rest.toString().padStart(2, '0')}`
 }
