@@ -1,13 +1,16 @@
 'use client'
 
-import { useState, useCallback, useEffect, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Zap, Flag, Menu, X } from 'lucide-react'
-import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
-import { useBackButton } from '@/lib/back-button-context'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Flag, Menu, X, Zap } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+
 import { GameSummary } from '@/components/GameSummary'
+import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
+import type { SessionPlayer, SessionTeam } from '@/lib/appwrite/sessions'
+import { useBackButton } from '@/lib/back-button-context'
+import type { HighLowRoundResultPayload, PlayerJoinedPayload, ScoreEntry } from '@/lib/game-types'
 import { HIGHLOW_QUESTIONS } from '@/lib/games/highlow'
-import { QUESTIONS_PER_GAME, limitQuestions } from '@/lib/games/question-limit'
+import { limitQuestions, QUESTIONS_PER_GAME } from '@/lib/games/question-limit'
 import {
   getHostSession,
   hostAuthHeaders,
@@ -15,12 +18,11 @@ import {
   updateHostSession,
 } from '@/lib/session-host-secret'
 import { playerJsonHeaders, savePlayerSecret } from '@/lib/session-player-secret'
-import { HostSetupView } from './HostSetupView'
+
 import { HostLobby } from './HostLobby'
-import { HostRound } from './HostRound'
 import { HostReveal } from './HostReveal'
-import type { HighLowRoundResultPayload, ScoreEntry, PlayerJoinedPayload } from '@/lib/game-types'
-import type { SessionTeam, SessionPlayer } from '@/lib/appwrite/sessions'
+import { HostRound } from './HostRound'
+import { HostSetupView } from './HostSetupView'
 
 type HLPhase = 'setup' | 'lobby' | 'guessing' | 'voting' | 'revealed' | 'finished'
 

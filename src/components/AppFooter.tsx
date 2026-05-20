@@ -1,7 +1,7 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
 import { Zap } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 
 const FOOTER_PATHS = ['/', '/login']
 
@@ -22,7 +22,10 @@ export function AppFooter() {
         className="pointer-events-auto flex flex-wrap items-center justify-center gap-2 text-[11px] tracking-wide"
         style={{ color: 'rgba(255,220,180,0.4)' }}
       >
-        Last Rodeo <span style={{ color: 'rgba(255,220,180,0.22)' }}>v1.0 custom</span>
+        Last Rodeo{' '}
+        <span style={{ color: 'rgba(255,220,180,0.22)' }}>
+          v{process.env.NEXT_PUBLIC_APP_VERSION}
+        </span>
         {' · '}
         <a href="https://aknsoftware.com" style={{ color: 'rgba(255,220,180,0.4)' }}>
           AKN Software

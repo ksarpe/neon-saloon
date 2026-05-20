@@ -1,5 +1,5 @@
-import { LegalPage } from '@/components/LegalPage'
 import type { LegalSection } from '@/components/LegalPage'
+import { LegalPage } from '@/components/LegalPage'
 
 const sections: LegalSection[] = [
   {
@@ -10,7 +10,7 @@ const sections: LegalSection[] = [
         <p>
           Niniejszy Regulamin określa zasady korzystania z serwisu internetowego{' '}
           <strong>Last Rodeo</strong>, dostępnego pod adresem <strong>lastrodeo.pl</strong> (dalej:
-          „Serwis"), prowadzonego przez AKN Software (dalej: „Operator").
+          „Serwis”), prowadzonego przez AKN Software (dalej: „Operator”).
         </p>
         <p>
           Korzystanie z Serwisu jest równoznaczne z akceptacją niniejszego Regulaminu w całości.
@@ -164,7 +164,7 @@ const sections: LegalSection[] = [
           czynnikami niezależnymi od Operatora.
         </p>
         <p>
-          Serwis jest dostarczany w stanie „takim, jaki jest". Operator nie gwarantuje
+          Serwis jest dostarczany w stanie „takim, jaki jest”. Operator nie gwarantuje
           nieprzerwanego i bezbłędnego działania Serwisu, choć dołoży wszelkich starań, aby zapewnić
           jak najwyższą jakość usługi.
         </p>

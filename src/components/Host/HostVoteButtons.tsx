@@ -1,7 +1,8 @@
 'use client'
 
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Check } from 'lucide-react'
+
 import type { GameCard } from '@/lib/store'
 
 interface Props {

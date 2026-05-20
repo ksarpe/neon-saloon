@@ -1,20 +1,22 @@
 'use client'
 
-import { useState, useCallback } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { Star } from 'lucide-react'
+import { useCallback, useState } from 'react'
+
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
-import { playerJsonHeaders } from '@/lib/session-player-secret'
-import { PlayerWaiting } from './PlayerWaiting'
-import { PlayerGuessing } from './PlayerGuessing'
-import { PlayerVoting } from './PlayerVoting'
-import { PlayerResult } from './PlayerResult'
-import { PlayerFinished } from './PlayerFinished'
 import type {
-  HighLowRoundStartPayload,
   HighLowRoundResultPayload,
+  HighLowRoundStartPayload,
   ScoreEntry,
 } from '@/lib/game-types'
+import { playerJsonHeaders } from '@/lib/session-player-secret'
+
+import { PlayerFinished } from './PlayerFinished'
+import { PlayerGuessing } from './PlayerGuessing'
+import { PlayerResult } from './PlayerResult'
+import { PlayerVoting } from './PlayerVoting'
+import { PlayerWaiting } from './PlayerWaiting'
 
 type PlayerHLPhase =
   | 'waiting'

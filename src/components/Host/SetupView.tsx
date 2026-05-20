@@ -1,9 +1,7 @@
 'use client'
 
-import { ChevronRight } from 'lucide-react'
-
-import { Button } from '@/components/ui/button'
 import { IdentityForm } from '@/components/IdentityForm'
+import { Button } from '@/components/ui/button'
 
 interface Props {
   name: string

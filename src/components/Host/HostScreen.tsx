@@ -1,28 +1,42 @@
 'use client'
 
-import { useState, useCallback, useEffect, useRef } from 'react'
-import { useBackButton } from '@/lib/back-button-context'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useCallback, useEffect, useRef, useState } from 'react'
+
+import type { GameSettingsPayload } from '@/app/api/settings/route'
 import { GameSummary } from '@/components/GameSummary'
-import { getHostSession, hostAuthHeaders, hostJsonHeaders, updateHostSession } from '@/lib/session-host-secret'
-import { playerJsonHeaders, savePlayerSecret } from '@/lib/session-player-secret'
+import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
+import { useBackButton } from '@/lib/back-button-context'
+import { REVEAL_COUNTDOWN_SECONDS } from '@/lib/game-config'
 import type {
+  NextCardPayload,
   PlayerJoinedPayload,
   PlayerLeftPayload,
   VoteCastPayload,
   VotesRevealedPayload,
-  NextCardPayload,
 } from '@/lib/game-types'
+import {
+  getHostSession,
+  hostAuthHeaders,
+  hostJsonHeaders,
+  updateHostSession,
+} from '@/lib/session-host-secret'
+import { playerJsonHeaders, savePlayerSecret } from '@/lib/session-player-secret'
 import type { GameCard } from '@/lib/store'
-import { REVEAL_COUNTDOWN_SECONDS } from '@/lib/game-config'
-import type { GameSettingsPayload } from '@/app/api/settings/route'
-import type { LivePlayer, ScoreEntry, TeamScoreEntry, HostPhase, HostScreenProps, VoteRecord } from './types'
-import { computeTeamScores } from './types'
-import { SetupView } from './SetupView'
-import { LobbyView } from './LobbyView'
+
 import { ActiveCardView } from './ActiveCardView'
 import { HostHeader } from './HostHeader'
+import { LobbyView } from './LobbyView'
+import { SetupView } from './SetupView'
+import type {
+  HostPhase,
+  HostScreenProps,
+  LivePlayer,
+  ScoreEntry,
+  TeamScoreEntry,
+  VoteRecord,
+} from './types'
+import { computeTeamScores } from './types'
 
 export default function HostScreen({ pin, initialCards }: HostScreenProps) {
   const { setHidden: setBackHidden } = useBackButton()
@@ -39,8 +53,10 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
   })
   useEffect(() => {
     fetch('/api/settings')
-      .then((r) => r.ok ? r.json() : null)
-      .then((d) => { if (d) setGameSettings(d) })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d) setGameSettings(d)
+      })
       .catch(() => {})
   }, [])
 
@@ -116,7 +132,9 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
     const id = setInterval(() => {
       fetch(`/api/sessions/${pin}`, { headers: hostAuthHeaders(pin) })
         .then((r) => (r.ok ? r.json() : null))
-        .then((data) => { if (data?.players) setPlayers(data.players) })
+        .then((data) => {
+          if (data?.players) setPlayers(data.players)
+        })
         .catch(() => {})
     }, 5000)
     return () => clearInterval(id)
@@ -204,13 +222,16 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
         setHostPlayerId(data.playerId)
         setPlayers((p) => {
           if (p.some((x) => x.playerId === data.playerId)) return p
-          return [...p, {
-            playerId: data.playerId,
-            playerName: hostName.trim(),
-            avatar: hostAvatar,
-            teamId: null,
-            teamName: null,
-          }]
+          return [
+            ...p,
+            {
+              playerId: data.playerId,
+              playerName: hostName.trim(),
+              avatar: hostAvatar,
+              teamId: null,
+              teamName: null,
+            },
+          ]
         })
       }
     } catch {
@@ -228,7 +249,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
   const handleReveal = useCallback(async () => {
     const card = initialCards[cardIndex]
     const votes = [...currentVotes]
-    let updatedScores = [...scores]
+    const updatedScores = [...scores]
 
     if (card.type === 'QUIZ' && card.answer) {
       votes.forEach((v) => {
@@ -355,7 +376,9 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
 
   // ── Auto-reveal when all players voted ───────────────────────────────────────
   const handleRevealRef = useRef(handleReveal)
-  useEffect(() => { handleRevealRef.current = handleReveal })
+  useEffect(() => {
+    handleRevealRef.current = handleReveal
+  })
   useEffect(() => {
     if (phase !== 'active' || isRevealed || players.length === 0) return
     if (currentVotes.length < players.length) return
@@ -365,9 +388,14 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
 
   // ── Auto-next with countdown ──────────────────────────────────────────────────
   const handleNextCardRef = useRef(handleNextCard)
-  useEffect(() => { handleNextCardRef.current = handleNextCard })
   useEffect(() => {
-    if (!isRevealed) { setCountdown(null); return }
+    handleNextCardRef.current = handleNextCard
+  })
+  useEffect(() => {
+    if (!isRevealed) {
+      setCountdown(null)
+      return
+    }
     const secs = gameSettings.revealCountdownSeconds
     setCountdown(secs)
     let n = secs
@@ -413,33 +441,52 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
         <div className="mx-auto w-full max-w-5xl">
           <AnimatePresence mode="wait">
             {phase === 'setup' && (
-              <motion.div key="setup" className="w-full"
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }}>
+              <motion.div
+                key="setup"
+                className="w-full"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4 }}
+              >
                 <SetupView
-                  name={hostName} onNameChange={setHostName}
-                  avatar={hostAvatar} onAvatarChange={setHostAvatar}
+                  name={hostName}
+                  onNameChange={setHostName}
+                  avatar={hostAvatar}
+                  onAvatarChange={setHostAvatar}
                   onContinue={handleSetupComplete}
                 />
               </motion.div>
             )}
 
             {phase === 'lobby' && (
-              <motion.div key="lobby" className="w-full"
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }}>
+              <motion.div
+                key="lobby"
+                className="w-full"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4 }}
+              >
                 <LobbyView
-                  pin={pin} players={players}
-                  hostAvatar={hostAvatar!} hostName={hostName}
+                  pin={pin}
+                  players={players}
+                  hostAvatar={hostAvatar!}
+                  hostName={hostName}
                   onStart={handleStart}
                 />
               </motion.div>
             )}
 
             {phase === 'active' && currentCard && (
-              <motion.div key={`card-${cardIndex}`} className="w-full"
-                initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.35 }}>
+              <motion.div
+                key={`card-${cardIndex}`}
+                className="w-full"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.35 }}
+              >
                 <ActiveCardView
                   card={currentCard}
                   cardIndex={cardIndex}
@@ -459,14 +506,25 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
             )}
 
             {phase === 'finished' && (
-              <motion.div key="finished" className="w-full"
-                initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
+              <motion.div
+                key="finished"
+                className="w-full"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+              >
                 <GameSummary
-                  scores={scores.map((s) => ({ id: s.playerId, name: s.playerName, score: s.score }))}
-                  teamScores={teamScores.length > 0
-                    ? teamScores.map((t) => ({ id: t.teamId, name: t.teamName, score: t.score }))
-                    : undefined}
+                  scores={scores.map((s) => ({
+                    id: s.playerId,
+                    name: s.playerName,
+                    score: s.score,
+                  }))}
+                  teamScores={
+                    teamScores.length > 0
+                      ? teamScores.map((t) => ({ id: t.teamId, name: t.teamName, score: t.score }))
+                      : undefined
+                  }
                   drinksScores={drinksScores.length > 0 ? drinksScores : undefined}
                   egzekwoScores={egzekwoScores.length > 0 ? egzekwoScores : undefined}
                 />

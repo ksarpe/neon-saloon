@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { Star } from 'lucide-react'
+
 import type { HighLowRoundResultPayload } from '@/lib/game-types'
 
 interface Props {

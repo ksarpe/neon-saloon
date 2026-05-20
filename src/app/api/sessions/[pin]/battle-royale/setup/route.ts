@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
 
 import { getSession, saveSession } from '@/lib/appwrite/sessions'
+import { BR_TIMER_SECONDS } from '@/lib/game-config'
 import { QUESTION_CATEGORIES } from '@/lib/games/categories'
 import { createQuestionOrder } from '@/lib/games/question-limit'
-import { BR_TIMER_SECONDS } from '@/lib/game-config'
 import { readLimitedJson, requiredString, validationErrorResponse } from '@/lib/request-validation'
 import { isHostAuthorized } from '@/lib/session-host-auth'
 

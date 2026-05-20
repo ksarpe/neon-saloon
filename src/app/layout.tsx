@@ -1,11 +1,13 @@
-import type { Metadata, Viewport } from 'next'
-import { Sora, Anton } from 'next/font/google'
 import './globals.css'
-import PageTransition from '@/components/PageTransition'
-import { BackButtonProvider } from '@/lib/back-button-context'
-import { Providers } from '@/components/Providers'
-import { BackgroundMusic } from '@/components/BackgroundMusic'
+
+import type { Metadata, Viewport } from 'next'
+import { Anton, Sora } from 'next/font/google'
+
 import { AppFooter } from '@/components/AppFooter'
+import { BackgroundMusic } from '@/components/BackgroundMusic'
+import PageTransition from '@/components/PageTransition'
+import { Providers } from '@/components/Providers'
+import { BackButtonProvider } from '@/lib/back-button-context'
 
 const font = Sora({
   subsets: ['latin', 'latin-ext'],

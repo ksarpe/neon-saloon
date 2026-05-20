@@ -1,9 +1,10 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Star, Loader2, TrendingDown, TrendingUp } from 'lucide-react'
+import { Loader2, Star, TrendingDown, TrendingUp } from 'lucide-react'
+
+import type { SessionPlayer, SessionTeam } from '@/lib/appwrite/sessions'
 import type { ScoreEntry } from '@/lib/game-types'
-import type { SessionTeam, SessionPlayer } from '@/lib/appwrite/sessions'
 import type { HighLowQuestion } from '@/lib/games/highlow'
 
 interface Props {

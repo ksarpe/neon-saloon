@@ -1,2 +1,2 @@
 export { default } from './HostScreen'
-export type { LivePlayer, ScoreEntry, TeamScoreEntry, HostPhase, HostScreenProps } from './types'
+export type { HostPhase, HostScreenProps, LivePlayer, ScoreEntry, TeamScoreEntry } from './types'

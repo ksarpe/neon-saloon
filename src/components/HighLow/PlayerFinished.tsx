@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { Star, Trophy } from 'lucide-react'
+
 import type { ScoreEntry } from '@/lib/game-types'
 
 interface Props {

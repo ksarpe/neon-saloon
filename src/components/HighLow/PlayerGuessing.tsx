@@ -2,8 +2,10 @@
 
 import { motion } from 'framer-motion'
 import { Loader2 } from 'lucide-react'
-import { PulsingDots } from './PulsingDots'
+
 import type { HighLowRoundStartPayload } from '@/lib/game-types'
+
+import { PulsingDots } from './PulsingDots'
 
 interface Props {
   phase: 'guessing-captain' | 'guessing-member'

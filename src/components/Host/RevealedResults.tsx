@@ -2,8 +2,10 @@
 
 import { motion } from 'framer-motion'
 import { Star } from 'lucide-react'
+
 import type { GameCard } from '@/lib/store'
-import type { VoteRecord, ScoreEntry } from './types'
+
+import type { ScoreEntry, VoteRecord } from './types'
 
 interface Props {
   card: GameCard

@@ -2,8 +2,9 @@
 
 import { motion } from 'framer-motion'
 import { ChevronRight } from 'lucide-react'
-import type { HighLowRoundResultPayload } from '@/lib/game-types'
+
 import type { SessionTeam } from '@/lib/appwrite/sessions'
+import type { HighLowRoundResultPayload } from '@/lib/game-types'
 
 interface Props {
   resultData: HighLowRoundResultPayload

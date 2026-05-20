@@ -364,7 +364,7 @@ export default function JoinGameForm() {
     if (!targetPin) return
 
     // tryResume is async — the setState happens after the fetch settles, not synchronously.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+
     tryResume(targetPin).finally(() => setResumeChecking(false))
   }, [resumeChecking, searchParams, tryResume])
 
@@ -559,7 +559,6 @@ export default function JoinGameForm() {
               <ModeSelector
                 onSolo={() => doJoin(null, null)}
                 onTeam={() => setStep('team')}
-                onBack={() => setStep('name')}
                 loading={loading}
               />
             </motion.div>

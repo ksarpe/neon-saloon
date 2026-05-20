@@ -1,22 +1,24 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useCallback, useEffect, useState } from 'react'
+
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
-import { playerJsonHeaders } from '@/lib/session-player-secret'
-import type {
-  WireCard,
-  VotesRevealedPayload,
-  NextCardPayload,
-  GameFinishedPayload,
-} from '@/lib/game-types'
-import type { Phase, PlayerGameScreenProps } from './types'
 import { REVEAL_COUNTDOWN_SECONDS } from '@/lib/game-config'
+import type {
+  GameFinishedPayload,
+  NextCardPayload,
+  VotesRevealedPayload,
+  WireCard,
+} from '@/lib/game-types'
+import { playerJsonHeaders } from '@/lib/session-player-secret'
+
+import { GameOverView } from './GameOverView'
 import { PlayerHeader } from './PlayerHeader'
 import { PlayingView } from './PlayingView'
-import { VotedWaiting } from './VotedWaiting'
 import { RevealView } from './RevealView'
-import { GameOverView } from './GameOverView'
+import type { Phase, PlayerGameScreenProps } from './types'
+import { VotedWaiting } from './VotedWaiting'
 
 export default function PlayerGameScreen({
   pin,

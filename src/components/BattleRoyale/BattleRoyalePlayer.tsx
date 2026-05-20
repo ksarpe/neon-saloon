@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useCallback, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
+import { CheckCircle2, Clock, Skull, Trophy } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
-import { Clock, CheckCircle2, Skull, Trophy } from 'lucide-react'
+import type { BRGameOverPayload, BRRoundRevealPayload, BRRoundStartPayload } from '@/lib/game-types'
 import { playerJsonHeaders } from '@/lib/session-player-secret'
-import type { BRRoundStartPayload, BRRoundRevealPayload, BRGameOverPayload } from '@/lib/game-types'
 
 type BRPlayerPhase =
   | 'waiting'

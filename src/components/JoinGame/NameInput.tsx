@@ -1,9 +1,9 @@
 'use client'
 
-import { ArrowLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
 import { IdentityForm } from '@/components/IdentityForm'
+import { Button } from '@/components/ui/button'
 
 interface Props {
   value: string

@@ -1,8 +1,9 @@
 'use client'
 
-import React from 'react'
 import { motion } from 'framer-motion'
 import { Star } from 'lucide-react'
+import React from 'react'
+
 import type { SummaryScore } from './types'
 
 const MEDALS = ['🥇', '🥈', '🥉']

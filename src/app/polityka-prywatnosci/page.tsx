@@ -1,5 +1,5 @@
-import { LegalPage } from '@/components/LegalPage'
 import type { LegalSection } from '@/components/LegalPage'
+import { LegalPage } from '@/components/LegalPage'
 
 const sections: LegalSection[] = [
   {
@@ -160,7 +160,7 @@ const sections: LegalSection[] = [
           </li>
           <li>
             <strong>Prawo do usunięcia</strong> — możesz zażądać usunięcia danych („prawo do bycia
-            zapomnianym").
+            zapomnianym”).
           </li>
           <li>
             <strong>Prawo do ograniczenia przetwarzania</strong> — możesz zażądać ograniczenia

@@ -2,14 +2,15 @@
 
 import { motion } from 'framer-motion'
 import { Loader2, Lock } from 'lucide-react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+
 import { Button } from '@/components/ui/button'
 import { ProModal } from '@/components/ui/ContentGate'
 import { useContentAccess } from '@/hooks/useContentAccess'
 import { checkAccess } from '@/lib/content-access'
 import { saveHostSecret } from '@/lib/session-host-secret'
-import Image from 'next/image'
 
 const GAME_MODES = [
   {

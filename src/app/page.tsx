@@ -1,19 +1,20 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import {
-  ChevronRight,
-  Brain,
-  Heart,
   BookOpen,
-  TrendingUp,
+  Brain,
   Check,
-  Minus,
+  ChevronRight,
+  Heart,
   type LucideIcon,
+  Minus,
+  TrendingUp,
 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import { useState } from 'react'
+
 import { Button } from '@/components/ui/button'
 
 interface GameModeCard {
@@ -214,12 +215,10 @@ function ModeCardContent({ mode, isActive }: { mode: GameModeCard; isActive: boo
 export default function LandingPage() {
   const router = useRouter()
   const { data: session } = useSession()
-  const [activeMode, setActiveMode] = useState(0)
-  const prevActiveRef = useRef(0)
-
-  useEffect(() => {
-    prevActiveRef.current = activeMode
-  }, [activeMode])
+  const [{ activeMode, prevActiveMode }, setModeState] = useState({
+    activeMode: 0,
+    prevActiveMode: 0,
+  })
 
   const totalModes = GAME_MODES.length
   const halfModes = totalModes / 2
@@ -229,8 +228,24 @@ export default function LandingPage() {
     else if (o < -halfModes) o += totalModes
     return o
   }
-  const goNext = () => setActiveMode((a) => (a + 1) % totalModes)
-  const goPrev = () => setActiveMode((a) => (a - 1 + totalModes) % totalModes)
+  const setActiveMode = (nextMode: number) => {
+    setModeState((current) => ({
+      activeMode: nextMode,
+      prevActiveMode: current.activeMode,
+    }))
+  }
+  const goNext = () => {
+    setModeState((current) => ({
+      activeMode: (current.activeMode + 1) % totalModes,
+      prevActiveMode: current.activeMode,
+    }))
+  }
+  const goPrev = () => {
+    setModeState((current) => ({
+      activeMode: (current.activeMode - 1 + totalModes) % totalModes,
+      prevActiveMode: current.activeMode,
+    }))
+  }
 
   const handlePricingCta = (planId: string) => {
     if (planId === 'free') return router.push('/graj')
@@ -382,7 +397,7 @@ export default function LandingPage() {
         >
           {GAME_MODES.map((mode, i) => {
             const offset = wrapOffset(i, activeMode)
-            const prevOffset = wrapOffset(i, prevActiveRef.current)
+            const prevOffset = wrapOffset(i, prevActiveMode)
             const isWrapping = Math.abs(offset - prevOffset) > 1.5
             const absOffset = Math.abs(offset)
             const isActive = absOffset === 0

@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 
 import { authOptions } from '@/lib/auth'
+import { BR_AUTO_NEXT_SECONDS, BR_TIMER_SECONDS, REVEAL_COUNTDOWN_SECONDS } from '@/lib/game-config'
 import { prisma } from '@/lib/prisma'
-import { REVEAL_COUNTDOWN_SECONDS, BR_TIMER_SECONDS, BR_AUTO_NEXT_SECONDS } from '@/lib/game-config'
 import { readLimitedJson, validationErrorResponse } from '@/lib/request-validation'
 
 export type GameSettingsPayload = {

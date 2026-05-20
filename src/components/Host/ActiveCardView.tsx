@@ -1,13 +1,15 @@
 'use client'
 
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Check } from 'lucide-react'
+
 import { GameCardStack } from '@/components/Card'
-import type { GameCard } from '@/lib/store'
 import type { VoteCastPayload } from '@/lib/game-types'
-import type { LivePlayer, VoteRecord, ScoreEntry } from './types'
+import type { GameCard } from '@/lib/store'
+
 import { HostVoteButtons } from './HostVoteButtons'
 import { RevealedResults } from './RevealedResults'
+import type { LivePlayer, ScoreEntry, VoteRecord } from './types'
 
 interface Props {
   card: GameCard

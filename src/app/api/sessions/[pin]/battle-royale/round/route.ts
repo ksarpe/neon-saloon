@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
-import { getSession, saveSession } from '@/lib/appwrite/sessions'
+
 import { triggerGameEvent } from '@/lib/appwrite/realtime'
+import { getSession, saveSession } from '@/lib/appwrite/sessions'
 import { QUESTION_CATEGORIES } from '@/lib/games/categories'
 import { getLimitedQuestionTotal, getOrderedQuestion } from '@/lib/games/question-limit'
 import { isHostAuthorized } from '@/lib/session-host-auth'

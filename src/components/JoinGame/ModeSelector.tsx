@@ -1,16 +1,15 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { User, Users, ChevronRight } from 'lucide-react'
+import { ChevronRight, User, Users } from 'lucide-react'
 
 interface Props {
   onSolo: () => void
   onTeam: () => void
-  onBack: () => void
   loading: boolean
 }
 
-export function ModeSelector({ onSolo, onTeam, onBack, loading }: Props) {
+export function ModeSelector({ onSolo, onTeam, loading }: Props) {
   return (
     <div className="flex flex-col items-center gap-6">
       <div className="flex w-full max-w-lg flex-col gap-3">

@@ -1,11 +1,13 @@
 'use client'
 
-import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Users, User } from 'lucide-react'
+import { User, Users } from 'lucide-react'
+import { useState } from 'react'
+
+import { Button } from '@/components/ui/button'
+
 import { RankingList } from './RankingList'
 import type { SummaryScore, Tab } from './types'
-import { Button } from '@/components/ui/button'
 
 interface Props {
   scores: SummaryScore[]

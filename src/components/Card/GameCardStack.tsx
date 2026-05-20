@@ -1,9 +1,10 @@
 'use client'
 
 import { motion } from 'framer-motion'
+
 import { CardFace } from './CardFace'
-import { CARD_W, CARD_H } from './types'
 import type { CardLike } from './types'
+import { CARD_H, CARD_W } from './types'
 
 interface Props {
   card: CardLike

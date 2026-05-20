@@ -2,8 +2,10 @@
 
 import { motion } from 'framer-motion'
 import { Loader2, TrendingDown, TrendingUp } from 'lucide-react'
-import { PulsingDots } from './PulsingDots'
+
 import type { HighLowRoundStartPayload } from '@/lib/game-types'
+
+import { PulsingDots } from './PulsingDots'
 
 type VotingPhase = 'voting-captain-waiting' | 'voting-captain-ready' | 'voting-member'
 

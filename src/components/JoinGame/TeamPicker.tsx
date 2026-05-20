@@ -1,9 +1,11 @@
 'use client'
 
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowLeft, Loader2, UserPlus } from 'lucide-react'
-import type { LiveTeam } from './types'
+
 import { Button } from '@/components/ui/button'
+
+import type { LiveTeam } from './types'
 
 interface Props {
   teams: LiveTeam[]

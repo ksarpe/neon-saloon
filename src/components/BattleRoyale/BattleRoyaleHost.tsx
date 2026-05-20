@@ -1,26 +1,27 @@
 'use client'
 
-import { useState, useCallback, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useBackButton } from '@/lib/back-button-context'
-import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
-import { SetupView } from '@/components/Host/SetupView'
+import { AnimatePresence, motion } from 'framer-motion'
+import { CheckCircle2, Clock, Play, Skull, Trophy } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+
+import type { GameSettingsPayload } from '@/app/api/settings/route'
 import { LobbyView } from '@/components/Host/LobbyView'
-import { Play, Skull, CheckCircle2, Clock, Trophy } from 'lucide-react'
+import { SetupView } from '@/components/Host/SetupView'
 import { Button } from '@/components/ui/button'
+import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
 import type { SessionPlayer } from '@/lib/appwrite/sessions'
-import { getHostSession, hostAuthHeaders, updateHostSession } from '@/lib/session-host-secret'
-import { playerJsonHeaders, savePlayerSecret } from '@/lib/session-player-secret'
+import { useBackButton } from '@/lib/back-button-context'
+import { BR_AUTO_NEXT_SECONDS, BR_TIMER_SECONDS } from '@/lib/game-config'
 import type {
-  PlayerJoinedPayload,
-  PlayerLeftPayload,
   BRAnswerSubmittedPayload,
   BRRoundRevealPayload,
+  PlayerJoinedPayload,
+  PlayerLeftPayload,
 } from '@/lib/game-types'
 import { QUESTION_CATEGORIES } from '@/lib/games/categories'
 import { getLimitedQuestionTotal, getOrderedQuestion } from '@/lib/games/question-limit'
-import { BR_TIMER_SECONDS, BR_AUTO_NEXT_SECONDS } from '@/lib/game-config'
-import type { GameSettingsPayload } from '@/app/api/settings/route'
+import { getHostSession, hostAuthHeaders, updateHostSession } from '@/lib/session-host-secret'
+import { playerJsonHeaders, savePlayerSecret } from '@/lib/session-player-secret'
 
 type BRPhase = 'setup' | 'lobby' | 'question' | 'reveal' | 'gameover'
 

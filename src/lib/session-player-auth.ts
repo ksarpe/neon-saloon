@@ -30,8 +30,13 @@ export function getAuthorizedPlayer(
 }
 
 export function publicPlayer(player: SessionPlayer): Omit<SessionPlayer, 'playerSecretHash'> {
-  const { playerSecretHash: _playerSecretHash, ...safePlayer } = player
-  return safePlayer
+  return {
+    playerId: player.playerId,
+    playerName: player.playerName,
+    avatar: player.avatar,
+    teamId: player.teamId,
+    teamName: player.teamName,
+  }
 }
 
 function timingSafeStringEqual(value: string, expected: string) {
