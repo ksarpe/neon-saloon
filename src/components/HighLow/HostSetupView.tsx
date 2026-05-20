@@ -25,7 +25,7 @@ export function HostSetupView({ team1, team2, onContinue }: Props) {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-xs flex-col items-center gap-6">
+    <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-6">
       <IdentityForm
         name={name}
         onNameChange={setName}

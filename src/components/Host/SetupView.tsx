@@ -15,7 +15,7 @@ export function SetupView({ name, onNameChange, avatar, onAvatarChange, onContin
   const canContinue = Boolean(name.trim() && avatar)
 
   return (
-    <div className="mx-auto flex w-full max-w-xs flex-col items-center gap-6">
+    <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-6">
       <IdentityForm
         name={name}
         onNameChange={onNameChange}

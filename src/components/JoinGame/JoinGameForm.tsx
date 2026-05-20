@@ -509,7 +509,7 @@ export default function JoinGameForm() {
 
   return (
     <div className="flex h-dvh w-full flex-col items-center justify-center overflow-hidden px-6">
-      <div className="relative z-10 w-full max-w-sm">
+      <div className={`relative z-10 w-full ${step === 'name' ? 'max-w-2xl' : 'max-w-sm'}`}>
         <AnimatePresence mode="popLayout" initial={false}>
           {step === 'pin' && (
             <motion.div

@@ -27,7 +27,7 @@ export function NameInput({ value, onChange, avatar, onAvatarChange, onSubmit, o
         onEnter={() => canSubmit && onSubmit()}
       />
 
-      <div className="flex w-full max-w-xs gap-3">
+      <div className="flex w-full max-w-md gap-3">
         <Button type="outline" onClick={onBack} className="flex-1">
           <ArrowLeft size={14} /> Wróć
         </Button>
