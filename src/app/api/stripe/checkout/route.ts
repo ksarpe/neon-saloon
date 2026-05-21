@@ -27,6 +27,11 @@ type CheckoutUser = {
   stripeCustomerId: string | null
 }
 
+const GLOBAL_STRIPE_CHECKOUT_LIMITS = [
+  { suffix: 'burst', limit: 60, windowMs: 60_000 },
+  { suffix: 'sustained', limit: 300, windowMs: 15 * 60_000 },
+]
+
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions)
@@ -127,6 +132,19 @@ async function getOrCreateStripeCustomerId(user: CheckoutUser) {
 }
 
 async function enforceStripeCheckoutLimit(request: Request, userId: string) {
+  for (const rateLimit of GLOBAL_STRIPE_CHECKOUT_LIMITS) {
+    const result = await consumeRateLimit(`stripe:checkout:global:${rateLimit.suffix}`, rateLimit)
+    if (!result.allowed) {
+      return NextResponse.json(
+        {
+          error: 'Chwilowo zbyt dużo prób rozpoczęcia płatności. Spróbuj ponownie później.',
+          retryAfter: result.retryAfter,
+        },
+        { status: 429, headers: rateLimitHeaders(result) }
+      )
+    }
+  }
+
   const ipLimit = await consumeRateLimit(`stripe:checkout:ip:${getClientIp(request)}`, {
     limit: 20,
     windowMs: 60_000,

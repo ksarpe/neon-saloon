@@ -11,8 +11,29 @@ import { prisma } from '@/lib/prisma'
 import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
 import { normalizeEmail, readLimitedJson, validationErrorResponse } from '@/lib/request-validation'
 
+const GLOBAL_FORGOT_PASSWORD_LIMITS = [
+  { suffix: 'burst', limit: 30, windowMs: 60_000 },
+  { suffix: 'sustained', limit: 200, windowMs: 60 * 60_000 },
+]
+
 export async function POST(request: Request) {
   try {
+    for (const rateLimit of GLOBAL_FORGOT_PASSWORD_LIMITS) {
+      const result = await consumeRateLimit(
+        `auth:forgot-password:global:${rateLimit.suffix}`,
+        rateLimit
+      )
+      if (!result.allowed) {
+        return NextResponse.json(
+          {
+            error: 'Chwilowo zbyt dużo próśb o reset hasła. Spróbuj ponownie później.',
+            retryAfter: result.retryAfter,
+          },
+          { status: 429, headers: rateLimitHeaders(result) }
+        )
+      }
+    }
+
     const body = await readLimitedJson<{ email?: unknown }>(request)
     const email = normalizeEmail(body.email)
 

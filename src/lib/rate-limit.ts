@@ -18,6 +18,8 @@ export type RateLimitResult = {
 
 const buckets = new Map<string, RateLimitBucket>()
 const RATE_LIMIT_KEY_PREFIX = process.env.RATE_LIMIT_KEY_PREFIX ?? 'neon-saloon'
+const RATE_LIMIT_FAIL_CLOSED = process.env.NODE_ENV === 'production'
+const RATE_LIMIT_UNAVAILABLE_RETRY_SECONDS = 60
 
 export function getClientIp(request: Request) {
   return getClientIpFromHeaders(request.headers)
@@ -42,15 +44,37 @@ export async function consumeRateLimit(
   key: string,
   options: RateLimitOptions
 ): Promise<RateLimitResult> {
-  if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+  const upstashConfigured = Boolean(
+    process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+  )
+
+  if (upstashConfigured) {
     try {
       return await consumeUpstashRateLimit(key, options)
     } catch (error) {
-      console.error('[rate-limit] Upstash limiter failed, falling back to memory', error)
+      console.error('[rate-limit] Upstash limiter failed', error)
+      if (RATE_LIMIT_FAIL_CLOSED) return rateLimitUnavailable(options)
     }
   }
 
+  if (RATE_LIMIT_FAIL_CLOSED) {
+    console.error('[rate-limit] Upstash is not configured in production')
+    return rateLimitUnavailable(options)
+  }
+
   return consumeMemoryRateLimit(key, options)
+}
+
+function rateLimitUnavailable(options: RateLimitOptions): RateLimitResult {
+  const resetAt = Date.now() + RATE_LIMIT_UNAVAILABLE_RETRY_SECONDS * 1000
+
+  return {
+    allowed: false,
+    limit: options.limit,
+    remaining: 0,
+    resetAt,
+    retryAfter: RATE_LIMIT_UNAVAILABLE_RETRY_SECONDS,
+  }
 }
 
 function consumeMemoryRateLimit(key: string, options: RateLimitOptions): RateLimitResult {

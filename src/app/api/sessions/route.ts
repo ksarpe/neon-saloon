@@ -9,6 +9,10 @@ import { createHostSecret, hashHostSecret } from '@/lib/session-host-auth'
 import { SESSION_PIN_LENGTH } from '@/lib/session-pin'
 
 const PREMIUM_GAME_MODES = new Set(['highlow', 'battle-royale'])
+const GLOBAL_SESSION_CREATE_RATE_LIMITS = [
+  { suffix: 'burst', limit: 120, windowMs: 60_000 },
+  { suffix: 'sustained', limit: 600, windowMs: 15 * 60_000 },
+]
 const SESSION_CREATE_RATE_LIMITS = [
   { suffix: 'burst', limit: 6, windowMs: 60_000 },
   { suffix: 'sustained', limit: 30, windowMs: 15 * 60_000 },
@@ -51,6 +55,19 @@ async function createSessionWithUniquePin(
 
 export async function POST(request: Request) {
   const clientIp = getClientIp(request)
+  for (const rateLimit of GLOBAL_SESSION_CREATE_RATE_LIMITS) {
+    const result = await consumeRateLimit(`session-create:global:${rateLimit.suffix}`, rateLimit)
+    if (!result.allowed) {
+      return NextResponse.json(
+        {
+          error: 'Chwilowo zbyt dużo osób tworzy salony. Spróbuj ponownie później.',
+          retryAfter: result.retryAfter,
+        },
+        { status: 429, headers: rateLimitHeaders(result) }
+      )
+    }
+  }
+
   for (const rateLimit of SESSION_CREATE_RATE_LIMITS) {
     const result = await consumeRateLimit(
       `session-create:${rateLimit.suffix}:${clientIp}`,

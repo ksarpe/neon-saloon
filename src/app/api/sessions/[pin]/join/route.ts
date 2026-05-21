@@ -15,18 +15,36 @@ import { createPlayerSecret, hashPlayerSecret } from '@/lib/session-player-auth'
 
 type RouteContext = { params: Promise<{ pin: string }> }
 
+const GLOBAL_SESSION_JOIN_LIMITS = [
+  { suffix: 'burst', limit: 600, windowMs: 60_000 },
+  { suffix: 'sustained', limit: 3_000, windowMs: 15 * 60_000 },
+]
+
 export async function POST(request: Request, { params }: RouteContext) {
   const { pin } = await params
   const clientIp = getClientIp(request)
-  const globalLimit = await consumeRateLimit(`session-join:${clientIp}`, {
+  for (const rateLimit of GLOBAL_SESSION_JOIN_LIMITS) {
+    const result = await consumeRateLimit(`session-join:global:${rateLimit.suffix}`, rateLimit)
+    if (!result.allowed) {
+      return NextResponse.json(
+        {
+          error: 'Chwilowo zbyt dużo osób dołącza do salonów. Spróbuj ponownie później.',
+          retryAfter: result.retryAfter,
+        },
+        { status: 429, headers: rateLimitHeaders(result) }
+      )
+    }
+  }
+
+  const ipLimit = await consumeRateLimit(`session-join:${clientIp}`, {
     limit: 20,
     windowMs: 60_000,
   })
 
-  if (!globalLimit.allowed) {
+  if (!ipLimit.allowed) {
     return NextResponse.json(
-      { error: 'Too many requests', retryAfter: globalLimit.retryAfter },
-      { status: 429, headers: rateLimitHeaders(globalLimit) }
+      { error: 'Too many requests', retryAfter: ipLimit.retryAfter },
+      { status: 429, headers: rateLimitHeaders(ipLimit) }
     )
   }
 

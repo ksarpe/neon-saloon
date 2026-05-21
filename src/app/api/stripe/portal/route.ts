@@ -7,6 +7,11 @@ import { prisma } from '@/lib/prisma'
 import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
 import { createStripeBillingPortalSession, getStripeSecretKey } from '@/lib/stripe'
 
+const GLOBAL_STRIPE_PORTAL_LIMITS = [
+  { suffix: 'burst', limit: 120, windowMs: 60_000 },
+  { suffix: 'sustained', limit: 600, windowMs: 15 * 60_000 },
+]
+
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions)
@@ -52,6 +57,19 @@ export async function POST(request: Request) {
 }
 
 async function enforceStripePortalLimit(request: Request, userId: string) {
+  for (const rateLimit of GLOBAL_STRIPE_PORTAL_LIMITS) {
+    const result = await consumeRateLimit(`stripe:portal:global:${rateLimit.suffix}`, rateLimit)
+    if (!result.allowed) {
+      return NextResponse.json(
+        {
+          error: 'Chwilowo zbyt dużo prób otwarcia panelu płatności. Spróbuj ponownie później.',
+          retryAfter: result.retryAfter,
+        },
+        { status: 429, headers: rateLimitHeaders(result) }
+      )
+    }
+  }
+
   const ipLimit = await consumeRateLimit(`stripe:portal:ip:${getClientIp(request)}`, {
     limit: 20,
     windowMs: 60_000,
