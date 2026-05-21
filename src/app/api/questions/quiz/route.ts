@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 
+import { getQuestionQuota } from '@/config/usage-limits'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
@@ -18,14 +19,22 @@ export async function GET(request: Request) {
 
   const userId = (session.user as { id: string }).id
   const pagination = getQuestionPagination(request)
-  const questions = await prisma.quizQuestion.findMany({
-    where: { userId },
-    orderBy: { createdAt: 'desc' },
-    skip: pagination.skip,
-    take: pagination.take,
-  })
+  const [questions, total] = await prisma.$transaction([
+    prisma.quizQuestion.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      skip: pagination.skip,
+      take: pagination.take,
+    }),
+    prisma.quizQuestion.count({ where: { userId } }),
+  ])
 
-  return NextResponse.json(questions, { headers: pagination.headers })
+  return NextResponse.json(questions, {
+    headers: {
+      ...pagination.headers,
+      ...questionQuotaHeaders(total, getQuestionQuota('quiz', Boolean(session.user.isPremium))),
+    },
+  })
 }
 
 export async function POST(request: Request) {
@@ -36,6 +45,21 @@ export async function POST(request: Request) {
     const userId = (session.user as { id: string }).id
     const rateLimitResponse = await enforceQuestionCreateLimit(request, 'quiz', userId)
     if (rateLimitResponse) return rateLimitResponse
+
+    const quota = getQuestionQuota('quiz', Boolean(session.user.isPremium))
+    const total = await prisma.quizQuestion.count({ where: { userId } })
+    if (total >= quota) {
+      return NextResponse.json(
+        {
+          error: session.user.isPremium
+            ? `Osiągnięto limit ${quota} pytań quizowych.`
+            : `Na darmowym koncie możesz dodać maksymalnie ${quota} pytań quizowych. Odblokuj PRO, żeby dodać więcej.`,
+          limit: quota,
+          count: total,
+        },
+        { status: 403, headers: questionQuotaHeaders(total, quota) }
+      )
+    }
 
     const body = await readLimitedJson<{ text?: unknown; answer?: unknown; options?: unknown }>(
       request
@@ -65,9 +89,20 @@ export async function POST(request: Request) {
       },
     })
 
-    return NextResponse.json(question, { status: 201 })
+    return NextResponse.json(question, {
+      status: 201,
+      headers: questionQuotaHeaders(total + 1, quota),
+    })
   } catch (error) {
     return validationErrorResponse(error) ?? NextResponse.json({ error: 'Failed' }, { status: 500 })
+  }
+}
+
+function questionQuotaHeaders(count: number, limit: number) {
+  return {
+    'X-Question-Count': String(count),
+    'X-Question-Limit': String(limit),
+    'X-Question-Remaining': String(Math.max(0, limit - count)),
   }
 }
 

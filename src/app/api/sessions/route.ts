@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 
 import { cleanupOldSessions, createSession, type SessionData } from '@/lib/appwrite/sessions'
 import { authOptions } from '@/lib/auth'
+import { readBotProtectionToken, verifyBotProtection } from '@/lib/bot-protection'
 import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
 import { optionalString, readLimitedJson, validationErrorResponse } from '@/lib/request-validation'
 import { createHostSecret, hashHostSecret } from '@/lib/session-host-auth'
@@ -85,7 +86,19 @@ export async function POST(request: Request) {
   }
 
   try {
-    const body = await readLimitedJson<{ hostName?: unknown; gameMode?: unknown }>(request)
+    const body = await readLimitedJson<{
+      hostName?: unknown
+      gameMode?: unknown
+      botProtectionToken?: unknown
+    }>(request)
+    const botProtectionToken = readBotProtectionToken(body.botProtectionToken)
+    const botProtection = await verifyBotProtection({
+      token: botProtectionToken,
+      request,
+      action: 'session-create',
+    })
+    if (!botProtection.ok) return botProtection.response
+
     const hostName = optionalString(body.hostName, 'hostName', 24) ?? 'Host'
     const gameMode = optionalString(body.gameMode, 'gameMode', 32) ?? 'classic'
 

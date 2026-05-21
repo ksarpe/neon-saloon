@@ -16,6 +16,7 @@ import type { ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 
 import { ProModal } from '@/components/ui/ContentGate'
+import { getQuestionQuota } from '@/config/usage-limits'
 import { useContentAccess } from '@/hooks/useContentAccess'
 import { checkAccess } from '@/lib/content-access'
 
@@ -25,7 +26,9 @@ import { panelButtonHover, type Question, QUESTION_PAGE_SIZE, type QuizQuestion 
 export function NeverTab() {
   const access = useContentAccess()
   const hasPremium = checkAccess({ type: 'premium' }, access).granted
+  const questionLimit = getQuestionQuota('never', hasPremium)
   const [questions, setQuestions] = useState<Question[]>([])
+  const [questionCount, setQuestionCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [addOpen, setAddOpen] = useState(false)
   const [proModalOpen, setProModalOpen] = useState(false)
@@ -37,9 +40,12 @@ export function NeverTab() {
   useEffect(() => {
     let cancelled = false
     fetch('/api/questions/never')
-      .then((res) => res.json())
-      .then((data) => {
-        if (!cancelled) setQuestions(Array.isArray(data) ? data : [])
+      .then(async (res) => {
+        const data = await res.json()
+        if (!cancelled) {
+          setQuestions(Array.isArray(data) ? data : [])
+          setQuestionCount(readQuestionCountHeader(res, Array.isArray(data) ? data.length : 0))
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false)
@@ -57,6 +63,10 @@ export function NeverTab() {
       setProModalOpen(true)
       return
     }
+    if (questionCount >= questionLimit) {
+      setError(`Osiągnięto limit ${questionLimit} własnych wyznań.`)
+      return
+    }
     setAdding(true)
     setError(null)
     try {
@@ -65,13 +75,14 @@ export function NeverTab() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: text.trim() }),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) throw new Error(await readApiError(res))
       const created = await res.json()
       setQuestions((prev) => [created, ...prev])
+      setQuestionCount(readQuestionCountHeader(res, questionCount + 1))
       setText('')
       setAddOpen(false)
-    } catch {
-      setError('Nie udało się dodać pytania.')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Nie udało się dodać pytania.')
     } finally {
       setAdding(false)
     }
@@ -82,6 +93,7 @@ export function NeverTab() {
     try {
       await fetch(`/api/questions/never/${id}`, { method: 'DELETE' })
       setQuestions((prev) => prev.filter((q) => q.id !== id))
+      setQuestionCount((prev) => Math.max(0, prev - 1))
     } finally {
       setDeletingId(null)
     }
@@ -96,6 +108,10 @@ export function NeverTab() {
             setError(null)
             if (!hasPremium) {
               setProModalOpen(true)
+              return
+            }
+            if (questionCount >= questionLimit) {
+              setError(`Osiągnięto limit ${questionLimit} własnych wyznań.`)
               return
             }
             setAddOpen(true)
@@ -180,7 +196,11 @@ export function NeverTab() {
         emptyActionText={
           hasPremium ? 'Dodaj pierwsze powyżej.' : 'Odblokuj PRO, żeby dodać własne wyznania.'
         }
-        label={`Twoje wyznania (${questions.length})`}
+        label={
+          hasPremium
+            ? `Twoje wyznania (${questionCount}/${questionLimit})`
+            : `Twoje wyznania (${questionCount}/0 PRO)`
+        }
         loading={loading}
         loadingColor="var(--neon-pink)"
         deletingId={deletingId}
@@ -192,9 +212,14 @@ export function NeverTab() {
 }
 
 export function QuizTab() {
+  const access = useContentAccess()
+  const hasPremium = checkAccess({ type: 'premium' }, access).granted
+  const questionLimit = getQuestionQuota('quiz', hasPremium)
   const [questions, setQuestions] = useState<QuizQuestion[]>([])
+  const [questionCount, setQuestionCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [addOpen, setAddOpen] = useState(false)
+  const [proModalOpen, setProModalOpen] = useState(false)
   const [text, setText] = useState('')
   const [options, setOptions] = useState(['', '', '', ''])
   const [correctIndex, setCorrectIndex] = useState(0)
@@ -205,9 +230,12 @@ export function QuizTab() {
   useEffect(() => {
     let cancelled = false
     fetch('/api/questions/quiz')
-      .then((res) => res.json())
-      .then((data) => {
-        if (!cancelled) setQuestions(Array.isArray(data) ? data : [])
+      .then(async (res) => {
+        const data = await res.json()
+        if (!cancelled) {
+          setQuestions(Array.isArray(data) ? data : [])
+          setQuestionCount(readQuestionCountHeader(res, Array.isArray(data) ? data.length : 0))
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false)
@@ -235,6 +263,17 @@ export function QuizTab() {
     const cleanText = text.trim()
     const answer = options[correctIndex]?.trim() ?? ''
     const cleanOptions = options.map((option) => option.trim()).filter(Boolean)
+    const quotaReached = questionCount >= questionLimit
+
+    if (quotaReached) {
+      if (!hasPremium) {
+        setAddOpen(false)
+        setProModalOpen(true)
+      } else {
+        setError(`Osiągnięto limit ${questionLimit} pytań quizowych.`)
+      }
+      return
+    }
 
     if (!cleanText) {
       setError('Wpisz pytanie.')
@@ -257,15 +296,16 @@ export function QuizTab() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: cleanText, answer, options: cleanOptions }),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) throw new Error(await readApiError(res))
       const created = await res.json()
       setQuestions((prev) => [created, ...prev])
+      setQuestionCount(readQuestionCountHeader(res, questionCount + 1))
       setText('')
       setOptions(['', '', '', ''])
       setCorrectIndex(0)
       setAddOpen(false)
-    } catch {
-      setError('Nie udało się dodać pytania quizowego.')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Nie udało się dodać pytania quizowego.')
     } finally {
       setAdding(false)
     }
@@ -276,6 +316,7 @@ export function QuizTab() {
     try {
       await fetch(`/api/questions/quiz/${id}`, { method: 'DELETE' })
       setQuestions((prev) => prev.filter((q) => q.id !== id))
+      setQuestionCount((prev) => Math.max(0, prev - 1))
     } finally {
       setDeletingId(null)
     }
@@ -288,6 +329,14 @@ export function QuizTab() {
           type="button"
           onClick={() => {
             setError(null)
+            if (questionCount >= questionLimit) {
+              if (!hasPremium) {
+                setProModalOpen(true)
+                return
+              }
+              setError(`Osiągnięto limit ${questionLimit} pytań quizowych.`)
+              return
+            }
             setAddOpen(true)
           }}
           className="flex items-center gap-2 rounded-xl border-2 px-4 py-2.5 text-xs font-bold tracking-normal uppercase"
@@ -308,6 +357,8 @@ export function QuizTab() {
           Dodaj pytanie
         </button>
       </div>
+
+      {proModalOpen && <ProModal onClose={() => setProModalOpen(false)} />}
 
       <AnimatePresence>
         {addOpen && (
@@ -450,7 +501,7 @@ export function QuizTab() {
 
       <QuestionList
         emptyText="Nie masz jeszcze pytań do quizu. Dodaj kilka przed uruchomieniem gry."
-        label={`Twoje pytania quizowe (${questions.length})`}
+        label={`Twoje pytania quizowe (${questionCount}/${questionLimit})`}
         loading={loading}
         loadingColor="var(--neon-pink)"
         deletingId={deletingId}
@@ -477,6 +528,16 @@ export function QuizTab() {
       />
     </div>
   )
+}
+
+function readQuestionCountHeader(response: Response, fallback: number) {
+  const value = Number(response.headers.get('X-Question-Count'))
+  return Number.isFinite(value) ? value : fallback
+}
+
+async function readApiError(response: Response) {
+  const payload = (await response.json().catch(() => null)) as { error?: unknown } | null
+  return typeof payload?.error === 'string' ? payload.error : 'Nie udało się zapisać pytania.'
 }
 
 function QuestionList<T extends Question>({

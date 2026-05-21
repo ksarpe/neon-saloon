@@ -4,8 +4,9 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { CheckCircle2, Eye, EyeOff, KeyRound, Loader2, Mail } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn } from 'next-auth/react'
-import { Suspense, useState } from 'react'
+import { Suspense, useCallback, useState } from 'react'
 
+import { BotProtection, isBotProtectionConfigured } from '@/components/ui/BotProtection'
 import { Button } from '@/components/ui/button'
 import { getPasswordPolicyError } from '@/lib/password-policy'
 
@@ -342,7 +343,6 @@ function ResetPasswordForm({ token, onDone }: { token: string; onDone: () => voi
       setError(passwordError)
       return
     }
-
     setLoading(true)
     setMessage(null)
     setError(null)
@@ -434,8 +434,16 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
+  const [botProtectionToken, setBotProtectionToken] = useState<string | null>(null)
+  const [botProtectionKey, setBotProtectionKey] = useState(0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const botProtectionEnabled = isBotProtectionConfigured()
+  const resetBotProtection = useCallback(() => {
+    setBotProtectionToken(null)
+    setBotProtectionKey((key) => key + 1)
+  }, [])
+  const clearBotProtection = useCallback(() => setBotProtectionToken(null), [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -450,6 +458,10 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
       setError(passwordError)
       return
     }
+    if (botProtectionEnabled && !botProtectionToken) {
+      setError('Potwierdź, że nie jesteś botem.')
+      return
+    }
 
     setLoading(true)
     setError(null)
@@ -458,13 +470,14 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, name }),
+        body: JSON.stringify({ email, password, name, botProtectionToken }),
       })
 
       const data = await res.json()
       if (!res.ok) {
         setError(data.error ?? 'Coś poszło nie tak')
         setLoading(false)
+        resetBotProtection()
         return
       }
 
@@ -478,12 +491,14 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
       if (signInRes?.error) {
         setError('Konto założone! Zaloguj się ręcznie.')
         setLoading(false)
+        resetBotProtection()
       } else {
         router.push(callbackUrl)
       }
     } catch {
       setError('Błąd połączenia — spróbuj ponownie')
       setLoading(false)
+      resetBotProtection()
     }
   }
 
@@ -520,6 +535,12 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
         autoComplete="new-password"
       />
 
+      <BotProtection
+        key={botProtectionKey}
+        onVerify={setBotProtectionToken}
+        onUnavailable={clearBotProtection}
+      />
+
       <AnimatePresence mode="wait">
         {error && <ErrorBanner key={error} message={error} />}
       </AnimatePresence>
@@ -527,7 +548,13 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
       <Button
         type="primary"
         htmlType="submit"
-        disabled={loading || !email || !password || !confirm}
+        disabled={
+          loading ||
+          !email ||
+          !password ||
+          !confirm ||
+          (botProtectionEnabled && !botProtectionToken)
+        }
         className="mt-1 w-full"
       >
         {loading ? <Loader2 size={18} className="animate-spin" /> : 'Otwórz konto'}

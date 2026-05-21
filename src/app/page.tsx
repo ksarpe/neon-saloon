@@ -46,7 +46,7 @@ const GAME_MODES: GameModeCard[] = [
     label: 'Skategoryzowane pytania',
     gradient: 'linear-gradient(160deg, #0d0030 0%, #2a0075 55%, #8b72e0 100%)',
     accent: '#a78bfa',
-    image: '/showcase/categories-game-showcase.png',
+    image: '/showcase/categories-game.png',
   },
   {
     id: 'never',
@@ -175,6 +175,10 @@ function ModeCardContent({ mode, isActive }: { mode: GameModeCard; isActive: boo
           priority={isActive}
           sizes="(max-width: 768px) 78vw, 520px"
           className="pointer-events-none rounded-[24px] object-cover select-none"
+          style={{
+            filter: isActive ? 'none' : 'blur(6px)',
+            transition: 'filter 0.4s ease',
+          }}
         />
       )}
 
@@ -439,7 +443,7 @@ export default function LandingPage() {
           >
             Tryby gry
           </h2>
-          <p className="mt-3 text-sm" style={{ color: 'rgba(240,223,192,0.5)' }}>
+          <p className="mt-3 text-sm mb-16" style={{ color: 'rgba(240,223,192,0.5)' }}>
             Każda runda inna, każda niezapomniana.
           </p>
         </motion.div>
@@ -483,13 +487,13 @@ export default function LandingPage() {
                 }}
                 className="absolute cursor-pointer select-none"
                 style={{
-                  width: 'min(480px, 73vw)',
+                  width: 'min(600px, 73vw)',
                   aspectRatio: '1 / 1',
                   borderRadius: '24px',
-                  border: `1px solid ${mode.accent}35`,
+                  border: `1.5px solid ${mode.accent}`,
                   boxShadow: isActive
-                    ? `0 24px 35px ${mode.accent}20, 0 0 1px ${mode.accent}40`
-                    : `0 10px 40px rgba(0,0,0,0.35)`,
+                    ? `0 0 18px ${mode.accent}aa, 0 0 46px ${mode.accent}55, inset 0 0 16px ${mode.accent}22, 0 22px 40px rgba(0,0,0,0.45)`
+                    : `0 0 12px ${mode.accent}77, 0 0 26px ${mode.accent}33, inset 0 0 12px ${mode.accent}1f, 0 12px 30px rgba(0,0,0,0.4)`,
                   filter: isActive ? 'none' : 'brightness(0.7) saturate(0.85)',
                   WebkitTapHighlightColor: 'transparent',
                   pointerEvents: absOffset > halfModes ? 'none' : 'auto',

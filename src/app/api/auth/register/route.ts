@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs'
 import { NextResponse } from 'next/server'
 
+import { readBotProtectionToken, verifyBotProtection } from '@/lib/bot-protection'
 import { getPasswordPolicyError } from '@/lib/password-policy'
 import { prisma } from '@/lib/prisma'
 import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
@@ -20,7 +21,15 @@ export async function POST(req: Request) {
       email?: unknown
       password?: unknown
       name?: unknown
+      botProtectionToken?: unknown
     }>(req)
+    const botProtectionToken = readBotProtectionToken(body.botProtectionToken)
+    const botProtection = await verifyBotProtection({
+      token: botProtectionToken,
+      request: req,
+      action: 'register',
+    })
+    if (!botProtection.ok) return botProtection.response
 
     const normalizedEmail = normalizeEmail(body.email)
     const password = requiredString(body.password, 'password', INPUT_LIMITS.password)

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 
+import { getQuestionQuota } from '@/config/usage-limits'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
@@ -17,27 +18,56 @@ export async function GET(request: Request) {
 
   const userId = (session.user as { id: string }).id
   const pagination = getQuestionPagination(request)
-  const questions = await prisma.neverQuestion.findMany({
-    where: { userId },
-    orderBy: { createdAt: 'desc' },
-    skip: pagination.skip,
-    take: pagination.take,
-  })
+  const [questions, total] = await prisma.$transaction([
+    prisma.neverQuestion.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      skip: pagination.skip,
+      take: pagination.take,
+    }),
+    prisma.neverQuestion.count({ where: { userId } }),
+  ])
 
-  return NextResponse.json(questions, { headers: pagination.headers })
+  return NextResponse.json(questions, {
+    headers: {
+      ...pagination.headers,
+      ...questionQuotaHeaders(total, getQuestionQuota('never', Boolean(session.user.isPremium))),
+    },
+  })
 }
 
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    if (!session.user.isPremium) {
-      return NextResponse.json({ error: 'Premium access required' }, { status: 403 })
-    }
 
     const userId = (session.user as { id: string }).id
+    const quota = getQuestionQuota('never', Boolean(session.user.isPremium))
+    if (quota <= 0) {
+      return NextResponse.json(
+        {
+          error: 'Premium access required',
+          limit: quota,
+          count: 0,
+        },
+        { status: 403, headers: questionQuotaHeaders(0, quota) }
+      )
+    }
+
     const rateLimitResponse = await enforceQuestionCreateLimit(request, 'never', userId)
     if (rateLimitResponse) return rateLimitResponse
+
+    const total = await prisma.neverQuestion.count({ where: { userId } })
+    if (total >= quota) {
+      return NextResponse.json(
+        {
+          error: `Osiągnięto limit ${quota} własnych wyznań Nigdy przenigdy.`,
+          limit: quota,
+          count: total,
+        },
+        { status: 403, headers: questionQuotaHeaders(total, quota) }
+      )
+    }
 
     const body = await readLimitedJson<{ text?: unknown }>(request)
     const text = requiredString(body.text, 'text', INPUT_LIMITS.questionText)
@@ -46,9 +76,20 @@ export async function POST(request: Request) {
       data: { text, userId },
     })
 
-    return NextResponse.json(question, { status: 201 })
+    return NextResponse.json(question, {
+      status: 201,
+      headers: questionQuotaHeaders(total + 1, quota),
+    })
   } catch (error) {
     return validationErrorResponse(error) ?? NextResponse.json({ error: 'Failed' }, { status: 500 })
+  }
+}
+
+function questionQuotaHeaders(count: number, limit: number) {
+  return {
+    'X-Question-Count': String(count),
+    'X-Question-Limit': String(limit),
+    'X-Question-Remaining': String(Math.max(0, limit - count)),
   }
 }
 

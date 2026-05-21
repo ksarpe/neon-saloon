@@ -4,8 +4,9 @@ import { motion } from 'framer-motion'
 import { Loader2, Lock } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
+import { BotProtection, isBotProtectionConfigured } from '@/components/ui/BotProtection'
 import { Button } from '@/components/ui/button'
 import { ProModal } from '@/components/ui/ContentGate'
 import { useContentAccess } from '@/hooks/useContentAccess'
@@ -66,13 +67,25 @@ const GAME_MODES = [
 export default function HostSetupPage() {
   const router = useRouter()
   const [selectedMode, setSelectedMode] = useState<string | null>(null)
+  const [botProtectionToken, setBotProtectionToken] = useState<string | null>(null)
+  const [botProtectionKey, setBotProtectionKey] = useState(0)
   const [creating, setCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [proModalOpen, setProModalOpen] = useState(false)
   const access = useContentAccess()
+  const botProtectionEnabled = isBotProtectionConfigured()
+  const resetBotProtection = useCallback(() => {
+    setBotProtectionToken(null)
+    setBotProtectionKey((key) => key + 1)
+  }, [])
+  const clearBotProtection = useCallback(() => setBotProtectionToken(null), [])
 
   const handleCreate = async () => {
     if (!selectedMode) return
+    if (botProtectionEnabled && !botProtectionToken) {
+      setError('Potwierdź, że nie jesteś botem.')
+      return
+    }
     setCreating(true)
     setError(null)
     try {
@@ -81,6 +94,7 @@ export default function HostSetupPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           gameMode: selectedMode,
+          botProtectionToken,
         }),
       })
       const payload = await res.json().catch(() => ({}))
@@ -95,10 +109,9 @@ export default function HostSetupPage() {
       }
       router.push(`/graj/host/${pin}?mode=${selectedMode}`)
     } catch (createError) {
-      setError(
-        createError instanceof Error ? createError.message : 'Nie udało się utworzyć gry.'
-      )
+      setError(createError instanceof Error ? createError.message : 'Nie udało się utworzyć gry.')
       setCreating(false)
+      resetBotProtection()
     }
   }
 
@@ -202,10 +215,16 @@ export default function HostSetupPage() {
           transition={{ delay: 0.35 }}
           className="w-full max-w-xl self-center"
         >
+          <BotProtection
+            key={botProtectionKey}
+            onVerify={setBotProtectionToken}
+            onUnavailable={clearBotProtection}
+          />
+
           <Button
             id="create-lobby-btn"
             type="primary"
-            disabled={!selectedMode || creating}
+            disabled={!selectedMode || creating || (botProtectionEnabled && !botProtectionToken)}
             onClick={handleCreate}
             className="w-full"
             size="lg"
