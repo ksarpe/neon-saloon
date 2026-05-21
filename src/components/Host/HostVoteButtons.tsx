@@ -50,7 +50,7 @@ export function HostVoteButtons({
                 whileTap={{ scale: 0.95 }}
                 disabled={hostLoading}
                 onClick={() => onHostVote(-2, '🚫 Nie piję')}
-                className="flex flex-1 flex-col items-center justify-center gap-1 rounded-2xl border-2 py-4 disabled:opacity-40"
+                className="flex flex-1 cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border-2 py-4 disabled:cursor-not-allowed disabled:opacity-40"
                 style={{
                   borderColor: 'rgba(255,220,180,0.25)',
                   backgroundColor: 'rgba(255,220,180,0.06)',
@@ -59,6 +59,16 @@ export function HostVoteButtons({
                   letterSpacing: '0.08em',
                   fontSize: '0.95rem',
                 }}
+                whileHover={
+                  hostLoading
+                    ? undefined
+                    : {
+                        borderColor: 'rgba(255,220,180,0.5)',
+                        backgroundColor: 'rgba(255,220,180,0.1)',
+                        color: 'var(--text-primary)',
+                        transition: { duration: 0.15 },
+                      }
+                }
               >
                 <span className="text-xl">🚫</span>
                 NIE PIJĘ
@@ -67,16 +77,26 @@ export function HostVoteButtons({
                 whileTap={{ scale: 0.95 }}
                 disabled={hostLoading}
                 onClick={() => onHostVote(-1, '🍺 Piję')}
-                className="flex flex-1 flex-col items-center justify-center gap-1 rounded-2xl border-2 py-4 disabled:opacity-40"
+                className="flex flex-1 cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border-2 py-4 disabled:cursor-not-allowed disabled:opacity-40"
                 style={{
-                  borderColor: 'var(--neon-pink)',
-                  backgroundColor: 'rgba(255,16,240,0.1)',
-                  color: 'var(--neon-pink)',
-                  boxShadow: '0 0 20px rgba(255,16,240,0.2)',
+                  borderColor: 'rgba(255,220,180,0.25)',
+                  backgroundColor: 'rgba(255,220,180,0.06)',
+                  color: 'rgba(255,220,180,0.8)',
                   fontFamily: 'var(--font-app)',
                   letterSpacing: '0.08em',
                   fontSize: '0.95rem',
                 }}
+                whileHover={
+                  hostLoading
+                    ? undefined
+                    : {
+                        borderColor: 'var(--neon-pink)',
+                        backgroundColor: 'rgba(255,16,240,0.1)',
+                        color: 'var(--neon-pink)',
+                        boxShadow: '0 0 20px rgba(255,16,240,0.2)',
+                        transition: { duration: 0.15 },
+                      }
+                }
               >
                 <span className="text-xl">🍺</span>
                 PIJĘ

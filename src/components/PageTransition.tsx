@@ -8,7 +8,7 @@ import { useSession } from 'next-auth/react'
 import { useBackButton } from '@/lib/back-button-context'
 
 const NAV_BTN =
-  'flex items-center gap-2 rounded-xl border border-[#ffdcb4]/25 bg-[#0a0414]/25 px-4 py-2 text-xs font-semibold text-[#ffdcb4]/85 backdrop-blur-sm transition-all duration-300 hover:border-[#ffd700]/55 hover:bg-[#ffd700]/12 hover:text-[#ffeb96] hover:shadow-[0_0_14px_rgba(255,215,0,0.18)] active:scale-[0.96]'
+  'pointer-events-auto flex items-center gap-2 rounded-xl border border-[#ffdcb4]/25 bg-[#0a0414]/25 px-4 py-2 text-xs font-semibold text-[#ffdcb4]/85 backdrop-blur-sm transition-all duration-300 hover:border-[#ffd700]/55 hover:bg-[#ffd700]/12 hover:text-[#ffeb96] hover:shadow-[0_0_14px_rgba(255,215,0,0.18)] active:scale-[0.96]'
 
 export default function PageTransition({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -41,7 +41,7 @@ export default function PageTransition({ children }: { children: React.ReactNode
     <>
       {/* ── Sticky header bar ──────────────────────────────────────────── */}
       {showHeader && (
-        <div className="fixed top-0 right-0 left-0 z-20 flex h-14 items-center justify-between px-4">
+        <div className="pointer-events-none fixed top-0 right-0 left-0 z-20 flex h-14 items-center justify-between px-4">
           {/* Left slot: Wróć */}
           {showBack ? (
             <motion.button
@@ -94,7 +94,7 @@ export default function PageTransition({ children }: { children: React.ReactNode
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.22, ease: 'easeInOut' }}
-          className={`fixed inset-0 z-10 overflow-y-auto${showHeader ? 'pt-14' : ''}`}
+          className="fixed inset-0 z-10 overflow-y-auto"
         >
           {children}
         </motion.div>

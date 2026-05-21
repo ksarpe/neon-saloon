@@ -45,6 +45,7 @@ export async function POST(request: Request, { params }: RouteContext) {
       categoryId,
       questionOrder,
       totalQuestions: questionOrder.length,
+      timerDuration,
     })
   } catch (err) {
     const validationResponse = validationErrorResponse(err)

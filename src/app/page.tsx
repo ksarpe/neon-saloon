@@ -9,8 +9,12 @@ import {
   Heart,
   type LucideIcon,
   Minus,
+  MonitorPlay,
+  PartyPopper,
+  Smartphone,
   TrendingUp,
 } from 'lucide-react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useState } from 'react'
@@ -23,6 +27,7 @@ interface GameModeCard {
   label: string
   gradient: string
   accent: string
+  image: string | null
   isPremium?: boolean
 }
 
@@ -33,6 +38,7 @@ const GAME_MODES: GameModeCard[] = [
     label: 'Quiz o Pannie Młodej',
     gradient: 'linear-gradient(160deg, #2d0040 0%, #6b0080 55%, #c0458a 100%)',
     accent: '#dd54a2',
+    image: null,
   },
   {
     id: 'categories',
@@ -40,6 +46,7 @@ const GAME_MODES: GameModeCard[] = [
     label: 'Skategoryzowane pytania',
     gradient: 'linear-gradient(160deg, #0d0030 0%, #2a0075 55%, #8b72e0 100%)',
     accent: '#a78bfa',
+    image: '/showcase/categories-game-showcase.png',
   },
   {
     id: 'never',
@@ -47,6 +54,7 @@ const GAME_MODES: GameModeCard[] = [
     label: 'Nigdy Przenigdy',
     gradient: 'linear-gradient(160deg, #1a0c00 0%, #4a2800 55%, #c47d00 100%)',
     accent: '#f59e0b',
+    image: null,
   },
   {
     id: 'highlow',
@@ -54,6 +62,16 @@ const GAME_MODES: GameModeCard[] = [
     label: 'Mniej czy Więcej',
     gradient: 'linear-gradient(160deg, #001a0d 0%, #004020 55%, #0d9e6a 100%)',
     accent: '#10b981',
+    image: null,
+    isPremium: true,
+  },
+  {
+    id: 'deadoralive',
+    icon: MonitorPlay,
+    label: 'Żywy czy Martwy?',
+    gradient: 'linear-gradient(160deg, #1a0c00 0%, #4a2800 55%, #c47d00 100%)',
+    accent: '#f59e0b',
+    image: null,
     isPremium: true,
   },
 ]
@@ -124,20 +142,23 @@ const PRICING_PLANS = [
 const HOW_IT_WORKS = [
   {
     step: '01',
-    title: 'Host otwiera salon',
-    desc: 'Jeden ekran na TV lub laptopie — wchodzi na /graj i klika Chcę być szeryfem.',
-    color: 'var(--sheriff-pink)',
+    icon: MonitorPlay,
+    title: 'Ktoś tworzy grę...',
+    desc: 'Wystarczy jedna osoba jako host i dowolna liczba graczy. Ktoś przecież musi być szeryfem.',
+    color: '#f94aff',
   },
   {
     step: '02',
-    title: 'Uczestniczki skanują',
-    desc: 'Każda wchodzi na stronę na telefonie, wpisuje PIN wyświetlony przez hosta.',
-    color: 'var(--neon-pink)',
+    icon: Smartphone,
+    title: 'Kowboje dołączają',
+    desc: 'Wpisz PIN lub zeskanuj kod QR. Wszyscy lądują w tym samym salonie - bez bałaganu.',
+    color: '#dd54a2',
   },
   {
     step: '03',
-    title: 'Chaos i śmiech gwarantowane',
-    desc: 'Host przełącza karty, wyniki lecą na żywo. Rywalizujcie, wyznawajcie, śmiejcie się.',
+    icon: PartyPopper,
+    title: 'Zaczynamy zabawę',
+    desc: 'Kto pierwszy ten lepszy. A może lepiej udawać, że nie wie się o co chodzi? Albo jednak nie...',
     color: '#a78bfa',
   },
 ]
@@ -145,11 +166,16 @@ const HOW_IT_WORKS = [
 function ModeCardContent({ mode, isActive }: { mode: GameModeCard; isActive: boolean }) {
   return (
     <>
-      {/* PRO badge */}
-      {mode.isPremium && (
-        <div className="absolute top-4 right-4 z-20 flex items-center gap-1 rounded-full border border-yellow-500/50 bg-black/60 px-2.5 py-1 text-[10px] font-bold tracking-normal text-yellow-400 uppercase backdrop-blur-sm">
-          🔒 PRO
-        </div>
+      {mode.image && (
+        <Image
+          src={mode.image}
+          alt=""
+          fill
+          draggable={false}
+          priority={isActive}
+          sizes="(max-width: 768px) 78vw, 520px"
+          className="pointer-events-none rounded-[24px] object-cover select-none"
+        />
       )}
 
       {/* Top edge shine */}
@@ -160,53 +186,30 @@ function ModeCardContent({ mode, isActive }: { mode: GameModeCard; isActive: boo
         }}
       />
 
-      {/* Large decorative icon — top-right corner */}
-      <div className="absolute -top-10 -right-10 opacity-[0.08]">
-        <mode.icon style={{ color: mode.accent, width: '260px', height: '260px' }} />
-      </div>
-
-      {/* Centred icon badge */}
-      <div className="absolute inset-0 flex items-center justify-center pb-20">
-        <div
-          className="flex items-center justify-center rounded-[20px]"
+      {/* Label pill — centered on the top border */}
+      <div className="absolute top-0 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 px-2">
+        <motion.span
+          animate={isActive ? { scale: [1, 1.05, 1] } : { scale: 1 }}
+          transition={
+            isActive ? { duration: 2.4, repeat: Infinity, ease: 'easeInOut' } : { duration: 0.3 }
+          }
+          className="inline-flex items-center gap-2 rounded-full font-bold whitespace-nowrap"
           style={{
-            width: isActive ? 88 : 68,
-            height: isActive ? 88 : 68,
-            background: `${mode.accent}1c`,
-            border: `1px solid ${mode.accent}40`,
-            boxShadow: `0 0 28px ${mode.accent}22`,
-            transition: 'width 0.4s, height 0.4s',
-          }}
-        >
-          <mode.icon
-            style={{
-              color: mode.accent,
-              width: isActive ? 36 : 28,
-              height: isActive ? 36 : 28,
-              transition: 'width 0.4s, height 0.4s',
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Bottom gradient fade */}
-      <div className="pointer-events-none absolute right-0 bottom-0 left-0 h-32 bg-gradient-to-t from-black/65 to-transparent" />
-
-      {/* Label pill */}
-      <div className="absolute right-0 bottom-6 left-0 flex justify-center px-6">
-        <span
-          className="rounded-full font-semibold whitespace-nowrap text-white"
-          style={{
-            fontSize: isActive ? '13px' : '11px',
-            padding: isActive ? '8px 18px' : '6px 14px',
-            background: 'rgba(0,0,0,0.6)',
+            fontSize: isActive ? '18px' : '11px',
+            padding: isActive ? '9px 20px' : '6px 14px',
+            color: isActive ? '#fff' : 'rgba(255,255,255,0.85)',
+            background: 'rgba(13,8,24,0.85)',
             backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            transition: 'font-size 0.4s, padding 0.4s',
+            border: `1px solid ${mode.accent}${isActive ? 'ff' : '55'}`,
+            boxShadow: isActive
+              ? `0 0 22px ${mode.accent}88, 0 0 46px ${mode.accent}44, 0 6px 18px rgba(0,0,0,0.5)`
+              : `0 4px 14px rgba(0,0,0,0.4)`,
+            textShadow: isActive ? `0 0 14px ${mode.accent}aa` : 'none',
+            transition: 'font-size 0.4s, padding 0.4s, box-shadow 0.4s, border-color 0.4s',
           }}
         >
           {mode.label}
-        </span>
+        </motion.span>
       </div>
     </>
   )
@@ -261,10 +264,10 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="shimmer-text text-[clamp(2rem,12vw,10rem)] leading-[0.9] tracking-wide whitespace-nowrap uppercase"
+          className="shimmer-text text-[clamp(4rem,22vw,10rem)] leading-[0.85] tracking-wide uppercase"
           style={{ fontFamily: 'var(--font-logo)' }}
         >
-          Last Rodeo
+          Last <br className="md:hidden" />Rodeo
         </motion.h1>
 
         {/* Tagline */}
@@ -272,10 +275,10 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="max-w-md text-xl leading-relaxed"
+          className="max-w-md text-base leading-relaxed sm:text-xl"
           style={{ color: 'rgba(240,223,192,0.7)' }}
         >
-          Zadaj pytanie. Odkryj prawdę. Nie żałuj.
+          To, co dzisiaj wyznasz, zrujnuje Ci jutro. Wchodzisz w to?
         </motion.p>
 
         {/* CTA */}
@@ -332,41 +335,77 @@ export default function LandingPage() {
           </p>
         </motion.div>
 
-        <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-3">
-          {HOW_IT_WORKS.map((item, i) => (
-            <motion.div
-              key={item.step}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.12 }}
-              className="flex flex-col gap-4 rounded-2xl border p-6"
-              style={{
-                borderColor: 'rgba(255,220,180,0.1)',
-                backgroundColor: 'rgba(13,8,24,0.5)',
-                backdropFilter: 'blur(12px)',
-              }}
-            >
-              <span
-                className="text-4xl font-black tracking-tight"
-                style={{
-                  fontFamily: 'var(--font-app)',
-                  color: item.color,
-                  opacity: 0.9,
-                }}
+        <div className="relative flex w-full flex-col gap-12 sm:flex-row sm:gap-4">
+          {HOW_IT_WORKS.map((item, i) => {
+            const Icon = item.icon
+            const isLast = i === HOW_IT_WORKS.length - 1
+            const nextColor = isLast ? item.color : HOW_IT_WORKS[i + 1].color
+            return (
+              <div
+                key={item.step}
+                className="relative flex flex-1 flex-col items-center text-center"
               >
-                {item.step}
-              </span>
-              <div>
-                <p className="mb-1 text-base font-bold" style={{ color: item.color }}>
-                  {item.title}
-                </p>
-                <p className="text-sm leading-relaxed" style={{ color: 'rgba(240,223,192,0.55)' }}>
-                  {item.desc}
-                </p>
+                {/* Świecący szlak do następnego kroku — tylko poziomy na desktopie */}
+                {!isLast && (
+                  <motion.div
+                    initial={{ scaleX: 0, opacity: 0 }}
+                    whileInView={{ scaleX: 1, opacity: 0.5 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: i * 0.15 + 0.35 }}
+                    className="absolute top-14 left-1/2 hidden h-1 w-[calc(100%+1rem)] origin-left sm:block"
+                    style={{ background: `linear-gradient(90deg, ${item.color}, ${nextColor})` }}
+                  />
+                )}
+
+                {/* Neonowy orb z ikoną i numerem kroku */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ type: 'spring', stiffness: 200, damping: 16, delay: i * 0.15 }}
+                  whileHover={{ scale: 1.09, rotate: -3 }}
+                  className="relative z-10 mb-6 flex h-28 w-28 items-center justify-center rounded-full border-2 backdrop-blur-md"
+                  style={{
+                    borderColor: `${item.color}99`,
+                    backgroundColor: 'rgba(13,8,24,0.85)',
+                    boxShadow: `0 0 40px ${item.color}55, inset 0 0 22px ${item.color}1a`,
+                  }}
+                >
+                  <Icon size={46} strokeWidth={1.75} style={{ color: item.color }} />
+                  <span
+                    className="absolute -top-2 -right-2 flex h-9 w-9 items-center justify-center rounded-full text-sm font-black"
+                    style={{
+                      backgroundColor: item.color,
+                      color: '#0d0818',
+                      fontFamily: 'var(--font-app)',
+                      boxShadow: `0 2px 10px ${item.color}80`,
+                    }}
+                  >
+                    {item.step}
+                  </span>
+                </motion.div>
+
+                {/* Tytuł + opis */}
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.15 + 0.2 }}
+                  className="flex flex-col gap-1.5 px-2"
+                >
+                  <p className="text-lg font-bold" style={{ color: item.color }}>
+                    {item.title}
+                  </p>
+                  <p
+                    className="text-sm leading-relaxed"
+                    style={{ color: 'rgba(240,223,192,0.55)' }}
+                  >
+                    {item.desc}
+                  </p>
+                </motion.div>
               </div>
-            </motion.div>
-          ))}
+            )
+          })}
         </div>
       </section>
 
@@ -380,7 +419,7 @@ export default function LandingPage() {
           className="px-6 text-center"
         >
           <h2
-            className="shimmer-text text-5xl tracking-normal sm:text-6xl"
+            className="text-neon-pink text-5xl tracking-normal sm:text-6xl"
             style={{ fontFamily: 'var(--font-app)' }}
           >
             Tryby gry
@@ -393,7 +432,7 @@ export default function LandingPage() {
         {/* Featured carousel — center card prominent, sides peek */}
         <div
           className="relative flex w-full items-center justify-center"
-          style={{ height: 'clamp(440px, 62vh, 640px)' }}
+          style={{ height: 'clamp(340px, 82vw, 500px)' }}
         >
           {GAME_MODES.map((mode, i) => {
             const offset = wrapOffset(i, activeMode)
@@ -415,9 +454,9 @@ export default function LandingPage() {
                   else if (info.offset.x > 60) goPrev()
                 }}
                 animate={{
-                  x: `${offset * 38}vw`,
-                  scale: isActive ? 1 : 0.72,
-                  opacity: absOffset > 1 ? 0 : 1,
+                  x: `${offset * 23}vw`,
+                  scale: isActive ? 1 : 0.7,
+                  opacity: absOffset > halfModes ? 0 : isActive ? 1 : 0.92,
                   zIndex: 20 - absOffset,
                 }}
                 transition={{
@@ -427,44 +466,24 @@ export default function LandingPage() {
                   x: isWrapping ? { duration: 0 } : { type: 'spring', stiffness: 220, damping: 30 },
                   opacity: { duration: 0.35 },
                 }}
-                className="absolute cursor-pointer overflow-hidden select-none"
+                className="absolute cursor-pointer select-none"
                 style={{
-                  width: 'min(620px, 78vw)',
-                  height: 'clamp(420px, 60vh, 620px)',
-                  borderRadius: '28px',
-                  background: mode.gradient,
+                  width: 'min(480px, 73vw)',
+                  aspectRatio: '1 / 1',
+                  borderRadius: '24px',
                   border: `1px solid ${mode.accent}35`,
                   boxShadow: isActive
-                    ? `0 24px 80px ${mode.accent}30, 0 0 1px ${mode.accent}50`
+                    ? `0 24px 35px ${mode.accent}20, 0 0 1px ${mode.accent}40`
                     : `0 10px 40px rgba(0,0,0,0.35)`,
                   filter: isActive ? 'none' : 'brightness(0.7) saturate(0.85)',
                   WebkitTapHighlightColor: 'transparent',
-                  pointerEvents: absOffset > 1 ? 'none' : 'auto',
+                  pointerEvents: absOffset > halfModes ? 'none' : 'auto',
                 }}
               >
                 <ModeCardContent mode={mode} isActive={isActive} />
               </motion.button>
             )
           })}
-        </div>
-
-        {/* Navigation dots */}
-        <div className="flex items-center gap-2">
-          {GAME_MODES.map((mode, i) => (
-            <button
-              key={mode.id}
-              type="button"
-              onClick={() => setActiveMode(i)}
-              aria-label={`Pokaż tryb ${mode.label}`}
-              className="cursor-pointer rounded-full transition-all duration-300"
-              style={{
-                width: i === activeMode ? '28px' : '8px',
-                height: '8px',
-                backgroundColor:
-                  i === activeMode ? GAME_MODES[activeMode].accent : 'rgba(255,220,180,0.25)',
-              }}
-            />
-          ))}
         </div>
       </section>
 

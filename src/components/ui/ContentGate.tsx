@@ -127,7 +127,7 @@ export function ProModal({ onClose }: { onClose: () => void }) {
           <h2 className="shimmer-text text-3xl tracking-wide">Odblokuj Last Rodeo PRO</h2>
           <p className="text-text-muted mt-2 max-w-2xl text-sm leading-relaxed">
             Wybierz dostęp miesięczny albo jednorazowy plan dożywotni. Oba odblokowują tryby
-            premium, w tym Mniej czy więcej.
+            premium, własne wyzwania Nigdy przenigdy i dodatkowe talie.
           </p>
         </div>
 
@@ -277,7 +277,8 @@ const PLANS: Array<{
     billingLabel: 'za miesięczną subskrypcję',
     cta: 'Wybierz miesięczny',
     features: [
-      'Mniej czy więcej i kolejne tryby premium',
+      'Mniej czy więcej, Dead or alive i kolejne tryby premium',
+      'Własne wyzwania Nigdy przenigdy',
       'Pełne paczki kart oraz pytań',
       'Dostęp do nowych rozszerzeń PRO',
     ],
@@ -293,6 +294,7 @@ const PLANS: Array<{
     cta: 'Wybierz dożywotni',
     features: [
       'Stały dostęp do obecnych trybów PRO',
+      'Własne wyzwania Nigdy przenigdy',
       'Przyszłe paczki i rozszerzenia premium',
       'Brak cyklicznego rozliczania',
     ],

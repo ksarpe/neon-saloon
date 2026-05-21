@@ -6,6 +6,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader2,
+  Lock,
   Plus,
   Send,
   Trash2,
@@ -14,13 +15,20 @@ import {
 import type { ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 
+import { ProModal } from '@/components/ui/ContentGate'
+import { useContentAccess } from '@/hooks/useContentAccess'
+import { checkAccess } from '@/lib/content-access'
+
 import { PanelModal } from './PanelModal'
 import { panelButtonHover, type Question, QUESTION_PAGE_SIZE, type QuizQuestion } from './shared'
 
 export function NeverTab() {
+  const access = useContentAccess()
+  const hasPremium = checkAccess({ type: 'premium' }, access).granted
   const [questions, setQuestions] = useState<Question[]>([])
   const [loading, setLoading] = useState(true)
   const [addOpen, setAddOpen] = useState(false)
+  const [proModalOpen, setProModalOpen] = useState(false)
   const [text, setText] = useState('')
   const [adding, setAdding] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
@@ -44,6 +52,11 @@ export function NeverTab() {
 
   const handleAdd = async () => {
     if (!text.trim()) return
+    if (!hasPremium) {
+      setAddOpen(false)
+      setProModalOpen(true)
+      return
+    }
     setAdding(true)
     setError(null)
     try {
@@ -81,6 +94,10 @@ export function NeverTab() {
           type="button"
           onClick={() => {
             setError(null)
+            if (!hasPremium) {
+              setProModalOpen(true)
+              return
+            }
             setAddOpen(true)
           }}
           className="flex items-center gap-2 rounded-xl border-2 px-4 py-2.5 text-xs font-bold tracking-normal uppercase"
@@ -97,10 +114,13 @@ export function NeverTab() {
             }
           )}
         >
-          <Plus size={14} />
+          {hasPremium ? <Plus size={14} /> : <Lock size={14} />}
           Dodaj wyznanie
+          {!hasPremium && <span className="text-yellow-400">PRO</span>}
         </button>
       </div>
+
+      {proModalOpen && <ProModal onClose={() => setProModalOpen(false)} />}
 
       <AnimatePresence>
         {addOpen && (
@@ -152,7 +172,14 @@ export function NeverTab() {
       </AnimatePresence>
 
       <QuestionList
-        emptyText="Nie masz jeszcze żadnych własnych wyznań."
+        emptyText={
+          hasPremium
+            ? 'Nie masz jeszcze żadnych własnych wyznań.'
+            : 'Własne wyznania Nigdy przenigdy są funkcją PRO.'
+        }
+        emptyActionText={
+          hasPremium ? 'Dodaj pierwsze powyżej.' : 'Odblokuj PRO, żeby dodać własne wyznania.'
+        }
         label={`Twoje wyznania (${questions.length})`}
         loading={loading}
         loadingColor="var(--neon-pink)"
@@ -454,6 +481,7 @@ export function QuizTab() {
 
 function QuestionList<T extends Question>({
   emptyText,
+  emptyActionText = 'Dodaj pierwsze powyżej.',
   label,
   loading,
   loadingColor,
@@ -463,6 +491,7 @@ function QuestionList<T extends Question>({
   renderDetails,
 }: {
   emptyText: string
+  emptyActionText?: string
   label: string
   loading: boolean
   loadingColor: string
@@ -509,7 +538,7 @@ function QuestionList<T extends Question>({
         <p className="text-text-muted text-sm">
           {emptyText}
           <br />
-          Dodaj pierwsze powyżej.
+          {emptyActionText}
         </p>
       </motion.div>
     )

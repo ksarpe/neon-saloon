@@ -59,9 +59,6 @@ body {
 
 body {
   background-color: var(--saloon-dark);
-  /* Subtle Cow Print Pattern */
-  background-image: url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 50 Q 80 20 120 50 T 180 80 Q 220 120 180 180 T 100 220 Q 50 250 20 180 T 50 50' fill='%23ff2da4' fill-opacity='0.03'/%3E%3Cpath d='M300 250 Q 340 220 380 250 T 400 320 Q 380 380 320 400 T 250 350 Q 220 300 300 250' fill='%23ff2da4' fill-opacity='0.02'/%3E%3Cpath d='M150 300 Q 180 280 210 300 T 250 350 Q 220 400 180 380 T 150 300' fill='%23ff2da4' fill-opacity='0.025'/%3E%3Cpath d='M350 50 Q 370 30 390 50 T 400 90 Q 380 120 350 110 T 350 50' fill='%23ff2da4' fill-opacity='0.02'/%3E%3Cpath d='M50 350 Q 70 330 90 350 T 100 390 Q 80 420 50 410 T 50 350' fill='%23ff2da4' fill-opacity='0.015'/%3E%3C/svg%3E");
-  background-attachment: fixed;
   color: var(--text-primary);
   font-family:
     var(--font-app),
@@ -188,7 +185,6 @@ body {
   inset: -50%;
   width: 200%;
   height: 200%;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
   opacity: 0.035;
   will-change: transform;
   animation: grain 8s steps(10) infinite;

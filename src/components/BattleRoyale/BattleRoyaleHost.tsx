@@ -51,9 +51,10 @@ interface Props {
   pin: string
   categoryId: string
   questionOrder?: number[] | null
+  timerDuration: number
 }
 
-export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Props) {
+export default function BattleRoyaleHost({ pin, categoryId, questionOrder, timerDuration }: Props) {
   const { setHidden: setBackHidden } = useBackButton()
   useEffect(() => {
     setBackHidden(true)
@@ -81,7 +82,8 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
   const [eliminatedIds, setEliminatedIds] = useState<Set<string>>(new Set())
   const [answeredIds, setAnsweredIds] = useState<Set<string>>(new Set())
   const [questionIndex, setQuestionIndex] = useState(0)
-  const [timerLeft, setTimerLeft] = useState(BR_TIMER_SECONDS)
+  const [roundTimerDuration, setRoundTimerDuration] = useState(timerDuration)
+  const [timerLeft, setTimerLeft] = useState(timerDuration)
   const [timerDone, setTimerDone] = useState(false)
   const [revealData, setRevealData] = useState<BRRevealResult | null>(null)
   const [winner, setWinner] = useState<string | undefined>()
@@ -99,7 +101,7 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const startTimer = useCallback(() => {
-    setTimerLeft(gameSettings.brTimerSeconds)
+    setTimerLeft(roundTimerDuration)
     setTimerDone(false)
     if (timerRef.current) clearInterval(timerRef.current)
     timerRef.current = setInterval(() => {
@@ -112,7 +114,7 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
         return t - 1
       })
     }, 1000)
-  }, [gameSettings.brTimerSeconds])
+  }, [roundTimerDuration])
 
   useEffect(
     () => () => {
@@ -140,6 +142,10 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
             setEliminatedIds(new Set<string>(br.eliminatedPlayers))
           }
           if (typeof br.questionIndex === 'number') setQuestionIndex(br.questionIndex)
+          if (typeof br.timerDuration === 'number') {
+            setRoundTimerDuration(br.timerDuration)
+            setTimerLeft(br.timerDuration)
+          }
           if (Array.isArray(br.roundAnswers)) {
             setAnsweredIds(
               new Set<string>(br.roundAnswers.map((a: { playerId: string }) => a.playerId))
@@ -344,7 +350,7 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder }: Pro
     [hostPlayerId, hostHasAnswered, hostAnswerLoading, pin, hostName, hostAvatar]
   )
 
-  const timerPct = (timerLeft / gameSettings.brTimerSeconds) * 100
+  const timerPct = (timerLeft / roundTimerDuration) * 100
   const hostIsEliminated = hostPlayerId ? eliminatedIds.has(hostPlayerId) : false
 
   return (

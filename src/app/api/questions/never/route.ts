@@ -30,6 +30,9 @@ export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session.user.isPremium) {
+      return NextResponse.json({ error: 'Premium access required' }, { status: 403 })
+    }
 
     const userId = (session.user as { id: string }).id
     const body = await readLimitedJson<{ text?: unknown }>(request)

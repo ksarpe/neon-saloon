@@ -43,6 +43,7 @@ export default function HostPage() {
   const [neverSource, setNeverSource] = useState<NeverSource | null>(null)
   const [brCategoryId, setBrCategoryId] = useState<string | null>(null)
   const [brQuestionOrder, setBrQuestionOrder] = useState<number[] | null>(null)
+  const [brRoundTimerDuration, setBrRoundTimerDuration] = useState(20)
   const [brSetupLoading, setBrSetupLoading] = useState(false)
   const [brTimerSeconds, setBrTimerSeconds] = useState(20)
   useEffect(() => {
@@ -159,6 +160,7 @@ export default function HostPage() {
         onSelect={setSelectedCategory}
         onBack={() => router.push('/graj/host')}
         includeAllOption
+        premiumCategoryIds={[ALL_CATEGORIES_ID, 'alcohol']}
       />
     )
   }
@@ -193,6 +195,9 @@ export default function HostPage() {
               })
               const data = await res.json()
               setBrQuestionOrder(Array.isArray(data.questionOrder) ? data.questionOrder : null)
+              setBrRoundTimerDuration(
+                typeof data.timerDuration === 'number' ? data.timerDuration : brTimerSeconds
+              )
               setBrCategoryId(catId)
             } finally {
               setBrSetupLoading(false)
@@ -203,7 +208,14 @@ export default function HostPage() {
         />
       )
     }
-    return <BattleRoyaleHost pin={pin} categoryId={brCategoryId} questionOrder={brQuestionOrder} />
+    return (
+      <BattleRoyaleHost
+        pin={pin}
+        categoryId={brCategoryId}
+        questionOrder={brQuestionOrder}
+        timerDuration={brRoundTimerDuration}
+      />
+    )
   }
 
   // ── HighLow: team setup step then lobby ──────────────────────────────────

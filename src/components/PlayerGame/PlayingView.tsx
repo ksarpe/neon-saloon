@@ -127,7 +127,7 @@ export function PlayingView({
               whileTap={{ scale: 0.95 }}
               disabled={loading}
               onClick={() => castVote(-2, '🚫 Nie piję')}
-              className="flex flex-1 flex-col items-center justify-center gap-1 rounded-2xl border-2 py-5 text-sm font-black"
+              className="flex flex-1 cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border-2 py-5 text-sm font-black disabled:cursor-not-allowed disabled:opacity-40"
               style={{
                 borderColor: 'rgba(255,220,180,0.25)',
                 backgroundColor: 'rgba(255,220,180,0.06)',
@@ -136,6 +136,16 @@ export function PlayingView({
                 letterSpacing: '0.08em',
                 fontSize: '1rem',
               }}
+              whileHover={
+                loading
+                  ? undefined
+                  : {
+                      borderColor: 'rgba(255,220,180,0.5)',
+                      backgroundColor: 'rgba(255,220,180,0.1)',
+                      color: 'var(--text-primary)',
+                      transition: { duration: 0.15 },
+                    }
+              }
             >
               <span className="text-2xl">🚫</span>
               NIE PIJĘ
@@ -144,16 +154,26 @@ export function PlayingView({
               whileTap={{ scale: 0.95 }}
               disabled={loading}
               onClick={() => castVote(-1, '🍺 Piję')}
-              className="flex flex-1 flex-col items-center justify-center gap-1 rounded-2xl border-2 py-5 text-sm font-black"
+              className="flex flex-1 cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border-2 py-5 text-sm font-black disabled:cursor-not-allowed disabled:opacity-40"
               style={{
-                borderColor: 'var(--neon-pink)',
-                backgroundColor: 'rgba(255,16,240,0.1)',
-                color: 'var(--neon-pink)',
-                boxShadow: '0 0 20px rgba(255,16,240,0.2)',
+                borderColor: 'rgba(255,220,180,0.25)',
+                backgroundColor: 'rgba(255,220,180,0.06)',
+                color: 'rgba(255,220,180,0.8)',
                 fontFamily: 'var(--font-app)',
                 letterSpacing: '0.08em',
                 fontSize: '1rem',
               }}
+              whileHover={
+                loading
+                  ? undefined
+                  : {
+                      borderColor: 'var(--neon-pink)',
+                      backgroundColor: 'rgba(255,16,240,0.1)',
+                      color: 'var(--neon-pink)',
+                      boxShadow: '0 0 20px rgba(255,16,240,0.2)',
+                      transition: { duration: 0.15 },
+                    }
+              }
             >
               <span className="text-2xl">🍺</span>
               PIJĘ

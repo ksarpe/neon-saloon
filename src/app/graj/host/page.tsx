@@ -59,6 +59,7 @@ const GAME_MODES = [
     color: '#ef4444',
     border: 'rgba(239,68,68,0.5)',
     bg: 'rgba(239,68,68,0.07)',
+    isPremium: true,
   },
 ]
 
@@ -82,14 +83,21 @@ export default function HostSetupPage() {
           gameMode: selectedMode,
         }),
       })
-      if (!res.ok) throw new Error()
-      const { pin, hostSecret } = await res.json()
+      const payload = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        throw new Error(
+          typeof payload.error === 'string' ? payload.error : 'Nie udało się utworzyć gry.'
+        )
+      }
+      const { pin, hostSecret } = payload
       if (typeof hostSecret === 'string') {
         saveHostSecret(pin, hostSecret)
       }
       router.push(`/graj/host/${pin}?mode=${selectedMode}`)
-    } catch {
-      setError('Could not create a game. Try again!')
+    } catch (createError) {
+      setError(
+        createError instanceof Error ? createError.message : 'Nie udało się utworzyć gry.'
+      )
       setCreating(false)
     }
   }

@@ -1,14 +1,17 @@
 ﻿'use client'
 
 import { motion } from 'framer-motion'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Lock } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
+import { ProModal } from '@/components/ui/ContentGate'
+import { useContentAccess } from '@/hooks/useContentAccess'
 import type { SessionTeam } from '@/lib/appwrite/sessions'
 import { useBackButton } from '@/lib/back-button-context'
 import { QUESTION_CATEGORIES } from '@/config/games/categories'
+import { checkAccess } from '@/lib/content-access'
 import { QUESTIONS_PER_GAME } from '@/lib/games/question-limit'
 import { hostJsonHeaders } from '@/lib/session-host-secret'
 
@@ -87,12 +90,17 @@ export function CategoryPicker({
   onBack,
   loading = false,
   includeAllOption = false,
+  premiumCategoryIds = [],
 }: {
   onSelect: (id: string) => void
   onBack: () => void
   loading?: boolean
   includeAllOption?: boolean
+  premiumCategoryIds?: readonly string[]
 }) {
+  const access = useContentAccess()
+  const [proModalOpen, setProModalOpen] = useState(false)
+  const hasPremium = checkAccess({ type: 'premium' }, access).granted
   const categories = includeAllOption
     ? [...QUESTION_CATEGORIES, ALL_CATEGORIES_OPTION]
     : QUESTION_CATEGORIES
@@ -105,37 +113,54 @@ export function CategoryPicker({
       onBack={onBack}
     >
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {categories.map((cat, i) => (
-          <motion.button
-            key={cat.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: i * 0.08 }}
-            whileTap={{ scale: 0.97 }}
-            disabled={loading}
-            onClick={() => onSelect(cat.id)}
-            className="flex flex-col gap-2 rounded-2xl border-2 p-5 text-left transition-all duration-200 disabled:opacity-50"
-            style={{ borderColor: cat.border, backgroundColor: cat.bg }}
-            onMouseEnter={(e) => {
-              if (loading) return
-              e.currentTarget.style.boxShadow = `0 0 24px ${cat.border}`
-              e.currentTarget.style.borderColor = cat.color
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = 'none'
-              e.currentTarget.style.borderColor = cat.border
-            }}
-          >
-            <p className="text-base font-bold" style={{ color: cat.color }}>
-              {cat.name}
-            </p>
-            <p className="text-text-muted text-xs leading-snug">{cat.description}</p>
-            <p className="mt-1 text-xs font-semibold" style={{ color: cat.color, opacity: 0.6 }}>
-              {Math.min(cat.questions.length, QUESTIONS_PER_GAME)} pytań w grze
-            </p>
-          </motion.button>
-        ))}
+        {categories.map((cat, i) => {
+          const isPremium = premiumCategoryIds.includes(cat.id)
+
+          return (
+            <motion.button
+              key={cat.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: i * 0.08 }}
+              whileTap={{ scale: 0.97 }}
+              disabled={loading}
+              onClick={() => {
+                if (isPremium && !hasPremium) {
+                  setProModalOpen(true)
+                  return
+                }
+                onSelect(cat.id)
+              }}
+              className="relative flex flex-col gap-2 rounded-2xl border-2 p-5 text-left transition-all duration-200 disabled:opacity-50"
+              style={{ borderColor: cat.border, backgroundColor: cat.bg }}
+              onMouseEnter={(e) => {
+                if (loading) return
+                e.currentTarget.style.boxShadow = `0 0 24px ${cat.border}`
+                e.currentTarget.style.borderColor = cat.color
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = 'none'
+                e.currentTarget.style.borderColor = cat.border
+              }}
+            >
+              {isPremium && (
+                <div className="absolute top-3 right-3 flex items-center gap-1 rounded-full border border-yellow-500/50 bg-black/60 px-2 py-0.5 text-[9px] font-bold tracking-normal text-yellow-400 uppercase">
+                  {!hasPremium && <Lock size={10} aria-hidden />}
+                  PRO
+                </div>
+              )}
+              <p className="text-base font-bold" style={{ color: cat.color }}>
+                {cat.name}
+              </p>
+              <p className="text-text-muted text-xs leading-snug">{cat.description}</p>
+              <p className="mt-1 text-xs font-semibold" style={{ color: cat.color, opacity: 0.6 }}>
+                {Math.min(cat.questions.length, QUESTIONS_PER_GAME)} pytań w grze
+              </p>
+            </motion.button>
+          )
+        })}
       </div>
+      {proModalOpen && <ProModal onClose={() => setProModalOpen(false)} />}
       {loading && (
         <div className="flex items-center justify-center gap-2 pt-2">
           <Loader2 size={14} className="animate-spin" style={{ color: 'var(--text-muted)' }} />
@@ -157,6 +182,7 @@ const NEVER_SOURCES: Array<{
   color: string
   border: string
   bg: string
+  isPremium?: boolean
 }> = [
   {
     id: 'app',
@@ -173,6 +199,7 @@ const NEVER_SOURCES: Array<{
     color: 'var(--neon-pink)',
     border: 'rgba(255,16,240,0.5)',
     bg: 'rgba(255,16,240,0.07)',
+    isPremium: true,
   },
   {
     id: 'all',
@@ -181,6 +208,7 @@ const NEVER_SOURCES: Array<{
     color: '#a78bfa',
     border: 'rgba(167,139,250,0.5)',
     bg: 'rgba(167,139,250,0.07)',
+    isPremium: true,
   },
 ]
 
@@ -191,6 +219,10 @@ export function NeverSourcePicker({
   onSelect: (src: NeverSource) => void
   onBack: () => void
 }) {
+  const access = useContentAccess()
+  const [proModalOpen, setProModalOpen] = useState(false)
+  const hasPremium = checkAccess({ type: 'premium' }, access).granted
+
   return (
     <PickerShell
       title="Wybierz źródło pytań"
@@ -206,8 +238,14 @@ export function NeverSourcePicker({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: i * 0.09 }}
             whileTap={{ scale: 0.97 }}
-            onClick={() => onSelect(src.id)}
-            className="flex flex-col gap-1.5 rounded-2xl border-2 p-5 text-left transition-all duration-200"
+            onClick={() => {
+              if (src.isPremium && !hasPremium) {
+                setProModalOpen(true)
+                return
+              }
+              onSelect(src.id)
+            }}
+            className="relative flex flex-col gap-1.5 rounded-2xl border-2 p-5 text-left transition-all duration-200"
             style={{ borderColor: src.border, backgroundColor: src.bg }}
             onMouseEnter={(e) => {
               e.currentTarget.style.boxShadow = `0 0 24px ${src.border}`
@@ -218,6 +256,12 @@ export function NeverSourcePicker({
               e.currentTarget.style.borderColor = src.border
             }}
           >
+            {src.isPremium && (
+              <div className="absolute top-3 right-3 flex items-center gap-1 rounded-full border border-yellow-500/50 bg-black/60 px-2 py-0.5 text-[9px] font-bold tracking-normal text-yellow-400 uppercase">
+                {!hasPremium && <Lock size={10} aria-hidden />}
+                PRO
+              </div>
+            )}
             <p className="text-base font-bold" style={{ color: src.color }}>
               {src.label}
             </p>
@@ -225,6 +269,7 @@ export function NeverSourcePicker({
           </motion.button>
         ))}
       </div>
+      {proModalOpen && <ProModal onClose={() => setProModalOpen(false)} />}
     </PickerShell>
   )
 }
