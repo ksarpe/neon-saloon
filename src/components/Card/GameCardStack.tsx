@@ -2,6 +2,8 @@
 
 import { motion } from 'framer-motion'
 
+import { pickDeckBackgrounds } from '@/config/card-backgrounds'
+
 import { CardFace } from './CardFace'
 import type { CardLike } from './types'
 import { CARD_H, CARD_W } from './types'
@@ -23,6 +25,9 @@ export function GameCardStack({
 }: Props) {
   const shadows = Math.min((cardsLeft ?? 1) - 1, 3)
   const stackPadding = 20
+  // Różne grafiki dla całego decku (aktywna + cienie), stabilnie po id karty.
+  const deckBgs = pickDeckBackgrounds(card.id, shadows + 1)
+  const activeBg = deckBgs[0]
 
   return (
     <div
@@ -41,11 +46,12 @@ export function GameCardStack({
           style={{
             width: `calc(100% - ${stackPadding}px)`,
             height: `calc(100% - ${stackPadding}px)`,
-            backgroundImage: "url('/bg/card1.png')",
+            backgroundImage: `url('${deckBgs[i + 1]}')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             transform: `translateY(${(i + 1) * -7}px) rotate(${(i % 2 === 0 ? 1 : -1) * (i + 1) * 1.8}deg)`,
             zIndex: shadows - i,
+            boxShadow: '0 0 0 1px rgba(249,74,255,0.55), 0 0 12px rgba(249,74,255,0.4)',
           }}
         />
       ))}
@@ -70,7 +76,7 @@ export function GameCardStack({
         whileHover={!isFlipped ? { rotateX: 14, rotateZ: -4, scale: 1.04, y: -3 } : {}}
       >
         {/* BACK face */}
-        <CardFace>
+        <CardFace background={activeBg}>
           {!isRevealed ? (
             <div className="flex h-full w-full items-center justify-center">
               <p
@@ -97,7 +103,7 @@ export function GameCardStack({
         </CardFace>
 
         {/* FRONT face */}
-        <CardFace flipped>
+        <CardFace flipped background={activeBg}>
           <div className="flex h-full w-full flex-col items-center justify-center p-5 text-center sm:p-7">
             <p className="text-lg leading-snug font-bold sm:text-xl" style={{ color: '#1a1a1a' }}>
               {card.description}

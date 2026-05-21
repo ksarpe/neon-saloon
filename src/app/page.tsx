@@ -490,10 +490,10 @@ export default function LandingPage() {
                   width: 'min(600px, 73vw)',
                   aspectRatio: '1 / 1',
                   borderRadius: '24px',
-                  border: `1.5px solid ${mode.accent}`,
+                  border: `1px solid ${mode.accent}35`,
                   boxShadow: isActive
-                    ? `0 0 18px ${mode.accent}aa, 0 0 46px ${mode.accent}55, inset 0 0 16px ${mode.accent}22, 0 22px 40px rgba(0,0,0,0.45)`
-                    : `0 0 12px ${mode.accent}77, 0 0 26px ${mode.accent}33, inset 0 0 12px ${mode.accent}1f, 0 12px 30px rgba(0,0,0,0.4)`,
+                    ? `0 24px 35px ${mode.accent}20, 0 0 1px ${mode.accent}40`
+                    : `0 10px 40px rgba(0,0,0,0.35)`,
                   filter: isActive ? 'none' : 'brightness(0.7) saturate(0.85)',
                   WebkitTapHighlightColor: 'transparent',
                   pointerEvents: absOffset > halfModes ? 'none' : 'auto',
