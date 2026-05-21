@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
 
+import { ANSWER_TIME_LIMIT_SECONDS, REVEAL_COUNTDOWN_SECONDS } from '@/config/game'
 import {
   cleanupSessionEvents,
   triggerGameEvent as triggerSessionEvent,
 } from '@/lib/appwrite/realtime'
-import { ANSWER_TIME_LIMIT_SECONDS, REVEAL_COUNTDOWN_SECONDS } from '@/config/game'
 import { updateSession } from '@/lib/appwrite/sessions'
 import type { ScoreEntry, TeamScoreEntry } from '@/lib/game-types'
 import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
@@ -15,6 +15,7 @@ import {
   requiredString,
   validationErrorResponse,
 } from '@/lib/request-validation'
+import { enforceSessionActionRateLimit } from '@/lib/session-action-rate-limit'
 import { requireHostSession, requireSession } from '@/lib/session-api'
 import { isHostAuthorized } from '@/lib/session-host-auth'
 import { sanitizeWireCard } from '@/lib/session-payloads'
@@ -24,7 +25,7 @@ type RouteContext = { params: Promise<{ pin: string }> }
 
 export async function GET(request: Request, { params }: RouteContext) {
   const { pin } = await params
-  const lookupLimit = consumeRateLimit(`session-lookup:${getClientIp(request)}`, {
+  const lookupLimit = await consumeRateLimit(`session-lookup:${getClientIp(request)}`, {
     limit: 60,
     windowMs: 60_000,
   })
@@ -69,6 +70,8 @@ export async function POST(request: Request, { params }: RouteContext) {
   try {
     const hostSession = await requireHostSession(request, pin)
     if (!hostSession.ok) return hostSession.response
+    const rateLimitResponse = await enforceSessionActionRateLimit('hostAction', pin, 'host')
+    if (rateLimitResponse) return rateLimitResponse
 
     const body = await readLimitedJson<{
       action?: unknown

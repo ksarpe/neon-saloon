@@ -6,16 +6,19 @@ const ACTION_LIMITS = {
   vote: { limit: 20, windowMs: 10_000 },
   battleRoyaleAnswer: { limit: 10, windowMs: 10_000 },
   highlowVote: { limit: 5, windowMs: 30_000 },
+  highlowNumber: { limit: 5, windowMs: 30_000 },
+  playerLeave: { limit: 5, windowMs: 60_000 },
+  hostAction: { limit: 60, windowMs: 60_000 },
 } as const
 
 type SessionAction = keyof typeof ACTION_LIMITS
 
-export function enforceSessionActionRateLimit(
+export async function enforceSessionActionRateLimit(
   action: SessionAction,
   pin: string,
   playerId: string
 ) {
-  const result = consumeRateLimit(
+  const result = await consumeRateLimit(
     `session-action:${action}:${pin}:${playerId}`,
     ACTION_LIMITS[action]
   )

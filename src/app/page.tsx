@@ -17,7 +17,7 @@ import {
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 
@@ -186,8 +186,10 @@ function ModeCardContent({ mode, isActive }: { mode: GameModeCard; isActive: boo
         }}
       />
 
-      {/* Label pill — centered on the top border */}
-      <div className="absolute top-0 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 px-2">
+      {/* Label pill — centered on the top border. Inactive labels hidden on mobile to avoid overlap. */}
+      <div
+        className={`absolute top-0 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 px-2 ${isActive ? '' : 'hidden sm:block'}`}
+      >
         <motion.span
           animate={isActive ? { scale: [1, 1.05, 1] } : { scale: 1 }}
           transition={
@@ -222,6 +224,19 @@ export default function LandingPage() {
     activeMode: 0,
     prevActiveMode: 0,
   })
+
+  // Rozstaw kart liczony z rzeczywistej szerokości karty (px-capowanej przez
+  // min(480px, 73vw)) — dzięki temu peek jest spójny na mobile, tablecie i desktopie.
+  // Współczynnik 0.8 = sąsiednie karty stykają się ze środkową i peekują na brzegach.
+  const [viewportW, setViewportW] = useState(1280)
+  useEffect(() => {
+    const update = () => setViewportW(window.innerWidth)
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+  const cardWidthPx = Math.min(480, viewportW * 0.73)
+  const cardGapPx = cardWidthPx * 0.8
 
   const totalModes = GAME_MODES.length
   const halfModes = totalModes / 2
@@ -454,7 +469,7 @@ export default function LandingPage() {
                   else if (info.offset.x > 60) goPrev()
                 }}
                 animate={{
-                  x: `${offset * 23}vw`,
+                  x: `${offset * cardGapPx}px`,
                   scale: isActive ? 1 : 0.7,
                   opacity: absOffset > halfModes ? 0 : isActive ? 1 : 0.92,
                   zIndex: 20 - absOffset,

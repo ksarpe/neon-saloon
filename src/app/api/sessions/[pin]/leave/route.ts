@@ -8,6 +8,7 @@ import {
   requiredString,
   validationErrorResponse,
 } from '@/lib/request-validation'
+import { enforceSessionActionRateLimit } from '@/lib/session-action-rate-limit'
 import { getAuthorizedPlayer } from '@/lib/session-player-auth'
 
 type RouteContext = { params: Promise<{ pin: string }> }
@@ -24,6 +25,13 @@ export async function POST(request: Request, { params }: RouteContext) {
     if (!session) return NextResponse.json({ ok: true })
     const player = getAuthorizedPlayer(request, session, playerId, playerSecret)
     if (!player) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+
+    const rateLimitResponse = await enforceSessionActionRateLimit(
+      'playerLeave',
+      pin,
+      player.playerId
+    )
+    if (rateLimitResponse) return rateLimitResponse
 
     session.players = session.players.filter((p) => p.playerId !== playerId)
     await saveSession(session)

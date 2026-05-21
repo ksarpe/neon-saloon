@@ -17,6 +17,7 @@ export type RateLimitResult = {
 }
 
 const buckets = new Map<string, RateLimitBucket>()
+const RATE_LIMIT_KEY_PREFIX = process.env.RATE_LIMIT_KEY_PREFIX ?? 'neon-saloon'
 
 export function getClientIp(request: Request) {
   return getClientIpFromHeaders(request.headers)
@@ -37,7 +38,22 @@ export function getClientIpFromHeaders(
   return forwardedFor || realIp || 'unknown'
 }
 
-export function consumeRateLimit(key: string, options: RateLimitOptions): RateLimitResult {
+export async function consumeRateLimit(
+  key: string,
+  options: RateLimitOptions
+): Promise<RateLimitResult> {
+  if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+    try {
+      return await consumeUpstashRateLimit(key, options)
+    } catch (error) {
+      console.error('[rate-limit] Upstash limiter failed, falling back to memory', error)
+    }
+  }
+
+  return consumeMemoryRateLimit(key, options)
+}
+
+function consumeMemoryRateLimit(key: string, options: RateLimitOptions): RateLimitResult {
   const now = Date.now()
   const existing = buckets.get(key)
   const bucket =
@@ -69,6 +85,58 @@ export function consumeRateLimit(key: string, options: RateLimitOptions): RateLi
     resetAt: bucket.resetAt,
     retryAfter: Math.max(1, Math.ceil((bucket.resetAt - now) / 1000)),
   }
+}
+
+async function consumeUpstashRateLimit(
+  key: string,
+  options: RateLimitOptions
+): Promise<RateLimitResult> {
+  const redisKey = `${RATE_LIMIT_KEY_PREFIX}:rate-limit:${key}`
+  const pipeline = await upstashPipeline([
+    ['SET', redisKey, '0', 'NX', 'PX', String(options.windowMs)],
+    ['INCR', redisKey],
+    ['PTTL', redisKey],
+  ])
+  const count = Number(pipeline[1]?.result ?? 0)
+  let ttlMs = Number(pipeline[2]?.result ?? options.windowMs)
+
+  if (!Number.isFinite(ttlMs) || ttlMs < 0) {
+    await upstashPipeline([['PEXPIRE', redisKey, String(options.windowMs)]])
+    ttlMs = options.windowMs
+  }
+
+  const resetAt = Date.now() + ttlMs
+  const retryAfter = Math.max(1, Math.ceil(ttlMs / 1000))
+
+  return {
+    allowed: count <= options.limit,
+    limit: options.limit,
+    remaining: Math.max(0, options.limit - count),
+    resetAt,
+    retryAfter,
+  }
+}
+
+async function upstashPipeline(commands: string[][]) {
+  const response = await fetch(`${process.env.UPSTASH_REDIS_REST_URL}/pipeline`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(commands),
+    cache: 'no-store',
+  })
+
+  if (!response.ok) {
+    throw new Error(`Upstash request failed with ${response.status}`)
+  }
+
+  const payload = (await response.json()) as Array<{ result?: unknown; error?: string }>
+  const error = payload.find((entry) => entry.error)?.error
+  if (error) throw new Error(error)
+
+  return payload
 }
 
 export function rateLimitHeaders(result: RateLimitResult) {

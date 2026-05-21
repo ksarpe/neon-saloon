@@ -16,12 +16,7 @@ export async function POST(request: NextRequest, context: NextAuthRouteContext) 
   const action = nextauth.join('/')
 
   if (action === 'callback/credentials') {
-    const formData = await request
-      .clone()
-      .formData()
-      .catch(() => null)
-    const email = formData?.get('email')?.toString().toLowerCase().trim()
-    const ipLimit = consumeRateLimit(`auth:login:ip:${getClientIp(request)}`, {
+    const ipLimit = await consumeRateLimit(`auth:login:ip:${getClientIp(request)}`, {
       limit: 10,
       windowMs: 15 * 60_000,
     })
@@ -33,8 +28,14 @@ export async function POST(request: NextRequest, context: NextAuthRouteContext) 
       )
     }
 
+    const formData = await request
+      .clone()
+      .formData()
+      .catch(() => null)
+    const email = formData?.get('email')?.toString().toLowerCase().trim()
+
     if (email) {
-      const emailLimit = consumeRateLimit(`auth:login:email:${email}`, {
+      const emailLimit = await consumeRateLimit(`auth:login:email:${email}`, {
         limit: 5,
         windowMs: 15 * 60_000,
       })

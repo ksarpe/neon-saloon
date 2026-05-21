@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth'
 import { getAppUrl } from '@/lib/app-url'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
 import {
   INPUT_LIMITS,
   readLimitedJson,
@@ -35,6 +36,9 @@ export async function POST(request: Request) {
         { status: 401 }
       )
     }
+
+    const rateLimitResponse = await enforceStripeCheckoutLimit(request, session.user.id)
+    if (rateLimitResponse) return rateLimitResponse
 
     const body = await readLimitedJson<{ plan?: unknown }>(request)
     const plan = requiredString(body.plan, 'plan', INPUT_LIMITS.stripePlan)
@@ -120,4 +124,36 @@ async function getOrCreateStripeCustomerId(user: CheckoutUser) {
   if (freshUser?.stripeCustomerId) return freshUser.stripeCustomerId
 
   throw new Error('Failed to persist Stripe customer id')
+}
+
+async function enforceStripeCheckoutLimit(request: Request, userId: string) {
+  const ipLimit = await consumeRateLimit(`stripe:checkout:ip:${getClientIp(request)}`, {
+    limit: 20,
+    windowMs: 60_000,
+  })
+  if (!ipLimit.allowed) {
+    return NextResponse.json(
+      {
+        error: 'Za dużo prób rozpoczęcia płatności. Spróbuj ponownie później.',
+        retryAfter: ipLimit.retryAfter,
+      },
+      { status: 429, headers: rateLimitHeaders(ipLimit) }
+    )
+  }
+
+  const userLimit = await consumeRateLimit(`stripe:checkout:user:${userId}`, {
+    limit: 5,
+    windowMs: 60_000,
+  })
+  if (!userLimit.allowed) {
+    return NextResponse.json(
+      {
+        error: 'Za dużo prób rozpoczęcia płatności. Spróbuj ponownie później.',
+        retryAfter: userLimit.retryAfter,
+      },
+      { status: 429, headers: rateLimitHeaders(userLimit) }
+    )
+  }
+
+  return null
 }

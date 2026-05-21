@@ -1,11 +1,11 @@
-﻿import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
-import { triggerGameEvent as triggerSessionEvent } from '@/lib/appwrite/realtime'
 import { HIGHLOW_QUESTIONS } from '@/config/games/highlow'
+import { triggerGameEvent as triggerSessionEvent } from '@/lib/appwrite/realtime'
+import { saveSession } from '@/lib/appwrite/sessions'
 import { readLimitedJson, requiredString, validationErrorResponse } from '@/lib/request-validation'
 import { enforceSessionActionRateLimit } from '@/lib/session-action-rate-limit'
 import { requirePlayerSession } from '@/lib/session-api'
-import { sanitizeScoreEntries } from '@/lib/session-payloads'
 
 type RouteContext = { params: Promise<{ pin: string }> }
 
@@ -15,20 +15,22 @@ export async function POST(request: Request, { params }: RouteContext) {
     const body = await readLimitedJson<{
       playerId?: unknown
       vote?: unknown
-      currentScores?: unknown
     }>(request)
     const playerId = requiredString(body.playerId, 'playerId', 80)
     const vote = requiredString(body.vote, 'vote', 8) as 'mniej' | 'wiecej'
     if (vote !== 'mniej' && vote !== 'wiecej') {
       return NextResponse.json({ error: 'Invalid vote' }, { status: 400 })
     }
-    const currentScores = sanitizeScoreEntries(body.currentScores, 'currentScores')
 
     const playerSession = await requirePlayerSession(request, pin, playerId)
     if (!playerSession.ok) return playerSession.response
     const { player, session } = playerSession.value
 
-    const rateLimitResponse = enforceSessionActionRateLimit('highlowVote', pin, player.playerId)
+    const rateLimitResponse = await enforceSessionActionRateLimit(
+      'highlowVote',
+      pin,
+      player.playerId
+    )
     if (rateLimitResponse) return rateLimitResponse
 
     const hl = session.highlowData
@@ -43,7 +45,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     const question = HIGHLOW_QUESTIONS[hl.questionIndex % HIGHLOW_QUESTIONS.length]
     const guess = parseFloat(hl.currentNumber)
     const correctVote: 'mniej' | 'wiecej' = guess < question.answer ? 'wiecej' : 'mniej'
-    // edge case: exact guess → guessing team wins
+    // Exact guess means the guessing team wins immediately.
     const guessedExactly = guess === question.answer
     const captainWon = guessedExactly ? false : vote === correctVote
 
@@ -51,9 +53,8 @@ export async function POST(request: Request, { params }: RouteContext) {
     const winningTeam = session.teams.find((t) => t.teamId === winningTeamId)
     const winningTeamName = winningTeam?.teamName ?? 'Nieznana drużyna'
 
-    // Award +1 to every player on the winning team
     const winningPlayers = session.players.filter((p) => p.teamId === winningTeamId)
-    const updatedScores = [...currentScores]
+    const updatedScores = [...(session.scores ?? [])]
     winningPlayers.forEach((p) => {
       const idx = updatedScores.findIndex((s) => s.playerId === p.playerId)
       if (idx > -1) {
@@ -68,6 +69,9 @@ export async function POST(request: Request, { params }: RouteContext) {
         })
       }
     })
+
+    session.scores = updatedScores
+    await saveSession(session)
 
     await triggerSessionEvent(pin, {
       event: 'highlow-round-result',

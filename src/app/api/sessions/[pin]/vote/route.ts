@@ -35,7 +35,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     if (!playerSession.ok) return playerSession.response
     const { player, session } = playerSession.value
 
-    const rateLimitResponse = enforceSessionActionRateLimit('vote', pin, player.playerId)
+    const rateLimitResponse = await enforceSessionActionRateLimit('vote', pin, player.playerId)
     if (rateLimitResponse) return rateLimitResponse
 
     if (cardIndex !== session.cardIndex) {

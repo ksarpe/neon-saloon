@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     const passwordError = getPasswordPolicyError(password)
     if (passwordError) throw new RequestValidationError(passwordError)
 
-    const ipLimit = consumeRateLimit(`auth:reset-password:ip:${getClientIp(request)}`, {
+    const ipLimit = await consumeRateLimit(`auth:reset-password:ip:${getClientIp(request)}`, {
       limit: 10,
       windowMs: 15 * 60_000,
     })
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     }
 
     const tokenHash = hashPasswordResetToken(token)
-    const tokenLimit = consumeRateLimit(`auth:reset-password:token:${tokenHash}`, {
+    const tokenLimit = await consumeRateLimit(`auth:reset-password:token:${tokenHash}`, {
       limit: 5,
       windowMs: 15 * 60_000,
     })

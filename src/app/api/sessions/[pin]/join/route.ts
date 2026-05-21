@@ -18,7 +18,7 @@ type RouteContext = { params: Promise<{ pin: string }> }
 export async function POST(request: Request, { params }: RouteContext) {
   const { pin } = await params
   const clientIp = getClientIp(request)
-  const globalLimit = consumeRateLimit(`session-join:${clientIp}`, {
+  const globalLimit = await consumeRateLimit(`session-join:${clientIp}`, {
     limit: 20,
     windowMs: 60_000,
   })
@@ -30,7 +30,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     )
   }
 
-  const pinLimit = consumeRateLimit(`session-join:${clientIp}:${pin}`, {
+  const pinLimit = await consumeRateLimit(`session-join:${clientIp}:${pin}`, {
     limit: 8,
     windowMs: 60_000,
   })

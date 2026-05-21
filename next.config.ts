@@ -1,5 +1,38 @@
 import type { NextConfig } from 'next'
 
+const appwriteOrigin = getOrigin(
+  process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT,
+  'https://cloud.appwrite.io'
+)
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "frame-ancestors 'none'",
+  "img-src 'self' data: blob:",
+  "font-src 'self' data:",
+  "style-src 'self' 'unsafe-inline'",
+  "script-src 'self' 'unsafe-inline'",
+  `connect-src 'self' ${appwriteOrigin} wss://cloud.appwrite.io https://api.stripe.com https://*.stripe.com`,
+  'upgrade-insecure-requests',
+].join('; ')
+const productionSecurityHeaders =
+  process.env.NODE_ENV === 'production'
+    ? [
+        { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' },
+        { key: 'Content-Security-Policy', value: contentSecurityPolicy },
+      ]
+    : []
+
+function getOrigin(value: string | undefined, fallback: string) {
+  if (!value) return fallback
+  try {
+    return new URL(value).origin
+  } catch {
+    return fallback
+  }
+}
+
 const nextConfig: NextConfig = {
   reactCompiler: true,
   allowedDevOrigins: ['192.168.100.27'],
@@ -12,6 +45,7 @@ const nextConfig: NextConfig = {
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+          ...productionSecurityHeaders,
         ],
       },
     ]

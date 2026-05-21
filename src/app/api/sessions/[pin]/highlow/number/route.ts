@@ -8,6 +8,7 @@ import {
   requiredString,
   validationErrorResponse,
 } from '@/lib/request-validation'
+import { enforceSessionActionRateLimit } from '@/lib/session-action-rate-limit'
 import { requirePlayerSession } from '@/lib/session-api'
 
 type RouteContext = { params: Promise<{ pin: string }> }
@@ -22,6 +23,13 @@ export async function POST(request: Request, { params }: RouteContext) {
     const playerSession = await requirePlayerSession(request, pin, playerId)
     if (!playerSession.ok) return playerSession.response
     const { player, session } = playerSession.value
+
+    const rateLimitResponse = await enforceSessionActionRateLimit(
+      'highlowNumber',
+      pin,
+      player.playerId
+    )
+    if (rateLimitResponse) return rateLimitResponse
 
     if (!session.highlowData)
       return NextResponse.json({ error: 'No active round' }, { status: 400 })

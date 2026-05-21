@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     const passwordError = getPasswordPolicyError(password)
     if (passwordError) throw new RequestValidationError(passwordError)
 
-    const ipLimit = consumeRateLimit(`auth:register:ip:${getClientIp(req)}`, {
+    const ipLimit = await consumeRateLimit(`auth:register:ip:${getClientIp(req)}`, {
       limit: 5,
       windowMs: 15 * 60_000,
     })
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
       )
     }
 
-    const emailLimit = consumeRateLimit(`auth:register:email:${normalizedEmail}`, {
+    const emailLimit = await consumeRateLimit(`auth:register:email:${normalizedEmail}`, {
       limit: 3,
       windowMs: 60 * 60_000,
     })

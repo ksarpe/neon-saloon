@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
 import {
   INPUT_LIMITS,
   readLimitedJson,
@@ -35,6 +36,9 @@ export async function POST(request: Request) {
     }
 
     const userId = (session.user as { id: string }).id
+    const rateLimitResponse = await enforceQuestionCreateLimit(request, 'never', userId)
+    if (rateLimitResponse) return rateLimitResponse
+
     const body = await readLimitedJson<{ text?: unknown }>(request)
     const text = requiredString(body.text, 'text', INPUT_LIMITS.questionText)
 
@@ -68,4 +72,36 @@ function parseBoundedInteger(value: string | null, min: number, max: number, fal
   const parsed = Number(value)
   if (!Number.isInteger(parsed)) return fallback
   return Math.min(max, Math.max(min, parsed))
+}
+
+async function enforceQuestionCreateLimit(request: Request, type: string, userId: string) {
+  const ipLimit = await consumeRateLimit(`questions:${type}:create:ip:${getClientIp(request)}`, {
+    limit: 60,
+    windowMs: 60_000,
+  })
+  if (!ipLimit.allowed) {
+    return NextResponse.json(
+      {
+        error: 'Za dużo prób dodania pytania. Spróbuj ponownie później.',
+        retryAfter: ipLimit.retryAfter,
+      },
+      { status: 429, headers: rateLimitHeaders(ipLimit) }
+    )
+  }
+
+  const userLimit = await consumeRateLimit(`questions:${type}:create:user:${userId}`, {
+    limit: 30,
+    windowMs: 60_000,
+  })
+  if (!userLimit.allowed) {
+    return NextResponse.json(
+      {
+        error: 'Za dużo prób dodania pytania. Spróbuj ponownie później.',
+        retryAfter: userLimit.retryAfter,
+      },
+      { status: 429, headers: rateLimitHeaders(userLimit) }
+    )
+  }
+
+  return null
 }

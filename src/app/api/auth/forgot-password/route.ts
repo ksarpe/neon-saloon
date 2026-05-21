@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     const body = await readLimitedJson<{ email?: unknown }>(request)
     const email = normalizeEmail(body.email)
 
-    const ipLimit = consumeRateLimit(`auth:forgot-password:ip:${getClientIp(request)}`, {
+    const ipLimit = await consumeRateLimit(`auth:forgot-password:ip:${getClientIp(request)}`, {
       limit: 5,
       windowMs: 15 * 60_000,
     })
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const emailLimit = consumeRateLimit(`auth:forgot-password:email:${email}`, {
+    const emailLimit = await consumeRateLimit(`auth:forgot-password:email:${email}`, {
       limit: 3,
       windowMs: 60 * 60_000,
     })

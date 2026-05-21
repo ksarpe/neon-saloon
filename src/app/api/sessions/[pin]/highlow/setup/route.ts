@@ -8,6 +8,7 @@ import {
   requiredString,
   validationErrorResponse,
 } from '@/lib/request-validation'
+import { enforceSessionActionRateLimit } from '@/lib/session-action-rate-limit'
 import { requireHostSession } from '@/lib/session-api'
 
 type RouteContext = { params: Promise<{ pin: string }> }
@@ -17,6 +18,8 @@ export async function POST(request: Request, { params }: RouteContext) {
   try {
     const hostSession = await requireHostSession(request, pin)
     if (!hostSession.ok) return hostSession.response
+    const rateLimitResponse = await enforceSessionActionRateLimit('hostAction', pin, 'host')
+    if (rateLimitResponse) return rateLimitResponse
     const session = hostSession.value
 
     const body = await readLimitedJson<{ team1Name?: unknown; team2Name?: unknown }>(request)

@@ -1,14 +1,15 @@
 ﻿import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 
-import { authOptions } from '@/lib/auth'
 import {
   ANSWER_TIME_LIMIT_SECONDS,
   BR_AUTO_NEXT_SECONDS,
   BR_TIMER_SECONDS,
   REVEAL_COUNTDOWN_SECONDS,
 } from '@/config/game'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
 import { readLimitedJson, validationErrorResponse } from '@/lib/request-validation'
 
 export type GameSettingsPayload = {
@@ -66,6 +67,8 @@ export async function PATCH(request: Request) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+    const rateLimitResponse = await enforceSettingsPatchLimit(request, session.user.id)
+    if (rateLimitResponse) return rateLimitResponse
 
     const body = await readLimitedJson<Partial<GameSettingsPayload>>(request)
 
@@ -114,4 +117,36 @@ export async function PATCH(request: Request) {
   } catch (err) {
     return validationErrorResponse(err) ?? NextResponse.json({ error: 'Failed' }, { status: 500 })
   }
+}
+
+async function enforceSettingsPatchLimit(request: Request, userId: string) {
+  const ipLimit = await consumeRateLimit(`settings:update:ip:${getClientIp(request)}`, {
+    limit: 60,
+    windowMs: 60_000,
+  })
+  if (!ipLimit.allowed) {
+    return NextResponse.json(
+      {
+        error: 'Za dużo prób aktualizacji ustawień. Spróbuj ponownie później.',
+        retryAfter: ipLimit.retryAfter,
+      },
+      { status: 429, headers: rateLimitHeaders(ipLimit) }
+    )
+  }
+
+  const userLimit = await consumeRateLimit(`settings:update:user:${userId}`, {
+    limit: 30,
+    windowMs: 60_000,
+  })
+  if (!userLimit.allowed) {
+    return NextResponse.json(
+      {
+        error: 'Za dużo prób aktualizacji ustawień. Spróbuj ponownie później.',
+        retryAfter: userLimit.retryAfter,
+      },
+      { status: 429, headers: rateLimitHeaders(userLimit) }
+    )
+  }
+
+  return null
 }

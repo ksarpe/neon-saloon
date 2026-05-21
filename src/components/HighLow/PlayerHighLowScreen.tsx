@@ -141,7 +141,7 @@ export default function PlayerHighLowScreen({
         await fetch(`/api/sessions/${pin}/highlow/vote`, {
           method: 'POST',
           headers: playerJsonHeaders(pin, playerId),
-          body: JSON.stringify({ playerId, vote, currentScores: scores }),
+          body: JSON.stringify({ playerId, vote }),
         })
       } catch {
         setVoted(false)
@@ -149,7 +149,7 @@ export default function PlayerHighLowScreen({
         setSubmitting(false)
       }
     },
-    [pin, playerId, voted, submitting, scores]
+    [pin, playerId, voted, submitting]
   )
 
   return (

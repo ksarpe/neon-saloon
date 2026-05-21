@@ -12,7 +12,7 @@ type RouteContext = { params: Promise<{ pin: string }> }
 
 export async function GET(request: Request, { params }: RouteContext) {
   const { pin } = await params
-  const limit = consumeRateLimit(`session-host-resume:${getClientIp(request)}`, {
+  const limit = await consumeRateLimit(`session-host-resume:${getClientIp(request)}`, {
     limit: 60,
     windowMs: 60_000,
   })

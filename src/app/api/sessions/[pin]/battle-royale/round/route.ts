@@ -1,9 +1,10 @@
 ﻿import { NextResponse } from 'next/server'
 
+import { QUESTION_CATEGORIES } from '@/config/games/categories'
 import { triggerGameEvent } from '@/lib/appwrite/realtime'
 import { saveSession } from '@/lib/appwrite/sessions'
-import { QUESTION_CATEGORIES } from '@/config/games/categories'
 import { getLimitedQuestionTotal, getOrderedQuestion } from '@/lib/games/question-limit'
+import { enforceSessionActionRateLimit } from '@/lib/session-action-rate-limit'
 import { requireHostSession } from '@/lib/session-api'
 
 type RouteContext = { params: Promise<{ pin: string }> }
@@ -14,6 +15,8 @@ export async function POST(request: Request, { params }: RouteContext) {
   try {
     const hostSession = await requireHostSession(request, pin)
     if (!hostSession.ok) return hostSession.response
+    const rateLimitResponse = await enforceSessionActionRateLimit('hostAction', pin, 'host')
+    if (rateLimitResponse) return rateLimitResponse
     const session = hostSession.value
 
     const br = session.battleRoyaleData

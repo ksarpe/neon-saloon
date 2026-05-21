@@ -1,9 +1,9 @@
 ﻿import { NextResponse } from 'next/server'
 
+import { QUESTION_CATEGORIES } from '@/config/games/categories'
 import { triggerGameEvent } from '@/lib/appwrite/realtime'
 import type { BRAnswer } from '@/lib/appwrite/sessions'
 import { saveSession } from '@/lib/appwrite/sessions'
-import { QUESTION_CATEGORIES } from '@/config/games/categories'
 import { getOrderedQuestion } from '@/lib/games/question-limit'
 import {
   INPUT_LIMITS,
@@ -35,7 +35,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     if (!playerSession.ok) return playerSession.response
     const { player, session } = playerSession.value
 
-    const rateLimitResponse = enforceSessionActionRateLimit(
+    const rateLimitResponse = await enforceSessionActionRateLimit(
       'battleRoyaleAnswer',
       pin,
       player.playerId

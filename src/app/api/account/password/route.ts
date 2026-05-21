@@ -21,7 +21,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const ipLimit = consumeRateLimit(`auth:change-password:ip:${getClientIp(request)}`, {
+    const ipLimit = await consumeRateLimit(`auth:change-password:ip:${getClientIp(request)}`, {
       limit: 10,
       windowMs: 15 * 60_000,
     })
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const userLimit = consumeRateLimit(`auth:change-password:user:${session.user.id}`, {
+    const userLimit = await consumeRateLimit(`auth:change-password:user:${session.user.id}`, {
       limit: 5,
       windowMs: 15 * 60_000,
     })

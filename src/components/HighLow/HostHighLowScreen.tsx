@@ -5,12 +5,12 @@ import { Flag, Menu, X, Zap } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { GameSummary } from '@/components/GameSummary'
+import { HIGHLOW_QUESTIONS } from '@/config/games/highlow'
 import { useLobbyPlayersPolling } from '@/hooks/useLobbyPlayersPolling'
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
 import type { SessionPlayer, SessionTeam } from '@/lib/appwrite/sessions'
 import { useBackButton } from '@/lib/back-button-context'
 import type { HighLowRoundResultPayload, PlayerJoinedPayload, ScoreEntry } from '@/lib/game-types'
-import { HIGHLOW_QUESTIONS } from '@/config/games/highlow'
 import { limitQuestions, QUESTIONS_PER_GAME } from '@/lib/games/question-limit'
 import {
   getHostSession,
@@ -316,7 +316,7 @@ export default function HostHighLowScreen({
         await fetch(`/api/sessions/${pin}/highlow/vote`, {
           method: 'POST',
           headers: playerJsonHeaders(pin, hostPlayerId),
-          body: JSON.stringify({ playerId: hostPlayerId, vote, currentScores: scores }),
+          body: JSON.stringify({ playerId: hostPlayerId, vote }),
         })
       } catch {
         setHostVoted(false)
@@ -324,7 +324,7 @@ export default function HostHighLowScreen({
         setHostSubmitting(false)
       }
     },
-    [pin, hostPlayerId, hostVoted, hostSubmitting, scores]
+    [pin, hostPlayerId, hostVoted, hostSubmitting]
   )
 
   return (
@@ -512,4 +512,3 @@ export default function HostHighLowScreen({
     </div>
   )
 }
-

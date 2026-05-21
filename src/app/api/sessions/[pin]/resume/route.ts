@@ -1,7 +1,7 @@
 ﻿import { NextResponse } from 'next/server'
 
-import { getSession } from '@/lib/appwrite/sessions'
 import { QUESTION_CATEGORIES } from '@/config/games/categories'
+import { getSession } from '@/lib/appwrite/sessions'
 import { getLimitedQuestionTotal, getOrderedQuestion } from '@/lib/games/question-limit'
 import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
 import { hashPlayerSecret, PLAYER_SECRET_HEADER, publicPlayer } from '@/lib/session-player-auth'
@@ -15,7 +15,7 @@ type RouteContext = { params: Promise<{ pin: string }> }
 
 export async function GET(request: Request, { params }: RouteContext) {
   const { pin } = await params
-  const limit = consumeRateLimit(`session-resume:${getClientIp(request)}`, {
+  const limit = await consumeRateLimit(`session-resume:${getClientIp(request)}`, {
     limit: 60,
     windowMs: 60_000,
   })

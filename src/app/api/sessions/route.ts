@@ -52,7 +52,10 @@ async function createSessionWithUniquePin(
 export async function POST(request: Request) {
   const clientIp = getClientIp(request)
   for (const rateLimit of SESSION_CREATE_RATE_LIMITS) {
-    const result = consumeRateLimit(`session-create:${rateLimit.suffix}:${clientIp}`, rateLimit)
+    const result = await consumeRateLimit(
+      `session-create:${rateLimit.suffix}:${clientIp}`,
+      rateLimit
+    )
     if (!result.allowed) {
       return NextResponse.json(
         {
