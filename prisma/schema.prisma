@@ -26,9 +26,29 @@ model User {
   quizQuestions       QuizQuestion[]
   passwordResetTokens PasswordResetToken[]
   gameSettings        GameSettings?
+  purchaseConsents    PurchaseConsent[]
 
   @@index([email])
   @@index([stripeCustomerId])
+}
+
+// Rejestr zgód konsumenta na rozpoczęcie świadczenia przed terminem odstąpienia.
+// Tworzony przy każdej próbie zakupu (ślad dowodowy: data, plan, treść, IP, urządzenie).
+model PurchaseConsent {
+  id        String @id @default(cuid())
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+
+  plan      String
+  version   String
+  text      String
+  ipAddress String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
 }
 
 model GameSettings {

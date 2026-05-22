@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Star } from 'lucide-react'
+import { Beer, Star } from 'lucide-react'
 
 import type { VotesRevealedPayload } from '@/lib/game-types'
 
@@ -12,6 +12,13 @@ interface Props {
 
 export function RevealView({ data, countdown }: Props) {
   const correctAnswer = data.correctAnswer?.trim()
+  const isNeverCard = !correctAnswer
+  const drinkScores = data.scores
+    .filter((score) => (score.drinks ?? 0) > 0)
+    .sort((a, b) => (b.drinks ?? 0) - (a.drinks ?? 0))
+  const pointScores = data.scores
+    .filter((score) => score.score > 0)
+    .sort((a, b) => b.score - a.score)
 
   return (
     <motion.div
@@ -78,8 +85,39 @@ export function RevealView({ data, countdown }: Props) {
         )
       })}
 
+      {/* Drink count for NEVER cards */}
+      {isNeverCard && (
+        <div className="border-saloon-border mt-4 flex flex-col gap-3 border-t-2 pt-4">
+          <p className="text-text-muted flex items-center justify-center gap-2 text-xs font-bold tracking-[0.2em] uppercase">
+            <Beer size={13} style={{ color: '#ffd700' }} />
+            WYPITE ŁYKI
+            <Beer size={13} style={{ color: '#ffd700' }} />
+          </p>
+          {drinkScores.length > 0 ? (
+            <div className="flex flex-col gap-2">
+              {drinkScores.map((s) => (
+                <div
+                  key={s.playerId}
+                  className="bg-saloon-card border-saloon-border flex items-center gap-3 rounded-xl border p-3 shadow-lg"
+                >
+                  <span className="text-text-primary flex-1 text-sm font-bold">{s.playerName}</span>
+                  <div className="flex items-center gap-1 rounded-lg bg-black/30 px-2 py-1">
+                    <Beer size={12} style={{ color: '#ffd700' }} />
+                    <span className="text-sm font-black" style={{ color: '#ffd700' }}>
+                      {s.drinks}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-text-muted text-center text-xs">Nikt nie pije w tej rundzie.</p>
+          )}
+        </div>
+      )}
+
       {/* Rankings */}
-      {data.scores.length > 0 && (
+      {!isNeverCard && pointScores.length > 0 && (
         <div className="border-saloon-border mt-4 flex flex-col gap-3 border-t-2 pt-4">
           <p className="text-text-muted flex items-center justify-center gap-2 text-xs font-bold tracking-[0.2em] uppercase">
             <Star size={12} fill="var(--sheriff-pink)" style={{ color: 'var(--sheriff-pink)' }} />
@@ -87,27 +125,25 @@ export function RevealView({ data, countdown }: Props) {
             <Star size={12} fill="var(--sheriff-pink)" style={{ color: 'var(--sheriff-pink)' }} />
           </p>
           <div className="flex flex-col gap-2">
-            {[...data.scores]
-              .sort((a, b) => b.score - a.score)
-              .map((s, i) => (
-                <div
-                  key={s.playerId}
-                  className="bg-saloon-card border-saloon-border flex items-center gap-3 rounded-xl border p-3 shadow-lg"
-                >
-                  <span className="text-neon-pink w-6 text-center font-black">{i + 1}.</span>
-                  <span className="text-text-primary flex-1 text-sm font-bold">{s.playerName}</span>
-                  <div className="flex items-center gap-1 rounded-lg bg-black/30 px-2 py-1">
-                    <Star
-                      size={12}
-                      fill="var(--sheriff-pink)"
-                      style={{ color: 'var(--sheriff-pink)' }}
-                    />
-                    <span className="text-sm font-black" style={{ color: 'var(--sheriff-pink)' }}>
-                      {s.score}
-                    </span>
-                  </div>
+            {pointScores.map((s, i) => (
+              <div
+                key={s.playerId}
+                className="bg-saloon-card border-saloon-border flex items-center gap-3 rounded-xl border p-3 shadow-lg"
+              >
+                <span className="text-neon-pink w-6 text-center font-black">{i + 1}.</span>
+                <span className="text-text-primary flex-1 text-sm font-bold">{s.playerName}</span>
+                <div className="flex items-center gap-1 rounded-lg bg-black/30 px-2 py-1">
+                  <Star
+                    size={12}
+                    fill="var(--sheriff-pink)"
+                    style={{ color: 'var(--sheriff-pink)' }}
+                  />
+                  <span className="text-sm font-black" style={{ color: 'var(--sheriff-pink)' }}>
+                    {s.score}
+                  </span>
                 </div>
-              ))}
+              </div>
+            ))}
           </div>
         </div>
       )}

@@ -7,6 +7,8 @@ import { useState } from 'react'
 import { useContentAccess } from '@/hooks/useContentAccess'
 import { checkAccess, type ContentGate as Gate } from '@/lib/content-access'
 
+import { PurchaseConsent } from './PurchaseConsent'
+
 interface ContentGateProps {
   gate: Gate
   children: React.ReactNode
@@ -55,6 +57,9 @@ export function ProModal({ onClose }: { onClose: () => void }) {
   const { status } = useSession()
   const [loadingPlan, setLoadingPlan] = useState<PlanId | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [consent, setConsent] = useState(false)
+  // Niezalogowany najpierw loguje się — zgodę zbieramy dopiero, gdy klik realnie startuje zakup.
+  const needsConsent = status !== 'unauthenticated'
 
   const startCheckout = async (plan: PlanId) => {
     setError(null)
@@ -64,12 +69,17 @@ export function ProModal({ onClose }: { onClose: () => void }) {
       return
     }
 
+    if (!consent) {
+      setError('Zaznacz zgodę na rozpoczęcie świadczenia, aby kontynuować zakup.')
+      return
+    }
+
     setLoadingPlan(plan)
     try {
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan }),
+        body: JSON.stringify({ plan, consent: true }),
       })
       const payload = await response.json().catch(() => ({}))
 
@@ -131,6 +141,12 @@ export function ProModal({ onClose }: { onClose: () => void }) {
           </p>
         </div>
 
+        {needsConsent && (
+          <div className="mb-4">
+            <PurchaseConsent checked={consent} onChange={setConsent} id="modal-purchase-consent" />
+          </div>
+        )}
+
         <div className="grid gap-4 md:grid-cols-2">
           {PLANS.map((plan) => {
             const loading = loadingPlan === plan.id
@@ -190,7 +206,7 @@ export function ProModal({ onClose }: { onClose: () => void }) {
 
                 <button
                   type="button"
-                  disabled={loadingPlan !== null}
+                  disabled={loadingPlan !== null || (needsConsent && !consent)}
                   onClick={() => startCheckout(plan.id)}
                   className="mt-6 flex min-h-12 items-center justify-center rounded-xl border px-5 py-3 text-sm font-black transition-transform hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                   style={{

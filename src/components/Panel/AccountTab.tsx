@@ -10,11 +10,13 @@ import {
   RefreshCw,
   Save,
   Settings,
+  Trash2,
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { useEffect, useRef, useState } from 'react'
 
+import { PurchaseConsent } from '@/components/ui/PurchaseConsent'
 import { getPasswordPolicyError } from '@/lib/password-policy'
 
 import {
@@ -42,6 +44,12 @@ export function AccountTab() {
   const [checkoutPlan, setCheckoutPlan] = useState<PlanId | null>(null)
   const [portalLoading, setPortalLoading] = useState(false)
   const [billingError, setBillingError] = useState<string | null>(null)
+  const [consent, setConsent] = useState(false)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [deletePassword, setDeletePassword] = useState('')
+  const [deleteConfirmation, setDeleteConfirmation] = useState('')
+  const [deleteLoading, setDeleteLoading] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
   const loadAccount = async () => {
     setLoading(true)
@@ -143,13 +151,17 @@ export function AccountTab() {
   }
 
   const startCheckout = async (plan: PlanId) => {
+    if (!consent) {
+      setBillingError('Zaznacz zgodę na rozpoczęcie świadczenia, aby kontynuować zakup.')
+      return
+    }
     setCheckoutPlan(plan)
     setBillingError(null)
     try {
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan }),
+        body: JSON.stringify({ plan, consent: true }),
       })
       const payload = await response.json().catch(() => ({}))
       if (!response.ok || !payload.url) {
@@ -177,6 +189,31 @@ export function AccountTab() {
         error instanceof Error ? error.message : 'Nie udało się otworzyć panelu Stripe.'
       )
       setPortalLoading(false)
+    }
+  }
+
+  const deleteAccount = async () => {
+    if (deleteLoading || deleteConfirmation !== 'USUŃ KONTO') return
+    setDeleteLoading(true)
+    setDeleteError(null)
+
+    try {
+      const response = await fetch('/api/account', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentPassword: deletePassword,
+          confirmation: deleteConfirmation,
+        }),
+      })
+      const payload = await response.json().catch(() => ({}))
+      if (!response.ok) throw new Error(payload.error ?? 'Nie udało się usunąć konta.')
+
+      clearLocalGameStorage()
+      await signOut({ callbackUrl: '/' })
+    } catch (error) {
+      setDeleteError(error instanceof Error ? error.message : 'Nie udało się usunąć konta.')
+      setDeleteLoading(false)
     }
   }
 
@@ -265,10 +302,16 @@ export function AccountTab() {
           </button>
         </div>
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+        {!isLifetime && (
+          <div className="mt-5">
+            <PurchaseConsent checked={consent} onChange={setConsent} id="account-purchase-consent" />
+          </div>
+        )}
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-3">
           <button
             type="button"
-            disabled={checkoutPlan !== null || isLifetime}
+            disabled={checkoutPlan !== null || isLifetime || !consent}
             onClick={() => startCheckout('monthly')}
             className="flex min-h-12 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-xs font-black tracking-normal uppercase disabled:opacity-35"
             {...panelButtonHover(
@@ -293,7 +336,7 @@ export function AccountTab() {
           </button>
           <button
             type="button"
-            disabled={checkoutPlan !== null || isLifetime}
+            disabled={checkoutPlan !== null || isLifetime || !consent}
             onClick={() => startCheckout('lifetime')}
             className="flex min-h-12 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-xs font-black tracking-normal uppercase disabled:opacity-35"
             {...panelButtonHover(
@@ -468,8 +511,242 @@ export function AccountTab() {
           </div>
         </div>
       </div>
+
+      <div
+        className="rounded-2xl border p-5"
+        style={{
+          borderColor: 'rgba(239,68,68,0.28)',
+          backgroundColor: 'rgba(127,29,29,0.12)',
+        }}
+      >
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex gap-3">
+            <div
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border"
+              style={{
+                borderColor: 'rgba(239,68,68,0.35)',
+                color: '#f87171',
+                backgroundColor: 'rgba(239,68,68,0.1)',
+              }}
+            >
+              <Trash2 size={20} />
+            </div>
+            <div>
+              <p className="text-text-primary text-sm font-black">Usuń konto</p>
+              <p className="text-text-muted mt-1 text-sm leading-snug">
+                Usuniemy konto, zapisane pytania, ustawienia i dane profilu. Tej operacji nie da
+                się cofnąć.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setDeleteError(null)
+              setDeleteModalOpen(true)
+            }}
+            className="flex min-h-11 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-xs font-black tracking-normal uppercase"
+            {...panelButtonHover(
+              {
+                borderColor: 'rgba(239,68,68,0.45)',
+                color: '#f87171',
+                backgroundColor: 'rgba(239,68,68,0.08)',
+              },
+              {
+                borderColor: 'rgba(239,68,68,0.65)',
+                color: '#fecaca',
+                backgroundColor: 'rgba(239,68,68,0.16)',
+              }
+            )}
+          >
+            <Trash2 size={15} />
+            Usuń konto
+          </button>
+        </div>
+      </div>
+
+      {deleteModalOpen && (
+        <DeleteAccountModal
+          email={account?.email ?? ''}
+          password={deletePassword}
+          confirmation={deleteConfirmation}
+          loading={deleteLoading}
+          error={deleteError}
+          onPasswordChange={setDeletePassword}
+          onConfirmationChange={setDeleteConfirmation}
+          onDelete={deleteAccount}
+          onClose={() => {
+            if (deleteLoading) return
+            setDeleteModalOpen(false)
+            setDeletePassword('')
+            setDeleteConfirmation('')
+            setDeleteError(null)
+          }}
+        />
+      )}
     </div>
   )
+}
+
+function DeleteAccountModal({
+  email,
+  password,
+  confirmation,
+  loading,
+  error,
+  onPasswordChange,
+  onConfirmationChange,
+  onDelete,
+  onClose,
+}: {
+  email: string
+  password: string
+  confirmation: string
+  loading: boolean
+  error: string | null
+  onPasswordChange: (value: string) => void
+  onConfirmationChange: (value: string) => void
+  onDelete: () => void
+  onClose: () => void
+}) {
+  const canDelete = confirmation === 'USUŃ KONTO' && password.length > 0 && !loading
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0d0818]/85 p-4 backdrop-blur-sm sm:items-center">
+      <motion.div
+        initial={{ opacity: 0, y: 18, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        className="w-full max-w-lg rounded-2xl border p-5 shadow-2xl sm:p-6"
+        style={{
+          borderColor: 'rgba(239,68,68,0.35)',
+          background:
+            'radial-gradient(circle at top left, rgba(239,68,68,0.18), transparent 34%), linear-gradient(160deg, rgba(26,15,42,0.98), rgba(13,8,24,0.98))',
+          boxShadow: '0 24px 80px rgba(0,0,0,0.48), 0 0 36px rgba(239,68,68,0.16)',
+        }}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div
+              className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border"
+              style={{
+                borderColor: 'rgba(239,68,68,0.4)',
+                background: 'rgba(239,68,68,0.12)',
+                color: '#f87171',
+              }}
+            >
+              <Trash2 size={24} aria-hidden />
+            </div>
+            <h2 className="text-text-primary text-2xl font-black">Usunąć konto?</h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={loading}
+            className="text-text-muted flex h-9 w-9 items-center justify-center rounded-full border transition-colors disabled:opacity-40"
+            style={{ borderColor: 'var(--saloon-border)' }}
+            aria-label="Zamknij"
+          >
+            ×
+          </button>
+        </div>
+
+        <p className="text-text-muted mt-2 text-sm leading-relaxed">
+          Konto <span className="text-text-primary font-bold">{email}</span> zostanie trwale
+          usunięte razem z pytaniami i ustawieniami. Jeśli masz aktywną subskrypcję miesięczną,
+          spróbujemy anulować ją w Stripe przed usunięciem konta.
+        </p>
+
+        <div className="mt-5 flex flex-col gap-3">
+          <input
+            type="password"
+            value={password}
+            onChange={(event) => onPasswordChange(event.target.value)}
+            placeholder="Obecne hasło"
+            autoComplete="current-password"
+            className="bg-saloon-surface text-text-primary placeholder:text-text-muted rounded-xl border-2 px-4 py-3 text-sm transition-colors focus:outline-none"
+            style={{ borderColor: password ? 'rgba(239,68,68,0.65)' : 'var(--saloon-border)' }}
+          />
+          <div>
+            <label className="text-text-muted mb-2 block text-xs font-semibold tracking-normal uppercase">
+              Wpisz USUŃ KONTO
+            </label>
+            <input
+              value={confirmation}
+              onChange={(event) => onConfirmationChange(event.target.value)}
+              className="bg-saloon-surface text-text-primary placeholder:text-text-muted rounded-xl border-2 px-4 py-3 text-sm transition-colors focus:outline-none"
+              style={{
+                borderColor:
+                  confirmation === 'USUŃ KONTO' ? 'rgba(239,68,68,0.65)' : 'var(--saloon-border)',
+              }}
+            />
+          </div>
+        </div>
+
+        {error && (
+          <p className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
+            {error}
+          </p>
+        )}
+
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={loading}
+            className="flex min-h-11 flex-1 items-center justify-center rounded-xl border px-4 py-3 text-xs font-black tracking-normal uppercase disabled:opacity-40"
+            {...panelButtonHover(
+              {
+                borderColor: 'rgba(255,220,180,0.18)',
+                color: 'rgba(255,220,180,0.82)',
+                backgroundColor: 'transparent',
+              },
+              {
+                borderColor: 'rgba(255,220,180,0.3)',
+                color: 'rgba(255,220,180,0.96)',
+                backgroundColor: 'rgba(255,220,180,0.07)',
+              }
+            )}
+          >
+            Anuluj
+          </button>
+          <button
+            type="button"
+            onClick={onDelete}
+            disabled={!canDelete}
+            className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-xs font-black tracking-normal uppercase disabled:opacity-35"
+            {...panelButtonHover(
+              {
+                borderColor: 'rgba(239,68,68,0.45)',
+                color: '#f87171',
+                backgroundColor: 'rgba(239,68,68,0.08)',
+              },
+              {
+                borderColor: 'rgba(239,68,68,0.65)',
+                color: '#fecaca',
+                backgroundColor: 'rgba(239,68,68,0.16)',
+              }
+            )}
+          >
+            {loading ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />}
+            Usuń konto
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
+function clearLocalGameStorage() {
+  if (typeof window === 'undefined') return
+  try {
+    const keys = Array.from({ length: window.localStorage.length }, (_, index) =>
+      window.localStorage.key(index)
+    ).filter((key): key is string => Boolean(key?.startsWith('last-rodeo-')))
+
+    keys.forEach((key) => window.localStorage.removeItem(key))
+  } catch {
+    // ignore
+  }
 }
 
 export function PaymentStatusBanner({ checkoutState }: { checkoutState: CheckoutState }) {

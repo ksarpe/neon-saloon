@@ -250,12 +250,6 @@ export default function LandingPage() {
     else if (o < -halfModes) o += totalModes
     return o
   }
-  const setActiveMode = (nextMode: number) => {
-    setModeState((current) => ({
-      activeMode: nextMode,
-      prevActiveMode: current.activeMode,
-    }))
-  }
   const goNext = () => {
     setModeState((current) => ({
       activeMode: (current.activeMode + 1) % totalModes,
@@ -464,7 +458,12 @@ export default function LandingPage() {
               <motion.button
                 key={mode.id}
                 type="button"
-                onClick={() => setActiveMode(i)}
+                onClick={(e) => {
+                  // Liczy się strona ekranu, nie konkretna karta:
+                  // klik w lewą połowę → krok w lewo, w prawą → krok w prawo.
+                  if (e.clientX < window.innerWidth / 2) goPrev()
+                  else goNext()
+                }}
                 drag="x"
                 dragConstraints={{ left: 0, right: 0 }}
                 dragElastic={0.2}

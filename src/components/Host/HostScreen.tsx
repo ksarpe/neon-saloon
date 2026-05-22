@@ -59,13 +59,18 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
   // ── Game state ───────────────────────────────────────────────────────────────
   const [phase, setPhase] = useState<HostPhase>('setup')
   const [players, setPlayers] = useState<LivePlayer[]>([])
+  const [cards, setCards] = useState<GameCard[]>(initialCards)
   const [cardIndex, setCardIndex] = useState(0)
   const [currentVotes, setCurrentVotes] = useState<VoteCastPayload[]>([])
   const [isRevealed, setIsRevealed] = useState(false)
   const [revealedVotes, setRevealedVotes] = useState<VoteRecord[]>([])
   const [scores, setScores] = useState<ScoreEntry[]>([])
   const [teamScores, setTeamScores] = useState<TeamScoreEntry[]>([])
-  const currentCard: GameCard | undefined = initialCards[cardIndex]
+  const currentCard: GameCard | undefined = cards[cardIndex]
+
+  useEffect(() => {
+    setCards(initialCards)
+  }, [initialCards])
 
   // ── Hydrate on mount ─────────────────────────────────────────────────────────
   // Full restore: identity from localStorage, game state (scores, reveal snapshot,
@@ -83,6 +88,13 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
         if (!data?.ok) return
         if (Array.isArray(data.players) && data.players.length) setPlayers(data.players)
         if (typeof data.cardIndex === 'number') setCardIndex(data.cardIndex)
+        if (Array.isArray(data.deck) && data.deck.length) {
+          setCards(data.deck)
+        } else if (data.currentCard && typeof data.cardIndex === 'number') {
+          setCards((prev) =>
+            prev.map((card, index) => (index === data.cardIndex ? data.currentCard : card))
+          )
+        }
         if (Array.isArray(data.scores)) setScores(data.scores)
         if (Array.isArray(data.teamScores)) setTeamScores(data.teamScores)
 
@@ -182,7 +194,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
   }, [pin, hostName, hostAvatar])
 
   const handleStart = useCallback(async () => {
-    const firstCard = initialCards[0]
+    const firstCard = cards[0]
     if (!firstCard || !hostName.trim() || !hostAvatar) return
 
     // Join host as a player first
@@ -226,6 +238,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
       body: JSON.stringify({
         action: 'start',
         card: firstCard,
+        deck: cards,
         settings: {
           revealCountdownSeconds: gameSettings.revealCountdownSeconds,
           answerTimeLimitSeconds: gameSettings.answerTimeLimitSeconds,
@@ -233,10 +246,10 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
       }),
     })
     setPhase('active')
-  }, [pin, initialCards, hostName, hostAvatar, gameSettings])
+  }, [pin, cards, hostName, hostAvatar, gameSettings])
 
   const handleReveal = useCallback(async () => {
-    const card = initialCards[cardIndex]
+    const card = cards[cardIndex]
     if (!card || isRevealed) return
 
     const votes = [...currentVotes]
@@ -300,11 +313,11 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
     setRevealedVotes(votes)
     setScores(updatedScores)
     setTeamScores(updatedTeamScores)
-  }, [pin, cardIndex, currentVotes, scores, initialCards, isRevealed])
+  }, [pin, cardIndex, currentVotes, scores, cards, isRevealed])
 
   const handleNextCard = useCallback(async () => {
     const next = cardIndex + 1
-    if (next >= initialCards.length) {
+    if (next >= cards.length) {
       await fetch(`/api/sessions/${pin}`, {
         method: 'POST',
         headers: hostJsonHeaders(pin),
@@ -316,14 +329,14 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
     await fetch(`/api/sessions/${pin}/next-card`, {
       method: 'POST',
       headers: hostJsonHeaders(pin),
-      body: JSON.stringify({ cardIndex: next, card: initialCards[next] }),
+      body: JSON.stringify({ cardIndex: next, card: cards[next] }),
     })
     setCardIndex(next)
     setCurrentVotes([])
     setIsRevealed(false)
     setRevealedVotes([])
     setHostHasVoted(false)
-  }, [pin, cardIndex, initialCards, scores, teamScores])
+  }, [pin, cardIndex, cards, scores, teamScores])
 
   const handleForceFinish = useCallback(async () => {
     setPhase('finished')
@@ -413,7 +426,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
         pin={pin}
         currentCard={currentCard}
         cardIndex={cardIndex}
-        totalCards={initialCards.length}
+        totalCards={cards.length}
         currentVotes={currentVotes}
         players={players}
         onForceFinish={handleForceFinish}
@@ -473,7 +486,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
                 <ActiveCardView
                   card={currentCard}
                   cardIndex={cardIndex}
-                  totalCards={initialCards.length}
+                  totalCards={cards.length}
                   players={players}
                   votes={currentVotes}
                   isRevealed={isRevealed}

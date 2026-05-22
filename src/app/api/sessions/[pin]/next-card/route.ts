@@ -20,7 +20,7 @@ export async function POST(request: Request, { params }: RouteContext) {
 
     const body = await readLimitedJson<{ cardIndex?: unknown; card?: unknown }>(request)
     const cardIndex = requiredInteger(body.cardIndex, 'cardIndex', 0, 10_000)
-    const card = sanitizeWireCard(body.card)
+    const card = sanitizeWireCard(session.deck?.[cardIndex] ?? body.card)
 
     await updateSession(pin, { cardIndex, currentCard: card, votes: [], currentReveal: undefined })
 

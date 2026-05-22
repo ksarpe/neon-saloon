@@ -1,17 +1,24 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Loader2, Lock } from 'lucide-react'
+import { AlertTriangle, Loader2, Lock, RotateCcw, Trash2 } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { BotProtection, isBotProtectionConfigured } from '@/components/ui/BotProtection'
 import { Button } from '@/components/ui/button'
 import { ProModal } from '@/components/ui/ContentGate'
 import { useContentAccess } from '@/hooks/useContentAccess'
 import { checkAccess } from '@/lib/content-access'
-import { saveHostSecret } from '@/lib/session-host-secret'
+import {
+  clearHostSession,
+  clearOtherHostSessions,
+  getStoredHostSessions,
+  hostAuthHeaders,
+  hostJsonHeaders,
+  saveHostSecret,
+} from '@/lib/session-host-secret'
 
 const GAME_MODES = [
   {
@@ -64,14 +71,23 @@ const GAME_MODES = [
   },
 ]
 
+type ActiveHostSession = {
+  pin: string
+  status: 'waiting' | 'active'
+  gameMode: string
+  playersCount: number
+}
+
 export default function HostSetupPage() {
   const router = useRouter()
   const [selectedMode, setSelectedMode] = useState<string | null>(null)
   const [botProtectionToken, setBotProtectionToken] = useState<string | null>(null)
   const [botProtectionKey, setBotProtectionKey] = useState(0)
   const [creating, setCreating] = useState(false)
+  const [endingExisting, setEndingExisting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [proModalOpen, setProModalOpen] = useState(false)
+  const [activeHostSession, setActiveHostSession] = useState<ActiveHostSession | null>(null)
   const access = useContentAccess()
   const botProtectionEnabled = isBotProtectionConfigured()
   const resetBotProtection = useCallback(() => {
@@ -80,8 +96,61 @@ export default function HostSetupPage() {
   }, [])
   const clearBotProtection = useCallback(() => setBotProtectionToken(null), [])
 
+  useEffect(() => {
+    let cancelled = false
+
+    async function checkActiveHostSession() {
+      const storedSessions = getStoredHostSessions()
+      const activeSessions: ActiveHostSession[] = []
+
+      for (const stored of storedSessions) {
+        try {
+          const response = await fetch(`/api/sessions/${stored.pin}/host-resume`, {
+            headers: hostAuthHeaders(stored.pin),
+          })
+
+          if (response.status === 401 || response.status === 404) {
+            clearHostSession(stored.pin)
+            continue
+          }
+          if (!response.ok) continue
+
+          const data = await response.json()
+          if (data.status === 'finished') {
+            clearHostSession(stored.pin)
+            continue
+          }
+
+          if ((data.status === 'waiting' || data.status === 'active') && !cancelled) {
+            activeSessions.push({
+              pin: stored.pin,
+              status: data.status,
+              gameMode: typeof data.gameMode === 'string' ? data.gameMode : 'trivia',
+              playersCount: Array.isArray(data.players) ? data.players.length : 0,
+            })
+          }
+        } catch {
+          // Keep the stored session when the network is unavailable.
+        }
+      }
+
+      const sessionToResume = activeSessions[0]
+      if (sessionToResume && !cancelled) {
+        clearOtherHostSessions(sessionToResume.pin)
+        setActiveHostSession(sessionToResume)
+      }
+    }
+
+    void checkActiveHostSession()
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   const handleCreate = async () => {
     if (!selectedMode) return
+    if (activeHostSession) return
     if (botProtectionEnabled && !botProtectionToken) {
       setError('Potwierdź, że nie jesteś botem.')
       return
@@ -112,6 +181,46 @@ export default function HostSetupPage() {
       setError(createError instanceof Error ? createError.message : 'Nie udało się utworzyć gry.')
       setCreating(false)
       resetBotProtection()
+    }
+  }
+
+  const handleResumeExisting = () => {
+    if (!activeHostSession) return
+    router.push(`/graj/host/${activeHostSession.pin}?mode=${activeHostSession.gameMode}`)
+  }
+
+  const handleEndExisting = async () => {
+    if (!activeHostSession) return
+    const sessionToEnd = activeHostSession
+    setEndingExisting(true)
+    setError(null)
+
+    try {
+      const response = await fetch(`/api/sessions/${sessionToEnd.pin}`, {
+        method: 'POST',
+        headers: hostJsonHeaders(sessionToEnd.pin),
+        body: JSON.stringify({ action: 'finish', scores: [], teamScores: [] }),
+      })
+
+      if (!response.ok && response.status !== 401 && response.status !== 404) {
+        const payload = await response.json().catch(() => ({}))
+        throw new Error(
+          typeof payload.error === 'string'
+            ? payload.error
+            : 'Nie udało się zakończyć aktywnej sesji.'
+        )
+      }
+
+      clearHostSession(sessionToEnd.pin)
+      setActiveHostSession(null)
+    } catch (endError) {
+      setError(
+        endError instanceof Error
+          ? endError.message
+          : 'Nie udało się zakończyć aktywnej sesji.'
+      )
+    } finally {
+      setEndingExisting(false)
     }
   }
 
@@ -260,6 +369,96 @@ export default function HostSetupPage() {
       </div>
 
       {proModalOpen && <ProModal onClose={() => setProModalOpen(false)} />}
+      {activeHostSession && (
+        <ActiveSessionModal
+          session={activeHostSession}
+          ending={endingExisting}
+          onResume={handleResumeExisting}
+          onEnd={handleEndExisting}
+        />
+      )}
+    </div>
+  )
+}
+
+function ActiveSessionModal({
+  session,
+  ending,
+  onResume,
+  onEnd,
+}: {
+  session: ActiveHostSession
+  ending: boolean
+  onResume: () => void
+  onEnd: () => void
+}) {
+  const statusLabel = session.status === 'active' ? 'Gra trwa' : 'Salon czeka'
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0d0818]/85 p-4 backdrop-blur-sm sm:items-center">
+      <motion.div
+        initial={{ opacity: 0, y: 18, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        className="w-full max-w-lg rounded-2xl border p-5 shadow-2xl sm:p-6"
+        style={{
+          borderColor: 'var(--saloon-border)',
+          background:
+            'radial-gradient(circle at top left, rgba(221,84,162,0.18), transparent 34%), linear-gradient(160deg, rgba(26,15,42,0.98), rgba(13,8,24,0.98))',
+          boxShadow: '0 24px 80px rgba(0,0,0,0.48), 0 0 36px rgba(226,67,157,0.16)',
+        }}
+      >
+        <div
+          className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border"
+          style={{
+            borderColor: 'rgba(221,84,162,0.42)',
+            background: 'rgba(221,84,162,0.12)',
+            color: 'var(--neon-pink)',
+          }}
+        >
+          <AlertTriangle size={24} aria-hidden />
+        </div>
+
+        <h2 className="text-text-primary text-2xl font-black">Masz aktywną sesję</h2>
+        <p className="text-text-muted mt-2 text-sm leading-relaxed">
+          Ten telefon lub komputer jest zapisany jako host salonu{' '}
+          <span className="text-text-primary font-bold">#{session.pin}</span>. Wróć do tej gry albo
+          zakończ ją, żeby utworzyć nową.
+        </p>
+
+        <div
+          className="mt-5 grid grid-cols-2 gap-3 rounded-2xl border p-4 text-sm"
+          style={{ borderColor: 'var(--saloon-border)', background: 'rgba(255,220,180,0.045)' }}
+        >
+          <div>
+            <p className="text-text-muted text-xs font-bold tracking-normal uppercase">Status</p>
+            <p className="text-text-primary mt-1 font-semibold">{statusLabel}</p>
+          </div>
+          <div>
+            <p className="text-text-muted text-xs font-bold tracking-normal uppercase">Gracze</p>
+            <p className="text-text-primary mt-1 font-semibold">{session.playersCount}</p>
+          </div>
+        </div>
+
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+          <Button type="primary" onClick={onResume} disabled={ending} className="flex-1" size="md">
+            <RotateCcw size={18} aria-hidden />
+            Wróć do sesji
+          </Button>
+          <Button type="outline" onClick={onEnd} disabled={ending} className="flex-1" size="md">
+            {ending ? (
+              <>
+                <Loader2 size={18} className="animate-spin" aria-hidden />
+                Kończę...
+              </>
+            ) : (
+              <>
+                <Trash2 size={18} aria-hidden />
+                Zakończ i twórz nową
+              </>
+            )}
+          </Button>
+        </div>
+      </motion.div>
     </div>
   )
 }

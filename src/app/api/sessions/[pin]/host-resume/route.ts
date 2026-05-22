@@ -36,6 +36,7 @@ export async function GET(request: Request, { params }: RouteContext) {
     teams: session.teams,
     cardIndex: session.cardIndex,
     currentCard: session.currentCard ?? null,
+    deck: session.deck ?? null,
     votes: (session.votes ?? []).filter((v) => v.cardIndex === session.cardIndex),
     scores: session.scores ?? [],
     teamScores: session.teamScores ?? [],

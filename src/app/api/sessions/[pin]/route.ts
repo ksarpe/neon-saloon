@@ -18,7 +18,7 @@ import {
 import { enforceSessionActionRateLimit } from '@/lib/session-action-rate-limit'
 import { requireHostSession, requireSession } from '@/lib/session-api'
 import { isHostAuthorized } from '@/lib/session-host-auth'
-import { sanitizeWireCard } from '@/lib/session-payloads'
+import { sanitizeStoredDeck, sanitizeWireCard } from '@/lib/session-payloads'
 import { publicPlayer } from '@/lib/session-player-auth'
 
 type RouteContext = { params: Promise<{ pin: string }> }
@@ -76,19 +76,22 @@ export async function POST(request: Request, { params }: RouteContext) {
     const body = await readLimitedJson<{
       action?: unknown
       card?: unknown
+      deck?: unknown
       settings?: unknown
       scores?: unknown
       teamScores?: unknown
-    }>(request)
+    }>(request, 64 * 1024)
     const action = requiredString(body.action, 'action', INPUT_LIMITS.action)
 
     if (action === 'start') {
       const card = sanitizeWireCard(body.card)
+      const deck = body.deck === undefined ? [card] : sanitizeStoredDeck(body.deck)
       const settings = sanitizeStandardSettings(body.settings)
       await updateSession(pin, {
         status: 'active',
         cardIndex: 0,
         currentCard: card,
+        deck,
         votes: [],
         currentReveal: undefined,
         settings,

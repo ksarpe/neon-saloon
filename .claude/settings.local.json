@@ -59,7 +59,9 @@
       "PowerShell(New-Item -ItemType Directory -Force \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\public\\\\player-avatars\")",
       "PowerShell(New-Item -ItemType File -Force \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\public\\\\player-avatars\\\\.gitkeep\")",
       "Bash(dir F:\\\\ProjektyAKNSoftware\\\\neon-saloon)",
-      "PowerShell(Get-ChildItem -Path \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\\\\components\" -Recurse -File | Where-Object { $_.Name -match \"\\(data|constants|config|categories|settings|limits\\)\" })"
+      "PowerShell(Get-ChildItem -Path \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\\\\components\" -Recurse -File | Where-Object { $_.Name -match \"\\(data|constants|config|categories|settings|limits\\)\" })",
+      "WebSearch",
+      "Bash(tee /tmp/tsc5.out)"
     ]
   }
 }

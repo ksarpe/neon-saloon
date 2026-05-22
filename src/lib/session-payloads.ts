@@ -1,3 +1,4 @@
+import type { StoredCard } from '@/lib/appwrite/sessions'
 import type { ScoreEntry, TeamScoreEntry, WireCard } from '@/lib/game-types'
 import {
   boundedStringArray,
@@ -34,6 +35,62 @@ export function sanitizeWireCard(value: unknown): WireCard {
     title: optionalString(card.title, 'card.title', INPUT_LIMITS.cardTitle) ?? undefined,
     description: requiredString(card.description, 'card.description', INPUT_LIMITS.cardDescription),
     emoji: optionalString(card.emoji, 'card.emoji', INPUT_LIMITS.avatar) ?? undefined,
+    options,
+  }
+}
+
+export function sanitizeStoredDeck(value: unknown): StoredCard[] {
+  if (!Array.isArray(value)) {
+    throw new RequestValidationError('deck must be an array')
+  }
+  if (value.length > INPUT_LIMITS.scoreEntries) {
+    throw new RequestValidationError(
+      `deck must contain at most ${INPUT_LIMITS.scoreEntries} cards`
+    )
+  }
+
+  return value.map((card, index) => {
+    const wireCard = sanitizeWireCardWithPrefix(card, `deck[${index}]`)
+    const row = card as Record<string, unknown>
+    return {
+      ...wireCard,
+      answer:
+        optionalString(row.answer, `deck[${index}].answer`, INPUT_LIMITS.quizAnswer) ?? undefined,
+    }
+  })
+}
+
+function sanitizeWireCardWithPrefix(value: unknown, field: string): WireCard {
+  if (!value || typeof value !== 'object') {
+    throw new RequestValidationError(`${field} must be an object`)
+  }
+
+  const card = value as Record<string, unknown>
+  const type = requiredString(card.type, `${field}.type`, 12)
+  if (type !== 'QUIZ' && type !== 'TEST' && type !== 'NEVER') {
+    throw new RequestValidationError(`Invalid ${field}.type`)
+  }
+
+  const options =
+    card.options === undefined
+      ? undefined
+      : boundedStringArray(
+          card.options,
+          `${field}.options`,
+          INPUT_LIMITS.cardOptions,
+          INPUT_LIMITS.quizOption
+        )
+
+  return {
+    id: requiredString(card.id, `${field}.id`, INPUT_LIMITS.cardId),
+    type,
+    title: optionalString(card.title, `${field}.title`, INPUT_LIMITS.cardTitle) ?? undefined,
+    description: requiredString(
+      card.description,
+      `${field}.description`,
+      INPUT_LIMITS.cardDescription
+    ),
+    emoji: optionalString(card.emoji, `${field}.emoji`, INPUT_LIMITS.avatar) ?? undefined,
     options,
   }
 }

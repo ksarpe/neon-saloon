@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Star } from 'lucide-react'
+import { Beer, Star } from 'lucide-react'
 
 import type { GameCard } from '@/lib/store'
 
@@ -16,6 +16,13 @@ interface Props {
 }
 
 export function RevealedResults({ card, revealedVotes, scores, hostPlayerId, countdown }: Props) {
+  const drinkScores = scores
+    .filter((score) => (score.drinks ?? 0) > 0)
+    .sort((a, b) => (b.drinks ?? 0) - (a.drinks ?? 0))
+  const pointScores = scores
+    .filter((score) => score.score > 0)
+    .sort((a, b) => b.score - a.score)
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -76,36 +83,60 @@ export function RevealedResults({ card, revealedVotes, scores, hostPlayerId, cou
         )
       })}
 
+      {/* Drink count for NEVER cards */}
+      {card.type === 'NEVER' && (
+        <div className="border-saloon-border mt-1 flex flex-col gap-1.5 border-t pt-3">
+          <p className="text-text-muted mb-1 flex items-center gap-1.5 text-[10px] font-bold tracking-normal uppercase">
+            <Beer size={10} style={{ color: '#ffd700' }} />
+            Wypite łyki
+          </p>
+          {drinkScores.length > 0 ? (
+            drinkScores.map((s) => (
+              <div key={s.playerId} className="flex items-center gap-2 text-sm">
+                <span className="text-text-primary flex-1 truncate text-xs font-semibold">
+                  {s.playerName}
+                </span>
+                <div className="flex items-center gap-1">
+                  <Beer size={10} style={{ color: '#ffd700' }} />
+                  <span className="text-xs font-bold" style={{ color: '#ffd700' }}>
+                    {s.drinks}
+                  </span>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-text-muted text-xs">Nikt nie pije w tej rundzie.</p>
+          )}
+        </div>
+      )}
+
       {/* Mini ranking */}
-      {scores.filter((s) => s.score > 0).length > 0 && (
+      {card.type !== 'NEVER' && pointScores.length > 0 && (
         <div className="border-saloon-border mt-1 flex flex-col gap-1.5 border-t pt-3">
           <p className="text-text-muted mb-1 flex items-center gap-1.5 text-[10px] font-bold tracking-normal uppercase">
             <Star size={10} fill="var(--sheriff-pink)" style={{ color: 'var(--sheriff-pink)' }} />
             Ranking
           </p>
-          {[...scores]
-            .filter((s) => s.score > 0)
-            .sort((a, b) => b.score - a.score)
-            .map((s, i) => (
-              <div key={s.playerId} className="flex items-center gap-2 text-sm">
-                <span className="text-text-muted w-4 text-center text-[10px] font-bold">
-                  {i + 1}
+          {pointScores.map((s, i) => (
+            <div key={s.playerId} className="flex items-center gap-2 text-sm">
+              <span className="text-text-muted w-4 text-center text-[10px] font-bold">
+                {i + 1}
+              </span>
+              <span className="text-text-primary flex-1 truncate text-xs font-semibold">
+                {s.playerName}
+              </span>
+              <div className="flex items-center gap-1">
+                <Star
+                  size={10}
+                  fill="var(--sheriff-pink)"
+                  style={{ color: 'var(--sheriff-pink)' }}
+                />
+                <span className="text-xs font-bold" style={{ color: 'var(--sheriff-pink)' }}>
+                  {s.score}
                 </span>
-                <span className="text-text-primary flex-1 truncate text-xs font-semibold">
-                  {s.playerName}
-                </span>
-                <div className="flex items-center gap-1">
-                  <Star
-                    size={10}
-                    fill="var(--sheriff-pink)"
-                    style={{ color: 'var(--sheriff-pink)' }}
-                  />
-                  <span className="text-xs font-bold" style={{ color: 'var(--sheriff-pink)' }}>
-                    {s.score}
-                  </span>
-                </div>
               </div>
-            ))}
+            </div>
+          ))}
         </div>
       )}
 

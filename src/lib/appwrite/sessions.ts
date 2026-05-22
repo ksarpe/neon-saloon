@@ -53,6 +53,7 @@ export type StoredCard = {
   title?: string
   description: string
   emoji?: string
+  answer?: string
   options?: string[]
 }
 
@@ -122,6 +123,7 @@ export type SessionData = {
   teams: SessionTeam[]
   cardIndex: number
   currentCard?: StoredCard
+  deck?: StoredCard[]
   votes: SessionVote[]
   // Persisted scores so the host can refresh mid-game without losing accumulated points
   scores?: StoredScoreEntry[]

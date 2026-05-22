@@ -147,6 +147,12 @@ export async function retrieveStripeSubscription(subscriptionId: string) {
   return stripeApiRequest<StripeSubscription>(`/subscriptions/${subscriptionId}`)
 }
 
+export async function cancelStripeSubscription(subscriptionId: string) {
+  return stripeApiRequest<StripeSubscription>(`/subscriptions/${subscriptionId}`, {
+    method: 'DELETE',
+  })
+}
+
 export async function createStripeBillingPortalSession(input: {
   customerId: string
   returnUrl: string

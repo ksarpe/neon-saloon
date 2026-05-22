@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 
@@ -10,6 +11,7 @@ import {
   requiredString,
   validationErrorResponse,
 } from '@/lib/request-validation'
+import { cancelStripeSubscription, getStripeSecretKey } from '@/lib/stripe'
 
 const ACTIVE_SUBSCRIPTION_STATUSES = new Set(['active', 'trialing'])
 const INACTIVE_SUBSCRIPTION_STATUSES = new Set(['canceled', 'incomplete_expired', 'unpaid'])
@@ -107,6 +109,81 @@ export async function PATCH(request: Request) {
   }
 }
 
+export async function DELETE(request: Request) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    const rateLimitResponse = await enforceAccountDeleteLimit(request, session.user.id)
+    if (rateLimitResponse) return rateLimitResponse
+
+    const body = await readLimitedJson<{ currentPassword?: unknown; confirmation?: unknown }>(
+      request
+    )
+    const confirmation = requiredString(body.confirmation, 'confirmation', 32)
+    if (confirmation !== 'USUŃ KONTO') {
+      return NextResponse.json({ error: 'Nieprawidłowe potwierdzenie.' }, { status: 400 })
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        id: true,
+        password: true,
+        stripeSubscriptionId: true,
+        stripeSubscriptionStatus: true,
+      },
+    })
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    if (user.password) {
+      const currentPassword = requiredString(
+        body.currentPassword,
+        'currentPassword',
+        INPUT_LIMITS.password
+      )
+      const passwordValid = await bcrypt.compare(currentPassword, user.password)
+      if (!passwordValid) {
+        return NextResponse.json({ error: 'Nieprawidłowe hasło.' }, { status: 400 })
+      }
+    }
+
+    if (
+      user.stripeSubscriptionId &&
+      ACTIVE_SUBSCRIPTION_STATUSES.has(user.stripeSubscriptionStatus ?? '')
+    ) {
+      if (!getStripeSecretKey()) {
+        return NextResponse.json(
+          {
+            error:
+              'Nie można usunąć konta, bo aktywna subskrypcja nie może zostać teraz anulowana. Spróbuj później albo otwórz panel Stripe.',
+          },
+          { status: 500 }
+        )
+      }
+
+      await cancelStripeSubscription(user.stripeSubscriptionId)
+    }
+
+    await prisma.user.delete({ where: { id: user.id } })
+
+    return NextResponse.json({ ok: true })
+  } catch (error) {
+    const validationResponse = validationErrorResponse(error)
+    if (validationResponse) return validationResponse
+
+    console.error('[DELETE /api/account]', error)
+    return NextResponse.json(
+      { error: 'Nie udało się usunąć konta. Spróbuj ponownie później.' },
+      { status: 500 }
+    )
+  }
+}
+
 async function enforceAccountPatchLimit(request: Request, userId: string) {
   const ipLimit = await consumeRateLimit(`account:update:ip:${getClientIp(request)}`, {
     limit: 60,
@@ -130,6 +207,38 @@ async function enforceAccountPatchLimit(request: Request, userId: string) {
     return NextResponse.json(
       {
         error: 'Za dużo prób aktualizacji konta. Spróbuj ponownie później.',
+        retryAfter: userLimit.retryAfter,
+      },
+      { status: 429, headers: rateLimitHeaders(userLimit) }
+    )
+  }
+
+  return null
+}
+
+async function enforceAccountDeleteLimit(request: Request, userId: string) {
+  const ipLimit = await consumeRateLimit(`account:delete:ip:${getClientIp(request)}`, {
+    limit: 10,
+    windowMs: 60_000,
+  })
+  if (!ipLimit.allowed) {
+    return NextResponse.json(
+      {
+        error: 'Za dużo prób usunięcia konta. Spróbuj ponownie później.',
+        retryAfter: ipLimit.retryAfter,
+      },
+      { status: 429, headers: rateLimitHeaders(ipLimit) }
+    )
+  }
+
+  const userLimit = await consumeRateLimit(`account:delete:user:${userId}`, {
+    limit: 3,
+    windowMs: 60_000,
+  })
+  if (!userLimit.allowed) {
+    return NextResponse.json(
+      {
+        error: 'Za dużo prób usunięcia konta. Spróbuj ponownie później.',
         retryAfter: userLimit.retryAfter,
       },
       { status: 429, headers: rateLimitHeaders(userLimit) }

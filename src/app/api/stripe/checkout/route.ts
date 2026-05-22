@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 
+import { PURCHASE_CONSENT_TEXT, PURCHASE_CONSENT_VERSION } from '@/config/consent'
 import { getAppUrl } from '@/lib/app-url'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
@@ -45,10 +46,17 @@ export async function POST(request: Request) {
     const rateLimitResponse = await enforceStripeCheckoutLimit(request, session.user.id)
     if (rateLimitResponse) return rateLimitResponse
 
-    const body = await readLimitedJson<{ plan?: unknown }>(request)
+    const body = await readLimitedJson<{ plan?: unknown; consent?: unknown }>(request)
     const plan = requiredString(body.plan, 'plan', INPUT_LIMITS.stripePlan)
     if (!isStripePlanId(plan)) {
       return NextResponse.json({ error: 'Nieprawidłowy plan.' }, { status: 400 })
+    }
+
+    if (body.consent !== true) {
+      return NextResponse.json(
+        { error: 'Wymagana jest zgoda na rozpoczęcie świadczenia, aby kontynuować zakup.' },
+        { status: 400 }
+      )
     }
 
     if (!getStripeSecretKey()) {
@@ -76,6 +84,18 @@ export async function POST(request: Request) {
     if (!user) {
       return NextResponse.json({ error: 'Nie znaleziono użytkownika.' }, { status: 404 })
     }
+
+    // Trwały ślad zgody — bez zapisu nie rozpoczynamy płatności.
+    await prisma.purchaseConsent.create({
+      data: {
+        userId: user.id,
+        plan,
+        version: PURCHASE_CONSENT_VERSION,
+        text: PURCHASE_CONSENT_TEXT,
+        ipAddress: getClientIp(request),
+        userAgent: (request.headers.get('user-agent') ?? '').slice(0, 512) || null,
+      },
+    })
 
     const customerId = await getOrCreateStripeCustomerId(user)
 
