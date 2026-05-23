@@ -24,8 +24,8 @@ export function GameSummary({
   egzekwoScores,
   homeHref = '/graj',
 }: Props) {
-  const hasPlayerPoints = scores.some((s) => s.score > 0)
-  const hasTeams = !!teamScores && teamScores.length > 0 && teamScores.some((s) => s.score > 0)
+  const hasPlayerPoints = scores.length > 0
+  const hasTeams = !!teamScores && teamScores.length > 0
   const hasDrinks = !!drinksScores && drinksScores.length > 0
   const hasEgzekwo = !!egzekwoScores && egzekwoScores.length > 0
   const tabCount =

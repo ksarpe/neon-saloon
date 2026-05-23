@@ -90,11 +90,10 @@ export function GameCardStack({
               </p>
             </div>
           ) : (
-            <div className="flex h-full w-full flex-col items-center justify-center gap-3 px-6 text-center">
-              <span className="text-3xl">🎉</span>
+            <div className="flex h-full w-full flex-col items-center justify-center px-6 text-center">
               <p
                 className="text-base leading-snug font-bold sm:text-lg"
-                style={{ color: 'var(--sheriff-pink)' }}
+                style={{ color: '#1a1a1a' }}
               >
                 {card.answer ?? 'Last Rodeo'}
               </p>

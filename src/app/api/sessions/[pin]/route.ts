@@ -103,7 +103,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     } else if (action === 'finish') {
       const scores = assertSmallArray<ScoreEntry>(body.scores, 'scores')
       const teamScores = assertSmallArray<TeamScoreEntry>(body.teamScores, 'teamScores')
-      await updateSession(pin, { status: 'finished', votes: [] })
+      await updateSession(pin, { status: 'finished', votes: [], scores, teamScores })
       await triggerSessionEvent(pin, {
         event: 'game-finished',
         data: { scores, teamScores },

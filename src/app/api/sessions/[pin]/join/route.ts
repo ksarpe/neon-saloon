@@ -89,10 +89,13 @@ export async function POST(request: Request, { params }: RouteContext) {
 
       const resolvedPlayerName = allocatePlayerName(playerName, session.players)
       const resolvedAvatar = resolveAvatar(chosenAvatar, session.players)
+      const selectedTeam = teamId ? session.teams.find((team) => team.teamId === teamId) : null
+      if (teamId && !selectedTeam) {
+        return { response: NextResponse.json({ error: 'Team not found' }, { status: 400 }) }
+      }
+
       let resolvedTeamId = teamId
-      let resolvedTeamName = teamId
-        ? (session.teams.find((team) => team.teamId === teamId)?.teamName ?? null)
-        : null
+      let resolvedTeamName = selectedTeam?.teamName ?? null
       const newTeam =
         newTeamName && !teamId
           ? {

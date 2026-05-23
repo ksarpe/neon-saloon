@@ -66,6 +66,17 @@ export default function HostHighLowScreen({
   const [hostSubmitting, setHostSubmitting] = useState(false)
   const [hostVoted, setHostVoted] = useState(false)
   const [hostVotedChoice, setHostVotedChoice] = useState<'mniej' | 'wiecej' | null>(null)
+  const teamScores = useMemo(
+    () =>
+      [team1, team2].map((team) => ({
+        teamId: team.teamId,
+        teamName: team.teamName,
+        score: scores
+          .filter((score) => score.playerTeamId === team.teamId)
+          .reduce((sum, score) => sum + score.score, 0),
+      })),
+    [scores, team1, team2]
+  )
 
   const votingTeamId = guessingTeamId === team1.teamId ? team2.teamId : team1.teamId
   const guessingTeam = guessingTeamId === team1.teamId ? team1 : team2
@@ -254,7 +265,7 @@ export default function HostHighLowScreen({
       await fetch(`/api/sessions/${pin}`, {
         method: 'POST',
         headers: hostJsonHeaders(pin),
-        body: JSON.stringify({ action: 'finish', scores, teamScores: [] }),
+        body: JSON.stringify({ action: 'finish', scores, teamScores }),
       })
       setPhase('finished')
       return
@@ -278,6 +289,7 @@ export default function HostHighLowScreen({
     votingTeamId,
     guessingTeamId,
     captainIndices,
+    teamScores,
     startRound,
   ])
 
@@ -286,10 +298,10 @@ export default function HostHighLowScreen({
     await fetch(`/api/sessions/${pin}`, {
       method: 'POST',
       headers: hostJsonHeaders(pin),
-      body: JSON.stringify({ action: 'finish', scores, teamScores: [] }),
+      body: JSON.stringify({ action: 'finish', scores, teamScores }),
     })
     setPhase('finished')
-  }, [pin, scores])
+  }, [pin, scores, teamScores])
 
   const handleHostSubmitNumber = useCallback(async () => {
     const num = numberInput.trim()
@@ -499,9 +511,7 @@ export default function HostHighLowScreen({
                   teamScores={[team1, team2].map((t) => ({
                     id: t.teamId,
                     name: t.teamName,
-                    score: scores
-                      .filter((s) => s.playerTeamId === t.teamId)
-                      .reduce((sum, s) => sum + s.score, 0),
+                    score: teamScores.find((score) => score.teamId === t.teamId)?.score ?? 0,
                   }))}
                 />
               </motion.div>

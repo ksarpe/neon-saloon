@@ -71,8 +71,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Co to są opuszki przedsionkowe (vestibular bulbs)?',
-        answer: 'Tkanka erekcyjna po obu stronach wejścia do pochwy – część anatomiczna łechtaczki',
-        options: ['Gruczoły Bartholina', 'Tkanka erekcyjna po obu stronach wejścia do pochwy – część anatomiczna łechtaczki', 'Wargi sromowe mniejsze', 'Mięśnie łonowo-guziczne'],
+        answer: 'Tkanka erekcyjna otaczająca wejście do pochwy',
+        options: ['Gruczoły nawilżające przedsionek pochwy', 'Tkanka erekcyjna otaczająca wejście do pochwy', 'Wewnętrzne fałdy skórne sromu', 'Mięśnie dna miednicy wokół pochwy'],
       },
       {
         text: 'Jaka część łechtaczki jest widoczna gołym okiem na zewnątrz ciała?',
@@ -96,23 +96,23 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile razy więcej zakończeń nerwowych na mm² ma żołądź łechtaczki niż opuszki palców?',
-        answer: 'Kilkakrotnie więcej – jest to najgęściej unerwiony obszar ciała',
-        options: ['Mniej więcej tyle samo', 'Dwa razy więcej', 'Kilkakrotnie więcej – jest to najgęściej unerwiony obszar ciała', 'Palce mają więcej nerwów'],
+        answer: 'Kilkakrotnie więcej',
+        options: ['Mniej więcej tyle samo', 'Dwa razy więcej', 'Kilkakrotnie więcej', 'Palce mają więcej nerwów'],
       },
       {
         text: 'Jak łechtaczka połączona jest anatomicznie z pochwą?',
-        answer: 'Poprzez opuszki przedsionkowe otaczające wejście do pochwy',
-        options: ['Bezpośrednim kanałem nerwowym', 'Poprzez opuszki przedsionkowe otaczające wejście do pochwy', 'Tkanką łączną pochwy', 'Więzadłem łonowym'],
+        answer: 'Przez opuszki przedsionkowe otaczające wejście do pochwy',
+        options: ['Bezpośrednim kanałem nerwowym prowadzącym do mózgu', 'Przez opuszki przedsionkowe otaczające wejście do pochwy', 'Przez tkankę łączną przedniej ściany pochwy', 'Przez więzadło wieszadłowe miednicy'],
       },
       {
         text: 'Co to jest frenulum łechtaczki?',
-        answer: 'Fałd skóry łączący wargi sromowe mniejsze z żołędzią łechtaczki od dołu',
-        options: ['Napletek łechtaczki', 'Wargi sromowe większe', 'Fałd skóry łączący wargi sromowe mniejsze z żołędzią łechtaczki od dołu', 'Ściana przednia pochwy'],
+        answer: 'Fałd skóry łączący wargi sromowe z żołędzią łechtaczki',
+        options: ['Fałd skóry pokrywający żołądź łechtaczki', 'Fałd oddzielający wargi sromowe większe', 'Fałd skóry łączący wargi sromowe z żołędzią łechtaczki', 'Fałd błony śluzowej przedniej ściany pochwy'],
       },
       {
         text: 'W którym roku anatomia łechtaczki zaczęła pojawiać się wyczerpująco w podręcznikach medycznych?',
-        answer: 'Dopiero w pierwszej dekadzie lat 2000.',
-        options: ['W latach 1950.', 'W latach 1970.', 'Dopiero w pierwszej dekadzie lat 2000.', 'Anatomia była opisana dokładnie już w XIX w.'],
+        answer: 'W pierwszej dekadzie lat 2000.',
+        options: ['Już w latach 50. XX wieku', 'Już w latach 70. XX wieku', 'W pierwszej dekadzie lat 2000.', 'Dokładnie już w XIX wieku'],
       },
       {
         text: 'Czy rozmiar żołędzi łechtaczki koreluje z intensywnością orgazmu?',
@@ -121,8 +121,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Czym jest "złota trójkąt" w kontekście łechtaczki (triangle of pleasure)?',
-        answer: 'Obszar między łechtaczką, cewką moczową a przednią ścianą pochwy, bogato unerwiony',
-        options: ['Trzy punkty G na ścianie pochwy', 'Obszar między łechtaczką, cewką moczową a przednią ścianą pochwy, bogato unerwiony', 'Trójkąt widoczny na USG pochwy', 'Przestrzeń między wargami sromowymi'],
+        answer: 'Bogato unerwiony obszar między łechtaczką a pochwą',
+        options: ['Trzy punkty G rozmieszczone na ścianie pochwy', 'Bogato unerwiony obszar między łechtaczką a pochwą', 'Trójkąt widoczny na obrazie USG pochwy', 'Przestrzeń między wargami sromowymi mniejszymi'],
       },
 
       // ── PENIS ────────────────────────────────────────────────────────────────
@@ -148,18 +148,18 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Co to jest choroba Peyroniego?',
-        answer: 'Skrzywienie penisa spowodowane bliznowaceniem tkanki (blaszka włóknista)',
-        options: ['Stan zapalny napletka', 'Skrzywienie penisa spowodowane bliznowaceniem tkanki (blaszka włóknista)', 'Zbyt mały penis od urodzenia', 'Ból podczas erekcji bez zmian anatomicznych'],
+        answer: 'Skrzywienie penisa wskutek bliznowacenia tkanki',
+        options: ['Stan zapalny napletka i żołędzi', 'Skrzywienie penisa wskutek bliznowacenia tkanki', 'Wrodzony zbyt mały rozmiar penisa', 'Ból podczas erekcji bez zmian anatomicznych'],
       },
       {
         text: 'Czy penis może doznać "złamania"?',
-        answer: 'Tak – pęknięcie osłonki białawej (tunica albuginea) podczas erekcji',
-        options: ['Nie – penis nie ma kości ani chrząstki do złamania', 'Tak – pęknięcie osłonki białawej (tunica albuginea) podczas erekcji', 'Tylko u starszych mężczyzn', 'Jedynie przy deformacji Peyroniego'],
+        answer: 'Tak – pęknięcie osłonki białawej podczas erekcji',
+        options: ['Nie – penis nie ma kości ani chrząstki do złamania', 'Tak – pęknięcie osłonki białawej podczas erekcji', 'Tylko u starszych mężczyzn po urazie', 'Jedynie przy współistniejącej chorobie Peyroniego'],
       },
       {
         text: 'Co to jest wędzidełko prącia (frenulum)?',
-        answer: 'Wrażliwy fałd skóry pod żołędzią, łączący ją z napletkiem',
-        options: ['Krawędź żołędzi penisa', 'Więzadło łączące penis z moszną', 'Wrażliwy fałd skóry pod żołędzią, łączący ją z napletkiem', 'Tkanki jamiste penisa'],
+        answer: 'Wrażliwy fałd skóry pod żołędzią',
+        options: ['Wystająca krawędź żołędzi penisa', 'Więzadło łączące penis z moszną', 'Wrażliwy fałd skóry pod żołędzią', 'Tkanki jamiste wnętrza penisa'],
       },
       {
         text: 'Jaki procent mężczyzn jest obrzezanych na świecie?',
@@ -168,13 +168,13 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile zakończeń nerwowych szacunkowo zawiera napletek?',
-        answer: 'Szacunkowo około 20 000',
-        options: ['Kilkaset', 'Około 2 000', 'Szacunkowo około 20 000', 'Tyle samo co żołądź'],
+        answer: 'Około 20 000',
+        options: ['Około 200', 'Około 2 000', 'Około 20 000', 'Około 100 000'],
       },
       {
         text: 'Co to jest stulejka (fimosis)?',
-        answer: 'Zbyt ciasny napletek uniemożliwiający odsłonięcie żołędzi',
-        options: ['Stan zapalny żołędzi', 'Skrzywienie penisa', 'Zbyt ciasny napletek uniemożliwiający odsłonięcie żołędzi', 'Brak wytrysku'],
+        answer: 'Zbyt ciasny napletek utrudniający odsłonięcie żołędzi',
+        options: ['Stan zapalny żołędzi i napletka', 'Bolesne skrzywienie penisa w erekcji', 'Zbyt ciasny napletek utrudniający odsłonięcie żołędzi', 'Brak wytrysku mimo orgazmu'],
       },
       {
         text: 'Jak szybko przebiega wytrysk?',
@@ -183,18 +183,18 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jaki procent ssaków posiada kość w penisie (baculum)?',
-        answer: 'Około 95% – człowiek jest wyjątkiem i jej nie posiada',
-        options: ['Około 10%', 'Około 40%', 'Około 95% – człowiek jest wyjątkiem i jej nie posiada', 'Tylko mięsożerne'],
+        answer: 'Około 95%',
+        options: ['Około 10%', 'Około 40%', 'Około 95%', 'Około 70%'],
       },
       {
         text: 'Co powoduje poranną erekcję?',
-        answer: 'Fazy snu REM (NPT – nocturnal penile tumescence)',
-        options: ['Wysoki poziom testosteronu rano', 'Pełny pęcherz moczowy', 'Fazy snu REM (NPT – nocturnal penile tumescence)', 'Kortyzol poranny'],
+        answer: 'Fazy snu REM',
+        options: ['Wysoki poranny poziom testosteronu', 'Ucisk od pełnego pęcherza moczowego', 'Fazy snu REM', 'Poranny wyrzut kortyzolu'],
       },
       {
         text: 'Co to jest zapalenie żołędzi (balanitis)?',
-        answer: 'Stan zapalny żołędzi prącia – często u nieobrzezanych mężczyzn',
-        options: ['Ból przy erekcji', 'Stan zapalny żołędzi prącia – często u nieobrzezanych mężczyzn', 'Skrzywienie żołędzi', 'Powiększenie żołędzi'],
+        answer: 'Stan zapalny żołędzi prącia',
+        options: ['Ból odczuwany przy erekcji', 'Stan zapalny żołędzi prącia', 'Bolesne skrzywienie żołędzi', 'Powiększenie żołędzi powyżej normy'],
       },
       {
         text: 'Jaki procent mężczyzn ma mikropenis (< 7 cm w erekcji)?',
@@ -203,8 +203,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Które więzadło przymocowuje penis do kości łonowej?',
-        answer: 'Więzadło wieszadłowe prącia (suspensory ligament)',
-        options: ['Więzadło łonowe', 'Więzadło wieszadłowe prącia (suspensory ligament)', 'Więzadło mosznowe', 'Rozcięgno biodrowe'],
+        answer: 'Więzadło wieszadłowe prącia',
+        options: ['Więzadło łonowo-pęcherzowe', 'Więzadło wieszadłowe prącia', 'Więzadło mosznowo-jądrowe', 'Rozcięgno mięśnia biodrowego'],
       },
       {
         text: 'Co to jest wytrysk wsteczny (retrograde ejaculation)?',
@@ -240,18 +240,18 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Czym są gruczoły Bartholina?',
-        answer: 'Gruczoły wydzielające śluz nawilżający wejście do pochwy podczas pobudzenia',
-        options: ['Gruczoły produkujące jaja', 'Gruczoły wydzielające śluz nawilżający wejście do pochwy podczas pobudzenia', 'Gruczoły limfatyczne sromu', 'Gruczoły regulujące pH pochwy'],
+        answer: 'Gruczoły nawilżające wejście do pochwy',
+        options: ['Gruczoły produkujące komórki jajowe', 'Gruczoły nawilżające wejście do pochwy', 'Gruczoły limfatyczne okolic sromu', 'Gruczoły regulujące pH pochwy'],
       },
       {
         text: 'Czym są gruczoły Skenego?',
-        answer: 'Żeński odpowiednik gruczołu krokowego – uczestniczą w squirtingu',
-        options: ['Gruczoły macicy produkujące hormony', 'Żeński odpowiednik gruczołu krokowego – uczestniczą w squirtingu', 'Gruczoły produkujące śluz szyjkowy', 'Gruczoły potowe sromu'],
+        answer: 'Żeński odpowiednik gruczołu krokowego',
+        options: ['Gruczoły macicy produkujące hormony', 'Żeński odpowiednik gruczołu krokowego', 'Gruczoły produkujące śluz szyjkowy', 'Gruczoły potowe okolic sromu'],
       },
       {
         text: 'Czym jest błona dziewicza (hymen)?',
-        answer: 'Cienka błona śluzowa częściowo pokrywająca wejście do pochwy',
-        options: ['Kompletna bariera zamykająca pochwę', 'Cienka błona śluzowa częściowo pokrywająca wejście do pochwy', 'Tkanka łączna szyjki macicy', 'Mięsień dna miednicy'],
+        answer: 'Cienka błona częściowo pokrywająca wejście do pochwy',
+        options: ['Szczelna bariera całkowicie zamykająca pochwę', 'Cienka błona częściowo pokrywająca wejście do pochwy', 'Tkanka łączna budująca szyjkę macicy', 'Mięsień dna miednicy zamykający pochwę'],
       },
       {
         text: 'Jaka jest spoczynkowa długość pochwy u dorosłej kobiety?',
@@ -265,43 +265,43 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Co to jest pochwica (vaginismus)?',
-        answer: 'Mimowolne skurcze mięśni pochwy uniemożliwiające lub utrudniające penetrację',
-        options: ['Przewlekłe zakażenie grzybicze pochwy', 'Mimowolne skurcze mięśni pochwy uniemożliwiające lub utrudniające penetrację', 'Suchość pochwy po menopauzie', 'Zapalenie szyjki macicy'],
+        answer: 'Mimowolne skurcze mięśni utrudniające penetrację',
+        options: ['Przewlekłe zakażenie grzybicze pochwy', 'Mimowolne skurcze mięśni utrudniające penetrację', 'Nadmierna suchość pochwy po menopauzie', 'Przewlekłe zapalenie szyjki macicy'],
       },
       {
         text: 'Czym są wargi sromowe mniejsze (labia minora)?',
-        answer: 'Wewnętrzne fałdy skórne sromu, obficie unerwione',
-        options: ['Zewnętrzne, przetłuszczone fałdy sromu', 'Wewnętrzne fałdy skórne sromu, obficie unerwione', 'Część układu limfatycznego sromu', 'Tkanka otaczająca cewkę moczową'],
+        answer: 'Wewnętrzne fałdy skórne sromu',
+        options: ['Zewnętrzne przetłuszczone fałdy sromu', 'Wewnętrzne fałdy skórne sromu', 'Element układu limfatycznego sromu', 'Tkanka otaczająca cewkę moczową'],
       },
       {
         text: 'Czym są wargi sromowe większe (labia majora)?',
-        answer: 'Zewnętrzne fałdy skóry sromu, zawierające tkankę tłuszczową',
-        options: ['Zewnętrzne fałdy skóry sromu, zawierające tkankę tłuszczową', 'Przednią część łechtaczki', 'Mięśnie dna miednicy', 'Część wyściółki pochwy'],
+        answer: 'Zewnętrzne fałdy skóry sromu z tkanką tłuszczową',
+        options: ['Zewnętrzne fałdy skóry sromu z tkanką tłuszczową', 'Przednia część osłonki łechtaczki', 'Mięśnie dna miednicy wokół sromu', 'Wewnętrzna wyściółka ścian pochwy'],
       },
       {
         text: 'Gdzie dokładnie zlokalizowany jest punkt G na ścianie pochwy?',
-        answer: '5–8 cm wgłąb, na przedniej ścianie (w kierunku pępka)',
-        options: ['Przy wejściu do pochwy, głębokość 1–2 cm', '5–8 cm wgłąb, na przedniej ścianie (w kierunku pępka)', 'Na tylnej ścianie pochwy, głębokość 10 cm', 'Na szyjce macicy'],
+        answer: '5–8 cm wgłąb, na przedniej ścianie pochwy',
+        options: ['Tuż przy wejściu do pochwy, na głębokości 1–2 cm', '5–8 cm wgłąb, na przedniej ścianie pochwy', 'Na tylnej ścianie pochwy, na głębokości 10 cm', 'Bezpośrednio na szyjce macicy'],
       },
       {
         text: 'Co to są marszczenia pochwy (rugae vaginalis)?',
-        answer: 'Podłużne fałdy błony śluzowej pochwy umożliwiające rozciąganie',
-        options: ['Brodawki śluzówkowe pochwy', 'Podłużne fałdy błony śluzowej pochwy umożliwiające rozciąganie', 'Skupiska gruczołów śluzu', 'Blizny po porodzie'],
+        answer: 'Podłużne fałdy błony śluzowej pochwy',
+        options: ['Drobne brodawki na błonie śluzowej pochwy', 'Podłużne fałdy błony śluzowej pochwy', 'Skupiska gruczołów wydzielających śluz', 'Blizny powstałe po porodzie'],
       },
       {
         text: 'Skąd pochodzi naturalne nawilżenie pochwy podczas pobudzenia?',
-        answer: 'Transudacja – przesiąkanie osocza krwi przez ściany pochwy',
-        options: ['Z gruczołów Bartholina (głównie)', 'Z wydzieliny gruczołów macicznych', 'Transudacja – przesiąkanie osocza krwi przez ściany pochwy', 'Ze śliny szyjkowej'],
+        answer: 'Z przesiąkania osocza krwi przez ściany pochwy',
+        options: ['Głównie z gruczołów Bartholina', 'Z wydzieliny gruczołów macicznych', 'Z przesiąkania osocza krwi przez ściany pochwy', 'Z wydzieliny śluzowej szyjki macicy'],
       },
       {
         text: 'Co to jest gardnereloza / bakteryjna waginoza (BV)?',
-        answer: 'Zaburzenie równowagi flory bakteryjnej pochwy – nadmiar bakterii beztlenowych',
-        options: ['Zakażenie grzybicze pochwy', 'Wirusowe STI przenoszone kontaktem seksualnym', 'Zaburzenie równowagi flory bakteryjnej pochwy – nadmiar bakterii beztlenowych', 'Pasożytnicze zakażenie pochwy'],
+        answer: 'Zaburzenie równowagi flory bakteryjnej pochwy',
+        options: ['Grzybicze zakażenie błony śluzowej pochwy', 'Wirusowe zakażenie przenoszone drogą płciową', 'Zaburzenie równowagi flory bakteryjnej pochwy', 'Pasożytnicze zakażenie dróg rodnych'],
       },
       {
         text: 'Co to jest srom (vulva)?',
-        answer: 'Zewnętrzne narządy płciowe kobiety (łechtaczka, wargi, przedsionek, cewka)',
-        options: ['Synonim pochwy', 'Zewnętrzne narządy płciowe kobiety (łechtaczka, wargi, przedsionek, cewka)', 'Szyjka macicy i pochwa łącznie', 'Jajniki i jajowody'],
+        answer: 'Zewnętrzne narządy płciowe kobiety',
+        options: ['Inna nazwa wnętrza pochwy', 'Zewnętrzne narządy płciowe kobiety', 'Szyjka macicy wraz z pochwą', 'Jajniki wraz z jajowodami'],
       },
       {
         text: 'Co to jest dyspareunia?',
@@ -310,8 +310,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jaki jest związek między odległością łechtaczka–cewka moczowa a orgazmem pochwowym?',
-        answer: 'Mniejsza odległość (<2,5 cm) koreluje z większą szansą na orgazm pochwowy',
-        options: ['Brak jakiejkolwiek korelacji', 'Mniejsza odległość (<2,5 cm) koreluje z większą szansą na orgazm pochwowy', 'Większa odległość = łatwiejszy orgazm', 'Odległość wpływa tylko na ból, nie orgazm'],
+        answer: 'Mniejsza odległość zwiększa szansę na orgazm pochwowy',
+        options: ['Nie ma między nimi żadnej korelacji', 'Mniejsza odległość zwiększa szansę na orgazm pochwowy', 'Większa odległość ułatwia osiągnięcie orgazmu', 'Odległość wpływa tylko na ból, nie na orgazm'],
       },
       {
         text: 'Skąd pochodzi ciecz wydzielana podczas squirtingu?',
@@ -320,20 +320,20 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Czy pochwa oczyszcza się sama?',
-        answer: 'Tak – naturalna wydzielina (discharge) odprowadza martwe komórki i bakterie',
-        options: ['Nie – wymaga codziennego irygowania', 'Tak – naturalna wydzielina (discharge) odprowadza martwe komórki i bakterie', 'Tylko po miesiączce', 'Tak, ale tylko przy stosowaniu probiotyków'],
+        answer: 'Tak – naturalna wydzielina odprowadza martwe komórki i bakterie',
+        options: ['Nie – wymaga codziennego irygowania od wewnątrz', 'Tak – naturalna wydzielina odprowadza martwe komórki i bakterie', 'Tylko bezpośrednio po miesiączce', 'Tak, ale wyłącznie przy stosowaniu probiotyków'],
       },
       {
         text: 'Czym jest vulvodynia?',
-        answer: 'Przewlekły ból sromu bez wyraźnej przyczyny zakaźnej lub skórnej',
-        options: ['Grzybica sromu', 'Przewlekły ból sromu bez wyraźnej przyczyny zakaźnej lub skórnej', 'Stan zapalny gruczołów Bartholina', 'Alergia na lateks'],
+        answer: 'Przewlekły ból sromu bez wyraźnej przyczyny',
+        options: ['Grzybicze zakażenie skóry sromu', 'Przewlekły ból sromu bez wyraźnej przyczyny', 'Stan zapalny gruczołów Bartholina', 'Alergia kontaktowa na lateks'],
       },
 
       // ── JĄDRA / PROSTATA ─────────────────────────────────────────────────────
       {
         text: 'Dlaczego lewe jądro zwisa zazwyczaj niżej niż prawe?',
-        answer: 'Żyła nasienna lewa uchodzi do żyły nerkowej pod kątem prostym – dłuższa droga spływu',
-        options: ['Lewe jądro jest cięższe', 'Żyła nasienna lewa uchodzi do żyły nerkowej pod kątem prostym – dłuższa droga spływu', 'Moszna jest asymetrycznie zbudowana', 'To tylko mit – jądra są na tym samym poziomie'],
+        answer: 'Lewa żyła nasienna ma dłuższą drogę spływu krwi',
+        options: ['Lewe jądro jest po prostu cięższe', 'Lewa żyła nasienna ma dłuższą drogę spływu krwi', 'Moszna jest asymetrycznie zbudowana', 'To tylko mit – jądra są na tym samym poziomie'],
       },
       {
         text: 'W jakiej temperaturze przebiega spermatogeneza?',
@@ -352,13 +352,13 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Co to jest wnętrostwo (kryptorchizm)?',
-        answer: 'Niezstąpienie jądra do moszny w trakcie rozwoju płodowego',
-        options: ['Brak produkcji nasienia', 'Niezstąpienie jądra do moszny w trakcie rozwoju płodowego', 'Stan zapalny jąder', 'Powiększenie jąder powyżej normy'],
+        answer: 'Niezstąpienie jądra do moszny',
+        options: ['Całkowity brak produkcji nasienia', 'Niezstąpienie jądra do moszny', 'Bolesny stan zapalny jąder', 'Powiększenie jąder powyżej normy'],
       },
       {
         text: 'Co produkuje gruczoł krokowy (prostata)?',
-        answer: 'Zasadowy płyn stanowiący ok. 30% objętości nasienia',
-        options: ['Testosteron', 'Zasadowy płyn stanowiący ok. 30% objętości nasienia', 'Główną masę plemników', 'Fruktozę odżywiającą plemniki'],
+        answer: 'Zasadowy płyn – ok. 30% objętości nasienia',
+        options: ['Testosteron i inne androgeny', 'Zasadowy płyn – ok. 30% objętości nasienia', 'Większość plemników w nasieniu', 'Fruktozę odżywiającą plemniki'],
       },
       {
         text: 'Jaki rozmiar porównuje się do prostaty u zdrowego mężczyzny?',
@@ -367,23 +367,23 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Co to jest PSA i do czego służy?',
-        answer: 'Antygen specyficzny dla gruczołu krokowego – marker stosowany w diagnostyce raka prostaty',
-        options: ['Białko w nasieniu odpowiedzialne za ruchliwość', 'Antygen specyficzny dla gruczołu krokowego – marker stosowany w diagnostyce raka prostaty', 'Hormon jąder regulujący spermatogenezę', 'Enzym rozkładający plemniki po zapłodnieniu'],
+        answer: 'Marker białkowy stosowany w diagnostyce raka prostaty',
+        options: ['Białko w nasieniu odpowiedzialne za ruchliwość', 'Marker białkowy stosowany w diagnostyce raka prostaty', 'Hormon jąder regulujący spermatogenezę', 'Enzym rozkładający plemniki po zapłodnieniu'],
       },
       {
         text: 'Co produkują pęcherzyki nasienne?',
-        answer: 'Płyn zawierający fruktozę stanowiący 60–70% objętości nasienia',
-        options: ['Hormony regulujące popęd', 'Płyn zawierający fruktozę stanowiący 60–70% objętości nasienia', 'Antyciała chroniące plemniki', 'Enzymy rozkładające komórkę jajową'],
+        answer: 'Płyn z fruktozą – 60–70% objętości nasienia',
+        options: ['Hormony regulujące popęd płciowy', 'Płyn z fruktozą – 60–70% objętości nasienia', 'Przeciwciała chroniące plemniki', 'Enzymy rozkładające komórkę jajową'],
       },
       {
         text: 'W jakim przedziale wiekowym najczęściej pojawia się rak jąder?',
-        answer: '15–35 lat – najczęstszy nowotwór u młodych mężczyzn',
-        options: ['0–5 lat (noworodki)', '15–35 lat – najczęstszy nowotwór u młodych mężczyzn', '50–65 lat', 'Powyżej 70. roku życia'],
+        answer: '15–35 lat',
+        options: ['0–5 lat (wczesne dzieciństwo)', '15–35 lat', '50–65 lat', 'Powyżej 70. roku życia'],
       },
       {
         text: 'Co to są żylaki powrózka nasiennego (varicocele)?',
-        answer: 'Poszerzenie żył żylastych odprowadzających krew z jądra – częsta przyczyna niepłodności',
-        options: ['Zapalenie jąder po śwince', 'Torbiel najądrza', 'Poszerzenie żył żylastych odprowadzających krew z jądra – częsta przyczyna niepłodności', 'Nowotwór jąder'],
+        answer: 'Poszerzenie żył odprowadzających krew z jądra',
+        options: ['Zapalenie jąder będące powikłaniem świnki', 'Wypełniona płynem torbiel najądrza', 'Poszerzenie żył odprowadzających krew z jądra', 'Złośliwy nowotwór tkanki jądra'],
       },
       {
         text: 'Gdzie dokładnie w ciele znajduje się gruczoł krokowy?',
@@ -392,8 +392,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent testosteronu u mężczyzny produkują jądra?',
-        answer: 'Około 95% – reszta pochodzi z nadnerczy',
-        options: ['Około 50%', 'Około 70%', 'Około 95% – reszta pochodzi z nadnerczy', '100% – nadnercza nie produkują testosteronu'],
+        answer: 'Około 95%',
+        options: ['Około 50%', 'Około 70%', 'Około 95%', 'Około 100%'],
       },
       {
         text: 'Ile ważą oba jądra razem?',
@@ -402,8 +402,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Co to jest zapalenie jąder (orchitis) i jaką ma najczęstszą przyczynę u dorosłych?',
-        answer: 'Stan zapalny jąder – najczęstsza przyczyna u dorosłych to powikłanie świnki',
-        options: ['Alergia na środki higieny', 'Stan zapalny jąder – najczęstsza przyczyna u dorosłych to powikłanie świnki', 'Nieprawidłowa temperatura moszny', 'Niedobór testosteronu'],
+        answer: 'Stan zapalny jąder – najczęściej jako powikłanie świnki',
+        options: ['Stan zapalny jąder – najczęściej wskutek alergii na środki higieny', 'Stan zapalny jąder – najczęściej jako powikłanie świnki', 'Stan zapalny jąder – najczęściej z powodu przegrzania moszny', 'Stan zapalny jąder – najczęściej przy niedoborze testosteronu'],
       },
 
       // ── ORGAZM ──────────────────────────────────────────────────────────────
@@ -419,13 +419,13 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Co się dzieje z korą przedczołową mózgu podczas orgazmu?',
-        answer: 'Ulega szerokiem dezaktywacji – stąd utrata kontroli i "la petite mort"',
-        options: ['Aktywuje się maksymalnie', 'Ulega szerokiem dezaktywacji – stąd utrata kontroli i "la petite mort"', 'Nie zmienia aktywności', 'Aktywują się tylko obszary słuchowe'],
+        answer: 'Ulega szerokiej dezaktywacji',
+        options: ['Aktywuje się na maksymalnym poziomie', 'Ulega szerokiej dezaktywacji', 'Nie zmienia swojej aktywności', 'Aktywują się tylko obszary słuchowe'],
       },
       {
         text: 'Co to jest "orgasm gap"?',
-        answer: 'Różnica w częstości osiągania orgazmu: mężczyźni ~95% vs kobiety ~65% podczas seksu',
-        options: ['Różnica w długości trwania orgazmu między płciami', 'Różnica w częstości osiągania orgazmu: mężczyźni ~95% vs kobiety ~65% podczas seksu', 'Brak orgazmu u jednego z partnerów', 'Różnica w głośności podczas orgazmu'],
+        answer: 'Różnica w częstości osiągania orgazmu między płciami',
+        options: ['Różnica w długości trwania orgazmu między płciami', 'Różnica w częstości osiągania orgazmu między płciami', 'Całkowity brak orgazmu u jednego z partnerów', 'Różnica w głośności partnerów podczas orgazmu'],
       },
       {
         text: 'Jaki procent kobiet osiąga orgazm wyłącznie ze stosunku penetracyjnego?',
@@ -439,8 +439,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Czy orgazm działa przeciwbólowo?',
-        answer: 'Tak – próg bólu wzrasta o 74–107% podczas pobudzenia i orgazmu',
-        options: ['Nie – nie ma wpływu na ból', 'Tak – próg bólu wzrasta o 74–107% podczas pobudzenia i orgazmu', 'Tylko u kobiet', 'Tak, ale tylko ból głowy'],
+        answer: 'Tak – próg bólu wzrasta nawet o ponad 100%',
+        options: ['Nie – nie ma wpływu na odczuwanie bólu', 'Tak – próg bólu wzrasta nawet o ponad 100%', 'Działa przeciwbólowo tylko u kobiet', 'Tak, ale łagodzi wyłącznie ból głowy'],
       },
       {
         text: 'Co to jest ejaculatory inevitability ("punkt bez powrotu")?',
@@ -449,13 +449,13 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jakie neurochemikalia są uwalniane podczas orgazmu?',
-        answer: 'Dopamina, oksytocyna, endorfiny i serotonina jednocześnie',
-        options: ['Wyłącznie adrenalina', 'Kortyzol i testosteron', 'Dopamina, oksytocyna, endorfiny i serotonina jednocześnie', 'Tylko endorfiny'],
+        answer: 'Dopamina, oksytocyna, endorfiny i serotonina',
+        options: ['Wyłącznie adrenalina i noradrenalina', 'Kortyzol, testosteron i adrenalina', 'Dopamina, oksytocyna, endorfiny i serotonina', 'Wyłącznie endorfiny i melatonina'],
       },
       {
         text: 'Czy mężczyźni mogą osiągać wielokrotne orgazmy?',
-        answer: 'Tak – przy technikach zatrzymania wytrysku (non-ejaculatory multiple orgasm)',
-        options: ['Nie – biologicznie niemożliwe', 'Tak – przy technikach zatrzymania wytrysku (non-ejaculatory multiple orgasm)', 'Tak, ale tylko po 50. roku życia', 'Tylko u mężczyzn z bardzo niskim poziomem prolaktyny'],
+        answer: 'Tak – dzięki technikom zatrzymania wytrysku',
+        options: ['Nie – jest to biologicznie niemożliwe', 'Tak – dzięki technikom zatrzymania wytrysku', 'Tak, ale dopiero po 50. roku życia', 'Tylko przy bardzo niskim poziomie prolaktyny'],
       },
       {
         text: 'Jaki hormon uwalniany po orgazmie wywołuje uczucie senności i relaksu?',
@@ -464,8 +464,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Co to jest post-coital dysphoria (PCD)?',
-        answer: 'Uczucie smutku, płaczliwości lub niepokoju po orgazmie – dotyczy ~46% kobiet',
-        options: ['Ból fizyczny po stosunku', 'Uczucie smutku, płaczliwości lub niepokoju po orgazmie – dotyczy ~46% kobiet', 'Niemożność osiągnięcia orgazmu', 'Dyskomfort podczas stosunku'],
+        answer: 'Uczucie smutku lub niepokoju pojawiające się po orgazmie',
+        options: ['Ból fizyczny odczuwany po stosunku', 'Uczucie smutku lub niepokoju pojawiające się po orgazmie', 'Niemożność osiągnięcia orgazmu mimo stymulacji', 'Dyskomfort odczuwany podczas stosunku'],
       },
       {
         text: 'Ile procent kobiet nigdy nie osiągnęło orgazmu w życiu (anorgazmia pierwotna)?',
@@ -479,8 +479,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Czy można doświadczyć orgazmu przez sen?',
-        answer: 'Tak – nocne orgazmy (pollucja u mężczyzn, nocturnal orgasm u kobiet)',
-        options: ['Nie – sen uniemożliwia orgazm', 'Tak – nocne orgazmy (pollucja u mężczyzn, nocturnal orgasm u kobiet)', 'Tylko mężczyźni, nie kobiety', 'Tylko przed 25. rokiem życia'],
+        answer: 'Tak – zdarzają się nocne orgazmy',
+        options: ['Nie – sen całkowicie uniemożliwia orgazm', 'Tak – zdarzają się nocne orgazmy', 'Tylko u mężczyzn, nie u kobiet', 'Tylko u osób przed 25. rokiem życia'],
       },
       {
         text: 'Co to jest orgazm wielokrotny?',
@@ -489,8 +489,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Co to jest anorgazmia?',
-        answer: 'Niemożność osiągnięcia orgazmu mimo wystarczającej stymulacji',
-        options: ['Ból przy orgazmie', 'Zbyt szybkie osiąganie orgazmu', 'Niemożność osiągnięcia orgazmu mimo wystarczającej stymulacji', 'Orgazm bez fizycznej przyjemności'],
+        answer: 'Niemożność osiągnięcia orgazmu mimo stymulacji',
+        options: ['Ból odczuwany w trakcie orgazmu', 'Zbyt szybkie osiąganie orgazmu', 'Niemożność osiągnięcia orgazmu mimo stymulacji', 'Orgazm pozbawiony fizycznej przyjemności'],
       },
       {
         text: 'Jaki procent kobiet przyznaje, że symuluje orgazm?',
@@ -499,8 +499,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jak orgazm wpływa na układ odpornościowy?',
-        answer: 'Przejściowo podnosi poziom immunoglobuliny A (IgA) i komórek NK',
-        options: ['Osłabia odporność przez 24h', 'Nie ma żadnego wpływu', 'Przejściowo podnosi poziom immunoglobuliny A (IgA) i komórek NK', 'Zwiększa białe krwinki przez tydzień'],
+        answer: 'Przejściowo podnosi poziom przeciwciał IgA i komórek NK',
+        options: ['Osłabia odporność na około dobę', 'Nie ma żadnego wpływu na odporność', 'Przejściowo podnosi poziom przeciwciał IgA i komórek NK', 'Zwiększa liczbę białych krwinek na tydzień'],
       },
       {
         text: 'Jak szybko może wzrosnąć tętno podczas orgazmu?',
@@ -509,90 +509,90 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jaka rola pudendal nerve (nerwu sromowego) w orgazmie?',
-        answer: 'Jest głównym nerwem czuciowym i motorycznym narządów płciowych odpowiedzialnym za orgazm',
-        options: ['Kontroluje wyłącznie ból', 'Jest głównym nerwem czuciowym i motorycznym narządów płciowych odpowiedzialnym za orgazm', 'Reguluje poziom hormonów', 'Łączy mózg bezpośrednio z jajnikami'],
+        answer: 'Jest głównym nerwem czuciowym narządów płciowych',
+        options: ['Kontroluje wyłącznie odczuwanie bólu', 'Jest głównym nerwem czuciowym narządów płciowych', 'Reguluje poziom hormonów płciowych', 'Łączy mózg bezpośrednio z jajnikami'],
       },
 
       // ── HORMONY ─────────────────────────────────────────────────────────────
       {
         text: 'Który hormon w największym stopniu napędza popęd seksualny kobiet?',
-        answer: 'Testosteron (produkowany w jajnikach i nadnerczach)',
-        options: ['Estrogen', 'Progesteron', 'Testosteron (produkowany w jajnikach i nadnerczach)', 'Oksytocyna'],
+        answer: 'Testosteron',
+        options: ['Estrogen', 'Progesteron', 'Testosteron', 'Oksytocyna'],
       },
       {
         text: 'Kiedy testosteron jest najwyższy u kobiet w trakcie cyklu?',
-        answer: 'Około owulacji (środek cyklu, ~dzień 14)',
-        options: ['W pierwszym dniu miesiączki', 'Około owulacji (środek cyklu, ~dzień 14)', 'W fazie lutealnej', 'Poziom jest stały przez cały cykl'],
+        answer: 'W okolicach owulacji (środek cyklu)',
+        options: ['W pierwszym dniu miesiączki', 'W okolicach owulacji (środek cyklu)', 'W fazie lutealnej cyklu', 'Poziom jest stały przez cały cykl'],
       },
       {
         text: 'Jaką rolę pełni oksytocyna w życiu seksualnym?',
-        answer: 'Wzmacnia więź emocjonalną po stosunku – uwalniania przy orgazmie i dotyku',
-        options: ['Napędza pożądanie seksualne', 'Reguluje cykl miesiączkowy', 'Wzmacnia więź emocjonalną po stosunku – uwalniania przy orgazmie i dotyku', 'Stymuluje owulację'],
+        answer: 'Wzmacnia więź emocjonalną po stosunku',
+        options: ['Napędza pożądanie seksualne', 'Reguluje cykl miesiączkowy', 'Wzmacnia więź emocjonalną po stosunku', 'Stymuluje owulację'],
       },
       {
         text: 'Co robi estrogen dla zdrowia pochwy?',
-        answer: 'Utrzymuje grubość, elastyczność ścianek i nawilżenie pochwy',
-        options: ['Reguluje popęd seksualny', 'Utrzymuje grubość, elastyczność ścianek i nawilżenie pochwy', 'Zwiększa produkcję plemników', 'Hamuje owulację'],
+        answer: 'Utrzymuje elastyczność i nawilżenie pochwy',
+        options: ['Reguluje popęd seksualny', 'Utrzymuje elastyczność i nawilżenie pochwy', 'Zwiększa produkcję plemników', 'Hamuje owulację'],
       },
       {
         text: 'Jaka jest rola prolaktyny po orgazmie mężczyzny?',
-        answer: 'Wywołuje uczucie znużenia i odpowiada za okres refrakcji',
-        options: ['Stymuluje kolejną erekcję', 'Wywołuje uczucie znużenia i odpowiada za okres refrakcji', 'Reguluje poziom testosteronu', 'Wpływa na jakość nasienia'],
+        answer: 'Wywołuje znużenie i okres refrakcji',
+        options: ['Stymuluje natychmiastową kolejną erekcję', 'Wywołuje znużenie i okres refrakcji', 'Reguluje poziom testosteronu', 'Wpływa na jakość nasienia'],
       },
       {
         text: 'O ile procent spada testosteron u mężczyzn po 30. roku życia rocznie?',
-        answer: 'Około 1% rocznie (stopniowy spadek)',
-        options: ['Około 0,1% rocznie', 'Około 1% rocznie (stopniowy spadek)', 'Około 5% rocznie', 'Ponad 10% rocznie'],
+        answer: 'Około 1% rocznie',
+        options: ['Około 0,1% rocznie', 'Około 1% rocznie', 'Około 5% rocznie', 'Ponad 10% rocznie'],
       },
       {
         text: 'Jak progesteron wpływa na libido?',
-        answer: 'Generalnie je obniża – zwłaszcza w fazie lutealnej i przy stosowaniu antykoncepcji',
-        options: ['Znacznie zwiększa libido', 'Generalnie je obniża – zwłaszcza w fazie lutealnej i przy stosowaniu antykoncepcji', 'Nie ma wpływu', 'Zwiększa tylko u kobiet po menopauzie'],
+        answer: 'Generalnie je obniża',
+        options: ['Znacznie zwiększa libido', 'Generalnie je obniża', 'Nie ma żadnego wpływu na libido', 'Zwiększa je tylko u kobiet po menopauzie'],
       },
       {
         text: 'Co to jest FSH i jaką pełni funkcję?',
-        answer: 'Hormon folikulotropowy – stymuluje produkcję jaj (u kobiet) i plemników (u mężczyzn)',
-        options: ['Hormon stresu wydzielany przez nadnercza', 'Hormon folikulotropowy – stymuluje produkcję jaj (u kobiet) i plemników (u mężczyzn)', 'Hormon tarczycy regulujący libido', 'Hormon tylnej części przysadki odpowiedzialny za więź'],
+        answer: 'Hormon folikulotropowy – stymuluje produkcję komórek rozrodczych',
+        options: ['Hormon stresu wydzielany przez nadnercza', 'Hormon folikulotropowy – stymuluje produkcję komórek rozrodczych', 'Hormon tarczycy regulujący libido', 'Hormon przysadki odpowiedzialny za więź'],
       },
       {
         text: 'Jak przewlekły stres wpływa na libido?',
-        answer: 'Kortyzol hamuje podwzgórze i obniża produkcję hormonów płciowych',
-        options: ['Zwiększa libido przez adrenalinę', 'Kortyzol hamuje podwzgórze i obniża produkcję hormonów płciowych', 'Nie ma wpływu na hormony płciowe', 'Zwiększa testosteron krótkoterminowo'],
+        answer: 'Kortyzol obniża produkcję hormonów płciowych',
+        options: ['Zwiększa libido poprzez wyrzut adrenaliny', 'Kortyzol obniża produkcję hormonów płciowych', 'Nie ma żadnego wpływu na hormony płciowe', 'Krótkoterminowo zwiększa poziom testosteronu'],
       },
       {
         text: 'Co się dzieje z poziomem estrogenów podczas menopauzy?',
-        answer: 'Drastycznie spada, powodując suchość pochwy, uderzenia gorąca i zaburzenia nastroju',
-        options: ['Rośnie, by kompensować brak owulacji', 'Pozostaje stały', 'Drastycznie spada, powodując suchość pochwy, uderzenia gorąca i zaburzenia nastroju', 'Najpierw rośnie, potem spada do zera po 5 latach'],
+        answer: 'Drastycznie spada przez cały okres menopauzy',
+        options: ['Rośnie, by skompensować brak owulacji', 'Pozostaje na stałym poziomie jak wcześniej', 'Drastycznie spada przez cały okres menopauzy', 'Najpierw rośnie, potem spada niemal do zera'],
       },
       {
         text: 'Co to jest andropauza?',
-        answer: 'Stopniowy, wieloletni spadek testosteronu u mężczyzn po 40–50. roku życia',
-        options: ['Nagłe zatrzymanie produkcji testosteronu', 'Hormonalny odpowiednik menopauzy u kobiet – nagły', 'Stopniowy, wieloletni spadek testosteronu u mężczyzn po 40–50. roku życia', 'Brak erekcji po 65. roku życia'],
+        answer: 'Stopniowy, wieloletni spadek testosteronu u mężczyzn',
+        options: ['Nagłe całkowite zatrzymanie produkcji testosteronu', 'Nagły hormonalny odpowiednik kobiecej menopauzy', 'Stopniowy, wieloletni spadek testosteronu u mężczyzn', 'Całkowity brak erekcji po 65. roku życia'],
       },
       {
         text: 'Jak niedoczynność tarczycy wpływa na życie seksualne?',
-        answer: 'Obniża libido, może powodować zaburzenia erekcji i suchość pochwy',
-        options: ['Nie ma żadnego wpływu', 'Zwiększa libido', 'Obniża libido, może powodować zaburzenia erekcji i suchość pochwy', 'Wpływa tylko na miesiączkę, nie na seks'],
+        answer: 'Obniża libido i może powodować zaburzenia erekcji',
+        options: ['Nie ma żadnego wpływu na seks', 'Zauważalnie zwiększa libido', 'Obniża libido i może powodować zaburzenia erekcji', 'Wpływa tylko na miesiączkę, nie na seks'],
       },
       {
         text: 'Jak trening siłowy wpływa na poziom testosteronu?',
-        answer: 'Krótkoterminowo go podnosi – zwłaszcza ćwiczenia wielostawowe (martwy ciąg, przysiady)',
-        options: ['Drastycznie obniża po każdym treningu', 'Krótkoterminowo go podnosi – zwłaszcza ćwiczenia wielostawowe (martwy ciąg, przysiady)', 'Nie wpływa na testosteron', 'Podnosi tylko u mężczyzn powyżej 50. roku życia'],
+        answer: 'Krótkoterminowo go podnosi, zwłaszcza ćwiczenia wielostawowe',
+        options: ['Drastycznie obniża go po każdym treningu', 'Krótkoterminowo go podnosi, zwłaszcza ćwiczenia wielostawowe', 'Nie wpływa w żaden sposób na testosteron', 'Podnosi go tylko po 50. roku życia'],
       },
       {
         text: 'Co to są fitoestrogeny?',
-        answer: 'Roślinne związki o budowie podobnej do estrogenów – obecne m.in. w soi i siemieniu lnianym',
-        options: ['Syntetyczne estrogeny w tabletkach antykoncepcyjnych', 'Roślinne związki o budowie podobnej do estrogenów – obecne m.in. w soi i siemieniu lnianym', 'Estrogeny produkowane przez tarczycę', 'Hormony regulujące popęd u mężczyzn'],
+        answer: 'Roślinne związki o budowie podobnej do estrogenów',
+        options: ['Syntetyczne estrogeny z tabletek antykoncepcyjnych', 'Roślinne związki o budowie podobnej do estrogenów', 'Estrogeny produkowane przez tarczycę', 'Hormony regulujące popęd u mężczyzn'],
       },
       {
         text: 'Jak alkohol przewlekle wpływa na poziom testosteronu?',
-        answer: 'Długotrwałe spożycie obniża poziom testosteronu i jakość nasienia',
-        options: ['Podnosi testosteron – dlatego mężczyźni są agresywni po alkoholu', 'Długotrwałe spożycie obniża poziom testosteronu i jakość nasienia', 'Nie ma wpływu na hormony', 'Alkohol działa jak booster testosteronu'],
+        answer: 'Długotrwałe spożycie obniża testosteron i jakość nasienia',
+        options: ['Podnosi testosteron – stąd agresja mężczyzn po alkoholu', 'Długotrwałe spożycie obniża testosteron i jakość nasienia', 'Nie ma żadnego wpływu na gospodarkę hormonalną', 'Działa jak naturalny booster testosteronu'],
       },
       {
         text: 'Jaką rolę odgrywa serotonina w życiu seksualnym?',
-        answer: 'Generalnie hamuje – SSRI (antydepresanty) często redukują libido i opóźniają orgazm',
-        options: ['Napędza pożądanie i erekcję', 'Nie ma związku z seksem', 'Generalnie hamuje – SSRI (antydepresanty) często redukują libido i opóźniają orgazm', 'Zwiększa libido u kobiet, obniża u mężczyzn'],
+        answer: 'Generalnie hamuje – dlatego leki SSRI obniżają libido',
+        options: ['Napędza pożądanie i ułatwia erekcję', 'Nie ma żadnego związku z seksem', 'Generalnie hamuje – dlatego leki SSRI obniżają libido', 'Zwiększa libido u kobiet, obniża u mężczyzn'],
       },
 
       // ── NASIENIE / SPERMA ────────────────────────────────────────────────────
@@ -603,13 +603,13 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jaki procent nasienia stanowią faktycznie plemniki?',
-        answer: 'Zaledwie 2–5%',
-        options: ['Ponad 50%', 'Około 25%', 'Około 10%', 'Zaledwie 2–5%'],
+        answer: 'Około 2–5%',
+        options: ['Ponad 50%', 'Około 25%', 'Około 10%', 'Około 2–5%'],
       },
       {
         text: 'Co stanowi większość objętości nasienia?',
-        answer: 'Płyn z pęcherzyków nasiennych (60–70%) i gruczołu krokowego (~30%)',
-        options: ['Wyłącznie plemniki', 'Wydzielina najądrzy', 'Płyn z pęcherzyków nasiennych (60–70%) i gruczołu krokowego (~30%)', 'Woda i enzymy z cewki moczowej'],
+        answer: 'Płyn z pęcherzyków nasiennych i prostaty',
+        options: ['Przede wszystkim same plemniki', 'Wydzielina gromadzona w najądrzach', 'Płyn z pęcherzyków nasiennych i prostaty', 'Woda i enzymy z cewki moczowej'],
       },
       {
         text: 'Jakie jest pH nasienia?',
@@ -623,8 +623,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Co kieruje plemnikiami w stronę komórki jajowej?',
-        answer: 'Chemotaksja i termotaksja – reakcja na substancje chemiczne i temperaturę',
-        options: ['Siła grawitacji', 'Magnetyzm biologiczny', 'Chemotaksja i termotaksja – reakcja na substancje chemiczne i temperaturę', 'Prądy elektryczne macicy'],
+        answer: 'Reakcja na substancje chemiczne i temperaturę',
+        options: ['Działająca na nie siła grawitacji', 'Wewnętrzny magnetyzm biologiczny', 'Reakcja na substancje chemiczne i temperaturę', 'Prądy elektryczne ścian macicy'],
       },
       {
         text: 'Co to jest azoospermia?',
@@ -633,8 +633,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Co to jest oligospermia?',
-        answer: 'Zbyt niska liczba plemników w nasieniu (< 16 mln/ml wg WHO)',
-        options: ['Zbyt niska liczba plemników w nasieniu (< 16 mln/ml wg WHO)', 'Zbyt duża objętość ejakulatu', 'Obecność krwi w nasieniu', 'Brak ruchliwości plemników'],
+        answer: 'Zbyt niska liczba plemników w nasieniu',
+        options: ['Zbyt niska liczba plemników w nasieniu', 'Zbyt duża objętość ejakulatu', 'Obecność krwi w nasieniu', 'Całkowity brak ruchliwości plemników'],
       },
       {
         text: 'Jaką ruchliwość plemników WHO uważa za normę?',
@@ -643,23 +643,23 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Co niszczy jakość nasienia?',
-        answer: 'Ciepło, palenie, alkohol, stres i sterydy anaboliczne',
-        options: ['Witaminy C i E', 'Ciepło, palenie, alkohol, stres i sterydy anaboliczne', 'Ćwiczenia fizyczne', 'Dieta roślinna'],
+        answer: 'Ciepło, palenie, alkohol i sterydy anaboliczne',
+        options: ['Witaminy C i E oraz cynk', 'Ciepło, palenie, alkohol i sterydy anaboliczne', 'Regularne ćwiczenia fizyczne', 'Dieta bogata w warzywa i owoce'],
       },
       {
         text: 'Jak szybko może płynąć pojedynczy plemnik?',
-        answer: 'Około 3 mm/minutę (to odpowiednik 16 km/h w przeliczeniu na ludzką wielkość)',
-        options: ['Około 0,01 mm/minutę', 'Około 3 mm/minutę (to odpowiednik 16 km/h w przeliczeniu na ludzką wielkość)', 'Około 30 mm/minutę', 'Ponad 10 cm/minutę'],
+        answer: 'Około 3 mm/minutę',
+        options: ['Około 0,01 mm/minutę', 'Około 3 mm/minutę', 'Około 30 mm/minutę', 'Ponad 10 cm/minutę'],
       },
       {
         text: 'Co to jest pojemność nasienia (sperm capacitation)?',
-        answer: 'Ostateczna aktywacja biochemiczna plemnika w żeńskich drogach rodnych umożliwiająca zapłodnienie',
-        options: ['Całkowita liczba plemników w ejakulacie', 'Zdolność nasienia do zapłodnienia komórki jajowej mierzona laboratoryjnie', 'Ostateczna aktywacja biochemiczna plemnika w żeńskich drogach rodnych umożliwiająca zapłodnienie', 'Ilość fruktozy w nasieniu'],
+        answer: 'Aktywacja biochemiczna plemnika w żeńskich drogach rodnych',
+        options: ['Całkowita liczba plemników w jednym ejakulacie', 'Laboratoryjna ocena zdolności nasienia do zapłodnienia', 'Aktywacja biochemiczna plemnika w żeńskich drogach rodnych', 'Zawartość fruktozy w płynie nasiennym'],
       },
       {
         text: 'Ile plemników z całego ejakulatu dociera do komórki jajowej?',
-        answer: 'Zaledwie 10–100 z 200–500 milionów',
-        options: ['Kilka milionów', 'Kilkadziesiąt tysięcy', 'Zaledwie 10–100 z 200–500 milionów', 'Połowa ejakulatu'],
+        answer: 'Tylko 10–100 z setek milionów',
+        options: ['Kilka milionów plemników', 'Kilkadziesiąt tysięcy plemników', 'Tylko 10–100 z setek milionów', 'Mniej więcej połowa ejakulatu'],
       },
       {
         text: 'Co zawiera fruktoza w nasieniu i po co?',
@@ -668,13 +668,13 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Co sprawia, że nasienie jest początkowo gęste, a potem się upłynnia?',
-        answer: 'Proteazy prostaty rozkładają białka koagulujące pęcherzyków nasiennych w ciągu 15–30 min',
-        options: ['Temperatura ciała powoduje upłynnienie', 'Proteazy prostaty rozkładają białka koagulujące pęcherzyków nasiennych w ciągu 15–30 min', 'Kontakt z pH pochwy', 'Enzymy produkowane przez najądrze'],
+        answer: 'Proteazy prostaty rozkładają białka koagulujące nasienia',
+        options: ['Upłynnienie wywołuje temperatura ciała', 'Proteazy prostaty rozkładają białka koagulujące nasienia', 'Upłynnia je kontakt z kwaśnym pH pochwy', 'Odpowiadają za to enzymy z najądrza'],
       },
       {
         text: 'Co to jest hiperspermia?',
-        answer: 'Zbyt duża objętość ejakulatu – powyżej 6 ml',
-        options: ['Zbyt szybki wytrysk', 'Zbyt duża objętość ejakulatu – powyżej 6 ml', 'Nadmiar plemników powyżej normy', 'Wielokrotny wytrysk podczas jednego stosunku'],
+        answer: 'Zbyt duża objętość ejakulatu',
+        options: ['Zbyt szybki, przedwczesny wytrysk', 'Zbyt duża objętość ejakulatu', 'Nadmiar plemników powyżej normy', 'Wielokrotny wytrysk podczas stosunku'],
       },
       {
         text: 'Jak długo plemniki przeżywają w kobiecych drogach rodnych?',
@@ -690,8 +690,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Skąd fizycznie pochodzi nawilżenie pochwy podczas pobudzenia?',
-        answer: 'Transudacja – osocze krwi przenika przez ściany pochwy pod wpływem wazokongescji',
-        options: ['Z gruczołów Bartholina (główne źródło)', 'Z wydzieliny szyjki macicy', 'Transudacja – osocze krwi przenika przez ściany pochwy pod wpływem wazokongescji', 'Z pęcherzyków jajnikowych'],
+        answer: 'Osocze krwi przenika przez ściany pochwy (transudacja)',
+        options: ['Głównie z gruczołów Bartholina przy wejściu', 'Z wydzieliny śluzowej szyjki macicy', 'Osocze krwi przenika przez ściany pochwy (transudacja)', 'Z dojrzewających pęcherzyków jajnikowych'],
       },
       {
         text: 'Co to jest strefa erogenna?',
@@ -700,63 +700,63 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Co to jest "podwójny model kontroli seksualnej" (dual control model)?',
-        answer: 'Równowaga między układem pobudzenia (gaz) a układem hamowania (hamulec) w mózgu',
-        options: ['Aktywacja obu półkul mózgu podczas seksu', 'Równowaga między układem pobudzenia (gaz) a układem hamowania (hamulec) w mózgu', 'Synchronizacja orgazmu partnerów', 'Kontrola oddechu i tętna podczas stosunku'],
+        answer: 'Równowaga między układem pobudzenia a układem hamowania',
+        options: ['Aktywacja obu półkul mózgu podczas seksu', 'Równowaga między układem pobudzenia a układem hamowania', 'Synchronizacja orgazmu obojga partnerów', 'Kontrola oddechu i tętna podczas stosunku'],
       },
       {
         text: 'Dlaczego brodawki sutkowe mogą erekować podczas pobudzenia?',
-        answer: 'Skurcz mięśni gładkich areoli pod wpływem oksytocyny i układu współczulnego',
-        options: ['Wzrost temperatury ciała', 'Skurcz mięśni gładkich areoli pod wpływem oksytocyny i układu współczulnego', 'Rozszerzenie naczyń krwionośnych brodawek', 'Wydzielanie estrogenów do tkanki piersi'],
+        answer: 'Skurcz mięśni gładkich brodawki pod wpływem oksytocyny',
+        options: ['Miejscowy wzrost temperatury ciała', 'Skurcz mięśni gładkich brodawki pod wpływem oksytocyny', 'Rozszerzenie naczyń krwionośnych brodawek', 'Wydzielanie estrogenów do tkanki piersi'],
       },
       {
         text: 'Co to jest rumieniec seksualny (sex flush)?',
-        answer: 'Zaczerwienienie skóry klatki piersiowej i szyi spowodowane rozszerzeniem naczyń krwionośnych',
-        options: ['Pocenie się podczas seksu', 'Zaczerwienienie skóry klatki piersiowej i szyi spowodowane rozszerzeniem naczyń krwionośnych', 'Uczucie gorąca od aktywności fizycznej', 'Objawy alergii'],
+        answer: 'Zaczerwienienie skóry klatki piersiowej i szyi',
+        options: ['Wzmożone pocenie się podczas seksu', 'Zaczerwienienie skóry klatki piersiowej i szyi', 'Uczucie gorąca od wysiłku fizycznego', 'Objawy reakcji alergicznej skóry'],
       },
       {
         text: 'Jaka jest rola dopaminy w pobudzeniu seksualnym?',
-        answer: 'Napędza motywację i pożądanie – stwarza uczucie "chcenia"',
-        options: ['Wywołuje fizyczną erekcję', 'Reguluje poziom nawilżenia pochwy', 'Napędza motywację i pożądanie – stwarza uczucie "chcenia"', 'Hamuje nadmierne pobudzenie'],
+        answer: 'Napędza motywację i pożądanie',
+        options: ['Wywołuje fizyczną erekcję', 'Reguluje poziom nawilżenia pochwy', 'Napędza motywację i pożądanie', 'Hamuje nadmierne pobudzenie'],
       },
       {
         text: 'Co to jest tumescencja?',
-        answer: 'Powiększenie narządów płciowych wypełnionych krwią (wazokongescja) podczas pobudzenia',
-        options: ['Ból w narządach płciowych po długiej stymulacji', 'Powiększenie narządów płciowych wypełnionych krwią (wazokongescja) podczas pobudzenia', 'Skurcz mięśni pochwy', 'Wydzielanie śluzu szyjkowego'],
+        answer: 'Powiększenie narządów płciowych wypełnionych krwią',
+        options: ['Ból narządów płciowych po długiej stymulacji', 'Powiększenie narządów płciowych wypełnionych krwią', 'Bolesny skurcz mięśni pochwy', 'Wzmożone wydzielanie śluzu szyjkowego'],
       },
       {
         text: 'Który obszar mózgu przetwarza emocjonalne bodźce seksualne i reaguje na strach?',
-        answer: 'Ciało migdałowate (amygdala)',
-        options: ['Móżdżek', 'Kora ruchowa', 'Ciało migdałowate (amygdala)', 'Zakręt środkowy czoła'],
+        answer: 'Ciało migdałowate',
+        options: ['Móżdżek', 'Kora ruchowa', 'Ciało migdałowate', 'Zakręt czołowy środkowy'],
       },
       {
         text: 'Kiedy libido kobiety jest statystycznie najwyższe w trakcie cyklu?',
-        answer: 'Wokół owulacji (dzień 12–16) – wzrost testosteronu i estrogenów',
-        options: ['Podczas miesiączki', 'Wokół owulacji (dzień 12–16) – wzrost testosteronu i estrogenów', 'W fazie lutealnej (tydzień 3–4)', 'Libido jest stałe przez cały cykl'],
+        answer: 'Wokół owulacji (dzień 12–16)',
+        options: ['Podczas miesiączki', 'Wokół owulacji (dzień 12–16)', 'W fazie lutealnej (tydzień 3–4)', 'Libido jest stałe przez cały cykl'],
       },
       {
         text: 'Co to jest efekt Coolidge\'a?',
-        answer: 'Odnowienie podniecenia seksualnego przy nowym partnerze mimo wcześniejszego nasycenia',
-        options: ['Stopniowy wzrost podniecenia w długim związku', 'Odnowienie podniecenia seksualnego przy nowym partnerze mimo wcześniejszego nasycenia', 'Obniżenie libido po wieloletnim związku', 'Brak zainteresowania seksem u osób starszych'],
+        answer: 'Powrót podniecenia przy nowym partnerze mimo nasycenia',
+        options: ['Stopniowy wzrost podniecenia w długim związku', 'Powrót podniecenia przy nowym partnerze mimo nasycenia', 'Obniżenie libido po wieloletnim związku', 'Brak zainteresowania seksem u osób starszych'],
       },
       {
         text: 'Jak stymulacja wizualna wpływa na pobudzenie seksualne u mężczyzn i kobiet?',
-        answer: 'Obie płci reagują na bodźce wizualne – mężczyźni silniej wg klasycznych badań, kobiety bardziej kontekstualnie',
-        options: ['Wyłącznie mężczyźni reagują na wzrok', 'Kobiety reagują silniej niż mężczyźni', 'Obie płci reagują na bodźce wizualne – mężczyźni silniej wg klasycznych badań, kobiety bardziej kontekstualnie', 'Wzrok nie wpływa na pobudzenie seksualne'],
+        answer: 'Obie płci reagują, choć w nieco inny sposób',
+        options: ['Wyłącznie mężczyźni reagują na bodźce wzrokowe', 'Kobiety reagują wyraźnie silniej niż mężczyźni', 'Obie płci reagują, choć w nieco inny sposób', 'Wzrok nie wpływa na pobudzenie seksualne'],
       },
       {
         text: 'Co to jest vomeronasal organ (narząd lemieszkowy) u ludzi?',
-        answer: 'Szczątkowy narząd wykrywający feromony – u dorosłych ludzi jest nieaktywny funkcjonalnie',
-        options: ['Narząd w nosie odpowiedzialny za słuch', 'Szczątkowy narząd wykrywający feromony – u dorosłych ludzi jest nieaktywny funkcjonalnie', 'Receptor smaku ważny dla orgazmu', 'Gruczoł wydzielający feromony u szyi'],
+        answer: 'Szczątkowy narząd wykrywający feromony',
+        options: ['Narząd w nosie odpowiedzialny za słuch', 'Szczątkowy narząd wykrywający feromony', 'Receptor smaku ważny dla orgazmu', 'Gruczoł wydzielający feromony na szyi'],
       },
       {
         text: 'Co to jest seksualne wstręt (sexual disgust)?',
-        answer: 'Ewolucyjny mechanizm chroniący przed potencjalnie szkodliwymi kontaktami seksualnymi',
-        options: ['Kliniczne zaburzenie polegające na awersji do wszystkiego co seksualne', 'Ewolucyjny mechanizm chroniący przed potencjalnie szkodliwymi kontaktami seksualnymi', 'Niemożność pobudzenia seksualnego', 'Fobia seksualna wymagająca leczenia'],
+        answer: 'Ewolucyjny mechanizm chroniący przed szkodliwym kontaktem',
+        options: ['Kliniczne zaburzenie – awersja do wszystkiego co seksualne', 'Ewolucyjny mechanizm chroniący przed szkodliwym kontaktem', 'Całkowita niemożność pobudzenia seksualnego', 'Fobia seksualna wymagająca leczenia'],
       },
       {
         text: 'Co się dzieje z tętnicami w narządach płciowych podczas pobudzenia?',
-        answer: 'Rozszerzają się (wazodylatacja) – krew napływa i powoduje wzwód / tumescencję',
-        options: ['Zwężają się dla lepszego ukrwienia', 'Rozszerzają się (wazodylatacja) – krew napływa i powoduje wzwód / tumescencję', 'Nie zmieniają się – to tylko efekt nerwowy', 'Pulsują szybciej bez zmiany średnicy'],
+        answer: 'Rozszerzają się, a napływ krwi powoduje wzwód',
+        options: ['Zwężają się dla lepszego ukrwienia', 'Rozszerzają się, a napływ krwi powoduje wzwód', 'Nie zmieniają się – to tylko efekt nerwowy', 'Pulsują szybciej bez zmiany średnicy'],
       },
 
       // ── REKORDY / CIEKAWOSTKI ────────────────────────────────────────────────
@@ -767,8 +767,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Do czego pierwotnie służył wibrator wynaleziony w XIX wieku?',
-        answer: 'Do lekarskiego "masażu" leczącego "histerię" – powszechną diagnozę u kobiet epoki wiktoriańskiej',
-        options: ['Do masażu pleców po pracy', 'Do lekarskiego "masażu" leczącego "histerię" – powszechną diagnozę u kobiet epoki wiktoriańskiej', 'Do badań fizjologicznych mięśni', 'Do leczenia bólu głowy elektryczną stymulacją'],
+        answer: 'Do lekarskiego "masażu" leczącego "histerię"',
+        options: ['Do masażu pleców po pracy fizycznej', 'Do lekarskiego "masażu" leczącego "histerię"', 'Do badań fizjologicznych mięśni', 'Do leczenia bólu głowy stymulacją elektryczną'],
       },
       {
         text: 'Kiedy pierwszy elektryczny wibrator trafił do powszechnej sprzedaży?',
@@ -777,43 +777,43 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jakie zwierzę ma proporcjonalnie największy penis w królestwie zwierząt?',
-        answer: 'Pąkla (barnacle) – penis może być do 8× długości ciała',
-        options: ['Słoń', 'Humbak (wieloryb)', 'Pąkla (barnacle) – penis może być do 8× długości ciała', 'Goryl'],
+        answer: 'Pąkla (skorupiak)',
+        options: ['Słoń', 'Humbak (wieloryb)', 'Pąkla (skorupiak)', 'Goryl'],
       },
       {
         text: 'Co to jest "blue balls" (epididymal hypertension)?',
-        answer: 'Bóle i dyskomfort w jądrach spowodowany długotrwałym pobudzeniem bez orgazmu – fenomen realny',
-        options: ['Mit medyczny bez podstaw naukowych', 'Choroba przenoszona drogą płciową', 'Bóle i dyskomfort w jądrach spowodowany długotrwałym pobudzeniem bez orgazmu – fenomen realny', 'Zapalenie najądrzy'],
+        answer: 'Dyskomfort w jądrach po długim pobudzeniu bez orgazmu',
+        options: ['Mit medyczny bez podstaw naukowych', 'Choroba przenoszona drogą płciową', 'Dyskomfort w jądrach po długim pobudzeniu bez orgazmu', 'Zapalenie najądrzy po przeziębieniu'],
       },
       {
         text: 'Ile razy szacunkowo przeciętna osoba uprawia seks w ciągu całego życia?',
-        answer: 'Szacunkowo 5 000–6 000 razy',
-        options: ['Około 500 razy', 'Około 1 000 razy', 'Szacunkowo 5 000–6 000 razy', 'Ponad 50 000 razy'],
+        answer: 'Około 5 000–6 000 razy',
+        options: ['Około 500 razy', 'Około 1 000 razy', 'Około 5 000–6 000 razy', 'Ponad 50 000 razy'],
       },
       {
         text: 'Który kraj jako pierwszy zdelegalizował homoseksualizm jako przestępstwo?',
-        answer: 'Francja (Code Pénal 1791, po Rewolucji Francuskiej)',
-        options: ['Holandia', 'Francja (Code Pénal 1791, po Rewolucji Francuskiej)', 'Szwecja', 'USA'],
+        answer: 'Francja',
+        options: ['Holandia', 'Francja', 'Szwecja', 'USA'],
       },
       {
         text: 'Jaki związek chemiczny w czekoladzie naśladuje uczucie zakochania?',
-        answer: 'Fenyloetylamine (PEA) – naturalna substancja uwalniania podczas zakochania',
-        options: ['Teofilina', 'Kofeina', 'Fenyloetylamine (PEA) – naturalna substancja uwalniania podczas zakochania', 'Serotonina zawarta w kakao'],
+        answer: 'Fenyloetyloamina (PEA)',
+        options: ['Teofilina', 'Kofeina', 'Fenyloetyloamina (PEA)', 'Serotonina z kakao'],
       },
       {
         text: 'Jaką najczęstszą fantazję seksualną mają kobiety wg badań?',
-        answer: 'Seks z nieznanym partnerem lub w niecodziennym miejscu',
-        options: ['Seks z gwiazdą filmową', 'Seks z nieznanym partnerem lub w niecodziennym miejscu', 'Seks z kobietą (dla hetero)', 'Fantazje BDSM'],
+        answer: 'Seks z nieznajomym lub w nietypowym miejscu',
+        options: ['Seks ze znaną gwiazdą filmową', 'Seks z nieznajomym lub w nietypowym miejscu', 'Seks z inną kobietą (u hetero)', 'Fantazje z motywami BDSM'],
       },
       {
         text: 'Które zwierzę jest uważane za symbol monogamii seksualnej wśród naczelnych?',
-        answer: 'Gibon – utrzymuje pary monogamiczne dłużej niż większość naczelnych',
-        options: ['Szympans', 'Goryl', 'Gibon – utrzymuje pary monogamiczne dłużej niż większość naczelnych', 'Makak'],
+        answer: 'Gibon',
+        options: ['Szympans', 'Goryl', 'Gibon', 'Makak'],
       },
       {
         text: 'Co to jest "beer goggles effect" – potwierdzony naukowo?',
-        answer: 'Postrzeganie innych jako atrakcyjniejszych pod wpływem alkoholu',
-        options: ['Zamazane widzenie po alkoholu', 'Postrzeganie innych jako atrakcyjniejszych pod wpływem alkoholu', 'Uczucie ciepła po piwie', 'Wzrost tolerancji na alkohol'],
+        answer: 'Postrzeganie innych jako atrakcyjniejszych po alkoholu',
+        options: ['Zamazane, nieostre widzenie po alkoholu', 'Postrzeganie innych jako atrakcyjniejszych po alkoholu', 'Uczucie przyjemnego ciepła po piwie', 'Stopniowy wzrost tolerancji na alkohol'],
       },
       {
         text: 'Ile kalorii spala przeciętny stosunek seksualny? (PLoS ONE 2013)',
@@ -822,8 +822,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Który starożytny grecki lekarz jako pierwszy szczegółowo opisał kobiecy orgazm?',
-        answer: 'Galen z Pergamonu (II w. n.e.)',
-        options: ['Hipokrates', 'Arystoteles', 'Galen z Pergamonu (II w. n.e.)', 'Sokrates'],
+        answer: 'Galen z Pergamonu',
+        options: ['Hipokrates', 'Arystoteles', 'Galen z Pergamonu', 'Sokrates'],
       },
       {
         text: 'Jaka jest najczęstsza pozycja seksualna na świecie wg badań?',
@@ -832,8 +832,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent badanych przez Kinsey kobiet przyznało się do masturbacji?',
-        answer: 'Około 62–70% (badanie z lat 50.)',
-        options: ['Około 5%', 'Około 20%', 'Około 62–70% (badanie z lat 50.)', 'Prawie 100%'],
+        answer: 'Około 62–70%',
+        options: ['Około 5%', 'Około 20%', 'Około 62–70%', 'Prawie 100%'],
       },
       {
         text: 'Który lekarz jako pierwszy opisał punkt G w publikacji naukowej (1950)?',
@@ -844,13 +844,13 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       // ── ZDROWIE INTYMNE ──────────────────────────────────────────────────────
       {
         text: 'Co to jest HPV?',
-        answer: 'Ludzki wirus brodawczaka – najczęstszy wirus przenoszony drogą płciową, może powodować raka szyjki macicy',
-        options: ['Wirus wywołujący opryszczkę narządów płciowych', 'Ludzki wirus brodawczaka – najczęstszy wirus przenoszony drogą płciową, może powodować raka szyjki macicy', 'Wirus HIV w formie utajonej', 'Zakażenie grzybicze narządów płciowych'],
+        answer: 'Ludzki wirus brodawczaka – może powodować raka szyjki macicy',
+        options: ['Wirus wywołujący opryszczkę narządów płciowych', 'Ludzki wirus brodawczaka – może powodować raka szyjki macicy', 'Wirus HIV w formie utajonej', 'Zakażenie grzybicze narządów płciowych'],
       },
       {
         text: 'Który środek jest najskuteczniejszy w zapobieganiu przenoszeniu STI?',
-        answer: 'Prezerwatywa (kondom) stosowana prawidłowo',
-        options: ['Antykoncepcja hormonalna', 'Prezerwatywa (kondom) stosowana prawidłowo', 'Wkładka domaciczna (IUD)', 'Wstrzemięźliwość przez kilka dni po kontakcie'],
+        answer: 'Prawidłowo stosowana prezerwatywa',
+        options: ['Antykoncepcja hormonalna', 'Prawidłowo stosowana prezerwatywa', 'Wkładka domaciczna (IUD)', 'Wstrzemięźliwość przez kilka dni'],
       },
       {
         text: 'Co wywołuje grzybicę pochwy?',
@@ -859,75 +859,75 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Co to jest endometrioza?',
-        answer: 'Stan, w którym tkanka podobna do błony śluzowej macicy rośnie poza macicą',
-        options: ['Rak endometrium', 'Stan, w którym tkanka podobna do błony śluzowej macicy rośnie poza macicą', 'Pogrubienie śluzówki macicy po menopauzie', 'Zapalenie macicy wywołane bakterią'],
+        answer: 'Tkanka podobna do śluzówki macicy rośnie poza macicą',
+        options: ['Złośliwy rak błony śluzowej macicy', 'Tkanka podobna do śluzówki macicy rośnie poza macicą', 'Pogrubienie śluzówki macicy po menopauzie', 'Zapalenie macicy wywołane bakterią'],
       },
       {
         text: 'Co to jest PCOS (zespół policystycznych jajników)?',
-        answer: 'Zaburzenie hormonalne powodujące nieregularne owulacje, cysty jajnikowe i nadmiar androgenów',
-        options: ['Nowotwór jajnika', 'Zaburzenie hormonalne powodujące nieregularne owulacje, cysty jajnikowe i nadmiar androgenów', 'Zapalenie jajowodów', 'Przedwczesna menopauza'],
+        answer: 'Zaburzenie hormonalne z nieregularną owulacją i cystami',
+        options: ['Złośliwy nowotwór jajnika', 'Zaburzenie hormonalne z nieregularną owulacją i cystami', 'Bakteryjne zapalenie jajowodów', 'Przedwczesna menopauza przed 40. rokiem'],
       },
       {
         text: 'Które STI można przenieść bez penetracji, przez sam kontakt skóry?',
-        answer: 'Opryszczka (HSV) i HPV – przenoszą się kontaktowo',
-        options: ['Chlamydia', 'HIV', 'Opryszczka (HSV) i HPV – przenoszą się kontaktowo', 'Kiła (wyłącznie przez krew)'],
+        answer: 'Opryszczka (HSV) i HPV',
+        options: ['Chlamydia', 'HIV', 'Opryszczka (HSV) i HPV', 'Kiła (tylko przez krew)'],
       },
       {
         text: 'Jaki środek zapobiega najczęstszym typom HPV powodującym raka szyjki macicy?',
-        answer: 'Szczepionka HPV (Gardasil 9) – podawana przed inicjacją seksualną',
-        options: ['Antybiotyk przyjmowany profilaktycznie', 'Szczepionka HPV (Gardasil 9) – podawana przed inicjacją seksualną', 'Regularne cytologie', 'Antykoncepcja hormonalna'],
+        answer: 'Szczepionka HPV (Gardasil 9)',
+        options: ['Antybiotyk przyjmowany profilaktycznie', 'Szczepionka HPV (Gardasil 9)', 'Regularnie wykonywana cytologia', 'Antykoncepcja hormonalna'],
       },
       {
         text: 'Co to jest rzęsistkowica (trichomoniasis)?',
-        answer: 'Pasożytnicze STI wywołane przez Trichomonas vaginalis – często bezobjawowe',
-        options: ['Zakażenie grzybicze pochwy', 'Wirusowe STI powodujące brodawki', 'Pasożytnicze STI wywołane przez Trichomonas vaginalis – często bezobjawowe', 'Bakteryjne zapalenie pochwy'],
+        answer: 'Pasożytnicze STI wywołane przez Trichomonas vaginalis',
+        options: ['Grzybicze zakażenie błony śluzowej pochwy', 'Wirusowe STI powodujące brodawki płciowe', 'Pasożytnicze STI wywołane przez Trichomonas vaginalis', 'Bakteryjne zapalenie błony śluzowej pochwy'],
       },
       {
         text: 'Jakie lubrykanty są bezpieczne do stosowania z prezerwatywami lateksowymi?',
-        answer: 'Na bazie wody lub silikonu – tłuszczowe niszczą lateks',
-        options: ['Olej kokosowy', 'Wazelina', 'Na bazie wody lub silikonu – tłuszczowe niszczą lateks', 'Krem nawilżający do ciała'],
+        answer: 'Na bazie wody lub silikonu',
+        options: ['Na bazie oleju kokosowego', 'Na bazie wazeliny', 'Na bazie wody lub silikonu', 'Zwykły krem nawilżający do ciała'],
       },
       {
         text: 'Jak antybiotyki wpływają na florę bakteryjną pochwy?',
-        answer: 'Mogą zaburzyć równowagę Lactobacillus i wywołać grzybicę wtórną',
-        options: ['Poprawiają florę bakteryjną pochwy', 'Nie mają wpływu na florę pochwy', 'Mogą zaburzyć równowagę Lactobacillus i wywołać grzybicę wtórną', 'Leczą infekcje grzybicze pochwy'],
+        answer: 'Mogą zaburzyć równowagę flory i wywołać grzybicę',
+        options: ['Wyraźnie poprawiają florę bakteryjną pochwy', 'Mogą zaburzyć równowagę flory i wywołać grzybicę', 'Nie mają żadnego wpływu na florę pochwy', 'Skutecznie leczą infekcje grzybicze pochwy'],
       },
       {
         text: 'Co to jest PrEP?',
-        answer: 'Pre-Exposure Prophylaxis – codzienny lek antyretrowirusowy zapobiegający zakażeniu HIV',
-        options: ['Szczepionka na HPV po kontakcie', 'Pre-Exposure Prophylaxis – codzienny lek antyretrowirusowy zapobiegający zakażeniu HIV', 'Antykoncepcja awaryjna dla kobiet', 'Test na HIV wykonywany w domu'],
+        answer: 'Codzienny lek zapobiegający zakażeniu HIV',
+        options: ['Szczepionka na HPV podawana po kontakcie', 'Codzienny lek zapobiegający zakażeniu HIV', 'Antykoncepcja awaryjna dla kobiet', 'Domowy test wykrywający zakażenie HIV'],
       },
       {
         text: 'Jaki jest objaw pierwotny kiły (syfilisu)?',
-        answer: 'Bezbolesny twardy wrzód (szankier) w miejscu wniknięcia bakterii Treponema pallidum',
-        options: ['Ropna wydzielina z narządów płciowych', 'Swędzenie i pieczenie pochwy', 'Bezbolesny twardy wrzód (szankier) w miejscu wniknięcia bakterii Treponema pallidum', 'Wysypka krostkowa narządów płciowych'],
+        answer: 'Bezbolesny twardy wrzód w miejscu zakażenia',
+        options: ['Ropna wydzielina z narządów płciowych', 'Swędzenie i pieczenie pochwy', 'Bezbolesny twardy wrzód w miejscu zakażenia', 'Wysypka krostkowa narządów płciowych'],
       },
       {
         text: 'Jaki jest problem z gonorrhea (rzeżączką) w XXI wieku?',
-        answer: 'Narastająca oporność na antybiotyki – szczepy XDR oporne na wszystkie standardowe leki',
-        options: ['Nie istnieje skuteczna diagnostyka', 'Narastająca oporność na antybiotyki – szczepy XDR oporne na wszystkie standardowe leki', 'Brak szczepionki i brak leczenia', 'Choroba sama ustępuje bez leczenia'],
+        answer: 'Narastająca oporność na antybiotyki',
+        options: ['Nie istnieje skuteczna diagnostyka', 'Narastająca oporność na antybiotyki', 'Brak szczepionki i brak leczenia', 'Choroba sama ustępuje bez leczenia'],
       },
       {
         text: 'Do czego służy cytologia (wymaz Pap smear)?',
-        answer: 'Przesiewowe badanie wykrywające zmiany przedrakowe i raka szyjki macicy',
-        options: ['Badanie pH pochwy', 'Diagnoza infekcji grzybiczych', 'Przesiewowe badanie wykrywające zmiany przedrakowe i raka szyjki macicy', 'Kontrola hormonu ciążowego'],
+        answer: 'Wykrywanie zmian przedrakowych szyjki macicy',
+        options: ['Badanie pH wydzieliny pochwy', 'Diagnoza infekcji grzybiczych pochwy', 'Wykrywanie zmian przedrakowych szyjki macicy', 'Kontrola poziomu hormonu ciążowego'],
       },
       {
         text: 'Jaką rolę pełnią probiotyki dla zdrowia pochwy?',
-        answer: 'Wspomagają odbudowę flory Lactobacillus i obniżają ryzyko BV i grzybicy',
-        options: ['Zastępują antybiotyki w leczeniu STI', 'Wspomagają odbudowę flory Lactobacillus i obniżają ryzyko BV i grzybicy', 'Leczą endometriozę', 'Nie mają udowodnionego wpływu na pochwę'],
+        answer: 'Wspomagają odbudowę flory i obniżają ryzyko infekcji',
+        options: ['Całkowicie zastępują antybiotyki w leczeniu STI', 'Wspomagają odbudowę flory i obniżają ryzyko infekcji', 'Skutecznie leczą endometriozę', 'Nie mają udowodnionego wpływu na pochwę'],
       },
 
       // ── MÓZG I SEKS ─────────────────────────────────────────────────────────
       {
         text: 'Jaką rolę pełni podwzgórze w życiu seksualnym?',
-        answer: 'Kontroluje wydzielanie hormonów płciowych poprzez hormony uwalniające (GnRH)',
-        options: ['Przetwarza bodźce wzrokowe erotyczne', 'Kontroluje wydzielanie hormonów płciowych poprzez hormony uwalniające (GnRH)', 'Odpowiada za fizyczny wzwód', 'Jest centrum doznań zmysłowych'],
+        answer: 'Kontroluje wydzielanie hormonów płciowych',
+        options: ['Przetwarza erotyczne bodźce wzrokowe', 'Kontroluje wydzielanie hormonów płciowych', 'Odpowiada za fizyczny wzwód', 'Jest centrum doznań zmysłowych'],
       },
       {
         text: 'Co to jest jądro półleżące (nucleus accumbens) i jakie ma znaczenie w seksie?',
-        answer: 'Centrum nagrody mózgu – aktywowane przez pożądanie seksualne i orgazm',
-        options: ['Centrum bólu regulujące odczuwanie w narządach płciowych', 'Centrum nagrody mózgu – aktywowane przez pożądanie seksualne i orgazm', 'Część układu limbicznego odpowiedzialna za strach', 'Obszar mózgu kontrolujący ruch podczas stosunku'],
+        answer: 'Centrum nagrody aktywowane przez orgazm',
+        options: ['Centrum bólu regulujące narządy płciowe', 'Centrum nagrody aktywowane przez orgazm', 'Część układu limbicznego odpowiedzialna za strach', 'Obszar kontrolujący ruch podczas stosunku'],
       },
       {
         text: 'Jaką rolę pełni wyspa (insula) podczas seksu?',
@@ -951,33 +951,33 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Co to jest HSDD (Hypoactive Sexual Desire Disorder)?',
-        answer: 'Klinicznie niskie lub nieobecne pożądanie seksualne powodujące distres u pacjenta',
-        options: ['Nadmierne pożądanie seksualne', 'Klinicznie niskie lub nieobecne pożądanie seksualne powodujące distres u pacjenta', 'Zaburzenie erekcji', 'Ból podczas stosunku'],
+        answer: 'Klinicznie niskie lub nieobecne pożądanie seksualne',
+        options: ['Nadmierne, niekontrolowane pożądanie seksualne', 'Klinicznie niskie lub nieobecne pożądanie seksualne', 'Uporczywe zaburzenie erekcji', 'Ból odczuwany podczas stosunku'],
       },
       {
         text: 'Jak stres niszczy popęd seksualny na poziomie neurobiologicznym?',
-        answer: 'Kortyzol hamuje oś podwzgórze-przysadka-gonady, obniżając produkcję hormonów płciowych',
-        options: ['Stres bezpośrednio uszkadza narządy płciowe', 'Kortyzol hamuje oś podwzgórze-przysadka-gonady, obniżając produkcję hormonów płciowych', 'Adrenalina blokuje wrażliwość nerwową genitaliów', 'Stres nie ma udowodnionego wpływu na libido'],
+        answer: 'Kortyzol hamuje oś podwzgórze-przysadka-gonady',
+        options: ['Stres bezpośrednio uszkadza narządy płciowe', 'Kortyzol hamuje oś podwzgórze-przysadka-gonady', 'Adrenalina blokuje wrażliwość nerwową genitaliów', 'Stres nie ma udowodnionego wpływu na libido'],
       },
       {
         text: 'Jaka jest rola endorfin podczas seksu i orgazmu?',
-        answer: 'Działają przeciwbólowo i wywołują euforię – podobnie jak morfina wiążą się z receptorami opioidowymi',
-        options: ['Regulują poziom estrogenów', 'Powodują skurcze mięśni niezbędne do orgazmu', 'Działają przeciwbólowo i wywołują euforię – podobnie jak morfina wiążą się z receptorami opioidowymi', 'Są głównym neuroprzekaźnikiem pożądania'],
+        answer: 'Działają przeciwbólowo i wywołują euforię',
+        options: ['Regulują poziom estrogenów we krwi', 'Powodują skurcze mięśni niezbędne do orgazmu', 'Działają przeciwbólowo i wywołują euforię', 'Są głównym neuroprzekaźnikiem pożądania'],
       },
       {
         text: 'Czy regularny seks wpływa na funkcje poznawcze?',
-        answer: 'Badania sugerują poprawę pamięci i neurogenezę hipokampa u aktywnych seksualnie',
-        options: ['Nie ma żadnych badań na ten temat', 'Pogarsza koncentrację z powodu hormonów', 'Badania sugerują poprawę pamięci i neurogenezę hipokampa u aktywnych seksualnie', 'Tylko u kobiet po 50. roku życia'],
+        answer: 'Badania sugerują poprawę pamięci i neurogenezę',
+        options: ['Nie ma żadnych badań na ten temat', 'Pogarsza koncentrację z powodu hormonów', 'Badania sugerują poprawę pamięci i neurogenezę', 'Działa tak tylko u kobiet po 50. roku życia'],
       },
       {
         text: 'Co to jest warunkowanie seksualne (sexual conditioning)?',
-        answer: 'Kojarzenie neutralnych bodźców z pobudzeniem (wzorzec Pawłowski) – podstawa wielu fetyszy',
-        options: ['Genetyczne programowanie preferencji seksualnych', 'Terapia seksualna oparta na warunkowaniu behawioralnym', 'Kojarzenie neutralnych bodźców z pobudzeniem (wzorzec Pawłowski) – podstawa wielu fetyszy', 'Trening kontroli orgazmu w terapii par'],
+        answer: 'Kojarzenie neutralnych bodźców z pobudzeniem',
+        options: ['Genetyczne programowanie preferencji seksualnych', 'Terapia seksualna oparta na behawioryzmie', 'Kojarzenie neutralnych bodźców z pobudzeniem', 'Trening kontroli orgazmu w terapii par'],
       },
       {
         text: 'Jak uzależnienie od pornografii wpływa na mózg wg badań neuroobrazowania?',
-        answer: 'Desensytyzacja układu nagrody – potrzeba silniejszych bodźców dla tego samego efektu',
-        options: ['Trwałe uszkodzenie kory wzrokowej', 'Desensytyzacja układu nagrody – potrzeba silniejszych bodźców dla tego samego efektu', 'Nadaktywność obszarów odpowiedzialnych za pamięć', 'Zmniejszenie objętości hipokampa'],
+        answer: 'Stępienie układu nagrody – potrzeba silniejszych bodźców',
+        options: ['Trwałe uszkodzenie kory wzrokowej', 'Stępienie układu nagrody – potrzeba silniejszych bodźców', 'Nadaktywność obszarów odpowiedzialnych za pamięć', 'Zmniejszenie objętości hipokampa'],
       },
       {
         text: 'Co to jest neuroplastyczność a seksualność?',
@@ -991,15 +991,15 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Czy mózg może doświadczyć orgazmu bez fizycznej stymulacji genitalnej?',
-        answer: 'Tak – nocne orgazmy, orgazmy podczas hipnozy lub spontaniczne orgazmy mózgowe',
-        options: ['Nie – orgazm wymaga bezwzględnie stymulacji fizycznej', 'Tak – nocne orgazmy, orgazmy podczas hipnozy lub spontaniczne orgazmy mózgowe', 'Tylko u kobiet, nie u mężczyzn', 'Jedynie u osób z zaburzeniami neurologicznymi'],
+        answer: 'Tak – np. nocne orgazmy lub orgazmy podczas hipnozy',
+        options: ['Nie – orgazm wymaga bezwzględnie stymulacji fizycznej', 'Tak – np. nocne orgazmy lub orgazmy podczas hipnozy', 'Tylko u kobiet, nie u mężczyzn', 'Jedynie u osób z zaburzeniami neurologicznymi'],
       },
 
       // ── DODATKOWE FAKTY ──────────────────────────────────────────────────────
       {
         text: 'Co to jest libido?',
-        answer: 'Popęd seksualny – napędzany przez testosteron, dopaminę i czynniki psychologiczne',
-        options: ['Hormon produkowany wyłącznie przez jajniki', 'Popęd seksualny – napędzany przez testosteron, dopaminę i czynniki psychologiczne', 'Zdolność do orgazmu', 'Poziom nawilżenia pochwy podczas pobudzenia'],
+        answer: 'Popęd seksualny napędzany hormonami i psychiką',
+        options: ['Hormon produkowany wyłącznie przez jajniki', 'Popęd seksualny napędzany hormonami i psychiką', 'Zdolność do osiągania orgazmu', 'Poziom nawilżenia pochwy przy pobudzeniu'],
       },
       {
         text: 'Który nerw jest głównym "nerwem przyjemności" narządów płciowych u obu płci?',
@@ -1008,43 +1008,43 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jak wiele procent par doświadcza tzw. "desire discrepancy" (różnic w popędzie seksualnym)?',
-        answer: 'Ponad 80% par w długotrwałych związkach',
-        options: ['Około 10%', 'Około 30%', 'Ponad 80% par w długotrwałych związkach', 'Jest to rzadkie zjawisko – poniżej 5%'],
+        answer: 'Ponad 80% par',
+        options: ['Około 10% par', 'Około 30% par', 'Ponad 80% par', 'Poniżej 5% par'],
       },
       {
         text: 'Ile wynosi typowy obwód pochwy w spoczynku?',
-        answer: 'Około 5–7 cm (obwód, nie średnica)',
-        options: ['Około 1 cm', 'Około 3 cm', 'Około 5–7 cm (obwód, nie średnica)', 'Ponad 15 cm'],
+        answer: 'Około 5–7 cm',
+        options: ['Około 1 cm', 'Około 3 cm', 'Około 5–7 cm', 'Ponad 15 cm'],
       },
       {
         text: 'Co to jest oksytocyna i dlaczego nazywana jest "hormonem przytulania"?',
-        answer: 'Hormon wydzielany podczas dotyku, orgazmu i karmienia – wzmacnia więź i zaufanie',
-        options: ['Hormon wydzielany wyłącznie podczas ciąży', 'Hormon wydzielany podczas dotyku, orgazmu i karmienia – wzmacnia więź i zaufanie', 'Neuroprzekaźnik napędzający pożądanie seksualne', 'Enzym regulujący nawilżenie pochwy'],
+        answer: 'Hormon wydzielany przy dotyku, orgazmie i karmieniu',
+        options: ['Hormon wydzielany wyłącznie podczas ciąży', 'Hormon wydzielany przy dotyku, orgazmie i karmieniu', 'Neuroprzekaźnik napędzający pożądanie seksualne', 'Enzym regulujący nawilżenie pochwy'],
       },
       {
         text: 'Ile procent par stosuje regularnie jakąś formę antykoncepcji?',
-        answer: 'Około 57% par na świecie (WHO 2019)',
-        options: ['Około 10%', 'Około 35%', 'Około 57% par na świecie (WHO 2019)', 'Ponad 90%'],
+        answer: 'Około 57% par',
+        options: ['Około 10% par', 'Około 35% par', 'Około 57% par', 'Ponad 90% par'],
       },
       {
         text: 'Jak długo trwa ejakulacja (sam akt wyrzutu nasienia) u mężczyzny?',
-        answer: 'Kilka sekund – zwykle 3–10 sekund',
-        options: ['Ułamek sekundy', 'Kilka sekund – zwykle 3–10 sekund', 'Około minuty', 'Trwa tak długo jak orgazm – 3–15 sekund'],
+        answer: 'Kilka sekund (zwykle 3–10)',
+        options: ['Zaledwie ułamek sekundy', 'Kilka sekund (zwykle 3–10)', 'Około jednej minuty', 'Tak długo jak orgazm – 3–15 sekund'],
       },
       {
         text: 'Co to jest menstruacja retrograde (wsteczna miesiączka)?',
-        answer: 'Krew miesiączkowa cofa się przez jajowody do jamy otrzewnej – czynnik ryzyka endometriozy',
-        options: ['Miesiączka trwająca ponad 10 dni', 'Brak krwawienia mimo cyklu', 'Krew miesiączkowa cofa się przez jajowody do jamy otrzewnej – czynnik ryzyka endometriozy', 'Nieregularne miesiączkowanie'],
+        answer: 'Krew miesiączkowa cofa się przez jajowody do otrzewnej',
+        options: ['Miesiączka trwająca ponad 10 dni', 'Brak krwawienia mimo trwającego cyklu', 'Krew miesiączkowa cofa się przez jajowody do otrzewnej', 'Nieregularne, nieprzewidywalne miesiączkowanie'],
       },
       {
         text: 'Ile plemników zdrowego mężczyzny jest morfologicznie "normalnych" wg WHO?',
-        answer: 'Wystarczy 4% normalnych – reszta może mieć drobne wady morfologiczne',
-        options: ['Co najmniej 90%', 'Co najmniej 50%', 'Co najmniej 20%', 'Wystarczy 4% normalnych – reszta może mieć drobne wady morfologiczne'],
+        answer: 'Wystarczy 4% prawidłowych',
+        options: ['Co najmniej 90%', 'Co najmniej 50%', 'Co najmniej 20%', 'Wystarczy 4% prawidłowych'],
       },
       {
         text: 'Co to jest ginekomastia?',
-        answer: 'Powiększenie tkanki gruczołowej piersi u mężczyzn – może być spowodowane zaburzeniem hormonalnym',
-        options: ['Rak piersi u mężczyzn', 'Powiększenie tkanki gruczołowej piersi u mężczyzn – może być spowodowane zaburzeniem hormonalnym', 'Nadmiar estrogenów powodujący impotencję', 'Stan zapalny piersi u kobiet po porodzie'],
+        answer: 'Powiększenie tkanki gruczołowej piersi u mężczyzn',
+        options: ['Złośliwy rak piersi u mężczyzn', 'Powiększenie tkanki gruczołowej piersi u mężczyzn', 'Nadmiar estrogenów powodujący impotencję', 'Stan zapalny piersi u kobiet po porodzie'],
       },
       {
         text: 'Co to jest refleks erekcji (reflex erection) vs psychogenna erekcja?',
@@ -1053,13 +1053,13 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jak wiek wpływa na refrakcję (czas między orgazmami) u mężczyzn?',
-        answer: 'Wydłuża się z wiekiem – z minut u nastolatka do godzin lub doby u mężczyzny 50+',
-        options: ['Skraca się z wiekiem dzięki doświadczeniu', 'Wydłuża się z wiekiem – z minut u nastolatka do godzin lub doby u mężczyzny 50+', 'Pozostaje stała przez całe życie', 'Zależy wyłącznie od diety, nie wieku'],
+        answer: 'Wydłuża się z wiekiem – od minut do nawet doby',
+        options: ['Skraca się z wiekiem dzięki doświadczeniu', 'Wydłuża się z wiekiem – od minut do nawet doby', 'Pozostaje stała przez całe życie', 'Zależy wyłącznie od diety, nie od wieku'],
       },
       {
         text: 'Ile kosztuje energetycznie jeden spermatogon (komórka macierzysta plemnika) na drodze do gotowego plemnika?',
-        answer: 'Każdy dojrzały plemnik to wynik wielu podziałów przez 64–74 dni – organizm wytwarza ~1500/s',
-        options: ['Każdy jest produkowany indywidualnie i trwa 1 dzień', 'Każdy dojrzały plemnik to wynik wielu podziałów przez 64–74 dni – organizm wytwarza ~1500/s', 'Produkcja jest jednorazowa – zasoby na całe życie', 'Jeden cykl trwa 7 dni i produkuje 1 mln komórek'],
+        answer: 'Dojrzewanie trwa 64–74 dni; organizm tworzy ~1500/s',
+        options: ['Każdy jest produkowany osobno w ciągu 1 dnia', 'Dojrzewanie trwa 64–74 dni; organizm tworzy ~1500/s', 'Produkcja jest jednorazowa – zasoby na całe życie', 'Jeden cykl trwa 7 dni i daje 1 mln komórek'],
       },
     ],
   },
@@ -1109,8 +1109,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jak pandemia COVID-19 wpłynęła globalnie na aktywność seksualną par?',
-        answer: 'U większości spadek – stres, zmęczenie i niepewność obniżyły libido',
-        options: ['Wzrost u prawie wszystkich par', 'U większości spadek – stres, zmęczenie i niepewność obniżyły libido', 'Brak wpływu – aktywność była identyczna', 'Tylko pary bez dzieci zauważyły zmianę'],
+        answer: 'U większości spadek – z powodu stresu i zmęczenia',
+        options: ['Wzrost aktywności u prawie wszystkich par', 'U większości spadek – z powodu stresu i zmęczenia', 'Brak wpływu – aktywność była identyczna', 'Zmianę zauważyły tylko pary bez dzieci'],
       },
       {
         text: 'Ile procent singli uprawia seks regularnie (co najmniej raz w miesiącu)?',
@@ -1119,15 +1119,15 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile czasu w ciągu dorosłego życia przeciętna osoba spędza uprawiając seks?',
-        answer: 'Szacunkowo około 1% całego czasu dorosłego życia',
-        options: ['Około 10%', 'Około 5%', 'Szacunkowo około 1% całego czasu dorosłego życia', 'Mniej niż 0,1%'],
+        answer: 'Około 1%',
+        options: ['Około 10%', 'Około 5%', 'Około 1%', 'Mniej niż 0,1%'],
       },
 
       // ── CZAS TRWANIA ─────────────────────────────────────────────────────────
       {
         text: 'Ile trwa penetracja mierzona stoperem wg badania BJUI 2005?',
-        answer: '5,4 minuty (mediana)',
-        options: ['1 minuta', '5,4 minuty (mediana)', '20 minut', '45 minut'],
+        answer: '5,4 minuty',
+        options: ['1 minuta', '5,4 minuty', '20 minut', '45 minut'],
       },
       {
         text: 'Co seksuolodzy uznają za "za krótko" w czasie trwania penetracji?',
@@ -1156,8 +1156,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jak SSRI (antydepresanty serotoninowe) wpływają na czas do wytrysku?',
-        answer: 'Znacznie go wydłużają – nawet 5–10-krotnie u niektórych mężczyzn',
-        options: ['Skracają czas do wytrysku', 'Nie mają wpływu', 'Znacznie go wydłużają – nawet 5–10-krotnie u niektórych mężczyzn', 'Całkowicie blokują wytrysk'],
+        answer: 'Znacznie go wydłużają',
+        options: ['Wyraźnie skracają czas do wytrysku', 'Nie mają żadnego wpływu', 'Znacznie go wydłużają', 'Całkowicie blokują wytrysk'],
       },
       {
         text: 'Ile procent mężczyzn doświadcza przedwczesnego wytrysku (czas penetracji < 2 min)? (ISSM)',
@@ -1193,13 +1193,13 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jak duże jest "orgasm gap" między kobietami lesbijkami a heteroseksualnymi?',
-        answer: 'Lesbijki osiągają orgazm w ~86% vs ~65% heteroseksualnych kobiet',
-        options: ['Brak różnicy – obie grupy ~65%', 'Lesbijki osiągają orgazm w ~86% vs ~65% heteroseksualnych kobiet', 'Heteroseksualne kobiety osiągają orgazm częściej', 'Różnica wynosi zaledwie 2%'],
+        answer: 'Lesbijki ~86% vs heteroseksualne kobiety ~65%',
+        options: ['Brak różnicy – obie grupy około 65%', 'Lesbijki ~86% vs heteroseksualne kobiety ~65%', 'Heteroseksualne kobiety osiągają orgazm częściej', 'Różnica wynosi zaledwie 2%'],
       },
       {
         text: 'W jakiej pozycji kobiety najczęściej osiągają orgazm wg badań?',
-        answer: 'Jeździec (cowgirl) – najlepsza kontrola stymulacji łechtaczki',
-        options: ['Misjonarz', 'Doggy style', 'Jeździec (cowgirl) – najlepsza kontrola stymulacji łechtaczki', 'Łyżeczka'],
+        answer: 'Jeździec (cowgirl)',
+        options: ['Misjonarz', 'Doggy style', 'Jeździec (cowgirl)', 'Łyżeczka'],
       },
       {
         text: 'Ile minut stymulacji potrzebuje przeciętna kobieta do osiągnięcia orgazmu?',
@@ -1213,8 +1213,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jak masturbacja wpływa na zdolność do osiągania orgazmu z partnerem?',
-        answer: 'Kobiety regularnie masturbujące się osiągają orgazm z partnerem statystycznie częściej',
-        options: ['Zmniejsza wrażliwość na dotyk partnera', 'Nie ma żadnego wpływu', 'Kobiety regularnie masturbujące się osiągają orgazm z partnerem statystycznie częściej', 'Zmniejsza szansę na orgazm z partnerem'],
+        answer: 'Zwiększa szansę na orgazm z partnerem',
+        options: ['Zmniejsza wrażliwość na dotyk partnera', 'Nie ma żadnego wpływu na orgazm', 'Zwiększa szansę na orgazm z partnerem', 'Zmniejsza szansę na orgazm z partnerem'],
       },
       {
         text: 'Jaki procent kobiet twierdzi, że doświadczyła orgazmu wielokrotnego?',
@@ -1240,18 +1240,18 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Dlaczego mężczyźni statystycznie podają wyższe liczby partnerów niż kobiety?',
-        answer: '"Reporting bias" – mężczyźni zawyżają, kobiety zaniżają z powodów społecznych',
-        options: ['Bo faktycznie mają więcej partnerów', '"Reporting bias" – mężczyźni zawyżają, kobiety zaniżają z powodów społecznych', 'Bo mają inne rozumienie pojęcia "partner"', 'To mit – podają identyczne liczby'],
+        answer: 'Mężczyźni zawyżają, a kobiety zaniżają liczby',
+        options: ['Bo faktycznie mają więcej partnerów', 'Mężczyźni zawyżają, a kobiety zaniżają liczby', 'Bo inaczej rozumieją pojęcie "partner"', 'To mit – podają identyczne liczby'],
       },
       {
         text: 'Ile procent dorosłych miało więcej niż 10 partnerów seksualnych?',
-        answer: 'Około 20–30% w krajach zachodnich',
-        options: ['Poniżej 1%', 'Około 5%', 'Około 20–30% w krajach zachodnich', 'Ponad 70%'],
+        answer: 'Około 20–30%',
+        options: ['Poniżej 1%', 'Około 5%', 'Około 20–30%', 'Ponad 70%'],
       },
       {
         text: 'Jaki procent dorosłych przyznaje się do relacji pozamałżeńskiej (zdrady)?',
-        answer: 'Około 15–25% (różni się znacznie wg kraju i metodologii)',
-        options: ['Poniżej 1%', 'Około 5%', 'Około 15–25% (różni się znacznie wg kraju i metodologii)', 'Ponad 60%'],
+        answer: 'Około 15–25%',
+        options: ['Poniżej 1%', 'Około 5%', 'Około 15–25%', 'Ponad 60%'],
       },
       {
         text: 'Ile procent pierwszych stosunków odbywa się jako "przypadkowy seks" (one-night stand)?',
@@ -1260,8 +1260,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent randek przez aplikacje (Tinder, Bumble) prowadzi do kontaktu seksualnego?',
-        answer: 'Około 30–40% wg badań użytkowników',
-        options: ['Poniżej 5%', 'Około 15%', 'Około 30–40% wg badań użytkowników', 'Prawie 100%'],
+        answer: 'Około 30–40%',
+        options: ['Poniżej 5%', 'Około 15%', 'Około 30–40%', 'Prawie 100%'],
       },
 
       // ── WIEK INICJACJI ───────────────────────────────────────────────────────
@@ -1277,8 +1277,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Które kraje mają statystycznie najniższy wiek inicjacji seksualnej?',
-        answer: 'Islandia i kraje skandynawskie – średnio ~15–16 lat',
-        options: ['Francja i Włochy', 'Islandia i kraje skandynawskie – średnio ~15–16 lat', 'Brazylia i Argentyna', 'USA i Kanada'],
+        answer: 'Islandia i kraje skandynawskie',
+        options: ['Francja i Włochy', 'Islandia i kraje skandynawskie', 'Brazylia i Argentyna', 'USA i Kanada'],
       },
       {
         text: 'W jakim wieku kobiety mają statystycznie największe libido wg badań?',
@@ -1287,8 +1287,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jak wiek inicjacji koreluje z późniejszą liczbą partnerów?',
-        answer: 'Wcześniejsza inicjacja koreluje ze statystycznie wyższą liczbą partnerów w życiu',
-        options: ['Brak jakiejkolwiek korelacji', 'Wcześniejsza inicjacja koreluje ze statystycznie wyższą liczbą partnerów w życiu', 'Późniejsza inicjacja = więcej partnerów', 'Wiek inicjacji wpływa tylko na płeć partnera'],
+        answer: 'Wcześniejsza inicjacja = statystycznie więcej partnerów',
+        options: ['Nie ma między nimi żadnej korelacji', 'Wcześniejsza inicjacja = statystycznie więcej partnerów', 'Późniejsza inicjacja = więcej partnerów', 'Wiek inicjacji wpływa tylko na płeć partnera'],
       },
       {
         text: 'Jaki procent nastolatków 15-letnich w Polsce jest aktywnych seksualnie?',
@@ -1314,8 +1314,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent par regularnie praktykuje elementy BDSM (wiązanie, dominacja)?',
-        answer: 'Około 5–10% regularnie; 25–30% eksperymentowało',
-        options: ['Poniżej 0,5%', 'Około 5–10% regularnie; 25–30% eksperymentowało', 'Ponad 60%', 'BDSM praktykują wyłącznie mężczyźni'],
+        answer: 'Około 5–10% regularnie',
+        options: ['Poniżej 0,5% dorosłych', 'Około 5–10% regularnie', 'Ponad 60% dorosłych', 'Wyłącznie mężczyźni praktykują BDSM'],
       },
       {
         text: 'Ile procent dorosłych przyznaje się do odgrywania ról (role-playing) w seksie?',
@@ -1329,8 +1329,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jaka jest najpopularniejsza fantazja seksualna na świecie wg badań Justin Lehmiller (2018)?',
-        answer: 'Seks wieloosobowy (trójkąt, grupowy)',
-        options: ['BDSM i dominacja', 'Seks z celebrytą', 'Seks wieloosobowy (trójkąt, grupowy)', 'Transwestytyzm'],
+        answer: 'Seks wieloosobowy (grupowy)',
+        options: ['BDSM i dominacja', 'Seks ze znanym celebrytą', 'Seks wieloosobowy (grupowy)', 'Transwestytyzm'],
       },
       {
         text: 'Ile procent kobiet przyznaje, że fantazjuje podczas stosunku z partnerem?',
@@ -1371,8 +1371,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'W jakim wieku typowo kobiety zaczynają masturbować się?',
-        answer: 'Zwykle 13–16 lat – później niż mężczyźni',
-        options: ['6–8 lat', 'Zwykle 13–16 lat – później niż mężczyźni', 'Dopiero po inicjacji seksualnej', 'Nie ma typowego wieku – jest bardzo zróżnicowany'],
+        answer: 'Zwykle 13–16 lat',
+        options: ['6–8 lat', 'Zwykle 13–16 lat', 'Dopiero po inicjacji seksualnej', 'Nie ma typowego wieku – bardzo zróżnicowany'],
       },
       {
         text: 'Ile procent kobiet używa wibratora podczas masturbacji?',
@@ -1413,13 +1413,13 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent par stosuje lubrykanty seksualne?',
-        answer: 'Około 30–40% regularnie',
-        options: ['Poniżej 1%', 'Około 10%', 'Około 30–40% regularnie', 'Prawie wszystkie pary'],
+        answer: 'Około 30–40%',
+        options: ['Poniżej 1%', 'Około 10%', 'Około 30–40%', 'Prawie wszystkie pary'],
       },
       {
         text: 'Jaki stosunek kobiet inicjuje seks oralny u partnera?',
-        answer: 'Około 50–55% regularnie inicjuje',
-        options: ['Poniżej 5%', 'Około 20%', 'Około 50–55% regularnie inicjuje', 'Prawie wszystkie'],
+        answer: 'Około 50–55%',
+        options: ['Poniżej 5%', 'Około 20%', 'Około 50–55%', 'Prawie wszystkie'],
       },
 
       // ── PORNOGRAFIA ──────────────────────────────────────────────────────────
@@ -1445,13 +1445,13 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jak regularne oglądanie pornografii wpływa na satysfakcję seksualną w związku?',
-        answer: 'U części par koreluje ze spadkiem satysfakcji i nierealistycznymi oczekiwaniami',
-        options: ['Zawsze poprawia satysfakcję', 'U części par koreluje ze spadkiem satysfakcji i nierealistycznymi oczekiwaniami', 'Nie ma żadnego związku', 'Zawsze niszczy związek'],
+        answer: 'U części par wiąże się ze spadkiem satysfakcji',
+        options: ['Zawsze poprawia satysfakcję w związku', 'U części par wiąże się ze spadkiem satysfakcji', 'Nie ma żadnego związku z satysfakcją', 'Zawsze niszczy każdy związek'],
       },
       {
         text: 'Jaka jest najpopularniejsza kategoria pornografii wśród kobiet wg danych Pornhub?',
-        answer: '"Lesbian" (treści z kobietami) i "romantic"',
-        options: ['"Hardcore" i "gangbang"', '"Lesbian" (treści z kobietami) i "romantic"', '"BDSM" i "bondage"', '"Amateur" i "casting"'],
+        answer: '"Lesbian" i "romantic"',
+        options: ['"Hardcore" i "gangbang"', '"Lesbian" i "romantic"', '"BDSM" i "bondage"', '"Amateur" i "casting"'],
       },
 
       // ── ZABAWKI EROTYCZNE ────────────────────────────────────────────────────
@@ -1477,15 +1477,15 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent kobiet, które używają wibratorów, łatwiej osiąga orgazm niż bez nich?',
-        answer: 'Ponad 90% deklaruje większą łatwość osiągania orgazmu',
-        options: ['Około 20%', 'Około 50%', 'Około 70%', 'Ponad 90% deklaruje większą łatwość osiągania orgazmu'],
+        answer: 'Ponad 90%',
+        options: ['Około 20%', 'Około 50%', 'Około 70%', 'Ponad 90%'],
       },
 
       // ── ANTYKONCEPCJA ────────────────────────────────────────────────────────
       {
         text: 'Jaka jest najczęściej stosowana metoda antykoncepcji na świecie?',
-        answer: 'Sterylizacja żeńska – ponad 22% par',
-        options: ['Prezerwatywa', 'Pigułka hormonalna', 'Sterylizacja żeńska – ponad 22% par', 'Wkładka domaciczna (IUD)'],
+        answer: 'Sterylizacja żeńska',
+        options: ['Prezerwatywa', 'Pigułka hormonalna', 'Sterylizacja żeńska', 'Wkładka domaciczna (IUD)'],
       },
       {
         text: 'Ile procent ciąż na świecie jest nieplanowanych wg WHO?',
@@ -1514,25 +1514,25 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jak skuteczna jest wkładka domaciczna (IUD) jako metoda antykoncepcji?',
-        answer: 'Ponad 99% – jedna z najskuteczniejszych odwracalnych metod',
-        options: ['Około 70%', 'Około 85%', 'Około 95%', 'Ponad 99% – jedna z najskuteczniejszych odwracalnych metod'],
+        answer: 'Ponad 99%',
+        options: ['Około 70%', 'Około 85%', 'Około 95%', 'Ponad 99%'],
       },
 
       // ── ZDROWIE SEKSUALNE W LICZBACH ─────────────────────────────────────────
       {
         text: 'Co jest najpowszechniejszym STI na świecie?',
-        answer: 'HPV – zaraża ponad 80% aktywnych seksualnie w jakimś momencie życia',
-        options: ['Chlamydia', 'Kiła (syfilis)', 'HPV – zaraża ponad 80% aktywnych seksualnie w jakimś momencie życia', 'HIV'],
+        answer: 'HPV',
+        options: ['Chlamydia', 'Kiła (syfilis)', 'HPV', 'HIV'],
       },
       {
         text: 'Ile nowych zakażeń HIV notuje się rocznie na świecie?',
-        answer: 'Około 1,5 miliona (UNAIDS 2023)',
-        options: ['Kilkaset tysięcy', 'Około 1,5 miliona (UNAIDS 2023)', 'Około 50 milionów', 'Ponad 200 milionów'],
+        answer: 'Około 1,5 miliona',
+        options: ['Kilkaset tysięcy', 'Około 1,5 miliona', 'Około 50 milionów', 'Ponad 200 milionów'],
       },
       {
         text: 'Ile osób na świecie żyje aktualnie z HIV?',
-        answer: 'Około 39 milionów (UNAIDS 2023)',
-        options: ['Kilkaset tysięcy', 'Około 5 milionów', 'Około 39 milionów (UNAIDS 2023)', 'Ponad 500 milionów'],
+        answer: 'Około 39 milionów',
+        options: ['Kilkaset tysięcy', 'Około 5 milionów', 'Około 39 milionów', 'Ponad 500 milionów'],
       },
       {
         text: 'Ile procent osób chorych na chlamydię nie ma żadnych objawów?',
@@ -1546,8 +1546,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent przypadków HIV na świecie przenosi się drogą seksualną?',
-        answer: 'Około 80% nowych zakażeń',
-        options: ['Około 10%', 'Około 40%', 'Około 80% nowych zakażeń', 'Prawie 100%'],
+        answer: 'Około 80%',
+        options: ['Około 10%', 'Około 40%', 'Około 80%', 'Prawie 100%'],
       },
       {
         text: 'Jaki procent kobiet na świecie doświadczyło przemocy seksualnej? (WHO)',
@@ -1573,18 +1573,18 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jak orgazm wpływa na jakość snu?',
-        answer: 'Uwalnia prolaktynę i oksytocynę – ułatwia zasypianie',
-        options: ['Utrudnia zasypianie z powodu adrenaliny', 'Nie ma wpływu na sen', 'Uwalnia prolaktynę i oksytocynę – ułatwia zasypianie', 'Tylko u mężczyzn skraca czas zasypiania'],
+        answer: 'Uwalnia hormony ułatwiające zasypianie',
+        options: ['Utrudnia zasypianie z powodu adrenaliny', 'Nie ma żadnego wpływu na sen', 'Uwalnia hormony ułatwiające zasypianie', 'Skraca czas zasypiania tylko u mężczyzn'],
       },
       {
         text: 'O ile podnosi się poziom immunoglobuliny A (IgA) przy seksie 1–2× tygodniowo? (Wilkes Univ.)',
-        answer: 'O około 30% w porównaniu do osób abstynentów',
-        options: ['Spada – wysiłek osłabia odporność', 'O około 5%', 'O około 30% w porównaniu do osób abstynentów', 'Ponad 10-krotnie'],
+        answer: 'O około 30%',
+        options: ['Spada – wysiłek osłabia odporność', 'O około 5%', 'O około 30%', 'Ponad 10-krotnie'],
       },
       {
         text: 'Jaki procent osób z migreną doświadcza jej złagodzenia podczas seksu/orgazmu?',
-        answer: 'Około 60% – orgazm wykazuje działanie przeciwbólowe (University of Münster)',
-        options: ['Poniżej 1%', 'Około 20%', 'Około 60% – orgazm wykazuje działanie przeciwbólowe (University of Münster)', 'Seks zawsze nasila ból głowy'],
+        answer: 'Około 60%',
+        options: ['Poniżej 1%', 'Około 20%', 'Około 60%', 'Seks zawsze nasila ból głowy'],
       },
       {
         text: 'Jak seks wpływa na poziom kortyzolu (hormonu stresu)?',
@@ -1593,8 +1593,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile kalorii spala przeciętna para rocznie uprawiając seks?',
-        answer: 'Szacunkowo 5 000–6 000 kcal rocznie',
-        options: ['Około 100 kcal', 'Około 500 kcal', 'Szacunkowo 5 000–6 000 kcal rocznie', 'Ponad 50 000 kcal'],
+        answer: 'Około 5 000–6 000 kcal',
+        options: ['Około 100 kcal', 'Około 500 kcal', 'Około 5 000–6 000 kcal', 'Ponad 50 000 kcal'],
       },
 
       // ── ZWIĄZKI I SEKS ───────────────────────────────────────────────────────
@@ -1610,13 +1610,13 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Co jest najczęstszą przyczyną problemów seksualnych w związkach wg terapeutów?',
-        answer: 'Stres, zmęczenie i brak komunikacji o potrzebach',
-        options: ['Fizyczne problemy zdrowotne', 'Brak pociągu fizycznego', 'Stres, zmęczenie i brak komunikacji o potrzebach', 'Oglądanie pornografii'],
+        answer: 'Stres, zmęczenie i brak komunikacji',
+        options: ['Poważne fizyczne problemy zdrowotne', 'Całkowity brak pociągu fizycznego', 'Stres, zmęczenie i brak komunikacji', 'Zbyt częste oglądanie pornografii'],
       },
       {
         text: 'Jak komunikacja seksualna w parze wpływa na satysfakcję?',
-        answer: 'Pary otwarcie komunikujące potrzeby mają o ~50% wyższą satysfakcję',
-        options: ['Nie ma żadnego mierzalnego wpływu', 'Zmniejsza satysfakcję – "magia" zanika', 'Pary otwarcie komunikujące potrzeby mają o ~50% wyższą satysfakcję', 'Wpływa tylko na kobiety'],
+        answer: 'Otwarta komunikacja zwiększa satysfakcję o ~50%',
+        options: ['Nie ma żadnego mierzalnego wpływu', 'Zmniejsza satysfakcję – "magia" zanika', 'Otwarta komunikacja zwiększa satysfakcję o ~50%', 'Wpływa wyłącznie na kobiety'],
       },
       {
         text: 'Do jakiej częstotliwości seksu wzrasta szczęście w związku, po czym plateau? (Muise et al. 2016)',
@@ -1625,15 +1625,15 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent par przyznaje się do otwartego związku (consensual non-monogamy)?',
-        answer: 'Około 4–5% w USA, nieco wyżej w Europie Zachodniej',
-        options: ['Poniżej 0,1%', 'Około 4–5% w USA, nieco wyżej w Europie Zachodniej', 'Około 30%', 'Ponad 50%'],
+        answer: 'Około 4–5%',
+        options: ['Poniżej 0,1%', 'Około 4–5%', 'Około 30%', 'Ponad 50%'],
       },
 
       // ── MITY I FAKTY ────────────────────────────────────────────────────────
       {
         text: 'Czy mężczyźni myślą o seksie co 7 sekund?',
-        answer: 'To mit – badanie Fisher (2011): średnio 19 razy dziennie, nie co 7 sekund',
-        options: ['Tak – potwierdzono to naukowo', 'To mit – badanie Fisher (2011): średnio 19 razy dziennie, nie co 7 sekund', 'Tak, ale tylko mężczyźni poniżej 30. roku życia', 'Tak, lecz tylko przy braku partnerki'],
+        answer: 'To mit – średnio około 19 razy dziennie',
+        options: ['Tak – zostało to potwierdzone naukowo', 'To mit – średnio około 19 razy dziennie', 'Tak, ale tylko mężczyźni przed 30. rokiem życia', 'Tak, lecz tylko przy braku partnerki'],
       },
       {
         text: 'Ile procent kobiet ocenia swój pierwszy seks z nowym partnerem jako rozczarowujący?',
@@ -1642,18 +1642,18 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Czy seks przed zawodami sportowymi osłabia wyniki sportowe?',
-        answer: 'Nie – badania nie wykazują wpływu na wyniki przy seksie 12h przed zawodami',
-        options: ['Tak – znacząco osłabia siłę i wytrzymałość', 'Tak, ale tylko u mężczyzn', 'Nie – badania nie wykazują wpływu na wyniki przy seksie 12h przed zawodami', 'Tak – podwyższa testosteron zbyt mocno'],
+        answer: 'Nie – badania nie wykazują wpływu na wyniki',
+        options: ['Tak – znacząco osłabia siłę i wytrzymałość', 'Tak, ale efekt dotyczy tylko mężczyzn', 'Nie – badania nie wykazują wpływu na wyniki', 'Tak – zbyt mocno podwyższa testosteron'],
       },
       {
         text: 'Czy seks podczas menstruacji jest medycznie niebezpieczny?',
-        answer: 'Nie – jest bezpieczny, choć nieznacznie zwiększa ryzyko transmisji STI',
-        options: ['Tak – grozi poważnymi infekcjami', 'Tak – jest bolesny dla obu stron', 'Nie – jest bezpieczny, choć nieznacznie zwiększa ryzyko transmisji STI', 'Tak – menstruacja uniemożliwia przyjemność seksualną'],
+        answer: 'Nie – jest bezpieczny dla obojga partnerów',
+        options: ['Tak – grozi poważnymi infekcjami', 'Tak – jest bolesny dla obu stron', 'Nie – jest bezpieczny dla obojga partnerów', 'Tak – uniemożliwia przyjemność seksualną'],
       },
       {
         text: 'Ile procent badanych kobiet deklaruje, że rozmiar penisa partnera nie ma dla nich znaczenia?',
-        answer: 'Około 85% jest zadowolona z rozmiaru partnera (Anik Geraerts et al.)',
-        options: ['Około 10%', 'Około 40%', 'Około 85% jest zadowolona z rozmiaru partnera (Anik Geraerts et al.)', 'Prawie 100%'],
+        answer: 'Około 85%',
+        options: ['Około 10%', 'Około 40%', 'Około 85%', 'Prawie 100%'],
       },
       {
         text: 'Ile procent dorosłych miało seks z kimś z pracy?',
@@ -1667,15 +1667,15 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent dorosłych regularnie rozmawia z partnerem o swoich potrzebach seksualnych?',
-        answer: 'Tylko około 40–50% – mimo że to klucz do satysfakcji',
-        options: ['Prawie wszyscy – ~90%', 'Około 70%', 'Tylko około 40–50% – mimo że to klucz do satysfakcji', 'Poniżej 10%'],
+        answer: 'Tylko około 40–50%',
+        options: ['Prawie wszyscy – ~90%', 'Około 70%', 'Tylko około 40–50%', 'Poniżej 10%'],
       },
 
       // ── SATYSFAKCJA SEKSUALNA ────────────────────────────────────────────────
       {
         text: 'Jaki procent dorosłych deklaruje ogólne zadowolenie ze swojego życia seksualnego?',
-        answer: 'Około 60–65% (Global Sex Survey Durex)',
-        options: ['Poniżej 10%', 'Około 30%', 'Około 60–65% (Global Sex Survey Durex)', 'Ponad 95%'],
+        answer: 'Około 60–65%',
+        options: ['Poniżej 10%', 'Około 30%', 'Około 60–65%', 'Ponad 95%'],
       },
       {
         text: 'Co jest najczęstszą przyczyną niezadowolenia seksualnego u kobiet?',
@@ -1694,13 +1694,13 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent dorosłych po 50. roku życia deklaruje satysfakcjonujące życie seksualne?',
-        answer: 'Około 50–55% – seks po 50 jest aktywny i satysfakcjonujący',
-        options: ['Poniżej 1%', 'Około 10%', 'Około 50–55% – seks po 50 jest aktywny i satysfakcjonujący', 'Prawie wszyscy – ~90%'],
+        answer: 'Około 50–55%',
+        options: ['Poniżej 1%', 'Około 10%', 'Około 50–55%', 'Prawie wszyscy – ~90%'],
       },
       {
         text: 'Jak samoocena własnego ciała wpływa na satysfakcję seksualną?',
-        answer: 'Lepsza samoocena ciała koreluje ze znacznie wyższą satysfakcją seksualną',
-        options: ['Brak jakiegokolwiek związku', 'Gorsza samoocena = lepsza koncentracja na partnerze', 'Lepsza samoocena ciała koreluje ze znacznie wyższą satysfakcją seksualną', 'Wpływa tylko na libido, nie satysfakcję'],
+        answer: 'Lepsza samoocena ciała = wyższa satysfakcja seksualna',
+        options: ['Nie ma między nimi żadnego związku', 'Gorsza samoocena = lepsza koncentracja na partnerze', 'Lepsza samoocena ciała = wyższa satysfakcja seksualna', 'Wpływa tylko na libido, nie na satysfakcję'],
       },
       {
         text: 'Ile procent par deklaruje "rutynowy seks" bez szczególnego entuzjazmu?',
@@ -1709,18 +1709,18 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jak styl życia (ćwiczenia, dieta) wpływa na satysfakcję seksualną?',
-        answer: 'Aktywne fizycznie osoby raportują o ~30% wyższą satysfakcję seksualną',
-        options: ['Brak związku między stylem życia a seksem', 'Ćwiczenia obniżają libido z powodu zmęczenia', 'Aktywne fizycznie osoby raportują o ~30% wyższą satysfakcję seksualną', 'Dieta jest jedynym ważnym czynnikiem'],
+        answer: 'Osoby aktywne fizycznie raportują wyższą satysfakcję',
+        options: ['Brak związku między stylem życia a seksem', 'Ćwiczenia obniżają libido z powodu zmęczenia', 'Osoby aktywne fizycznie raportują wyższą satysfakcję', 'Dieta jest jedynym ważnym czynnikiem'],
       },
       {
         text: 'Jak długo po porodzie przeciętna para wznawia aktywność seksualną?',
-        answer: 'Medycznie 6–8 tygodni, faktycznie często 3–6 miesięcy',
-        options: ['Tydzień po porodzie', '2 tygodnie po porodzie', 'Medycznie 6–8 tygodni, faktycznie często 3–6 miesięcy', 'Po ukończeniu przez dziecko 1. roku życia'],
+        answer: 'Zwykle po 6–8 tygodniach',
+        options: ['Już tydzień po porodzie', 'Około 2 tygodnie po porodzie', 'Zwykle po 6–8 tygodniach', 'Dopiero po 1. roku życia dziecka'],
       },
       {
         text: 'Jaki procent par uprawia "seks planowany" (np. wyznaczony dzień tygodnia)?',
-        answer: 'Około 20–25% par w długich związkach',
-        options: ['Poniżej 1%', 'Około 20–25% par w długich związkach', 'Około 70%', 'Prawie wszyscy w związkach powyżej 10 lat'],
+        answer: 'Około 20–25% par',
+        options: ['Poniżej 1% par', 'Około 20–25% par', 'Około 70% par', 'Prawie wszyscy w związkach 10+ lat'],
       },
 
       // ── SEKS NA ŚWIECIE ──────────────────────────────────────────────────────
@@ -1736,55 +1736,55 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent kobiet na świecie doświadczyło przemocy seksualnej co najmniej raz w życiu?',
-        answer: 'Około 27–30% wg WHO',
-        options: ['Poniżej 1%', 'Około 5%', 'Około 27–30% wg WHO', 'Ponad 80%'],
+        answer: 'Około 27–30%',
+        options: ['Poniżej 1%', 'Około 5%', 'Około 27–30%', 'Ponad 80%'],
       },
       {
         text: 'Jaki jest najniższy wiek przyzwolenia seksualnego w Europie (z pewnymi zastrzeżeniami)?',
-        answer: '14 lat (Niemcy, Austria, Włochy – z zastrzeżeniami co do różnicy wieku)',
-        options: ['10 lat', '14 lat (Niemcy, Austria, Włochy – z zastrzeżeniami co do różnicy wieku)', '18 lat w całej UE', '21 lat'],
+        answer: '14 lat',
+        options: ['10 lat', '14 lat', '18 lat w całej UE', '21 lat'],
       },
       {
         text: 'Jak religia wpływa na statystyki seksualne?',
-        answer: 'Osoby głęboko religijne statystycznie inicjują seksualnie później i mają mniej partnerów',
-        options: ['Religia nie wpływa na zachowania seksualne', 'Osoby religijne mają więcej seksu – rodziny są większe', 'Osoby głęboko religijne statystycznie inicjują seksualnie później i mają mniej partnerów', 'Religia wpływa tylko na orientację seksualną'],
+        answer: 'Inicjują seksualnie później i mają mniej partnerów',
+        options: ['Religia nie wpływa na zachowania seksualne', 'Osoby religijne mają więcej seksu – większe rodziny', 'Inicjują seksualnie później i mają mniej partnerów', 'Religia wpływa tylko na orientację seksualną'],
       },
       {
         text: 'Który kontynent ma globalnie najwyższy wskaźnik zakażeń HIV?',
-        answer: 'Afryka Subsaharyjska – ok. 25 mln z 39 mln zakażonych na świecie',
-        options: ['Azja Południowo-Wschodnia', 'Ameryka Łacińska', 'Afryka Subsaharyjska – ok. 25 mln z 39 mln zakażonych na świecie', 'Europa Wschodnia'],
+        answer: 'Afryka Subsaharyjska',
+        options: ['Azja Południowo-Wschodnia', 'Ameryka Łacińska', 'Afryka Subsaharyjska', 'Europa Wschodnia'],
       },
       {
         text: 'Ile procent gwałtów jest zgłaszanych organom ścigania?',
-        answer: 'Około 10–15% – zdecydowana większość pozostaje niezgłoszona',
-        options: ['Prawie wszystkie – ~90%', 'Około 50%', 'Około 30%', 'Około 10–15% – zdecydowana większość pozostaje niezgłoszona'],
+        answer: 'Około 10–15%',
+        options: ['Prawie wszystkie – ~90%', 'Około 50%', 'Około 30%', 'Około 10–15%'],
       },
       {
         text: 'W których krajach stosunki pozamałżeńskie są nadal prawnie karane śmiercią?',
-        answer: 'W niektórych częściach Iranu, Arabii Saudyjskiej i Afganistanu',
-        options: ['W żadnym kraju na świecie', 'Tylko w Afryce Zachodniej', 'W niektórych częściach Iranu, Arabii Saudyjskiej i Afganistanu', 'Wyłącznie w Ameryce Południowej'],
+        answer: 'W niektórych krajach Bliskiego Wschodu i Azji',
+        options: ['W żadnym kraju na świecie', 'Tylko w krajach Afryki Zachodniej', 'W niektórych krajach Bliskiego Wschodu i Azji', 'Wyłącznie w Ameryce Południowej'],
       },
 
       // ── ORIENTACJA I TOŻSAMOŚĆ ───────────────────────────────────────────────
       {
         text: 'Ile procent dorosłych identyfikuje się jako biseksualnych (kraje zachodnie)?',
-        answer: 'Około 3–5% (więcej u kobiet niż mężczyzn)',
-        options: ['Poniżej 0,1%', 'Około 3–5% (więcej u kobiet niż mężczyzn)', 'Około 25%', 'Ponad 50%'],
+        answer: 'Około 3–5%',
+        options: ['Poniżej 0,1%', 'Około 3–5%', 'Około 25%', 'Ponad 50%'],
       },
       {
         text: 'Ile procent dorosłych identyfikuje się jako homoseksualni?',
-        answer: 'Około 2–4% (różnice wg kraju i metodologii)',
-        options: ['Poniżej 0,1%', 'Około 2–4% (różnice wg kraju i metodologii)', 'Około 20%', 'Ponad 40%'],
+        answer: 'Około 2–4%',
+        options: ['Poniżej 0,1%', 'Około 2–4%', 'Około 20%', 'Ponad 40%'],
       },
       {
         text: 'Jak orientacja seksualna wpływa na satysfakcję seksualną?',
-        answer: 'Przy akceptacji środowiska – osoby LGB raportują podobną lub wyższą satysfakcję',
-        options: ['Osoby LGB zawsze mają niższą satysfakcję', 'Brak jakichkolwiek różnic – płeć nie ma znaczenia', 'Przy akceptacji środowiska – osoby LGB raportują podobną lub wyższą satysfakcję', 'Tylko heteroseksualiści mogą osiągać pełną satysfakcję'],
+        answer: 'Przy akceptacji – satysfakcja podobna lub wyższa',
+        options: ['Osoby LGB zawsze mają niższą satysfakcję', 'Brak jakichkolwiek różnic – płeć bez znaczenia', 'Przy akceptacji – satysfakcja podobna lub wyższa', 'Tylko heteroseksualiści osiągają pełną satysfakcję'],
       },
       {
         text: 'Jak Tinder i aplikacje randkowe wpłynęły na liczbę partnerów seksualnych?',
-        answer: 'Aktywni użytkownicy mają statystycznie więcej partnerów i częstszy casual sex',
-        options: ['Aplikacje zmniejszyły aktywność seksualną', 'Aktywni użytkownicy mają statystycznie więcej partnerów i częstszy casual sex', 'Brak mierzalnego wpływu na zachowania seksualne', 'Tylko singlom powyżej 35 lat aplikacje dają więcej partnerów'],
+        answer: 'Aktywni użytkownicy mają więcej partnerów',
+        options: ['Aplikacje zmniejszyły aktywność seksualną', 'Aktywni użytkownicy mają więcej partnerów', 'Brak mierzalnego wpływu na zachowania', 'Więcej partnerów dają tylko singlom 35+'],
       },
 
       // ── CIEKAWOSTKI W LICZBACH ───────────────────────────────────────────────
@@ -1800,13 +1800,13 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent singli na randkach oczekuje seksu po pierwszej randce?',
-        answer: 'Około 20–25% deklaruje takie oczekiwanie',
-        options: ['Prawie wszyscy – ~85%', 'Około 50%', 'Około 20–25% deklaruje takie oczekiwanie', 'Poniżej 1%'],
+        answer: 'Około 20–25%',
+        options: ['Prawie wszyscy – ~85%', 'Około 50%', 'Około 20–25%', 'Poniżej 1%'],
       },
       {
         text: 'Jak wykształcenie wpływa na satysfakcję seksualną?',
-        answer: 'Wyższe wykształcenie koreluje z lepszą komunikacją i wyższą satysfakcją',
-        options: ['Niższe wykształcenie = wyższa spontaniczność = więcej satysfakcji', 'Brak jakiegokolwiek związku', 'Wyższe wykształcenie koreluje z lepszą komunikacją i wyższą satysfakcją', 'Wykształcenie wpływa tylko na częstotliwość seksu'],
+        answer: 'Wyższe wykształcenie = lepsza komunikacja i satysfakcja',
+        options: ['Niższe wykształcenie = więcej spontaniczności i satysfakcji', 'Brak jakiegokolwiek związku', 'Wyższe wykształcenie = lepsza komunikacja i satysfakcja', 'Wykształcenie wpływa tylko na częstotliwość seksu'],
       },
       {
         text: 'Ile procent dorosłych kiedykolwiek miało seks w wodzie (basen, morze, wanna)?',
@@ -1815,45 +1815,45 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent dorosłych kiedykolwiek seksowało (seksting)?',
-        answer: 'Około 60–70% dorosłych z telefonem smartfonowym',
-        options: ['Poniżej 5%', 'Około 20%', 'Około 60–70% dorosłych z telefonem smartfonowym', 'Prawie wszyscy – ~99%'],
+        answer: 'Około 60–70%',
+        options: ['Poniżej 5%', 'Około 20%', 'Około 60–70%', 'Prawie wszyscy – ~99%'],
       },
       {
         text: 'Jak zarobki wpływają na częstotliwość seksu?',
-        answer: 'Wyższy dochód nieznacznie koreluje z wyższą częstotliwością seksu',
-        options: ['Zamożniejsi uprawiają seks 10x rzadziej – stres pracy', 'Wyższy dochód nieznacznie koreluje z wyższą częstotliwością seksu', 'Brak jakiegokolwiek związku', 'Biedniejsi uprawiają znacznie więcej seksu'],
+        answer: 'Wyższy dochód nieco zwiększa częstotliwość seksu',
+        options: ['Zamożniejsi uprawiają seks 10x rzadziej – stres', 'Wyższy dochód nieco zwiększa częstotliwość seksu', 'Brak jakiegokolwiek związku', 'Biedniejsi uprawiają znacznie więcej seksu'],
       },
       {
         text: 'Ile procent dorosłych kiedykolwiek uprawiało seks pod wpływem alkoholu?',
-        answer: 'Ponad 70% (badania wśród college students i dorosłych)',
-        options: ['Poniżej 5%', 'Około 30%', 'Około 50%', 'Ponad 70% (badania wśród college students i dorosłych)'],
+        answer: 'Ponad 70%',
+        options: ['Poniżej 5%', 'Około 30%', 'Około 50%', 'Ponad 70%'],
       },
       {
         text: 'Ile procent stosunków seksualnych prowadzi do ciąży, gdy nie jest stosowana antykoncepcja?',
-        answer: 'Około 20–25% stosunków w oknie płodnym kobiety',
-        options: ['Prawie każdy stosunek – ~99%', 'Około 50%', 'Około 20–25% stosunków w oknie płodnym kobiety', 'Poniżej 1%'],
+        answer: 'Około 20–25%',
+        options: ['Prawie każdy stosunek – ~99%', 'Około 50%', 'Około 20–25%', 'Poniżej 1%'],
       },
       {
         text: 'Ile procent ciąż w Polsce jest nieplanowanych?',
-        answer: 'Około 30–40% (dane GUS i WHO dla Polski)',
-        options: ['Poniżej 1%', 'Około 10%', 'Około 30–40% (dane GUS i WHO dla Polski)', 'Ponad 80%'],
+        answer: 'Około 30–40%',
+        options: ['Poniżej 1%', 'Około 10%', 'Około 30–40%', 'Ponad 80%'],
       },
       {
         text: 'Ile par par korzysta z terapii seksualnej lub poradnictwa par?',
-        answer: 'Mniej niż 5% – pomimo że problemy seksualne są powszechne',
-        options: ['Prawie wszystkie pary z problemami – ~80%', 'Około 30%', 'Około 15%', 'Mniej niż 5% – pomimo że problemy seksualne są powszechne'],
+        answer: 'Mniej niż 5%',
+        options: ['Prawie wszystkie pary z problemami – ~80%', 'Około 30%', 'Około 15%', 'Mniej niż 5%'],
       },
 
       // ── SEKS PO 50 I STAROŚĆ ─────────────────────────────────────────────────
       {
         text: 'Ile procent osób po 70. roku życia jest nadal aktywnych seksualnie?',
-        answer: 'Około 40–50% w krajach zachodnich',
-        options: ['Poniżej 1%', 'Około 10%', 'Około 40–50% w krajach zachodnich', 'Prawie wszyscy – ~90%'],
+        answer: 'Około 40–50%',
+        options: ['Poniżej 1%', 'Około 10%', 'Około 40–50%', 'Prawie wszyscy – ~90%'],
       },
       {
         text: 'Jak menopauza wpływa na libido kobiety?',
-        answer: 'U ok. 40% kobiet spada libido, u ok. 20% rośnie – brak lęku przed ciążą',
-        options: ['Całkowite wygaszenie libido u wszystkich kobiet', 'Libido zawsze rośnie po menopauzie', 'U ok. 40% kobiet spada libido, u ok. 20% rośnie – brak lęku przed ciążą', 'Menopauza nie wpływa na libido'],
+        answer: 'U części kobiet spada, u części wręcz rośnie',
+        options: ['Całkowite wygaszenie libido u wszystkich kobiet', 'Libido zawsze rośnie po menopauzie', 'U części kobiet spada, u części wręcz rośnie', 'Menopauza w ogóle nie wpływa na libido'],
       },
       {
         text: 'Jak andropauza wpływa na aktywność seksualną mężczyzn?',
@@ -1867,42 +1867,42 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jak seks w starszym wieku wpływa na zdrowie psychiczne?',
-        answer: 'Aktywność seksualna po 60. roku życia koreluje z lepszym samopoczuciem i niższą depresją',
-        options: ['Negatywny wpływ – wzrost ryzyka zawału', 'Brak żadnego wpływu na psychikę', 'Aktywność seksualna po 60. roku życia koreluje z lepszym samopoczuciem i niższą depresją', 'Pozytywny wpływ tylko u kobiet, nie mężczyzn'],
+        answer: 'Koreluje z lepszym samopoczuciem i niższą depresją',
+        options: ['Negatywny wpływ – wzrost ryzyka zawału', 'Brak żadnego wpływu na psychikę', 'Koreluje z lepszym samopoczuciem i niższą depresją', 'Pozytywny wpływ tylko u kobiet, nie mężczyzn'],
       },
 
       // ── PREZERWATYWY I BEZPIECZEŃSTWO ────────────────────────────────────────
       {
         text: 'Ile prezerwatyw sprzedaje się rocznie na całym świecie?',
-        answer: 'Szacunkowo 27–30 miliardów sztuk rocznie',
-        options: ['Kilka milionów', 'Około 500 milionów', 'Szacunkowo 27–30 miliardów sztuk rocznie', 'Ponad bilion'],
+        answer: 'Około 27–30 miliardów sztuk',
+        options: ['Kilka milionów', 'Około 500 milionów', 'Około 27–30 miliardów sztuk', 'Ponad bilion'],
       },
       {
         text: 'Ile procent stosunków seksualnych na świecie odbywa się z użyciem prezerwatywy?',
-        answer: 'Szacunkowo około 5–10% globalnie',
-        options: ['Prawie wszystkie – ~90%', 'Około 50%', 'Około 30%', 'Szacunkowo około 5–10% globalnie'],
+        answer: 'Około 5–10%',
+        options: ['Prawie wszystkie – ~90%', 'Około 50%', 'Około 30%', 'Około 5–10%'],
       },
       {
         text: 'Jak wiek wpływa na stosowanie prezerwatyw?',
-        answer: 'Nastolatki i młodzi dorośli (18–25 lat) używają prezerwatyw częściej niż osoby starsze',
-        options: ['Starsi używają prezerwatyw częściej', 'Brak różnicy wiekowej w stosowaniu', 'Nastolatki i młodzi dorośli (18–25 lat) używają prezerwatyw częściej niż osoby starsze', 'Prezerwatywy używają prawie wyłącznie osoby po 50. roku życia'],
+        answer: 'Młodzi dorośli (18–25 lat) używają ich częściej',
+        options: ['Osoby starsze używają ich częściej', 'Brak różnicy wiekowej w stosowaniu', 'Młodzi dorośli (18–25 lat) używają ich częściej', 'Używają ich prawie wyłącznie osoby 50+'],
       },
       {
         text: 'Ile procent przypadków HIV można by uniknąć przy 100% stosowaniu prezerwatyw?',
-        answer: 'Szacunkowo 80% lub więcej nowych zakażeń drogą seksualną',
-        options: ['Około 10%', 'Około 40%', 'Szacunkowo 80% lub więcej nowych zakażeń drogą seksualną', 'Prezerwatywy nie wpływają na transmisję HIV'],
+        answer: 'Około 80% lub więcej',
+        options: ['Około 10%', 'Około 40%', 'Około 80% lub więcej', 'Prezerwatywy nie wpływają na transmisję HIV'],
       },
 
       // ── SEKS ONLINE I NOWOCZESNE TRENDY ─────────────────────────────────────
       {
         text: 'Jaki procent dorosłych kiedykolwiek uczestniczył w wideo-seksie (np. przez Skype/FaceTime)?',
-        answer: 'Około 25–30% – wzrost znaczny po pandemii COVID',
-        options: ['Poniżej 1%', 'Około 10%', 'Około 25–30% – wzrost znaczny po pandemii COVID', 'Prawie wszyscy – ~80%'],
+        answer: 'Około 25–30%',
+        options: ['Poniżej 1%', 'Około 10%', 'Około 25–30%', 'Prawie wszyscy – ~80%'],
       },
       {
         text: 'Ile procent dorosłych kiedykolwiek kupiło produkt erotyczny przez internet?',
-        answer: 'Około 40–50% w krajach zachodnich',
-        options: ['Poniżej 2%', 'Około 15%', 'Około 40–50% w krajach zachodnich', 'Prawie wszyscy – ~90%'],
+        answer: 'Około 40–50%',
+        options: ['Poniżej 2%', 'Około 15%', 'Około 40–50%', 'Prawie wszyscy – ~90%'],
       },
       {
         text: 'Ile procent dorosłych przyznaje się do oglądania pornografii z partnerem razem?',
@@ -1911,30 +1911,30 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'W którym roku rynek OnlyFans gwałtownie wzrósł?',
-        answer: '2020 – podczas lockdownów pandemii COVID-19',
-        options: ['2015', '2018', '2020 – podczas lockdownów pandemii COVID-19', '2023'],
+        answer: '2020',
+        options: ['2015', '2018', '2020', '2023'],
       },
       {
         text: 'Ile dorosłych kobiet zarabia pieniądze tworząc treści dla dorosłych online?',
-        answer: 'Szacunkowo kilka milionów na całym świecie (dane nieprecyzyjne ze względu na anonimowość)',
-        options: ['Kilkaset osób globalnie', 'Szacunkowo kilka milionów na całym świecie (dane nieprecyzyjne ze względu na anonimowość)', 'Ponad 500 milionów', 'Tylko profesjonalne aktorki – rynek amatorski nie istnieje'],
+        answer: 'Szacunkowo kilka milionów na świecie',
+        options: ['Kilkaset osób globalnie', 'Szacunkowo kilka milionów na świecie', 'Ponad 500 milionów', 'Tylko profesjonalne aktorki – brak amatorek'],
       },
 
       // ── PŁODNOŚĆ W LICZBACH ──────────────────────────────────────────────────
       {
         text: 'Ile procent par w krajach zachodnich doświadcza problemów z płodnością?',
-        answer: 'Około 10–15% par starających się o dziecko',
-        options: ['Poniżej 0,5%', 'Około 3%', 'Około 10–15% par starających się o dziecko', 'Ponad 50%'],
+        answer: 'Około 10–15%',
+        options: ['Poniżej 0,5%', 'Około 3%', 'Około 10–15%', 'Ponad 50%'],
       },
       {
         text: 'W jakiej proporcji za niepłodność odpowiada czynnik męski vs żeński?',
-        answer: 'Mniej więcej po równo – ~40% mężczyźni, ~40% kobiety, ~20% oboje',
-        options: ['Wyłącznie kobieta – ~90%', 'Wyłącznie mężczyzna – ~80%', 'Mniej więcej po równo – ~40% mężczyźni, ~40% kobiety, ~20% oboje', 'Niepłodność jest zawsze obustronna'],
+        answer: 'Mniej więcej po równo między płciami',
+        options: ['Niemal wyłącznie kobieta – ~90%', 'Niemal wyłącznie mężczyzna – ~80%', 'Mniej więcej po równo między płciami', 'Niepłodność jest zawsze obustronna'],
       },
       {
         text: 'O ile spada płodność kobiety po 35. roku życia?',
-        answer: 'Znacząco – szansa na ciążę miesięcznie spada z ~20% (25 lat) do ~5% (40 lat)',
-        options: ['Nie spada – kobiety są płodne do menopauzy w tym samym stopniu', 'O 5% na rok – minimalnie', 'Znacząco – szansa na ciążę miesięcznie spada z ~20% (25 lat) do ~5% (40 lat)', 'Gwałtownie po 30. roku życia, zupełny zanik po 35.'],
+        answer: 'Znacząco – z ~20% do ~5% szansy miesięcznie',
+        options: ['Nie spada – płodne tak samo aż do menopauzy', 'O 5% na rok – minimalnie', 'Znacząco – z ~20% do ~5% szansy miesięcznie', 'Gwałtownie po 30., zupełny zanik po 35.'],
       },
       {
         text: 'Jak pandemia COVID-19 wpłynęła na wskaźniki urodzeń?',
@@ -1943,30 +1943,30 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent zapłodnień in vitro (IVF) kończy się żywym urodzeniem (kobiety do 35 lat)?',
-        answer: 'Około 40–45% na transfer (poniżej 35 lat)',
-        options: ['Prawie 100%', 'Około 70%', 'Około 40–45% na transfer (poniżej 35 lat)', 'Poniżej 5%'],
+        answer: 'Około 40–45%',
+        options: ['Prawie 100%', 'Około 70%', 'Około 40–45%', 'Poniżej 5%'],
       },
 
       // ── PSYCHOLOGIA SEKSUALNA W LICZBACH ────────────────────────────────────
       {
         text: 'Ile procent dorosłych ma co najmniej jeden fetysz seksualny?',
-        answer: 'Badania wskazują na ~30–45% (stopy i bielizna są najczęstsze)',
-        options: ['Poniżej 1% – fetysze są rzadkie', 'Około 5%', 'Badania wskazują na ~30–45% (stopy i bielizna są najczęstsze)', 'Prawie wszyscy – ~95%'],
+        answer: 'Około 30–45%',
+        options: ['Poniżej 1% – fetysze są rzadkie', 'Około 5%', 'Około 30–45%', 'Prawie wszyscy – ~95%'],
       },
       {
         text: 'Jaki jest najczęstszy fetysz seksualny na świecie wg badań?',
-        answer: 'Fetysz stóp (podofilia)',
-        options: ['Fetysz bielizny', 'Fetysz stóp (podofilia)', 'Fetysz skóry', 'Fetysz mundurów'],
+        answer: 'Fetysz stóp',
+        options: ['Fetysz bielizny', 'Fetysz stóp', 'Fetysz skóry', 'Fetysz mundurów'],
       },
       {
         text: 'Ile procent dorosłych regularnie używa aplikacji randkowych?',
-        answer: 'Około 30% samotnych dorosłych i 10–15% wszystkich dorosłych',
-        options: ['Poniżej 1%', 'Około 10% wszystkich dorosłych', 'Około 30% samotnych dorosłych i 10–15% wszystkich dorosłych', 'Ponad 80% dorosłych poniżej 40. roku życia'],
+        answer: 'Około 30% samotnych dorosłych',
+        options: ['Poniżej 1% dorosłych', 'Około 10% wszystkich dorosłych', 'Około 30% samotnych dorosłych', 'Ponad 80% dorosłych poniżej 40 lat'],
       },
       {
         text: 'Jaka jest najczęstszą przyczyną seks-terapii u par?',
-        answer: 'Różnice w poziomie pożądania (desire discrepancy)',
-        options: ['Zaburzenia erekcji', 'Niewiern ość', 'Różnice w poziomie pożądania (desire discrepancy)', 'Ból podczas stosunku'],
+        answer: 'Różnice w poziomie pożądania',
+        options: ['Zaburzenia erekcji', 'Niewierność partnera', 'Różnice w poziomie pożądania', 'Ból podczas stosunku'],
       },
       {
         text: 'Ile procent dorosłych kiedykolwiek korzystało z seks-linii telefonicznej lub czatu erotycznego?',
@@ -1975,52 +1975,52 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile dorosłych na świecie było kiedykolwiek klientem usług seksualnych (prostytucji)?',
-        answer: 'Szacunkowo 15–20% mężczyzn (głównie mężczyźni – kobiety to znikomy procent)',
-        options: ['Poniżej 0,1%', 'Około 5%', 'Szacunkowo 15–20% mężczyzn (głównie mężczyźni – kobiety to znikomy procent)', 'Ponad 60%'],
+        answer: 'Około 15–20% mężczyzn',
+        options: ['Poniżej 0,1%', 'Około 5%', 'Około 15–20% mężczyzn', 'Ponad 60%'],
       },
 
       // ── SEKS A TECHNOLOGIA ───────────────────────────────────────────────────
       {
         text: 'Jak smartfony zmieniły nawyki seksualne?',
-        answer: 'Ułatwiły dostęp do pornografii, randkowanie i komunikację seksualną (seksting)',
-        options: ['Zmniejszyły aktywność seksualną – ludzie wolą ekrany', 'Ułatwiły dostęp do pornografii, randkowanie i komunikację seksualną (seksting)', 'Nie wpłynęły na zachowania seksualne', 'Zastąpiły kontakt fizyczny u większości osób'],
+        answer: 'Ułatwiły dostęp do porno, randek i sekstingu',
+        options: ['Zmniejszyły aktywność seksualną – ludzie wolą ekrany', 'Ułatwiły dostęp do porno, randek i sekstingu', 'Nie wpłynęły na zachowania seksualne', 'Zastąpiły kontakt fizyczny u większości osób'],
       },
       {
         text: 'Ile aplikacji randkowych jest aktualnie dostępnych na rynku globalnym?',
-        answer: 'Ponad 1 500 różnych aplikacji randkowych',
-        options: ['Kilka (Tinder, Bumble, Happn)', 'Około 50', 'Około 300', 'Ponad 1 500 różnych aplikacji randkowych'],
+        answer: 'Ponad 1 500',
+        options: ['Tylko kilka popularnych', 'Około 50', 'Około 300', 'Ponad 1 500'],
       },
       {
         text: 'Co to jest "sextortion" i ilu dotyczy?',
-        answer: 'Szantaż seksualnymi zdjęciami/filmami – dotyka milionów ofiar rocznie na świecie',
-        options: ['Termin marketingowy na sexy tortion w kręgosłupie', 'Szantaż seksualnymi zdjęciami/filmami – dotyka milionów ofiar rocznie na świecie', 'Legalna forma seksbiznesu', 'Zjawisko dotyczące wyłącznie celebrytek'],
+        answer: 'Szantaż intymnymi zdjęciami lub filmami',
+        options: ['Termin marketingowy z branży fitness', 'Szantaż intymnymi zdjęciami lub filmami', 'Legalna forma seksbiznesu', 'Zjawisko dotyczące wyłącznie celebrytek'],
       },
 
       // ── MAŁŻEŃSTWO I SEKS ────────────────────────────────────────────────────
       {
         text: 'Ile procent małżeństw jest ocenianych jako "seksualnie satysfakcjonujące" przez obie strony?',
-        answer: 'Około 50–55% wg badań długoterminowych',
-        options: ['Prawie wszystkie – ~95%', 'Około 75%', 'Około 50–55% wg badań długoterminowych', 'Mniej niż 10%'],
+        answer: 'Około 50–55%',
+        options: ['Prawie wszystkie – ~95%', 'Około 75%', 'Około 50–55%', 'Mniej niż 10%'],
       },
       {
         text: 'Jak długość małżeństwa wpływa na częstotliwość seksu?',
-        answer: 'Statystycznie maleje z każdym rokiem – o ok. 20% co dekadę',
-        options: ['Rośnie – pary lepiej się poznają', 'Statystycznie maleje z każdym rokiem – o ok. 20% co dekadę', 'Pozostaje stała przez całe małżeństwo', 'Gwałtowny spadek tylko po urodzeniu dzieci, potem stała'],
+        answer: 'Stopniowo maleje – ok. 20% co dekadę',
+        options: ['Rośnie – pary coraz lepiej się poznają', 'Stopniowo maleje – ok. 20% co dekadę', 'Pozostaje stała przez całe małżeństwo', 'Spada po urodzeniu dzieci, potem jest stała'],
       },
       {
         text: 'Ile procent małżeństw przeżywa po potwierdzeniu zdrady? (wg badań par)',
-        answer: 'Około 20% udaje się utrzymać związek po zdradzie dłużej niż 5 lat',
-        options: ['Prawie wszystkie – zdrada wzmacnia związek', 'Około 80%', 'Około 50%', 'Około 20% udaje się utrzymać związek po zdradzie dłużej niż 5 lat'],
+        answer: 'Około 20%',
+        options: ['Prawie wszystkie – zdrada wzmacnia związek', 'Około 80%', 'Około 50%', 'Około 20%'],
       },
       {
         text: 'Ile procent par w Polsce decyduje się na separację lub rozwód?',
-        answer: 'Około 30% małżeństw kończy się rozwodem (GUS 2022)',
-        options: ['Poniżej 1%', 'Około 10%', 'Około 30% małżeństw kończy się rozwodem (GUS 2022)', 'Ponad 70%'],
+        answer: 'Około 30%',
+        options: ['Poniżej 1%', 'Około 10%', 'Około 30%', 'Ponad 70%'],
       },
       {
         text: 'Ile procent rozwodów jest pośrednio lub bezpośrednio związanych z problemami seksualnymi?',
-        answer: 'Około 20–30% par wskazuje seks jako jeden z głównych powodów',
-        options: ['Poniżej 1% – seks rzadko jest przyczyną rozstania', 'Około 20–30% par wskazuje seks jako jeden z głównych powodów', 'Ponad 80% – seks jest zawsze kluczowy', 'Dokładnie 50%'],
+        answer: 'Około 20–30%',
+        options: ['Poniżej 1% – seks rzadko bywa przyczyną', 'Około 20–30%', 'Ponad 80% – seks jest zawsze kluczowy', 'Dokładnie 50%'],
       },
       {
         text: 'W którym roku życia małżeńskiego najczęściej pojawia się "syndrom wypalenia seksualnego"?',
@@ -2029,15 +2029,15 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent wdowców/wdów po 65. roku życia podejmuje nowe relacje seksualne?',
-        answer: 'Około 25–35% – wbrew stereotypowi starości bez seksu',
-        options: ['Prawie żaden – ~1%', 'Około 25–35% – wbrew stereotypowi starości bez seksu', 'Ponad 80%', 'Tylko mężczyźni, kobiety rzadko'],
+        answer: 'Około 25–35%',
+        options: ['Prawie żaden – ~1%', 'Około 25–35%', 'Ponad 80%', 'Tylko mężczyźni, kobiety rzadko'],
       },
 
       // ── OSTATNIA SERIA CIEKAWOSTEK ───────────────────────────────────────────
       {
         text: 'Ile procent aktów seksualnych odbywa się spontanicznie (bez planowania)?',
-        answer: 'Około 70–80% – spontaniczność dominuje szczególnie w nowych związkach',
-        options: ['Prawie wszystkie – ~99%', 'Około 70–80% – spontaniczność dominuje szczególnie w nowych związkach', 'Mniej niż 10%', 'Równo 50/50'],
+        answer: 'Około 70–80%',
+        options: ['Prawie wszystkie – ~99%', 'Około 70–80%', 'Mniej niż 10%', 'Równo 50/50'],
       },
       {
         text: 'Ile procent dorosłych nigdy nie rozmawiało ze swoimi rodzicami o seksie?',
@@ -2046,28 +2046,28 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent kobiet przyznaje, że kiedykolwiek miała seks bez podekscytowania – wyłącznie z obowiązku?',
-        answer: 'Około 50–60% (tzw. "obligatory sex")',
-        options: ['Poniżej 1%', 'Około 10%', 'Około 50–60% (tzw. "obligatory sex")', 'Prawie wszystkie – ~90%'],
+        answer: 'Około 50–60%',
+        options: ['Poniżej 1%', 'Około 10%', 'Około 50–60%', 'Prawie wszystkie – ~90%'],
       },
       {
         text: 'Ile procent dorosłych uprawiało seks w sposób, którego potem żałowało?',
-        answer: 'Około 55–65% (badania różnych grup demograficznych)',
-        options: ['Poniżej 5%', 'Około 20%', 'Około 55–65% (badania różnych grup demograficznych)', 'Prawie wszyscy – ~99%'],
+        answer: 'Około 55–65%',
+        options: ['Poniżej 5%', 'Około 20%', 'Około 55–65%', 'Prawie wszyscy – ~99%'],
       },
       {
         text: 'Jak bardzo aktywność fizyczna wpływa na libido?',
-        answer: 'Regularne ćwiczenia (3–5x tygodniowo) zwiększają libido o 30–60% w badaniach',
-        options: ['Nie wpływa wcale', 'Ćwiczenia zmniejszają libido – ciało jest zmęczone', 'Regularne ćwiczenia (3–5x tygodniowo) zwiększają libido o 30–60% w badaniach', 'Wpływa tylko na mężczyzn'],
+        answer: 'Regularne ćwiczenia wyraźnie zwiększają libido',
+        options: ['Nie wpływa na libido wcale', 'Ćwiczenia zmniejszają libido – zmęczenie ciała', 'Regularne ćwiczenia wyraźnie zwiększają libido', 'Wpływa tylko na mężczyzn'],
       },
       {
         text: 'Ile procent dorosłych regularnie rozmawia z lekarzem o swoim życiu seksualnym?',
-        answer: 'Mniej niż 20% – pomimo że wiele problemów seksualnych ma podłoże medyczne',
-        options: ['Prawie wszyscy – lekarz pyta o seks zawsze', 'Około 50%', 'Około 35%', 'Mniej niż 20% – pomimo że wiele problemów seksualnych ma podłoże medyczne'],
+        answer: 'Mniej niż 20%',
+        options: ['Prawie wszyscy – lekarz zawsze pyta', 'Około 50%', 'Około 35%', 'Mniej niż 20%'],
       },
       {
         text: 'Ile procent dorosłych kobiet przeżyło co najmniej jeden stosunek, który był dla nich bolesny?',
-        answer: 'Około 75% kobiet doświadczyło bólu podczas seksu co najmniej raz',
-        options: ['Poniżej 5%', 'Około 25%', 'Około 50%', 'Około 75% kobiet doświadczyło bólu podczas seksu co najmniej raz'],
+        answer: 'Około 75%',
+        options: ['Poniżej 5%', 'Około 25%', 'Około 50%', 'Około 75%'],
       },
       {
         text: 'Ile procent kobiet cierpi na przewlekłą dyspareuniię (regularny ból podczas seksu)?',
@@ -2076,23 +2076,23 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent mężczyzn ma trudności z utrzymaniem erekcji co najmniej okazjonalnie?',
-        answer: 'Około 52% mężczyzn powyżej 40. roku życia (Massachusetts Male Aging Study)',
-        options: ['Poniżej 1%', 'Około 10%', 'Około 52% mężczyzn powyżej 40. roku życia (Massachusetts Male Aging Study)', 'Prawie wszyscy po 50. roku życia'],
+        answer: 'Około 52% mężczyzn po 40. roku życia',
+        options: ['Poniżej 1%', 'Około 10%', 'Około 52% mężczyzn po 40. roku życia', 'Prawie wszyscy po 50. roku życia'],
       },
       {
         text: 'Jaka jest global średnia liczba stosunków seksualnych w ciągu całego aktywnego życia?',
-        answer: 'Szacunkowo 5 000–6 000 stosunków',
-        options: ['Około 100', 'Około 1 000', 'Szacunkowo 5 000–6 000 stosunków', 'Ponad 100 000'],
+        answer: 'Około 5 000–6 000 stosunków',
+        options: ['Około 100', 'Około 1 000', 'Około 5 000–6 000 stosunków', 'Ponad 100 000'],
       },
       {
         text: 'Ile procent osób aktywnych seksualnie nigdy nie używało żadnej formy antykoncepcji?',
-        answer: 'Około 15–20% globalnie (wyżej w krajach rozwijających się)',
-        options: ['Poniżej 0,1%', 'Około 5%', 'Około 15–20% globalnie (wyżej w krajach rozwijających się)', 'Ponad 50%'],
+        answer: 'Około 15–20%',
+        options: ['Poniżej 0,1%', 'Około 5%', 'Około 15–20%', 'Ponad 50%'],
       },
       {
         text: 'Ile procent kobiet po 60. roku życia jest wciąż aktywnych seksualnie?',
-        answer: 'Około 50–65% w krajach zachodnich (wg badań AARP)',
-        options: ['Poniżej 1%', 'Około 15%', 'Około 50–65% w krajach zachodnich (wg badań AARP)', 'Prawie wszystkie – ~95%'],
+        answer: 'Około 50–65%',
+        options: ['Poniżej 1%', 'Około 15%', 'Około 50–65%', 'Prawie wszystkie – ~95%'],
       },
       {
         text: 'Co statystyki pokazują o związku między szczęściem a aktywnością seksualną?',
@@ -2101,13 +2101,13 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent dorosłych mających problemy seksualne nigdy nie szuka pomocy specjalistycznej?',
-        answer: 'Około 80–85% – duże tabu i wstyd przed wizytą u seksuologa',
-        options: ['Poniżej 5% – prawie wszyscy szukają pomocy', 'Około 30%', 'Około 55%', 'Około 80–85% – duże tabu i wstyd przed wizytą u seksuologa'],
+        answer: 'Około 80–85%',
+        options: ['Poniżej 5% – prawie wszyscy szukają pomocy', 'Około 30%', 'Około 55%', 'Około 80–85%'],
       },
       {
         text: 'Ile procent par przyznaje, że ich seks jest lepszy po kłótni (makeup sex)?',
-        answer: 'Około 30–40% deklaruje intensywniejszy seks po konflikcie',
-        options: ['Poniżej 1%', 'Około 10%', 'Około 30–40% deklaruje intensywniejszy seks po konflikcie', 'Ponad 90%'],
+        answer: 'Około 30–40%',
+        options: ['Poniżej 1%', 'Około 10%', 'Około 30–40%', 'Ponad 90%'],
       },
       {
         text: 'Ile procent dorosłych uprawiało seks na pierwszej randce?',
@@ -2116,13 +2116,13 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jaki jest wskaźnik satysfakcji seksualnej u par stosujących terapię seksualną?',
-        answer: 'Poprawa u ok. 70–80% par po 10–15 sesjach terapeutycznych',
-        options: ['Brak poprawy – terapia nie działa', 'Poprawa u ok. 10%', 'Poprawa u ok. 70–80% par po 10–15 sesjach terapeutycznych', 'Pogorszenie – terapia ujawnia głębsze problemy'],
+        answer: 'Poprawa u ok. 70–80% par',
+        options: ['Brak poprawy – terapia nie działa', 'Poprawa u ok. 10% par', 'Poprawa u ok. 70–80% par', 'Pogorszenie – terapia ujawnia głębsze problemy'],
       },
       {
         text: 'Ile procent dorosłych przyznaje, że oglądanie partnerki/partnera podczas seksu zwiększa ich satysfakcję?',
-        answer: 'Około 65–70% (silny składnik wizualny u obu płci)',
-        options: ['Poniżej 5%', 'Około 25%', 'Około 65–70% (silny składnik wizualny u obu płci)', 'Prawie wszyscy – ~99%'],
+        answer: 'Około 65–70%',
+        options: ['Poniżej 5%', 'Około 25%', 'Około 65–70%', 'Prawie wszyscy – ~99%'],
       },
     ],
   },
@@ -2182,33 +2182,33 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Czy wzrost mężczyzny koreluje z długością penisa?',
-        answer: 'Bardzo słabo – współczynnik korelacji r ≈ 0,2 (praktycznie bez znaczenia)',
-        options: ['Tak – wyscy mężczyźni mają zawsze większy penis', 'Bardzo słabo – współczynnik korelacji r ≈ 0,2 (praktycznie bez znaczenia)', 'Korelacja jest silna – r = 0,9', 'Niscy mężczyźni mają statystycznie większy penis'],
+        answer: 'Bardzo słabo – korelacja r ≈ 0,2',
+        options: ['Tak – wysocy mężczyźni zawsze mają większy penis', 'Bardzo słabo – korelacja r ≈ 0,2', 'Korelacja jest silna – r ≈ 0,9', 'Niscy mężczyźni mają statystycznie większy penis'],
       },
       {
         text: 'Co to jest choroba Peyroniego?',
-        answer: 'Skrzywienie penisa spowodowane bliznowaceniem tkanki (blaszka włóknista)',
-        options: ['Stan zapalny napletka', 'Skrzywienie penisa spowodowane bliznowaceniem tkanki (blaszka włóknista)', 'Zbyt mały penis od urodzenia', 'Ból podczas erekcji bez zmian anatomicznych'],
+        answer: 'Skrzywienie penisa wskutek bliznowacenia tkanki',
+        options: ['Stan zapalny napletka i żołędzi', 'Skrzywienie penisa wskutek bliznowacenia tkanki', 'Wrodzony zbyt mały rozmiar penisa', 'Ból podczas erekcji bez zmian anatomicznych'],
       },
       {
         text: 'Jaki procent mężczyzn ma skrzywiony penis w erekcji?',
-        answer: 'Lekkie skrzywienie do 30° jest normalne i dotyczy ok. 20–30% mężczyzn',
-        options: ['Jest to rzadkość – poniżej 1%', 'Tylko mężczyźni z chorobą Peyroniego – ~5%', 'Lekkie skrzywienie do 30° jest normalne i dotyczy ok. 20–30% mężczyzn', 'Ponad 80% – każdy penis jest skrzywiony'],
+        answer: 'Lekkie skrzywienie jest normalne – ok. 20–30%',
+        options: ['Jest to rzadkość – poniżej 1%', 'Tylko przy chorobie Peyroniego – ~5%', 'Lekkie skrzywienie jest normalne – ok. 20–30%', 'Ponad 80% – każdy penis jest skrzywiony'],
       },
       {
         text: 'Co to jest wędzidełko prącia (frenulum) i dlaczego jest ważne?',
-        answer: 'Wrażliwy fałd skóry pod żołędzią – jedno z najbardziej unerwionn miejsc na penisie',
-        options: ['Kość penisa u człowieka', 'Wrażliwy fałd skóry pod żołędzią – jedno z najbardziej unerwionn miejsc na penisie', 'Więzadło łączące penis z moszną', 'Tkanka jamista penisa'],
+        answer: 'Wrażliwy fałd skóry pod żołędzią',
+        options: ['Kość znajdująca się w penisie', 'Wrażliwy fałd skóry pod żołędzią', 'Więzadło łączące penis z moszną', 'Tkanka jamista wnętrza penisa'],
       },
       {
         text: 'Ile zakończeń nerwowych szacunkowo zawiera napletek?',
-        answer: 'Szacunkowo około 20 000',
-        options: ['Kilkadziesiąt', 'Około 1 000', 'Szacunkowo około 20 000', 'Tyle samo co cały penis'],
+        answer: 'Około 20 000',
+        options: ['Kilkadziesiąt', 'Około 1 000', 'Około 20 000', 'Około 100 000'],
       },
       {
         text: 'Co to jest stulejka (fimosis)?',
-        answer: 'Zbyt ciasny napletek uniemożliwiający lub utrudniający odsłonięcie żołędzi',
-        options: ['Stan zapalny żołędzi', 'Zbyt ciasny napletek uniemożliwiający lub utrudniający odsłonięcie żołędzi', 'Skrzywienie penisa', 'Brak wytrysku'],
+        answer: 'Zbyt ciasny napletek utrudniający odsłonięcie żołędzi',
+        options: ['Bolesny stan zapalny żołędzi', 'Zbyt ciasny napletek utrudniający odsłonięcie żołędzi', 'Bolesne skrzywienie penisa', 'Całkowity brak wytrysku'],
       },
 
       // ── EREKCJA I ZABURZENIA ─────────────────────────────────────────────────
@@ -2219,60 +2219,60 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Co powoduje poranną erekcję?',
-        answer: 'Fazy snu REM aktywujące autonomiczny układ nerwowy (NPT – nocturnal penile tumescence)',
-        options: ['Wysoki poziom testosteronu rano', 'Pełny pęcherz moczowy uciskający nerwy', 'Fazy snu REM aktywujące autonomiczny układ nerwowy (NPT – nocturnal penile tumescence)', 'Kortyzol wydzielany rano'],
+        answer: 'Fazy snu REM aktywujące układ nerwowy',
+        options: ['Wysoki poranny poziom testosteronu', 'Pełny pęcherz moczowy uciskający nerwy', 'Fazy snu REM aktywujące układ nerwowy', 'Kortyzol wydzielany nad ranem'],
       },
       {
         text: 'Co to jest priapizm?',
-        answer: 'Bolesna erekcja trwająca ponad 4 godziny – stan zagrożenia życia penisa',
-        options: ['Lęk przed stosunkiem', 'Bolesna erekcja trwająca ponad 4 godziny – stan zagrożenia życia penisa', 'Zbyt szybki wytrysk', 'Brak popędu seksualnego'],
+        answer: 'Bolesna erekcja trwająca ponad 4 godziny',
+        options: ['Lęk przed zbliżeniem seksualnym', 'Bolesna erekcja trwająca ponad 4 godziny', 'Zbyt szybki, przedwczesny wytrysk', 'Całkowity brak popędu seksualnego'],
       },
       {
         text: 'Ile procent mężczyzn po 40. roku życia doświadcza zaburzeń erekcji (ED)?',
-        answer: 'Około 52% mężczyzn po 40. (Massachusetts Male Aging Study)',
-        options: ['Poniżej 1%', 'Około 10%', 'Około 52% mężczyzn po 40. (Massachusetts Male Aging Study)', 'Prawie wszyscy po 50. roku życia'],
+        answer: 'Około 52% mężczyzn po 40. roku życia',
+        options: ['Poniżej 1%', 'Około 10%', 'Około 52% mężczyzn po 40. roku życia', 'Prawie wszyscy po 50. roku życia'],
       },
       {
         text: 'Jaka jest najczęstsza przyczyna zaburzeń erekcji u mężczyzn poniżej 40. roku życia?',
-        answer: 'Psychologiczna – lęk, stres, depresja i performance anxiety',
-        options: ['Niski testosteron', 'Choroby naczyń krwionośnych', 'Psychologiczna – lęk, stres, depresja i performance anxiety', 'Alergia na lateks'],
+        answer: 'Przyczyny psychologiczne – lęk i stres',
+        options: ['Zbyt niski poziom testosteronu', 'Choroby naczyń krwionośnych', 'Przyczyny psychologiczne – lęk i stres', 'Alergia kontaktowa na lateks'],
       },
       {
         text: 'Jak działa sildenafil (Viagra) na erekcję?',
-        answer: 'Blokuje PDE-5, co zwiększa poziom cGMP i rozszerza naczynia ciał jamistych penisa',
-        options: ['Podnosi poziom testosteronu', 'Blokuje PDE-5, co zwiększa poziom cGMP i rozszerza naczynia ciał jamistych penisa', 'Pobudza układ nerwowy jak kawa', 'Bezpośrednio stymuluje nerwowo erekcję'],
+        answer: 'Rozszerza naczynia ciał jamistych przez blokadę PDE-5',
+        options: ['Podnosi poziom testosteronu we krwi', 'Rozszerza naczynia ciał jamistych przez blokadę PDE-5', 'Pobudza układ nerwowy jak kofeina', 'Bezpośrednio stymuluje nerwy erekcji'],
       },
       {
         text: 'Ile procent mężczyzn z ED nie zgłasza problemu lekarzowi?',
-        answer: 'Ponad 70% – wstyd i tabu są ogromną barierą',
-        options: ['Poniżej 5%', 'Około 30%', 'Ponad 70% – wstyd i tabu są ogromną barierą', 'Prawie nikt – mężczyźni zawsze szukają pomocy'],
+        answer: 'Ponad 70%',
+        options: ['Poniżej 5%', 'Około 30%', 'Ponad 70%', 'Prawie nikt – mężczyźni zawsze szukają pomocy'],
       },
       {
         text: 'Jak alkohol wpływa na erekcję?',
-        answer: 'Małe ilości mogą obniżyć zahamowania; duże blokują erekcję przez depresję OUN',
-        options: ['Zawsze poprawia erekcję przez wzrost pewności siebie', 'Nie ma żadnego wpływu na erekcję', 'Małe ilości mogą obniżyć zahamowania; duże blokują erekcję przez depresję OUN', 'Alkohol jest najlepszym naturalnym afrodyzjakiem'],
+        answer: 'Małe dawki rozluźniają, duże blokują erekcję',
+        options: ['Zawsze poprawia erekcję przez wzrost pewności siebie', 'Nie ma żadnego wpływu na erekcję', 'Małe dawki rozluźniają, duże blokują erekcję', 'Alkohol jest najlepszym naturalnym afrodyzjakiem'],
       },
       {
         text: 'Co to jest "performance anxiety" i jak wpływa na mężczyzn?',
-        answer: 'Lęk przed oceną seksualną – jeden z najczęstszych powodów ED i szybkiego wytrysku',
-        options: ['Wzrost adrenaliny poprawiający erekcję', 'Lęk przed oceną seksualną – jeden z najczęstszych powodów ED i szybkiego wytrysku', 'Naturalne zmęczenie po stosunku', 'Stan po którym następuje wzmożona erekcja'],
+        answer: 'Lęk przed oceną seksualną',
+        options: ['Wzrost adrenaliny poprawiający erekcję', 'Lęk przed oceną seksualną', 'Naturalne zmęczenie po stosunku', 'Stan, po którym następuje wzmożona erekcja'],
       },
       {
         text: 'Czy erekcja możliwa jest po śmierci mężczyzny?',
-        answer: 'Tak – "angel lust" to erekcja po śmierci spowodowana ciśnieniem krwi w pozycji leżącej',
-        options: ['Nie – erekcja wymaga aktywnego układu nerwowego', 'Tak – "angel lust" to erekcja po śmierci spowodowana ciśnieniem krwi w pozycji leżącej', 'Tylko po straceniu (szubienica)', 'To mit niemający podstaw medycznych'],
+        answer: 'Tak – tzw. "angel lust" po śmierci',
+        options: ['Nie – erekcja wymaga aktywnego układu nerwowego', 'Tak – tzw. "angel lust" po śmierci', 'Tylko po straceniu na szubienicy', 'To mit niemający podstaw medycznych'],
       },
       {
-        text: 'Ile procent mężczyzn jest obrze zanych na świecie?',
-        answer: 'Około 37–38% mężczyzn globalnie',
-        options: ['Około 5%', 'Około 20%', 'Około 37–38% mężczyzn globalnie', 'Ponad 80%'],
+        text: 'Ile procent mężczyzn jest obrzezanych na świecie?',
+        answer: 'Około 37–38%',
+        options: ['Około 5%', 'Około 20%', 'Około 37–38%', 'Ponad 80%'],
       },
 
       // ── WYTRYSK I ORGAZM ─────────────────────────────────────────────────────
       {
         text: 'Jak szybko przebiega wytrysk (prędkość nasienia)?',
-        answer: 'Około 45 km/h przy wyrzucie',
-        options: ['Około 2 km/h', 'Około 10 km/h', 'Około 45 km/h przy wyrzucie', 'Ponad 200 km/h'],
+        answer: 'Około 45 km/h',
+        options: ['Około 2 km/h', 'Około 10 km/h', 'Około 45 km/h', 'Ponad 200 km/h'],
       },
       {
         text: 'Ile trwa orgazm u przeciętnego mężczyzny?',
@@ -2281,8 +2281,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Co to jest "ejaculatory inevitability" – punkt bez powrotu?',
-        answer: 'Moment, po którym mężczyzna nie może zatrzymać wytrysku – trwa ok. 1–2 sekundy',
-        options: ['Chwila tuż po orgazmie', 'Moment, po którym mężczyzna nie może zatrzymać wytrysku – trwa ok. 1–2 sekundy', 'Stan pełnej erekcji bez możliwości jej cofnięcia', 'Drugi orgazm z rzędu'],
+        answer: 'Moment, po którym nie można już zatrzymać wytrysku',
+        options: ['Chwila tuż po zakończeniu orgazmu', 'Moment, po którym nie można już zatrzymać wytrysku', 'Stan pełnej erekcji bez możliwości jej cofnięcia', 'Drugi orgazm następujący z rzędu'],
       },
       {
         text: 'Ile procent mężczyzn doświadcza przedwczesnego wytrysku? (ISSM)',
@@ -2291,33 +2291,33 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Co to jest opóźniony wytrysk (delayed ejaculation)?',
-        answer: 'Trudność lub niemożność osiągnięcia wytrysku mimo wystarczającej stymulacji',
-        options: ['Wytrysk po 30 minutach – norma u starszych mężczyzn', 'Trudność lub niemożność osiągnięcia wytrysku mimo wystarczającej stymulacji', 'Wytrysk w kilka sekund po penetracji', 'Wytrysk dwuetapowy – zjawisko normalne'],
+        answer: 'Trudność z osiągnięciem wytrysku mimo stymulacji',
+        options: ['Wytrysk po 30 minutach – norma u starszych mężczyzn', 'Trudność z osiągnięciem wytrysku mimo stymulacji', 'Wytrysk w kilka sekund po penetracji', 'Wytrysk dwuetapowy – zjawisko normalne'],
       },
       {
         text: 'Co to jest wytrysk wsteczny (retrograde ejaculation)?',
-        answer: 'Nasienie cofa się do pęcherza zamiast wychodzić – suchy orgazm',
-        options: ['Wytrysk bez uczucia orgazmu', 'Nasienie cofa się do pęcherza zamiast wychodzić – suchy orgazm', 'Brak nasienia przy wytrysku (azoospermia)', 'Podwójny wytrysk podczas jednego orgazmu'],
+        answer: 'Nasienie cofa się do pęcherza – suchy orgazm',
+        options: ['Wytrysk bez odczucia orgazmu', 'Nasienie cofa się do pęcherza – suchy orgazm', 'Brak nasienia przy wytrysku (azoospermia)', 'Podwójny wytrysk podczas jednego orgazmu'],
       },
       {
         text: 'Ile ejakulacji miesięcznie u mężczyzn koreluje z niższym ryzykiem raka prostaty? (Giovannucci 2004)',
-        answer: '21 lub więcej ejakulacji miesięcznie',
-        options: ['1–2 miesięcznie', '5–7 miesięcznie', '21 lub więcej ejakulacji miesięcznie', 'Celibat – brak ejakulacji chroni prostatę'],
+        answer: '21 lub więcej miesięcznie',
+        options: ['1–2 miesięcznie', '5–7 miesięcznie', '21 lub więcej miesięcznie', 'Celibat – brak ejakulacji chroni prostatę'],
       },
       {
         text: 'Czy mężczyźni mogą osiągać orgazm wielokrotny?',
-        answer: 'Tak – stosując techniki non-ejaculatory orgasm (zatrzymanie nasienia)',
-        options: ['Nie – biologicznie niemożliwe u mężczyzn', 'Tak – stosując techniki non-ejaculatory orgasm (zatrzymanie nasienia)', 'Tak, ale tylko mężczyźni poniżej 25. roku życia', 'Tylko po kastracji chemicznej'],
+        answer: 'Tak – dzięki technikom zatrzymania nasienia',
+        options: ['Nie – jest to biologicznie niemożliwe', 'Tak – dzięki technikom zatrzymania nasienia', 'Tak, ale tylko mężczyźni przed 25. rokiem życia', 'Tylko po kastracji chemicznej'],
       },
       {
         text: 'Co to jest orgazm mężczyzny z prostaty ("P-spot orgasm")?',
-        answer: 'Orgazm przez stymulację gruczołu krokowego przez odbyt – opisywany jako bardzo intensywny',
-        options: ['Mit niemający podstaw anatomicznych', 'Orgazm przez stymulację gruczołu krokowego przez odbyt – opisywany jako bardzo intensywny', 'Orgazm wyłącznie przy impotencji', 'Orgazm wywołany myślami bez stymulacji'],
+        answer: 'Orgazm przez stymulację prostaty przez odbyt',
+        options: ['Mit niemający podstaw anatomicznych', 'Orgazm przez stymulację prostaty przez odbyt', 'Orgazm występujący wyłącznie przy impotencji', 'Orgazm wywołany samymi myślami bez stymulacji'],
       },
       {
         text: 'Jak mężczyźni opisują uczucie podczas orgazmu neurologicznie?',
-        answer: 'Aktywacja tych samych obszarów nagrody co heroina – nucleus accumbens zalewa dopamina',
-        options: ['Łagodna przyjemność podobna do drapania po plecach', 'Aktywacja tych samych obszarów nagrody co heroina – nucleus accumbens zalewa dopamina', 'Głównie ulga napięcia bez wyraźnej przyjemności', 'Uczucie bólu przechodzącego w ulgę'],
+        answer: 'Aktywacja tych samych obszarów nagrody co heroina',
+        options: ['Łagodna przyjemność jak drapanie po plecach', 'Aktywacja tych samych obszarów nagrody co heroina', 'Głównie ulga napięcia bez wyraźnej przyjemności', 'Uczucie bólu przechodzącego w ulgę'],
       },
 
       // ── REFRAKCJA I LIBIDO ───────────────────────────────────────────────────
@@ -2328,18 +2328,18 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile wynosi okres refrakcji u mężczyzny po 50. roku życia?',
-        answer: 'Od kilku godzin do doby – znacząco wzrasta z wiekiem',
-        options: ['Identyczny jak u 20-latka – 15 min', 'Od kilku godzin do doby – znacząco wzrasta z wiekiem', 'Kilka sekund', 'Mężczyźni po 50. nie mają refrakcji'],
+        answer: 'Od kilku godzin nawet do doby',
+        options: ['Identyczny jak u 20-latka – 15 min', 'Od kilku godzin nawet do doby', 'Zaledwie kilka sekund', 'Mężczyźni po 50. nie mają refrakcji'],
       },
       {
         text: 'Co powoduje uczucie senności i znużenia po orgazmie u mężczyzn?',
-        answer: 'Spike prolaktyny i oksytocyny po wytrysku – działają uspakajająco jak morfina',
-        options: ['Utrata energii z powodu wysiłku fizycznego', 'Spike prolaktyny i oksytocyny po wytrysku – działają uspakajająco jak morfina', 'Krew odpływa z mózgu do ciał jamistych', 'To mit – mężczyźni nie są bardziej senni po seksie'],
+        answer: 'Wyrzut prolaktyny i oksytocyny po wytrysku',
+        options: ['Utrata energii z powodu wysiłku fizycznego', 'Wyrzut prolaktyny i oksytocyny po wytrysku', 'Krew odpływa z mózgu do ciał jamistych', 'To mit – mężczyźni nie są bardziej senni'],
       },
       {
         text: 'Ile razy dziennie przeciętny mężczyzna myśli o seksie? (Fisher et al. 2011)',
-        answer: 'Około 19 razy dziennie – nie co 7 sekund (to mit)',
-        options: ['Raz na godzinę – ~16 razy', 'Około 19 razy dziennie – nie co 7 sekund (to mit)', 'Co 7 sekund (ok. 8 000 razy)', 'Ponad 200 razy'],
+        answer: 'Około 19 razy dziennie',
+        options: ['Raz na godzinę – ~16 razy', 'Około 19 razy dziennie', 'Co 7 sekund (ok. 8 000 razy)', 'Ponad 200 razy dziennie'],
       },
       {
         text: 'Jak się nazywa zjawisko odnowionego podniecenia seksualnego przy nowym partnerze?',
@@ -2348,72 +2348,72 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jak poziom testosteronu zmienia się przez dobę?',
-        answer: 'Szczyt rano (6:00–8:00), minimum wieczorem – dlatego poranna erekcja i poranny seks',
-        options: ['Jest stały przez całą dobę', 'Szczyt rano (6:00–8:00), minimum wieczorem – dlatego poranna erekcja i poranny seks', 'Szczyt o północy', 'Testosteron wzrasta wyłącznie podczas seksu'],
+        answer: 'Szczyt rano (6:00–8:00), minimum wieczorem',
+        options: ['Jest stały przez całą dobę', 'Szczyt rano (6:00–8:00), minimum wieczorem', 'Szczyt przypada o północy', 'Wzrasta wyłącznie podczas seksu'],
       },
       {
         text: 'Jak dieta wpływa na libido mężczyzny?',
-        answer: 'Dieta bogata w cynk, witaminę D i zdrowe tłuszcze wspiera produkcję testosteronu',
-        options: ['Dieta nie ma żadnego wpływu na libido', 'Wyłącznie kaloryczność posiłków decyduje o libido', 'Dieta bogata w cynk, witaminę D i zdrowe tłuszcze wspiera produkcję testosteronu', 'Wegetarianizm zawsze obniża libido mężczyzn'],
+        answer: 'Cynk, witamina D i zdrowe tłuszcze wspierają testosteron',
+        options: ['Dieta nie ma żadnego wpływu na libido', 'Wyłącznie kaloryczność posiłków decyduje o libido', 'Cynk, witamina D i zdrowe tłuszcze wspierają testosteron', 'Wegetarianizm zawsze obniża libido mężczyzn'],
       },
 
       // ── TESTOSTERON I HORMONY ─────────────────────────────────────────────────
       {
         text: 'Który gruczoł produkuje ok. 95% testosteronu u mężczyzny?',
-        answer: 'Jądra (komórki Leydiga)',
-        options: ['Nadnercza', 'Przysadka mózgowa', 'Jądra (komórki Leydiga)', 'Prostata'],
+        answer: 'Jądra',
+        options: ['Nadnercza', 'Przysadka mózgowa', 'Jądra', 'Prostata'],
       },
       {
         text: 'O ile procent rocznie spada testosteron po 30. roku życia?',
-        answer: 'Około 1% rocznie – stopniowy, wieloletni proces',
-        options: ['Nie spada wcale do menopauzy', 'Około 0,1% rocznie', 'Około 1% rocznie – stopniowy, wieloletni proces', 'Ponad 10% rocznie'],
+        answer: 'Około 1% rocznie',
+        options: ['Nie spada wcale aż do starości', 'Około 0,1% rocznie', 'Około 1% rocznie', 'Ponad 10% rocznie'],
       },
       {
         text: 'Co to jest andropauza?',
-        answer: 'Stopniowy, wieloletni spadek testosteronu u mężczyzn po 40–50. roku życia',
-        options: ['Nagłe zatrzymanie produkcji testosteronu jak menopauza', 'Stopniowy, wieloletni spadek testosteronu u mężczyzn po 40–50. roku życia', 'Stan po kastracji chirurgicznej', 'Chorobowy niedobór testosteronu od urodzenia'],
+        answer: 'Stopniowy spadek testosteronu po 40–50. roku życia',
+        options: ['Nagłe zatrzymanie produkcji testosteronu jak menopauza', 'Stopniowy spadek testosteronu po 40–50. roku życia', 'Stan po kastracji chirurgicznej', 'Chorobowy niedobór testosteronu od urodzenia'],
       },
       {
         text: 'Jak trening siłowy wpływa na testosteron?',
-        answer: 'Krótkoterminowo podnosi – zwłaszcza ćwiczenia wielostawowe (martwy ciąg, przysiady)',
-        options: ['Drastycznie obniża po każdym treningu', 'Krótkoterminowo podnosi – zwłaszcza ćwiczenia wielostawowe (martwy ciąg, przysiady)', 'Nie wpływa na testosteron', 'Podnosi testosteron tylko u kobiet'],
+        answer: 'Krótkoterminowo podnosi, zwłaszcza ćwiczenia wielostawowe',
+        options: ['Drastycznie obniża go po każdym treningu', 'Krótkoterminowo podnosi, zwłaszcza ćwiczenia wielostawowe', 'Nie wpływa w żaden sposób na testosteron', 'Podnosi testosteron tylko u kobiet'],
       },
       {
         text: 'Jak stres wpływa na testosteron?',
-        answer: 'Kortyzol antagonizuje testosteron – przewlekły stres znacząco go obniża',
-        options: ['Stres podnosi testosteron przez adrenalinę', 'Stres nie wpływa na testosteron', 'Kortyzol antagonizuje testosteron – przewlekły stres znacząco go obniża', 'Stres wpływa tylko na estrogeny'],
+        answer: 'Kortyzol antagonizuje testosteron i obniża go',
+        options: ['Stres podnosi testosteron przez adrenalinę', 'Stres nie wpływa na poziom testosteronu', 'Kortyzol antagonizuje testosteron i obniża go', 'Stres wpływa tylko na estrogeny'],
       },
       {
         text: 'Jaki poziom testosteronu uważa się za normy u dorosłego mężczyzny?',
-        answer: '300–1 000 ng/dl – normy laboratoryjne różnią się wg źródeł',
-        options: ['50–100 ng/dl', '150–200 ng/dl', '300–1 000 ng/dl – normy laboratoryjne różnią się wg źródeł', 'Ponad 5 000 ng/dl'],
+        answer: '300–1 000 ng/dl',
+        options: ['50–100 ng/dl', '150–200 ng/dl', '300–1 000 ng/dl', 'Ponad 5 000 ng/dl'],
       },
       {
         text: 'Co to jest hipogonadyzm u mężczyzny?',
-        answer: 'Niedobór produkcji testosteronu przez jądra – powoduje ED, zmęczenie i utratę libido',
-        options: ['Przerost jąder', 'Niedobór produkcji testosteronu przez jądra – powoduje ED, zmęczenie i utratę libido', 'Stan po wazektomii', 'Zapalenie gruczołu krokowego'],
+        answer: 'Niedobór produkcji testosteronu przez jądra',
+        options: ['Nadmierny przerost jąder', 'Niedobór produkcji testosteronu przez jądra', 'Stan po zabiegu wazektomii', 'Zapalenie gruczołu krokowego'],
       },
       {
         text: 'Co to jest ginekomastia?',
-        answer: 'Powiększenie tkanki gruczołowej piersi u mężczyzn – często przez zaburzenie hormonalne lub leki',
-        options: ['Rak piersi u mężczyzn', 'Powiększenie tkanki gruczołowej piersi u mężczyzn – często przez zaburzenie hormonalne lub leki', 'Nadmierne owłosienie klatki piersiowej', 'Brak owłosienia klatki piersiowej'],
+        answer: 'Powiększenie tkanki gruczołowej piersi u mężczyzn',
+        options: ['Złośliwy rak piersi u mężczyzn', 'Powiększenie tkanki gruczołowej piersi u mężczyzn', 'Nadmierne owłosienie klatki piersiowej', 'Całkowity brak owłosienia klatki'],
       },
       {
         text: 'Jak alkohol przewlekle wpływa na testosteron?',
-        answer: 'Obniża poziom testosteronu i może powodować atrofię jąder przy długotrwałym nadużywaniu',
-        options: ['Podnosi testosteron – stąd agresja po alkoholu', 'Nie ma wpływu na hormony mężczyzny', 'Obniża poziom testosteronu i może powodować atrofię jąder przy długotrwałym nadużywaniu', 'Tylko piwo, nie wódka, obniża testosteron'],
+        answer: 'Obniża testosteron i może powodować zanik jąder',
+        options: ['Podnosi testosteron – stąd agresja po alkoholu', 'Nie ma wpływu na hormony mężczyzny', 'Obniża testosteron i może powodować zanik jąder', 'Tylko piwo, nie wódka, obniża testosteron'],
       },
       {
         text: 'Co to są sterydy anaboliczne i jak wpływają na jądra?',
-        answer: 'Syntetyczny testosteron – powoduje zanik jąder i azoospermię przez sprzężenie zwrotne',
-        options: ['Naturalne suplementy wzmacniające jądra', 'Syntetyczny testosteron – powoduje zanik jąder i azoospermię przez sprzężenie zwrotne', 'Leki na zaburzenia erekcji', 'Witaminy stosowane przez sportowców'],
+        answer: 'Syntetyczny testosteron – powoduje zanik jąder',
+        options: ['Naturalne suplementy wzmacniające jądra', 'Syntetyczny testosteron – powoduje zanik jąder', 'Leki stosowane na zaburzenia erekcji', 'Witaminy stosowane przez sportowców'],
       },
 
       // ── SPERMA I PŁODNOŚĆ ────────────────────────────────────────────────────
       {
         text: 'Ile plemników produkuje zdrowy mężczyzna każdego dnia?',
-        answer: 'Około 300 milionów dziennie (~1 500/sekundę)',
-        options: ['Kilka tysięcy', 'Kilka milionów', 'Około 300 milionów dziennie (~1 500/sekundę)', 'Kilka miliardów'],
+        answer: 'Około 300 milionów dziennie',
+        options: ['Kilka tysięcy', 'Kilka milionów', 'Około 300 milionów dziennie', 'Kilka miliardów'],
       },
       {
         text: 'Ile trwa spermatogeneza – od komórki macierzystej do dojrzałego plemnika?',
@@ -2422,43 +2422,43 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile ml nasienia zawiera typowy ejakulat?',
-        answer: '3–5 ml (wg WHO Reference Values)',
-        options: ['0,5 ml', '1–2 ml', '3–5 ml (wg WHO Reference Values)', 'Ponad 20 ml'],
+        answer: '3–5 ml',
+        options: ['0,5 ml', '1–2 ml', '3–5 ml', 'Ponad 20 ml'],
       },
       {
         text: 'Jak długo plemniki przeżywają w kobiecych drogach rodnych?',
-        answer: 'Do 5 dni – najdłużej w śluzie szyjkowym przy owulacji',
-        options: ['Kilka minut', 'Kilka godzin', 'Do 5 dni – najdłużej w śluzie szyjkowym przy owulacji', 'Do 3 tygodni'],
+        answer: 'Do 5 dni',
+        options: ['Kilka minut', 'Kilka godzin', 'Do 5 dni', 'Do 3 tygodni'],
       },
       {
         text: 'Co niszczy jakość nasienia?',
-        answer: 'Ciepło, palenie tytoniu, alkohol, stres, sterydy anaboliczne i promieniowanie',
-        options: ['Ćwiczenia fizyczne i dieta roślinna', 'Ciepło, palenie tytoniu, alkohol, stres, sterydy anaboliczne i promieniowanie', 'Seks zbyt częsty – "wyczerpanie" zapasów', 'Tylko czynniki genetyczne'],
+        answer: 'Ciepło, palenie, alkohol, stres i sterydy',
+        options: ['Ćwiczenia fizyczne i dieta roślinna', 'Ciepło, palenie, alkohol, stres i sterydy', 'Zbyt częsty seks – "wyczerpanie" zapasów', 'Wyłącznie czynniki genetyczne'],
       },
       {
         text: 'Dlaczego noszenie obcisłych slipów może wpływać na jakość nasienia?',
-        answer: 'Zbyt wysoka temperatura moszny (powyżej 34–35°C) zaburza spermatogenezę',
-        options: ['Ucisk mechaniczny niszczy plemnikiw nadjądrzu', 'Zbyt wysoka temperatura moszny (powyżej 34–35°C) zaburza spermatogenezę', 'Obcisła bielizna obniża testosteron', 'To wyłącznie mit bez podstaw naukowych'],
+        answer: 'Podwyższona temperatura moszny zaburza spermatogenezę',
+        options: ['Ucisk mechaniczny niszczy plemniki w najądrzu', 'Podwyższona temperatura moszny zaburza spermatogenezę', 'Obcisła bielizna obniża poziom testosteronu', 'To wyłącznie mit bez podstaw naukowych'],
       },
       {
         text: 'Co to jest azoospermia?',
-        answer: 'Całkowity brak plemników w nasieniu – dotyczy ok. 1% mężczyzn',
-        options: ['Zbyt mała objętość ejakulatu', 'Całkowity brak plemników w nasieniu – dotyczy ok. 1% mężczyzn', 'Niska ruchliwość plemników', 'Zdeformowane plemniki'],
+        answer: 'Całkowity brak plemników w nasieniu',
+        options: ['Zbyt mała objętość ejakulatu', 'Całkowity brak plemników w nasieniu', 'Zbyt niska ruchliwość plemników', 'Zdeformowane, wadliwe plemniki'],
       },
       {
         text: 'Ile procent niepłodności u par wynika z czynnika wyłącznie męskiego?',
-        answer: 'Około 40% – mężczyzna jest przyczyną u niemal połowy niepłodnych par',
-        options: ['Poniżej 5% – niepłodność to problem kobiecy', 'Około 15%', 'Około 40% – mężczyzna jest przyczyną u niemal połowy niepłodnych par', 'Ponad 80%'],
+        answer: 'Około 40%',
+        options: ['Poniżej 5% – to problem wyłącznie kobiecy', 'Około 15%', 'Około 40%', 'Ponad 80%'],
       },
       {
         text: 'Jak praca siedząca długotrwale wpływa na jakość nasienia?',
-        answer: 'Może podnosić temperaturę moszny i obniżać jakość nasienia przy wielogodzinnym siedzeniu',
-        options: ['Poprawia jakość nasienia przez brak wysiłku fizycznego', 'Może podnosić temperaturę moszny i obniżać jakość nasienia przy wielogodzinnym siedzeniu', 'Nie ma żadnego wpływu na nasienie', 'Wyłącznie jazda na rowerze szkodzi nasieniu'],
+        answer: 'Może podnosić temperaturę moszny i obniżać jakość nasienia',
+        options: ['Poprawia jakość nasienia przez brak wysiłku', 'Może podnosić temperaturę moszny i obniżać jakość nasienia', 'Nie ma żadnego wpływu na nasienie', 'Wyłącznie jazda na rowerze szkodzi nasieniu'],
       },
       {
         text: 'Jaka dieta wspiera jakość nasienia i płodność mężczyzny?',
-        answer: 'Śródziemnomorska – bogata w antyoksydanty, cynk, selen, kwasy omega-3',
-        options: ['Dieta wysokobiałkowa z dużą ilością mięsa czerwonego', 'Śródziemnomorska – bogata w antyoksydanty, cynk, selen, kwasy omega-3', 'Dieta ketogeniczna eliminująca węglowodany', 'Suplementacja wyłącznie witaminą C'],
+        answer: 'Śródziemnomorska – bogata w antyoksydanty i cynk',
+        options: ['Wysokobiałkowa z dużą ilością czerwonego mięsa', 'Śródziemnomorska – bogata w antyoksydanty i cynk', 'Ketogeniczna, eliminująca węglowodany', 'Suplementacja wyłącznie witaminą C'],
       },
 
       // ── PROSTATA I JĄDRA ─────────────────────────────────────────────────────
@@ -2469,48 +2469,48 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jaki rozmiar ma zdrowa prostata?',
-        answer: 'Orzech włoski – około 20 g, 3×4 cm',
-        options: ['Ziarno grochu', 'Orzech włoski – około 20 g, 3×4 cm', 'Jajko kurze', 'Piłka tenisowa'],
+        answer: 'Orzech włoski',
+        options: ['Ziarno grochu', 'Orzech włoski', 'Jajko kurze', 'Piłka tenisowa'],
       },
       {
         text: 'Co to jest PSA i do czego służy?',
-        answer: 'Antygen specyficzny dla prostaty – marker używany w diagnostyce raka gruczołu krokowego',
-        options: ['Białko w nasieniu odpowiedzialne za ruchliwość plemników', 'Antygen specyficzny dla prostaty – marker używany w diagnostyce raka gruczołu krokowego', 'Hormon regulujący spermatogenezę', 'Enzym rozkładający ściankę komórki jajowej'],
+        answer: 'Marker używany w diagnostyce raka prostaty',
+        options: ['Białko w nasieniu odpowiedzialne za ruchliwość', 'Marker używany w diagnostyce raka prostaty', 'Hormon regulujący spermatogenezę', 'Enzym rozkładający ściankę komórki jajowej'],
       },
       {
         text: 'Ile procent mężczyzn po 80. roku życia ma komórki raka prostaty (mikrofokalne)?',
-        answer: 'Około 70–80% – ale większość nigdy nie spowoduje objawów',
-        options: ['Poniżej 1%', 'Około 10%', 'Około 40%', 'Około 70–80% – ale większość nigdy nie spowoduje objawów'],
+        answer: 'Około 70–80%',
+        options: ['Poniżej 1%', 'Około 10%', 'Około 40%', 'Około 70–80%'],
       },
       {
         text: 'Co to jest BPH (łagodny przerost prostaty)?',
-        answer: 'Niezłośliwe powiększenie gruczołu krokowego utrudniające oddawanie moczu – dotyka ~50% mężczyzn po 50.',
-        options: ['Rak prostaty we wczesnym stadium', 'Niezłośliwe powiększenie gruczołu krokowego utrudniające oddawanie moczu – dotyka ~50% mężczyzn po 50.', 'Zapalenie gruczołu krokowego (prostatitis)', 'Kamica gruczołu krokowego'],
+        answer: 'Niezłośliwe powiększenie prostaty utrudniające oddawanie moczu',
+        options: ['Rak prostaty we wczesnym stadium', 'Niezłośliwe powiększenie prostaty utrudniające oddawanie moczu', 'Zapalenie gruczołu krokowego (prostatitis)', 'Kamica gruczołu krokowego'],
       },
       {
         text: 'W jakim przedziale wiekowym najczęściej pojawia się rak jąder?',
-        answer: '15–35 lat – najczęstszy nowotwór złośliwy u młodych mężczyzn',
-        options: ['0–5 lat (noworodki)', '15–35 lat – najczęstszy nowotwór złośliwy u młodych mężczyzn', '50–65 lat', 'Powyżej 70. roku życia'],
+        answer: '15–35 lat',
+        options: ['0–5 lat (noworodki)', '15–35 lat', '50–65 lat', 'Powyżej 70. roku życia'],
       },
       {
         text: 'Dlaczego lewe jądro zwisa zazwyczaj niżej niż prawe?',
-        answer: 'Żyła nasienna lewa uchodzi do żyły nerkowej pod kątem prostym – dłuższy spływ krwi',
-        options: ['Lewe jądro jest cięższe u większości mężczyzn', 'Żyła nasienna lewa uchodzi do żyły nerkowej pod kątem prostym – dłuższy spływ krwi', 'Moszna jest asymetrycznie zbudowana u wszystkich', 'To mit – jądra są zawsze symetrycznie'],
+        answer: 'Lewa żyła nasienna ma dłuższą drogę spływu krwi',
+        options: ['Lewe jądro jest cięższe u większości mężczyzn', 'Lewa żyła nasienna ma dłuższą drogę spływu krwi', 'Moszna jest asymetrycznie zbudowana u wszystkich', 'To mit – jądra są zawsze symetryczne'],
       },
       {
         text: 'Co to są żylaki powrózka nasiennego (varicocele)?',
-        answer: 'Poszerzenie żył jądra – najczęstsza odwracalna przyczyna niepłodności męskiej',
-        options: ['Zapalenie najądrza', 'Poszerzenie żył jądra – najczęstsza odwracalna przyczyna niepłodności męskiej', 'Torbiel jądra', 'Skręt jądra'],
+        answer: 'Poszerzenie żył odprowadzających krew z jądra',
+        options: ['Bolesne zapalenie najądrza', 'Poszerzenie żył odprowadzających krew z jądra', 'Wypełniona płynem torbiel jądra', 'Nagły skręt jądra'],
       },
       {
         text: 'Jak długi jest najądrze, jeśli się go rozwinąć?',
-        answer: 'Około 6 metrów – tu dojrzewają plemniki przez 2–3 tygodnie',
-        options: ['Około 10 cm', 'Około 1 metra', 'Około 6 metrów – tu dojrzewają plemniki przez 2–3 tygodnie', 'Ponad 50 metrów'],
+        answer: 'Około 6 metrów',
+        options: ['Około 10 cm', 'Około 1 metra', 'Około 6 metrów', 'Ponad 50 metrów'],
       },
       {
         text: 'Co to jest skręt jądra i dlaczego jest nagły?',
-        answer: 'Skręcenie powrózka nasiennego odcinające dopływ krwi – stan pilny, okno 4–6h na ratowanie jądra',
-        options: ['Łagodny ból po wysiłku fizycznym', 'Zapalenie najądrza', 'Skręcenie powrózka nasiennego odcinające dopływ krwi – stan pilny, okno 4–6h na ratowanie jądra', 'Normalny objaw dojrzewania u nastolatków'],
+        answer: 'Skręcenie powrózka odcinające dopływ krwi do jądra',
+        options: ['Łagodny ból po wysiłku fizycznym', 'Bolesne zapalenie najądrza', 'Skręcenie powrózka odcinające dopływ krwi do jądra', 'Normalny objaw dojrzewania u nastolatków'],
       },
 
       // ── MASTURBACJA ──────────────────────────────────────────────────────────
@@ -2553,23 +2553,23 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent mężczyzn doświadczyło post-coital dysphoria (smutku po seksie)?',
-        answer: 'Około 41% mężczyzn przynajmniej raz – rzadziej niż kobiety, ale znaczący odsetek',
-        options: ['Poniżej 1% – to wyłącznie kobiece zjawisko', 'Około 10%', 'Około 41% mężczyzn przynajmniej raz – rzadziej niż kobiety, ale znaczący odsetek', 'Prawie wszyscy – ~90%'],
+        answer: 'Około 41%',
+        options: ['Poniżej 1% – to wyłącznie kobiece zjawisko', 'Około 10%', 'Około 41%', 'Prawie wszyscy – ~90%'],
       },
       {
         text: 'Co to jest "Madonna-Whore Complex"?',
-        answer: 'Psychologiczne rozdzielenie kobiet na "dobre" (do związku) i "złe" (do seksu) – opisany przez Freuda',
-        options: ['Kompleks Edypa u dorosłych mężczyzn', 'Psychologiczne rozdzielenie kobiet na "dobre" (do związku) i "złe" (do seksu) – opisany przez Freuda', 'Fetysz na muzykę i seksualność', 'Zaburzenie erekcji u mężczyzn pobożnych'],
+        answer: 'Rozdzielenie kobiet na "dobre" do związku i "złe" do seksu',
+        options: ['Kompleks Edypa u dorosłych mężczyzn', 'Rozdzielenie kobiet na "dobre" do związku i "złe" do seksu', 'Fetysz na muzykę i seksualność', 'Zaburzenie erekcji u mężczyzn pobożnych'],
       },
       {
         text: 'Ile procent mężczyzn doświadczyło przemocy seksualnej?',
-        answer: 'Szacunkowo 10–15% – mocno zaniżone z powodu tabu i wstydu',
-        options: ['Poniżej 0,1%', 'Około 2%', 'Szacunkowo 10–15% – mocno zaniżone z powodu tabu i wstydu', 'Tyle samo co kobiety – ~27%'],
+        answer: 'Szacunkowo 10–15%',
+        options: ['Poniżej 0,1%', 'Około 2%', 'Szacunkowo 10–15%', 'Tyle samo co kobiety – ~27%'],
       },
       {
         text: 'Jak mężczyźni reagują biologicznie na widok atrakcyjnej kobiety?',
-        answer: 'Krótkoterminowy wzrost testosteronu i aktywacja układu nagrody (dopamina)',
-        options: ['Wyłącznie psychologiczna reakcja bez zmian hormonalnych', 'Krótkoterminowy wzrost testosteronu i aktywacja układu nagrody (dopamina)', 'Wzrost kortyzolu przez ekscytację', 'Brak żadnych biologicznych zmian'],
+        answer: 'Krótkoterminowy wzrost testosteronu i aktywacja układu nagrody',
+        options: ['Wyłącznie reakcja psychologiczna bez zmian hormonalnych', 'Krótkoterminowy wzrost testosteronu i aktywacja układu nagrody', 'Wzrost kortyzolu wywołany ekscytacją', 'Brak jakichkolwiek biologicznych zmian'],
       },
       {
         text: 'Co mówią badania o mężczyznach i zakochaniu?',
@@ -2578,8 +2578,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent mężczyzn zgłasza problemy seksualne lekarzowi?',
-        answer: 'Mniej niż 25% – tabu i wstyd są ogromną barierą',
-        options: ['Prawie wszyscy – zdrowie seksualne jest priorytetem mężczyzn', 'Około 60%', 'Mniej niż 25% – tabu i wstyd są ogromną barierą', 'Tylko mężczyźni powyżej 60. roku życia szukają pomocy'],
+        answer: 'Mniej niż 25%',
+        options: ['Prawie wszyscy – zdrowie seksualne jest priorytetem', 'Około 60%', 'Mniej niż 25%', 'Tylko mężczyźni powyżej 60. roku życia'],
       },
 
       // ── MĘŻCZYŹNI W ZWIĄZKACH ────────────────────────────────────────────────
@@ -2590,8 +2590,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent mężczyzn zdradza w stałym związku?',
-        answer: 'Szacunkowo 15–25% – podobnie jak kobiety (różnica jest mniejsza niż stereotypy wskazują)',
-        options: ['Ponad 80%', 'Około 50%', 'Szacunkowo 15–25% – podobnie jak kobiety (różnica jest mniejsza niż stereotypy wskazują)', 'Poniżej 1%'],
+        answer: 'Szacunkowo 15–25%',
+        options: ['Ponad 80%', 'Około 50%', 'Szacunkowo 15–25%', 'Poniżej 1%'],
       },
       {
         text: 'Co jest najczęstszą przyczyną niesatysfakcji seksualnej u mężczyzn w związkach?',
@@ -2600,30 +2600,30 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jak ojcostwo wpływa na testosteron mężczyzny?',
-        answer: 'Ojcowie mają statystycznie niższy testosteron niż bezdzietni mężczyźni – ewolucyjne przystosowanie',
-        options: ['Ojcostwo podnosi testosteron przez większą odpowiedzialność', 'Ojcostwo nie wpływa na testosteron', 'Ojcowie mają statystycznie niższy testosteron niż bezdzietni mężczyźni – ewolucyjne przystosowanie', 'Testosteron rośnie przy pierwszym dziecku, potem spada'],
+        answer: 'Ojcowie mają statystycznie niższy testosteron',
+        options: ['Ojcostwo podnosi testosteron przez większą odpowiedzialność', 'Ojcostwo nie wpływa na testosteron', 'Ojcowie mają statystycznie niższy testosteron', 'Testosteron rośnie przy pierwszym dziecku, potem spada'],
       },
       {
         text: 'Jak małżeństwo wpływa na poziom testosteronu mężczyzny?',
-        answer: 'Żonaci mężczyźni mają statystycznie niższy testosteron niż kawalerowie – wg badań endokrynologicznych',
-        options: ['Małżeństwo podnosi testosteron', 'Nie ma żadnego wpływu', 'Żonaci mężczyźni mają statystycznie niższy testosteron niż kawalerowie – wg badań endokrynologicznych', 'Testosteron rośnie w pierwszym roku małżeństwa, potem spada'],
+        answer: 'Żonaci mają statystycznie niższy testosteron niż kawalerowie',
+        options: ['Małżeństwo podnosi poziom testosteronu', 'Nie ma żadnego wpływu na testosteron', 'Żonaci mają statystycznie niższy testosteron niż kawalerowie', 'Testosteron rośnie w pierwszym roku małżeństwa'],
       },
       {
         text: 'Ile procent mężczyzn inicjuje seks w swoich związkach?',
-        answer: 'Około 60–70% – mężczyźni inicjują częściej, ale różnica maleje w nowoczesnych związkach',
-        options: ['Prawie 100% – kobiety nigdy nie inicjują', 'Około 60–70% – mężczyźni inicjują częściej, ale różnica maleje w nowoczesnych związkach', 'Równo 50% – inicjatywa jest symetryczna', 'Kobiety inicjują seks częściej niż mężczyźni'],
+        answer: 'Około 60–70%',
+        options: ['Prawie 100% – kobiety nigdy nie inicjują', 'Około 60–70%', 'Równo 50% – inicjatywa jest symetryczna', 'Kobiety inicjują seks częściej niż mężczyźni'],
       },
 
       // ── ZDROWIE SEKSUALNE MĘŻCZYZN ───────────────────────────────────────────
       {
         text: 'Jak regularna aktywność seksualna wpływa na zdrowie prostaty?',
-        answer: '21+ ejakulacji miesięcznie koreluje z niższym ryzykiem raka prostaty (Giovannucci 2004)',
-        options: ['Aktywność seksualna niszczy prostatę', 'Nie ma żadnego wpływu', '21+ ejakulacji miesięcznie koreluje z niższym ryzykiem raka prostaty (Giovannucci 2004)', 'Abstynencja chroni prostatę najlepiej'],
+        answer: '21+ ejakulacji miesięcznie obniża ryzyko raka prostaty',
+        options: ['Aktywność seksualna niszczy prostatę', 'Nie ma żadnego wpływu na prostatę', '21+ ejakulacji miesięcznie obniża ryzyko raka prostaty', 'Abstynencja chroni prostatę najlepiej'],
       },
       {
         text: 'Jak seks wpływa na układ sercowo-naczyniowy mężczyzny?',
-        answer: 'Seks 2× tygodniowo zmniejsza ryzyko zawału serca wg American Journal of Cardiology',
-        options: ['Seks obciąża serce i zwiększa ryzyko zawału', 'Nie ma wpływu na układ sercowo-naczyniowy', 'Seks 2× tygodniowo zmniejsza ryzyko zawału serca wg American Journal of Cardiology', 'Seks wpływa tylko na serce kobiet, nie mężczyzn'],
+        answer: 'Seks 2× tygodniowo zmniejsza ryzyko zawału serca',
+        options: ['Seks obciąża serce i zwiększa ryzyko zawału', 'Nie ma wpływu na układ sercowo-naczyniowy', 'Seks 2× tygodniowo zmniejsza ryzyko zawału serca', 'Seks wpływa tylko na serce kobiet, nie mężczyzn'],
       },
       {
         text: 'Jak zaburzenia erekcji mogą być wczesnym sygnałem innych chorób?',
@@ -2632,18 +2632,18 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent mężczyzn regularnie bada swoje jądra samodzielnie?',
-        answer: 'Mniej niż 25% – choć samobadanie może wykryć raka jądra we wczesnym stadium',
-        options: ['Prawie wszyscy – ~90%', 'Około 50%', 'Mniej niż 25% – choć samobadanie może wykryć raka jądra we wczesnym stadium', 'Samobadanie jąder nie jest zalecane'],
+        answer: 'Mniej niż 25%',
+        options: ['Prawie wszyscy – ~90%', 'Około 50%', 'Mniej niż 25%', 'Samobadanie jąder nie jest zalecane'],
       },
       {
         text: 'Ile procent mężczyzn pali tytoń i jak to wpływa na seksualność?',
-        answer: 'Palacze mają o 40–50% wyższe ryzyko ED – nikotyna niszczy śródbłonek naczyń ciał jamistych',
-        options: ['Palenie nie wpływa na seksualność mężczyzn', 'Palacze mają lepsze erekcje przez wzrost adrenaliny', 'Palacze mają o 40–50% wyższe ryzyko ED – nikotyna niszczy śródbłonek naczyń ciał jamistych', 'Palenie wpływa wyłącznie na nasienie, nie erekcję'],
+        answer: 'Palacze mają o 40–50% wyższe ryzyko ED',
+        options: ['Palenie nie wpływa na seksualność mężczyzn', 'Palacze mają lepsze erekcje przez wzrost adrenaliny', 'Palacze mają o 40–50% wyższe ryzyko ED', 'Palenie wpływa wyłącznie na nasienie, nie erekcję'],
       },
       {
         text: 'Co to jest zapalenie gruczołu krokowego (prostatitis) i jak często dotyka mężczyzn?',
-        answer: 'Ból i zapalenie prostaty – dotyka ok. 50% mężczyzn w jakimś momencie życia',
-        options: ['Rak prostaty', 'Ból i zapalenie prostaty – dotyka ok. 50% mężczyzn w jakimś momencie życia', 'Jedynie mężczyźni po 70. roku życia mogą mieć zapalenie prostaty', 'Rzadka choroba – poniżej 1% mężczyzn'],
+        answer: 'Ból i zapalenie gruczołu krokowego',
+        options: ['Złośliwy rak prostaty', 'Ból i zapalenie gruczołu krokowego', 'Dotyczy jedynie mężczyzn po 70. roku życia', 'Rzadka choroba – poniżej 1% mężczyzn'],
       },
 
       // ── MĘŻCZYŹNI I PORNOGRAFIA ──────────────────────────────────────────────
@@ -2654,55 +2654,55 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jak regularne oglądanie pornografii wpływa na mózg mężczyzny?',
-        answer: 'Desensytyzacja układu nagrody – konieczność silniejszych bodźców dla tych samych odczuć',
-        options: ['Poprawia sprawność mózgu przez ciągłą stymulację', 'Desensytyzacja układu nagrody – konieczność silniejszych bodźców dla tych samych odczuć', 'Brak wpływu na mózg – to tylko rozrywka', 'Pornografia zwiększa empatię przez obserwację emocji'],
+        answer: 'Stępienie układu nagrody – potrzeba silniejszych bodźców',
+        options: ['Poprawia sprawność mózgu przez ciągłą stymulację', 'Stępienie układu nagrody – potrzeba silniejszych bodźców', 'Brak wpływu na mózg – to tylko rozrywka', 'Pornografia zwiększa empatię przez obserwację emocji'],
       },
       {
         text: 'Co to jest PIED (Porn-Induced Erectile Dysfunction)?',
-        answer: 'Zaburzenia erekcji spowodowane uzależnieniem od pornografii – penis reaguje na ekran, nie na partnerkę',
-        options: ['Erekcja wywołana myśleniem o pornografii', 'Zaburzenia erekcji spowodowane uzależnieniem od pornografii – penis reaguje na ekran, nie na partnerkę', 'Stan po obejrzeniu zbyt dużo pornografii jednorazowo', 'Normalna adaptacja układu nerwowego do podniet'],
+        answer: 'Zaburzenia erekcji spowodowane uzależnieniem od pornografii',
+        options: ['Erekcja wywołana myśleniem o pornografii', 'Zaburzenia erekcji spowodowane uzależnieniem od pornografii', 'Stan po obejrzeniu zbyt dużo pornografii naraz', 'Normalna adaptacja układu nerwowego do podniet'],
       },
       {
         text: 'Ile procent mężczyzn uważa się za uzależnionych od pornografii?',
-        answer: 'Około 8–10% regularnych użytkowników deklaruje utratę kontroli',
-        options: ['Poniżej 0,1%', 'Około 2%', 'Około 8–10% regularnych użytkowników deklaruje utratę kontroli', 'Ponad 50%'],
+        answer: 'Około 8–10% regularnych użytkowników',
+        options: ['Poniżej 0,1%', 'Około 2%', 'Około 8–10% regularnych użytkowników', 'Ponad 50%'],
       },
       {
         text: 'W jakim wieku mężczyźni najczęściej po raz pierwszy oglądają pornografię?',
-        answer: 'Między 11 a 13 rokiem życia (Internet umożliwił znacznie wcześniejszy dostęp)',
-        options: ['Po 18. roku życia', 'Między 15 a 17 rokiem życia', 'Między 11 a 13 rokiem życia (Internet umożliwił znacznie wcześniejszy dostęp)', 'Dopiero w dorosłości po 20. roku życia'],
+        answer: 'Między 11 a 13 rokiem życia',
+        options: ['Dopiero po 18. roku życia', 'Między 15 a 17 rokiem życia', 'Między 11 a 13 rokiem życia', 'Dopiero w dorosłości po 20. roku życia'],
       },
 
       // ── MĘŻCZYŹNI W LICZBACH – CIEKAWOSTKI ──────────────────────────────────
       {
         text: 'Ile razy przeciętny mężczyzna uprawia seks w ciągu życia?',
-        answer: 'Szacunkowo 5 000–6 000 razy',
-        options: ['Około 100 razy', 'Około 1 000 razy', 'Szacunkowo 5 000–6 000 razy', 'Ponad 100 000 razy'],
+        answer: 'Około 5 000–6 000 razy',
+        options: ['Około 100 razy', 'Około 1 000 razy', 'Około 5 000–6 000 razy', 'Ponad 100 000 razy'],
       },
       {
         text: 'Ile czasu w ciągu życia przeciętny mężczyzna spędza na seksie?',
-        answer: 'Szacunkowo ok. 1% aktywnego życia – to równowartość kilku miesięcy',
-        options: ['Ponad 10% życia', 'Około 5% życia', 'Szacunkowo ok. 1% aktywnego życia – to równowartość kilku miesięcy', 'Mniej niż godzina łącznie'],
+        answer: 'Około 1% aktywnego życia',
+        options: ['Ponad 10% życia', 'Około 5% życia', 'Około 1% aktywnego życia', 'Mniej niż godzina łącznie'],
       },
       {
         text: 'Co to jest wazektomia i jak skuteczna jest jako metoda antykoncepcji?',
-        answer: 'Przecięcie lub podwiązanie nasieniowodów – skuteczność ponad 99,9%',
-        options: ['Chemiczne blokowanie testosteronu', 'Usunięcie jąder', 'Przecięcie lub podwiązanie nasieniowodów – skuteczność ponad 99,9%', 'Zastrzyk hormonalny podawany co miesiąc'],
+        answer: 'Przecięcie lub podwiązanie nasieniowodów',
+        options: ['Chemiczne blokowanie testosteronu', 'Chirurgiczne usunięcie jąder', 'Przecięcie lub podwiązanie nasieniowodów', 'Zastrzyk hormonalny podawany co miesiąc'],
       },
       {
         text: 'Ile procent mężczyzn decyduje się na wazektomię w Polsce?',
-        answer: 'Bardzo mało – poniżej 1% (w USA ok. 10%, w Holandii ok. 11%)',
-        options: ['Prawie wszyscy mężczyźni po 40. roku życia', 'Około 30%', 'Około 10% – jak w USA', 'Bardzo mało – poniżej 1% (w USA ok. 10%, w Holandii ok. 11%)'],
+        answer: 'Bardzo mało – poniżej 1%',
+        options: ['Prawie wszyscy mężczyźni po 40. roku życia', 'Około 30%', 'Około 10% – jak w USA', 'Bardzo mało – poniżej 1%'],
       },
       {
         text: 'Które zwierzę domowe jest najczęściej kojarzone z obniżonym testosteronem u właściciela?',
-        answer: 'Żadne – to mit; opieka nad zwierzęciem może obniżać stres, co pośrednio wspiera testosteron',
-        options: ['Kot – felinofilia obniża testosteron', 'Pies – właściciele psów mają niższy testosteron', 'Żadne – to mit; opieka nad zwierzęciem może obniżać stres, co pośrednio wspiera testosteron', 'Chomik – udowodniono laboratoryjnie'],
+        answer: 'Żadne – to mit, brak takiego związku',
+        options: ['Kot – felinofilia obniża testosteron', 'Pies – właściciele psów mają niższy testosteron', 'Żadne – to mit, brak takiego związku', 'Chomik – udowodniono to laboratoryjnie'],
       },
       {
         text: 'Co to jest "Movember" i czego dotyczy?',
-        answer: 'Listopadowa kampania na rzecz zdrowia mężczyzn – raka prostaty, jąder i zdrowia psychicznego',
-        options: ['Kampania promująca brody u mężczyzn', 'Miesiąc walki z otyłością u mężczyzn', 'Listopadowa kampania na rzecz zdrowia mężczyzn – raka prostaty, jąder i zdrowia psychicznego', 'Akcja promująca mężczyzn w kuchni'],
+        answer: 'Listopadowa kampania na rzecz zdrowia mężczyzn',
+        options: ['Kampania promująca brody u mężczyzn', 'Miesiąc walki z otyłością u mężczyzn', 'Listopadowa kampania na rzecz zdrowia mężczyzn', 'Akcja promująca mężczyzn w kuchni'],
       },
 
       // ── MĘŻCZYŹNI I STAROŚĆ ──────────────────────────────────────────────────
@@ -2713,35 +2713,35 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent mężczyzn po 70. roku życia jest aktywnych seksualnie?',
-        answer: 'Około 40–50% – aktywność seksualna nie kończy się na emeryturze',
-        options: ['Poniżej 1%', 'Około 10%', 'Około 40–50% – aktywność seksualna nie kończy się na emeryturze', 'Prawie wszyscy – ~90%'],
+        answer: 'Około 40–50%',
+        options: ['Poniżej 1%', 'Około 10%', 'Około 40–50%', 'Prawie wszyscy – ~90%'],
       },
       {
         text: 'Jak zmienia się orgazm mężczyzny z wiekiem?',
-        answer: 'Mniej intensywny, wolniejszy, okres refrakcji znacznie dłuższy – ale wciąż możliwy',
-        options: ['Orgazm staje się silniejszy z doświadczeniem', 'Orgazm całkowicie zanika po 60. roku życia', 'Mniej intensywny, wolniejszy, okres refrakcji znacznie dłuższy – ale wciąż możliwy', 'Wiek nie wpływa na orgazm mężczyzny'],
+        answer: 'Mniej intensywny i wolniejszy, ale wciąż możliwy',
+        options: ['Orgazm staje się silniejszy z doświadczeniem', 'Orgazm całkowicie zanika po 60. roku życia', 'Mniej intensywny i wolniejszy, ale wciąż możliwy', 'Wiek nie wpływa na orgazm mężczyzny'],
       },
       {
         text: 'Jak testosterone replacement therapy (TRT) wpływa na mężczyzn po andropauzie?',
-        answer: 'Poprawia libido, energię i erekcję, ale wymaga monitorowania PSA i krwi',
-        options: ['Całkowicie eliminuje starzenie się seksualne', 'Poprawia libido, energię i erekcję, ale wymaga monitorowania PSA i krwi', 'Jest nieskuteczna u mężczyzn po 60. roku życia', 'TRT jest nielegalna w Polsce'],
+        answer: 'Poprawia libido i erekcję, ale wymaga kontroli',
+        options: ['Całkowicie eliminuje starzenie się seksualne', 'Poprawia libido i erekcję, ale wymaga kontroli', 'Jest nieskuteczna u mężczyzn po 60. roku życia', 'TRT jest całkowicie nielegalna w Polsce'],
       },
       {
         text: 'Ile lat żyją mężczyźni statystycznie krócej od kobiet?',
-        answer: 'Około 5–7 lat krócej – globalna różnica jest stała od dziesięcioleci',
-        options: ['Mężczyźni żyją dłużej', 'Różnica wynosi poniżej roku', 'Około 5–7 lat krócej – globalna różnica jest stała od dziesięcioleci', 'Ponad 20 lat krócej'],
+        answer: 'Około 5–7 lat krócej',
+        options: ['Mężczyźni żyją dłużej niż kobiety', 'Różnica wynosi poniżej roku', 'Około 5–7 lat krócej', 'Ponad 20 lat krócej'],
       },
       {
         text: 'Dlaczego mężczyźni statystycznie żyją krócej?',
-        answer: 'Wyższe ryzyko chorób sercowo-naczyniowych, wypadków, rzadsze korzystanie z pomocy medycznej i tłumienie emocji',
-        options: ['Słabszy układ odpornościowy biologicznie', 'Wyższe ryzyko chorób sercowo-naczyniowych, wypadków, rzadsze korzystanie z pomocy medycznej i tłumienie emocji', 'Wyłącznie palenie tytoniu', 'Hormony męskie bezpośrednio skracają życie'],
+        answer: 'Choroby serca, wypadki i rzadsze leczenie',
+        options: ['Biologicznie słabszy układ odpornościowy', 'Choroby serca, wypadki i rzadsze leczenie', 'Wyłącznie palenie tytoniu', 'Hormony męskie bezpośrednio skracają życie'],
       },
 
       // ── MĘŻCZYŹNI VS KOBIETY – RÓŻNICE SEKSUALNE ────────────────────────────
       {
         text: 'Kto jest bardziej wzrokowcem seksualnym – mężczyzna czy kobieta?',
-        answer: 'Mężczyźni – silniej reagują na bodźce wizualne, co potwierdzają badania fMRI',
-        options: ['Kobiety – wzrok jest ważniejszy dla kobiecej stymulacji', 'Mężczyźni – silniej reagują na bodźce wizualne, co potwierdzają badania fMRI', 'Nie ma różnicy – obie płci są jednakowo wzrokowcami', 'Żadne płeć – dotyk jest ważniejszy niż wzrok dla obu'],
+        answer: 'Mężczyźni – silniej reagują na bodźce wizualne',
+        options: ['Kobiety – wzrok jest ważniejszy dla ich stymulacji', 'Mężczyźni – silniej reagują na bodźce wizualne', 'Nie ma różnicy – obie płci jednakowo', 'Żadna płeć – dotyk jest ważniejszy niż wzrok'],
       },
       {
         text: 'Jak mężczyźni i kobiety różnią się w zakresie fantazji seksualnych?',
@@ -2750,8 +2750,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile razy szybciej mężczyźni się podniecają wizualnie niż kobiety?',
-        answer: 'Badania fMRI: mężczyźni reagują na erotyczny obraz w ciągu 0,2 sekundy – to odruch nawet bez udziału świadomości',
-        options: ['Kobiety reagują szybciej niż mężczyźni', 'Identycznie szybko', 'Badania fMRI: mężczyźni reagują na erotyczny obraz w ciągu 0,2 sekundy – to odruch nawet bez udziału świadomości', 'Mężczyźni reagują 100× wolniej – potrzebują kontekstu'],
+        answer: 'Mężczyźni reagują na obraz w ~0,2 sekundy',
+        options: ['Kobiety reagują szybciej niż mężczyźni', 'Obie płcie reagują identycznie szybko', 'Mężczyźni reagują na obraz w ~0,2 sekundy', 'Mężczyźni reagują 100× wolniej – potrzebują kontekstu'],
       },
       {
         text: 'Jak różni się komunikacja seksualna między mężczyznami a kobietami w związkach?',
@@ -2760,19 +2760,19 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Ile procent mężczyzn jest gotowych na seks z atrakcyjną nieznajomą wg klasycznych badań (Clark & Hatfield 1989)?',
-        answer: 'Około 75% – kobiety w identycznym eksperymencie: 0%',
-        options: ['Około 10%', 'Około 40%', 'Około 75% – kobiety w identycznym eksperymencie: 0%', 'Prawie wszyscy – ~99%'],
+        answer: 'Około 75%',
+        options: ['Około 10%', 'Około 40%', 'Około 75%', 'Prawie wszyscy – ~99%'],
       },
       {
         text: 'Co mówi ewolucja o różnicach seksualnych mężczyzn i kobiet?',
-        answer: 'Mężczyźni ewolucyjnie preferują liczność partnerek (r-strategia), kobiety jakość partnera (K-strategia)',
-        options: ['Ewolucja nie wpłynęła na preferencje seksualne', 'Mężczyźni i kobiety mają identyczne strategie seksualne', 'Mężczyźni ewolucyjnie preferują liczność partnerek (r-strategia), kobiety jakość partnera (K-strategia)', 'Kobiety preferu ją liczność partnerów, mężczyźni – jedną partnerkę'],
+        answer: 'Mężczyźni preferują liczność partnerek, kobiety – jakość',
+        options: ['Ewolucja nie wpłynęła na preferencje seksualne', 'Mężczyźni i kobiety mają identyczne strategie seksualne', 'Mężczyźni preferują liczność partnerek, kobiety – jakość', 'Kobiety preferują liczność partnerów, mężczyźni – jedną'],
       },
       // Seksualność – dodatkowe fakty
       {
         text: 'Ile cm wynosi średni obwód (circumference) penisa wg BJUI 2015?',
-        answer: 'Około 11,66 cm w stanie wzwodu',
-        options: ['Około 8 cm', 'Około 9,5 cm', 'Około 11,66 cm w stanie wzwodu', 'Około 14 cm'],
+        answer: 'Około 11,66 cm',
+        options: ['Około 8 cm', 'Około 9,5 cm', 'Około 11,66 cm', 'Około 14 cm'],
       },
       {
         text: 'W którym roku penis po raz pierwszy zmierzono klinicznie w dużej próbie?',
@@ -2781,33 +2781,33 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Jaki procent mężczyzn ma penisa krótszego niż 10 cm w erekcji?',
-        answer: 'Około 2,28% (dwa odchylenia standardowe poniżej średniej)',
-        options: ['Około 15%', 'Około 10%', 'Około 5%', 'Około 2,28% (dwa odchylenia standardowe poniżej średniej)'],
+        answer: 'Około 2,28%',
+        options: ['Około 15%', 'Około 10%', 'Około 5%', 'Około 2,28%'],
       },
       {
         text: 'Co oznacza termin "efekt szatni" (locker room effect) w kontekście penisa?',
-        answer: 'Złudzenie, że inni mężczyźni mają większy penis, bo wzrok patrzy z góry na własny, a z przodu na cudzy',
-        options: ['Strach przed rozebranием się przy innych mężczyznach', 'Efekt powiększenia penisa przez zimną wodę', 'Złudzenie, że inni mężczyźni mają większy penis, bo wzrok patrzy z góry na własny, a z przodu na cudzy', 'Rywalizacja seksualna w środowiskach sportowych'],
+        answer: 'Złudzenie, że inni mają większy penis – przez perspektywę',
+        options: ['Strach przed rozebranием się przy innych mężczyznach', 'Efekt powiększenia penisa przez zimną wodę', 'Złudzenie, że inni mają większy penis – przez perspektywę', 'Rywalizacja seksualna w środowiskach sportowych'],
       },
       {
         text: 'Ile procent mężczyzn ma penisa "grower" (rośnie znacznie przy erekcji) vs "shower" (prawie bez zmiany)?',
-        answer: 'Około 79% to "growers", 21% to "showers" wg badań urologicznych',
-        options: ['50% growers, 50% showers', 'Około 30% growers, 70% showers', 'Około 79% to "growers", 21% to "showers" wg badań urologicznych', 'Niemal wszyscy to "showers"'],
+        answer: 'Około 79% to "growers", 21% to "showers"',
+        options: ['50% growers, 50% showers', 'Około 30% growers, 70% showers', 'Około 79% to "growers", 21% to "showers"', 'Niemal wszyscy to "showers"'],
       },
       {
         text: 'Jak długo trwa przeciętna erekcja poranna (morning wood)?',
-        answer: 'Od kilku do 30 minut; pojawia się 3–5 razy w nocy podczas fazy REM',
-        options: ['Zawsze dokładnie 5 minut', 'Od kilku do 30 minut; pojawia się 3–5 razy w nocy podczas fazy REM', 'Tylko jeśli mężczyzna ma sen erotyczny', 'Maksymalnie 2 minuty'],
+        answer: 'Od kilku do 30 minut',
+        options: ['Zawsze dokładnie 5 minut', 'Od kilku do 30 minut', 'Tylko jeśli mężczyzna ma sen erotyczny', 'Maksymalnie 2 minuty'],
       },
       {
         text: 'Jaki jest najdłuższy udokumentowany medycznie czas trwania erekcji?',
-        answer: 'Przypadek priapizmu trwającego ponad 96 godzin opisano w literaturze urologicznej',
-        options: ['Maksymalnie 6 godzin', 'Przypadek priapizmu trwającego ponad 96 godzin opisano w literaturze urologicznej', 'Rekord to 24 godziny', 'Medycyna nie mierzy tego parametru'],
+        answer: 'Ponad 96 godzin (opisany przypadek priapizmu)',
+        options: ['Maksymalnie 6 godzin', 'Ponad 96 godzin (opisany przypadek priapizmu)', 'Rekord to 24 godziny', 'Medycyna nie mierzy tego parametru'],
       },
       {
         text: 'Co to jest "penile plethysmography"?',
-        answer: 'Urządzenie mierzące zmiany obwodu penisa w celu oceny podniecenia seksualnego – stosowane w badaniach klinicznych',
-        options: ['Operacja plastyczna penisa', 'Lek na zaburzenia erekcji', 'Urządzenie mierzące zmiany obwodu penisa w celu oceny podniecenia seksualnego – stosowane w badaniach klinicznych', 'Technika tatuażu na penisie'],
+        answer: 'Urządzenie mierzące zmiany obwodu penisa',
+        options: ['Operacja plastyczna penisa', 'Lek na zaburzenia erekcji', 'Urządzenie mierzące zmiany obwodu penisa', 'Technika tatuażu na penisie'],
       },
       {
         text: 'Ile milionów plemników traci mężczyzna przy jednym wytrysku?',
@@ -4264,8 +4264,8 @@ export const QUESTION_CATEGORIES: QuestionCategory[] = [
       },
       {
         text: 'Co to jest "beer goggles effect" udowodniony naukowo?',
-        answer: 'Postrzeganie innych jako atrakcyjniejszych pod wpływem alkoholu',
-        options: ['Zamazane widzenie po alkoholu', 'Postrzeganie innych jako atrakcyjniejszych pod wpływem alkoholu', 'Uczucie ciepła po piwie', 'Wzrost tolerancji na alkohol'],
+        answer: 'Postrzeganie innych jako atrakcyjniejszych po alkoholu',
+        options: ['Zamazane, nieostre widzenie po alkoholu', 'Postrzeganie innych jako atrakcyjniejszych po alkoholu', 'Uczucie przyjemnego ciepła po piwie', 'Stopniowy wzrost tolerancji na alkohol'],
       },
       {
         text: 'Przy jakim stężeniu promili alkoholu we krwi grozi utrata przytomności?',

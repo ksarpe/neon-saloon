@@ -297,7 +297,8 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
       })
     }
 
-    const updatedTeamScores = computeTeamScores(updatedScores)
+    const normalizedScores = ensurePointScoreEntries(updatedScores, players, cards)
+    const updatedTeamScores = computeTeamScores(normalizedScores)
     await fetch(`/api/sessions/${pin}/reveal`, {
       method: 'POST',
       headers: hostJsonHeaders(pin),
@@ -305,24 +306,32 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
         cardIndex,
         correctAnswer: card.answer,
         votes,
-        scores: updatedScores,
+        scores: normalizedScores,
         teamScores: updatedTeamScores,
       }),
     })
     setIsRevealed(true)
     setRevealedVotes(votes)
-    setScores(updatedScores)
+    setScores(normalizedScores)
     setTeamScores(updatedTeamScores)
-  }, [pin, cardIndex, currentVotes, scores, cards, isRevealed])
+  }, [pin, cardIndex, currentVotes, scores, cards, isRevealed, players])
 
   const handleNextCard = useCallback(async () => {
     const next = cardIndex + 1
     if (next >= cards.length) {
+      const finalScores = ensurePointScoreEntries(scores, players, cards)
+      const finalTeamScores = computeTeamScores(finalScores)
       await fetch(`/api/sessions/${pin}`, {
         method: 'POST',
         headers: hostJsonHeaders(pin),
-        body: JSON.stringify({ action: 'finish', scores, teamScores }),
+        body: JSON.stringify({
+          action: 'finish',
+          scores: finalScores,
+          teamScores: finalTeamScores,
+        }),
       })
+      setScores(finalScores)
+      setTeamScores(finalTeamScores)
       setPhase('finished')
       return
     }
@@ -336,20 +345,28 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
     setIsRevealed(false)
     setRevealedVotes([])
     setHostHasVoted(false)
-  }, [pin, cardIndex, cards, scores, teamScores])
+  }, [pin, cardIndex, cards, scores, players])
 
   const handleForceFinish = useCallback(async () => {
+    const finalScores = ensurePointScoreEntries(scores, players, cards)
+    const finalTeamScores = computeTeamScores(finalScores)
     setPhase('finished')
+    setScores(finalScores)
+    setTeamScores(finalTeamScores)
     try {
       await fetch(`/api/sessions/${pin}`, {
         method: 'POST',
         headers: hostJsonHeaders(pin),
-        body: JSON.stringify({ action: 'finish', scores, teamScores }),
+        body: JSON.stringify({
+          action: 'finish',
+          scores: finalScores,
+          teamScores: finalTeamScores,
+        }),
       })
     } catch (err) {
       console.error('[handleForceFinish]', err)
     }
-  }, [pin, scores, teamScores])
+  }, [pin, scores, players, cards])
 
   const handleHostVote = useCallback(
     async (answerIndex: number, answerText: string) => {
@@ -532,4 +549,29 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
       </div>
     </div>
   )
+}
+
+function ensurePointScoreEntries(
+  scores: ScoreEntry[],
+  players: LivePlayer[],
+  cards: GameCard[]
+): ScoreEntry[] {
+  if (!cards.some((card) => card.type === 'QUIZ')) return scores
+
+  const next = [...scores]
+
+  players.forEach((player) => {
+    if (next.some((score) => score.playerId === player.playerId)) return
+
+    next.push({
+      playerId: player.playerId,
+      playerName: player.playerName,
+      score: 0,
+      drinks: 0,
+      playerTeamId: player.teamId ?? undefined,
+      playerTeamName: player.teamName ?? undefined,
+    })
+  })
+
+  return next
 }

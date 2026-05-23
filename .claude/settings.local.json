@@ -61,7 +61,9 @@
       "Bash(dir F:\\\\ProjektyAKNSoftware\\\\neon-saloon)",
       "PowerShell(Get-ChildItem -Path \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\\\\src\\\\components\" -Recurse -File | Where-Object { $_.Name -match \"\\(data|constants|config|categories|settings|limits\\)\" })",
       "WebSearch",
-      "Bash(tee /tmp/tsc5.out)"
+      "Bash(tee /tmp/tsc5.out)",
+      "Bash(node -e ' *)",
+      "Bash(node validate_questions.cjs)"
     ]
   }
 }

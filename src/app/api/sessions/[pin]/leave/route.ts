@@ -33,6 +33,8 @@ export async function POST(request: Request, { params }: RouteContext) {
     )
     if (rateLimitResponse) return rateLimitResponse
 
+    const teamId = player.teamId
+    const teamName = player.teamName
     session.players = session.players.filter((p) => p.playerId !== playerId)
     await saveSession(session)
 
@@ -40,6 +42,17 @@ export async function POST(request: Request, { params }: RouteContext) {
       event: 'player-left',
       data: { playerId },
     })
+
+    if (teamId) {
+      await triggerSessionEvent(pin, {
+        event: 'team-updated',
+        data: {
+          teamId,
+          teamName: teamName ?? '',
+          memberCount: session.players.filter((p) => p.teamId === teamId).length,
+        },
+      })
+    }
 
     return NextResponse.json({ ok: true })
   } catch (err) {

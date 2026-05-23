@@ -160,7 +160,7 @@ export default function HostPage() {
         onSelect={setSelectedCategory}
         onBack={() => router.push('/graj/host')}
         includeAllOption
-        premiumCategoryIds={[ALL_CATEGORIES_ID, 'alcohol']}
+        premiumCategoryIds={[ALL_CATEGORIES_ID, 'stats', 'alcohol']}
       />
     )
   }
