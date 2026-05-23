@@ -21,15 +21,22 @@ export async function POST(request: Request, { params }: RouteContext) {
     const body = await readLimitedJson<{ cardIndex?: unknown; card?: unknown }>(request)
     const cardIndex = requiredInteger(body.cardIndex, 'cardIndex', 0, 10_000)
     const card = sanitizeWireCard(session.deck?.[cardIndex] ?? body.card)
+    const cardStartedAt = Date.now()
 
-    await updateSession(pin, { cardIndex, currentCard: card, votes: [], currentReveal: undefined })
+    await updateSession(pin, {
+      cardIndex,
+      currentCardStartedAt: cardStartedAt,
+      currentCard: card,
+      votes: [],
+      currentReveal: undefined,
+    })
 
     await triggerSessionEvent(pin, {
       event: 'next-card',
-      data: { cardIndex, card, settings: session.settings },
+      data: { cardIndex, cardStartedAt, card, settings: session.settings },
     })
 
-    return NextResponse.json({ ok: true })
+    return NextResponse.json({ ok: true, cardStartedAt })
   } catch (err) {
     const validationResponse = validationErrorResponse(err)
     if (validationResponse) return validationResponse

@@ -122,6 +122,10 @@ function maxSeq(events: StoredEvent[]): number {
   return events.length === 0 ? -1 : events.reduce((m, e) => (e.seq > m ? e.seq : m), -1)
 }
 
+function parseStoredEvents(value: string | undefined): StoredEvent[] {
+  return JSON.parse(value ?? '[]') as StoredEvent[]
+}
+
 // ─── Hook ───────────────────────────────────────────────────────────────────
 
 export function useGameEvents(pin: string | null, handlers: GameSocketHandlers) {
@@ -160,7 +164,7 @@ export function useGameEvents(pin: string | null, handlers: GameSocketHandlers) 
           tableId: SESSIONS_TABLE,
           rowId: pin,
         })
-        const events = JSON.parse(row.events ?? '[]') as StoredEvent[]
+        const events = parseStoredEvents(row.events)
         lastSeenSeq = maxSeq(events)
       } catch (err) {
         // 404 = session doesn't exist yet (host hasn't created the row).
@@ -170,6 +174,16 @@ export function useGameEvents(pin: string | null, handlers: GameSocketHandlers) 
         }
       }
       if (cancelled) return
+
+      const dispatchUnseen = (events: StoredEvent[]) => {
+        const sorted = [...events].sort((a, b) => a.seq - b.seq)
+        for (const ev of sorted) {
+          if (ev.seq > lastSeenSeq) {
+            dispatch(handlersRef.current, ev.type, ev.payload)
+            lastSeenSeq = ev.seq
+          }
+        }
+      }
 
       const client = getAppwriteClient()
       unsubscribe = client.subscribe<SessionRowPayload>(channel, (response) => {
@@ -182,21 +196,30 @@ export function useGameEvents(pin: string | null, handlers: GameSocketHandlers) 
 
         let events: StoredEvent[]
         try {
-          events = JSON.parse(response.payload.events ?? '[]') as StoredEvent[]
+          events = parseStoredEvents(response.payload.events)
         } catch (err) {
           console.error('[Appwrite RT] malformed events array', err)
           return
         }
 
-        // Dispatch in seq order so handlers see the same order events fired
-        const sorted = [...events].sort((a, b) => a.seq - b.seq)
-        for (const ev of sorted) {
-          if (ev.seq > lastSeenSeq) {
-            dispatch(handlersRef.current, ev.type, ev.payload)
-            lastSeenSeq = ev.seq
-          }
-        }
+        // Dispatch in seq order so handlers see the same order events fired.
+        dispatchUnseen(events)
       })
+
+      // Close the baseline->subscribe race: an event can be written after the
+      // baseline fetch but before the websocket subscription is attached.
+      try {
+        const row = await getTablesDB().getRow<SessionRowPayload>({
+          databaseId: DATABASE_ID,
+          tableId: SESSIONS_TABLE,
+          rowId: pin,
+        })
+        if (!cancelled) dispatchUnseen(parseStoredEvents(row.events))
+      } catch (err) {
+        if (!(err instanceof AppwriteException) || err.code !== 404) {
+          console.warn('[Appwrite RT] catch-up fetch failed', err)
+        }
+      }
     })()
 
     return () => {

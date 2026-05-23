@@ -30,6 +30,7 @@ export default function PlayerGameScreen({
   avatar,
   initialCard,
   initialCardIndex,
+  initialCardStartedAt,
   initialHasVoted,
   initialSettings,
 }: PlayerGameScreenProps) {
@@ -37,6 +38,8 @@ export default function PlayerGameScreen({
   const [isFlipped, setIsFlipped] = useState(Boolean(initialHasVoted))
   const [currentCard, setCurrentCard] = useState<WireCard>(initialCard)
   const [currentCardIndex, setCurrentCardIndex] = useState(initialCardIndex)
+  const [cardStartedAt, setCardStartedAt] = useState<number | null>(initialCardStartedAt ?? null)
+  const [revealStartedAt, setRevealStartedAt] = useState<number | null>(null)
   const [revealData, setRevealData] = useState<VotesRevealedPayload | null>(null)
   const [finishData, setFinishData] = useState<GameFinishedPayload | null>(null)
   const [loading, setLoading] = useState(false)
@@ -49,22 +52,27 @@ export default function PlayerGameScreen({
     active: phase === 'reveal',
     seconds: gameSettings.revealCountdownSeconds,
     resetKey: currentCardIndex,
+    startedAtMs: revealStartedAt,
   })
   const answerCountdown = useAutoCountdown({
     active: phase === 'playing' || phase === 'voted',
     seconds: gameSettings.answerTimeLimitSeconds,
     resetKey: currentCardIndex,
+    startedAtMs: cardStartedAt,
   })
 
   useGameSocket(pin, {
     onVotesRevealed: useCallback((d: VotesRevealedPayload) => {
       setRevealData(d)
+      setRevealStartedAt(d.revealStartedAt ?? Date.now())
       setVoteError(null)
       setPhase('reveal')
     }, []),
     onNextCard: useCallback((d: NextCardPayload) => {
       setCurrentCard(d.card)
       setCurrentCardIndex(d.cardIndex)
+      setCardStartedAt(d.cardStartedAt ?? Date.now())
+      setRevealStartedAt(null)
       if (d.settings) setGameSettings((prev) => ({ ...prev, ...d.settings }))
       setRevealData(null)
       setVoteError(null)

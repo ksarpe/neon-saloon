@@ -158,6 +158,7 @@ export type StandardGameSettings = {
 
 export type VotesRevealedPayload = {
   cardIndex: number
+  revealStartedAt?: number
   correctAnswer?: string // undefined for NEVER cards (no scoring)
   votes: Array<{
     playerId: string
@@ -173,12 +174,14 @@ export type VotesRevealedPayload = {
 
 export type NextCardPayload = {
   cardIndex: number
+  cardStartedAt?: number
   card: WireCard
   settings?: StandardGameSettings
 }
 
 export type GameStartedPayload = {
   cardIndex: number
+  cardStartedAt?: number
   card: WireCard
   settings?: StandardGameSettings
 }

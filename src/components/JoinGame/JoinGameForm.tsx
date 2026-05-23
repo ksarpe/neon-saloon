@@ -203,10 +203,12 @@ export default function JoinGameForm() {
           teamId: string | null
           teamName: string | null
         }
+        serverNow?: number
         session: { status: string; gameMode: string }
         classic?: {
           cardIndex: number
           card: WireCard
+          cardStartedAt?: number | null
           hasVoted: boolean
           settings?: StandardGameSettings | null
         }
@@ -245,6 +247,12 @@ export default function JoinGameForm() {
         teamId: data.player.teamId,
         teamName: data.player.teamName,
       })
+
+      const alignServerTimestamp = (timestamp?: number | null) => {
+        if (typeof timestamp !== 'number') return undefined
+        if (typeof data.serverNow !== 'number') return timestamp
+        return Date.now() - Math.max(0, data.serverNow - timestamp)
+      }
 
       if (data.session.status === 'waiting') {
         // Host hasn't started yet — drop back into the waiting room
@@ -289,6 +297,7 @@ export default function JoinGameForm() {
         setGameStartData({
           cardIndex: data.classic.cardIndex,
           card: data.classic.card,
+          cardStartedAt: alignServerTimestamp(data.classic.cardStartedAt),
           settings: data.classic.settings ?? undefined,
         })
         setClassicHasVoted(data.classic.hasVoted)
@@ -396,6 +405,18 @@ export default function JoinGameForm() {
     void handlePinSubmit(pinFromUrl)
   }, [handlePinSubmit, loading, resumeChecking, searchParams, step])
 
+  useEffect(() => {
+    if (step !== 'waiting' || !pin || !playerInfo) return
+
+    const refreshGameState = () => {
+      void tryResume(pin)
+    }
+
+    refreshGameState()
+    const id = window.setInterval(refreshGameState, 1500)
+    return () => window.clearInterval(id)
+  }, [pin, playerInfo, step, tryResume])
+
   const doJoin = useCallback(
     async (teamId: string | null, teamName: string | null) => {
       if (joiningRef.current) return
@@ -487,6 +508,7 @@ export default function JoinGameForm() {
           avatar={playerInfo.avatar}
           initialCard={gameStartData.card}
           initialCardIndex={gameStartData.cardIndex}
+          initialCardStartedAt={gameStartData.cardStartedAt}
           initialHasVoted={classicHasVoted}
           initialSettings={gameStartData.settings}
         />

@@ -121,12 +121,18 @@ export default function HostSetupPage() {
             continue
           }
 
+          const playersCount = Array.isArray(data.players) ? data.players.length : 0
+          if (data.status === 'waiting' && playersCount === 0) {
+            clearHostSession(stored.pin)
+            continue
+          }
+
           if ((data.status === 'waiting' || data.status === 'active') && !cancelled) {
             activeSessions.push({
               pin: stored.pin,
               status: data.status,
               gameMode: typeof data.gameMode === 'string' ? data.gameMode : 'trivia',
-              playersCount: Array.isArray(data.players) ? data.players.length : 0,
+              playersCount,
             })
           }
         } catch {

@@ -39,6 +39,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     const votes = sanitizeVotes(body.votes)
     const scores = sanitizeScoreEntries(body.scores)
     const teamScores = sanitizeTeamScoreEntries(body.teamScores)
+    const revealStartedAt = Date.now()
 
     // Persist scores + reveal snapshot so the host can refresh mid-game without
     // losing accumulated points or the reveal view.
@@ -47,6 +48,7 @@ export async function POST(request: Request, { params }: RouteContext) {
       teamScores,
       currentReveal: {
         cardIndex,
+        revealStartedAt,
         correctAnswer,
         votes: votes.map((v) => ({
           playerId: v.playerId,
@@ -61,10 +63,10 @@ export async function POST(request: Request, { params }: RouteContext) {
 
     await triggerSessionEvent(pin, {
       event: 'votes-revealed',
-      data: { cardIndex, correctAnswer, votes, scores, teamScores },
+      data: { cardIndex, revealStartedAt, correctAnswer, votes, scores, teamScores },
     })
 
-    return NextResponse.json({ ok: true })
+    return NextResponse.json({ ok: true, revealStartedAt })
   } catch (err) {
     const validationResponse = validationErrorResponse(err)
     if (validationResponse) return validationResponse

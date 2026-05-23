@@ -84,6 +84,7 @@ export type StoredVoteRecord = {
 
 export type CurrentRevealSnapshot = {
   cardIndex: number
+  revealStartedAt?: number
   correctAnswer?: string
   votes: StoredVoteRecord[]
 }
@@ -122,6 +123,7 @@ export type SessionData = {
   players: SessionPlayer[]
   teams: SessionTeam[]
   cardIndex: number
+  currentCardStartedAt?: number
   currentCard?: StoredCard
   deck?: StoredCard[]
   votes: SessionVote[]

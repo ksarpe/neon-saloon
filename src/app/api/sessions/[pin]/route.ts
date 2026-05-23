@@ -87,9 +87,11 @@ export async function POST(request: Request, { params }: RouteContext) {
       const card = sanitizeWireCard(body.card)
       const deck = body.deck === undefined ? [card] : sanitizeStoredDeck(body.deck)
       const settings = sanitizeStandardSettings(body.settings)
+      const cardStartedAt = Date.now()
       await updateSession(pin, {
         status: 'active',
         cardIndex: 0,
+        currentCardStartedAt: cardStartedAt,
         currentCard: card,
         deck,
         votes: [],
@@ -98,7 +100,7 @@ export async function POST(request: Request, { params }: RouteContext) {
       })
       await triggerSessionEvent(pin, {
         event: 'game-started',
-        data: { cardIndex: 0, card, settings },
+        data: { cardIndex: 0, cardStartedAt, card, settings },
       })
     } else if (action === 'finish') {
       const scores = assertSmallArray<ScoreEntry>(body.scores, 'scores')

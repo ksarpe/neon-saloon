@@ -61,6 +61,8 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
   const [players, setPlayers] = useState<LivePlayer[]>([])
   const [cards, setCards] = useState<GameCard[]>(initialCards)
   const [cardIndex, setCardIndex] = useState(0)
+  const [cardStartedAt, setCardStartedAt] = useState<number | null>(null)
+  const [revealStartedAt, setRevealStartedAt] = useState<number | null>(null)
   const [currentVotes, setCurrentVotes] = useState<VoteCastPayload[]>([])
   const [isRevealed, setIsRevealed] = useState(false)
   const [revealedVotes, setRevealedVotes] = useState<VoteRecord[]>([])
@@ -86,8 +88,16 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (!data?.ok) return
+        const alignServerTimestamp = (timestamp?: number | null) => {
+          if (typeof timestamp !== 'number') return null
+          if (typeof data.serverNow !== 'number') return timestamp
+          return Date.now() - Math.max(0, data.serverNow - timestamp)
+        }
         if (Array.isArray(data.players) && data.players.length) setPlayers(data.players)
         if (typeof data.cardIndex === 'number') setCardIndex(data.cardIndex)
+        if (typeof data.currentCardStartedAt === 'number') {
+          setCardStartedAt(alignServerTimestamp(data.currentCardStartedAt))
+        }
         if (Array.isArray(data.deck) && data.deck.length) {
           setCards(data.deck)
         } else if (data.currentCard && typeof data.cardIndex === 'number') {
@@ -107,6 +117,9 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
         // Restore reveal snapshot if host left mid-reveal
         if (data.currentReveal && data.currentReveal.cardIndex === data.cardIndex) {
           setIsRevealed(true)
+          if (typeof data.currentReveal.revealStartedAt === 'number') {
+            setRevealStartedAt(alignServerTimestamp(data.currentReveal.revealStartedAt))
+          }
           setRevealedVotes(data.currentReveal.votes ?? [])
         }
 
@@ -135,7 +148,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
   // ── Poll during active — fallback for missed Realtime events ─────────────────
   useEffect(() => {
     if (phase !== 'active') return
-    const id = setInterval(() => {
+    const refreshVotes = () => {
       fetch(`/api/sessions/${pin}`, { headers: hostAuthHeaders(pin) })
         .then((r) => (r.ok ? r.json() : null))
         .then((data) => {
@@ -153,7 +166,10 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
           })
         })
         .catch(() => {})
-    }, 5000)
+    }
+
+    refreshVotes()
+    const id = setInterval(refreshVotes, 1500)
     return () => clearInterval(id)
   }, [phase, pin])
 
@@ -172,10 +188,13 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
       setRevealedVotes(d.votes)
       setScores(d.scores)
       setTeamScores(d.teamScores ?? [])
+      setRevealStartedAt(d.revealStartedAt ?? Date.now())
       setIsRevealed(true)
     }, []),
     onNextCard: useCallback((d: NextCardPayload) => {
       setCardIndex(d.cardIndex)
+      setCardStartedAt(d.cardStartedAt ?? Date.now())
+      setRevealStartedAt(null)
       setCurrentVotes([])
       setIsRevealed(false)
       setRevealedVotes([])
@@ -232,6 +251,8 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
       // Continue even if join fails — game still works for others
     }
 
+    const startedAt = Date.now()
+    setCardStartedAt(startedAt)
     await fetch(`/api/sessions/${pin}`, {
       method: 'POST',
       headers: hostJsonHeaders(pin),
@@ -299,7 +320,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
 
     const normalizedScores = ensurePointScoreEntries(updatedScores, players, cards)
     const updatedTeamScores = computeTeamScores(normalizedScores)
-    await fetch(`/api/sessions/${pin}/reveal`, {
+    const response = await fetch(`/api/sessions/${pin}/reveal`, {
       method: 'POST',
       headers: hostJsonHeaders(pin),
       body: JSON.stringify({
@@ -310,6 +331,8 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
         teamScores: updatedTeamScores,
       }),
     })
+    const data = await response.json().catch(() => ({}))
+    setRevealStartedAt(typeof data.revealStartedAt === 'number' ? data.revealStartedAt : Date.now())
     setIsRevealed(true)
     setRevealedVotes(votes)
     setScores(normalizedScores)
@@ -335,12 +358,15 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
       setPhase('finished')
       return
     }
-    await fetch(`/api/sessions/${pin}/next-card`, {
+    const response = await fetch(`/api/sessions/${pin}/next-card`, {
       method: 'POST',
       headers: hostJsonHeaders(pin),
       body: JSON.stringify({ cardIndex: next, card: cards[next] }),
     })
+    const data = await response.json().catch(() => ({}))
     setCardIndex(next)
+    setCardStartedAt(typeof data.cardStartedAt === 'number' ? data.cardStartedAt : Date.now())
+    setRevealStartedAt(null)
     setCurrentVotes([])
     setIsRevealed(false)
     setRevealedVotes([])
@@ -410,6 +436,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
     active: phase === 'active' && !isRevealed && Boolean(currentCard) && players.length > 0,
     seconds: gameSettings.answerTimeLimitSeconds,
     resetKey: cardIndex,
+    startedAtMs: cardStartedAt,
     onComplete: () => handleRevealRef.current(),
   })
 
@@ -422,6 +449,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
     active: isRevealed,
     seconds: gameSettings.revealCountdownSeconds,
     resetKey: cardIndex,
+    startedAtMs: revealStartedAt,
     onComplete: () => handleNextCardRef.current(),
   })
 

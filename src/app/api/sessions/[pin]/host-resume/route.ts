@@ -29,12 +29,14 @@ export async function GET(request: Request, { params }: RouteContext) {
 
   return NextResponse.json({
     ok: true,
+    serverNow: Date.now(),
     pin: session.pin,
     status: session.status,
     gameMode: session.gameMode ?? 'classic',
     players: session.players.map(publicPlayer),
     teams: session.teams,
     cardIndex: session.cardIndex,
+    currentCardStartedAt: session.currentCardStartedAt ?? null,
     currentCard: session.currentCard ?? null,
     deck: session.deck ?? null,
     votes: (session.votes ?? []).filter((v) => v.cardIndex === session.cardIndex),

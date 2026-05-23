@@ -11,6 +11,7 @@ export interface PlayerGameScreenProps {
   avatar: string
   initialCard: WireCard
   initialCardIndex: number
+  initialCardStartedAt?: number | null
   // Set on resume when the player has already voted for the current card
   initialHasVoted?: boolean
   initialSettings?: StandardGameSettings

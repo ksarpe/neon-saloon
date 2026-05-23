@@ -6,6 +6,7 @@ type UseAutoCountdownOptions = {
   active: boolean
   seconds: number
   resetKey?: unknown
+  startedAtMs?: number | null
   onComplete?: () => void
 }
 
@@ -13,6 +14,7 @@ export function useAutoCountdown({
   active,
   seconds,
   resetKey,
+  startedAtMs,
   onComplete,
 }: UseAutoCountdownOptions) {
   const [countdown, setCountdown] = useState<number | null>(null)
@@ -28,22 +30,28 @@ export function useAutoCountdown({
       return
     }
 
-    let next = seconds
-    setCountdown(next)
+    const startedAt = startedAtMs ?? Date.now()
+    const deadline = startedAt + seconds * 1000
+    let completed = false
 
-    const tick = setInterval(() => {
-      next -= 1
+    const update = () => {
+      const next = Math.ceil((deadline - Date.now()) / 1000)
       if (next <= 0) {
-        clearInterval(tick)
         setCountdown(null)
-        onCompleteRef.current?.()
+        if (!completed) {
+          completed = true
+          onCompleteRef.current?.()
+        }
       } else {
         setCountdown(next)
       }
-    }, 1000)
+    }
+
+    update()
+    const tick = setInterval(update, 1000)
 
     return () => clearInterval(tick)
-  }, [active, resetKey, seconds])
+  }, [active, resetKey, seconds, startedAtMs])
 
   return countdown
 }

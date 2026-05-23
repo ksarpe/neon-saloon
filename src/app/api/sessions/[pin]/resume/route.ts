@@ -51,12 +51,15 @@ export async function GET(request: Request, { params }: RouteContext) {
   type ResumeResponse = {
     ok: true
     player: typeof player
+    serverNow: number
     session: { pin: string; status: typeof session.status; gameMode: string }
     classic?: {
       cardIndex: number
       card: NonNullable<typeof session.currentCard> | null
+      cardStartedAt: number | null
       hasVoted: boolean
       settings: typeof session.settings | null
+      currentReveal: typeof session.currentReveal | null
     }
     battleRoyale?: {
       questionIndex: number
@@ -86,6 +89,7 @@ export async function GET(request: Request, { params }: RouteContext) {
   const response: ResumeResponse = {
     ok: true,
     player,
+    serverNow: Date.now(),
     session: { pin: session.pin, status: session.status, gameMode },
   }
 
@@ -139,8 +143,10 @@ export async function GET(request: Request, { params }: RouteContext) {
     response.classic = {
       cardIndex: session.cardIndex,
       card: session.currentCard,
+      cardStartedAt: session.currentCardStartedAt ?? null,
       hasVoted,
       settings: session.settings ?? null,
+      currentReveal: session.currentReveal ?? null,
     }
   }
 
