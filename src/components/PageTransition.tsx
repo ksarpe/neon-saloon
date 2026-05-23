@@ -94,7 +94,7 @@ export default function PageTransition({ children }: { children: React.ReactNode
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.22, ease: 'easeInOut' }}
-          className="fixed inset-0 z-10 overflow-y-auto"
+          className="relative z-10 min-h-dvh overflow-x-hidden"
         >
           {children}
         </motion.div>
