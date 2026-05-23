@@ -67,8 +67,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pl" className={`h-full ${font.variable} ${logoFont.variable}`}>
-      <body className="bg-saloon-dark text-text-primary h-full antialiased">
+    <html lang="pl" className={`min-h-full ${font.variable} ${logoFont.variable}`}>
+      <body className="bg-saloon-dark text-text-primary min-h-full antialiased">
         {/* Global dark overlay */}
         <div
           aria-hidden

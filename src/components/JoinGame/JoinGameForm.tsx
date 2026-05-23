@@ -498,7 +498,7 @@ export default function JoinGameForm() {
 
   if (resumeChecking) {
     return (
-      <div className="flex h-dvh w-full flex-col items-center justify-center px-6">
+      <div className="flex min-h-dvh w-full flex-col items-center justify-center px-6 py-20">
         <div className="flex flex-col items-center gap-3 text-center">
           <div
             className="h-10 w-10 animate-spin rounded-full border-2"
@@ -519,7 +519,7 @@ export default function JoinGameForm() {
   }
 
   return (
-    <div className="flex h-dvh w-full flex-col items-center justify-center overflow-hidden px-6">
+    <div className="flex min-h-dvh w-full flex-col items-center justify-center overflow-y-auto overflow-x-hidden px-6 py-20">
       <div className={`relative z-10 w-full ${step === 'name' ? 'max-w-2xl' : 'max-w-sm'}`}>
         <AnimatePresence mode="popLayout" initial={false}>
           {step === 'pin' && (

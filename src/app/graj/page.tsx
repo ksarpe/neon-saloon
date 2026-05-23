@@ -9,7 +9,7 @@ export default function GrajPage() {
   const router = useRouter()
 
   return (
-    <main className="relative flex h-dvh w-full flex-col items-center justify-center overflow-hidden px-6">
+    <main className="relative flex min-h-dvh w-full flex-col items-center justify-center overflow-y-auto overflow-x-hidden px-6 py-20">
       <div className="relative z-10 flex w-full max-w-lg flex-col items-center gap-10 text-center">
         {/* Hero */}
         <h1
