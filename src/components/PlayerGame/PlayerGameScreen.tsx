@@ -1,7 +1,7 @@
 ﻿'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { useAutoCountdown } from '@/hooks/useAutoCountdown'
 import { DEFAULT_GAME_SETTINGS } from '@/hooks/useGameSettings'
@@ -9,10 +9,11 @@ import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
 import type {
   GameFinishedPayload,
   NextCardPayload,
+  StandardGameSettings,
   VotesRevealedPayload,
   WireCard,
 } from '@/lib/game-types'
-import { playerJsonHeaders } from '@/lib/session-player-secret'
+import { playerAuthHeaders, playerJsonHeaders } from '@/lib/session-player-secret'
 
 import { GameOverView } from './GameOverView'
 import { PlayerHeader } from './PlayerHeader'
@@ -20,6 +21,15 @@ import { PlayingView } from './PlayingView'
 import { RevealView } from './RevealView'
 import type { Phase, PlayerGameScreenProps } from './types'
 import { VotedWaiting } from './VotedWaiting'
+
+type ClassicResumeState = {
+  cardIndex: number
+  card: WireCard
+  cardStartedAt: number | null
+  hasVoted: boolean
+  settings: StandardGameSettings | null
+  currentReveal: (VotesRevealedPayload & { revealStartedAt?: number }) | null
+}
 
 export default function PlayerGameScreen({
   pin,
@@ -48,6 +58,42 @@ export default function PlayerGameScreen({
     ...DEFAULT_GAME_SETTINGS,
     ...initialSettings,
   }))
+  const alignServerTimestamp = useCallback((timestamp?: number | null, serverNow?: number) => {
+    if (typeof timestamp !== 'number') return null
+    if (typeof serverNow !== 'number') return timestamp
+    return Date.now() - Math.max(0, serverNow - timestamp)
+  }, [])
+
+  const applyClassicState = useCallback(
+    (classic: ClassicResumeState, serverNow?: number) => {
+      if (!classic.card) return
+
+      if (classic.cardIndex !== currentCardIndex || classic.card.id !== currentCard.id) {
+        setCurrentCard(classic.card)
+        setCurrentCardIndex(classic.cardIndex)
+        setIsFlipped(Boolean(classic.hasVoted))
+        setVoteError(null)
+      }
+
+      setCardStartedAt(alignServerTimestamp(classic.cardStartedAt, serverNow))
+      if (classic.settings) setGameSettings((prev) => ({ ...prev, ...classic.settings }))
+
+      if (classic.currentReveal) {
+        setRevealData(classic.currentReveal)
+        setRevealStartedAt(
+          alignServerTimestamp(classic.currentReveal.revealStartedAt, serverNow) ?? Date.now()
+        )
+        setVoteError(null)
+        setPhase('reveal')
+        return
+      }
+
+      setRevealData(null)
+      setRevealStartedAt(null)
+      setPhase(classic.hasVoted ? 'voted' : 'playing')
+    },
+    [alignServerTimestamp, currentCard.id, currentCardIndex]
+  )
   const countdown = useAutoCountdown({
     active: phase === 'reveal',
     seconds: gameSettings.revealCountdownSeconds,
@@ -84,6 +130,34 @@ export default function PlayerGameScreen({
       setPhase('finished')
     }, []),
   })
+
+  useEffect(() => {
+    const refreshState = async () => {
+      try {
+        const response = await fetch(`/api/sessions/${pin}/resume`, {
+          headers: playerAuthHeaders(pin, playerId),
+        })
+        if (!response.ok) return
+        const data = await response.json()
+
+        if (data.session?.status === 'finished' && data.finished) {
+          setFinishData(data.finished)
+          setPhase('finished')
+          return
+        }
+
+        if (data.session?.status === 'active' && data.classic) {
+          applyClassicState(data.classic, data.serverNow)
+        }
+      } catch {
+        // Realtime remains the primary path; polling is only a recovery path.
+      }
+    }
+
+    void refreshState()
+    const id = window.setInterval(refreshState, 1500)
+    return () => window.clearInterval(id)
+  }, [applyClassicState, pin, playerId])
 
   const castVote = useCallback(
     async (answerIndex: number, answerText: string) => {

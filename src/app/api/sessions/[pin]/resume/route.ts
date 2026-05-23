@@ -53,13 +53,20 @@ export async function GET(request: Request, { params }: RouteContext) {
     player: typeof player
     serverNow: number
     session: { pin: string; status: typeof session.status; gameMode: string }
+    finished?: {
+      scores: typeof session.scores
+      teamScores: typeof session.teamScores
+    }
     classic?: {
       cardIndex: number
       card: NonNullable<typeof session.currentCard> | null
       cardStartedAt: number | null
       hasVoted: boolean
       settings: typeof session.settings | null
-      currentReveal: typeof session.currentReveal | null
+      currentReveal: (NonNullable<typeof session.currentReveal> & {
+        scores: typeof session.scores
+        teamScores: typeof session.teamScores
+      }) | null
     }
     battleRoyale?: {
       questionIndex: number
@@ -91,6 +98,14 @@ export async function GET(request: Request, { params }: RouteContext) {
     player,
     serverNow: Date.now(),
     session: { pin: session.pin, status: session.status, gameMode },
+  }
+
+  if (session.status === 'finished') {
+    response.finished = {
+      scores: session.scores ?? [],
+      teamScores: session.teamScores ?? [],
+    }
+    return NextResponse.json(response)
   }
 
   if (session.status !== 'active') {
@@ -146,7 +161,13 @@ export async function GET(request: Request, { params }: RouteContext) {
       cardStartedAt: session.currentCardStartedAt ?? null,
       hasVoted,
       settings: session.settings ?? null,
-      currentReveal: session.currentReveal ?? null,
+      currentReveal: session.currentReveal
+        ? {
+            ...session.currentReveal,
+            scores: session.scores ?? [],
+            teamScores: session.teamScores ?? [],
+          }
+        : null,
     }
   }
 

@@ -18,20 +18,41 @@ import type { SessionRow } from './sessions'
 // receive THIS pin's events. Linear in players, not players × games.
 //
 // Trade-offs:
-//   • Race on concurrent triggerGameEvent for same pin: read-append-write is
-//     not atomic, last writer wins, one event broadcast may be lost. State
-//     mutations via saveSession are unaffected (different field). Acceptable
-//     for a party game; if it becomes a problem, move to PartyKit.
+//   • Event append uses an Appwrite transaction with short retries. Realtime is
+//     still treated as the fast signal; REST snapshots are the recovery path
+//     for reconnects or dropped websocket messages.
 //   • Bounded array (kept to last EVENTS_KEEP entries) so the column doesn't
 //     grow unbounded for long-running sessions.
 
 const EVENTS_KEEP = 50
+const EVENT_APPEND_RETRIES = 3
 
 type StoredEvent = {
   seq: number
   type: string
   payload: unknown
   ts: string
+}
+
+function parseStoredEvents(value: string | undefined): StoredEvent[] {
+  return JSON.parse(value ?? '[]') as StoredEvent[]
+}
+
+function nextStoredEvent(existing: StoredEvent[], event: SessionEvent): StoredEvent {
+  return {
+    seq: existing.length > 0 ? Math.max(...existing.map((e) => e.seq)) + 1 : 0,
+    type: event.event,
+    payload: event.data,
+    ts: new Date().toISOString(),
+  }
+}
+
+function isMissingRowError(err: unknown) {
+  return err instanceof AppwriteException && err.code === 404
+}
+
+function retryDelay(attempt: number) {
+  return new Promise((resolve) => setTimeout(resolve, 35 * (attempt + 1)))
 }
 
 /**
@@ -42,36 +63,57 @@ type StoredEvent = {
 export async function triggerGameEvent(pin: string, event: SessionEvent): Promise<void> {
   const db = getTablesDB()
 
-  // Read current events to compute the next seq number and preserve history
-  let existing: StoredEvent[] = []
-  try {
-    const row = await db.getRow<SessionRow>(APPWRITE_DATABASE_ID, APPWRITE_TABLE_GAME_SESSIONS, pin)
-    existing = JSON.parse(row.events ?? '[]') as StoredEvent[]
-  } catch (err) {
-    if (err instanceof AppwriteException && err.code === 404) {
-      // Row doesn't exist yet — host hasn't created the session, or it was
-      // deleted. Nothing to broadcast to; silently no-op.
-      console.warn(`[Appwrite RT] triggerGameEvent: row ${pin} not found, skipping`)
+  for (let attempt = 0; attempt < EVENT_APPEND_RETRIES; attempt++) {
+    const transaction = await db.createTransaction()
+    const transactionId = transaction.$id
+
+    try {
+      const row = await db.getRow<SessionRow>(
+        APPWRITE_DATABASE_ID,
+        APPWRITE_TABLE_GAME_SESSIONS,
+        pin,
+        undefined,
+        transactionId
+      )
+      const existing = parseStoredEvents(row.events)
+      const next = nextStoredEvent(existing, event)
+      const updated = [...existing, next].slice(-EVENTS_KEEP)
+
+      await db.updateRow<SessionRow>(
+        APPWRITE_DATABASE_ID,
+        APPWRITE_TABLE_GAME_SESSIONS,
+        pin,
+        {
+          events: JSON.stringify(updated),
+          updatedAt: next.ts,
+        },
+        undefined,
+        transactionId
+      )
+
+      await db.updateTransaction(transactionId, true)
       return
+    } catch (err) {
+      try {
+        await db.updateTransaction(transactionId, false, true)
+      } catch {
+        // Ignore rollback errors so callers receive the original failure.
+      }
+
+      if (isMissingRowError(err)) {
+        // Row does not exist yet, or it was deleted. Nothing to broadcast to.
+        console.warn(`[Appwrite RT] triggerGameEvent: row ${pin} not found, skipping`)
+        return
+      }
+
+      if (attempt < EVENT_APPEND_RETRIES - 1) {
+        await retryDelay(attempt)
+        continue
+      }
+
+      throw err
     }
-    throw err
   }
-
-  const nextSeq = existing.length > 0 ? Math.max(...existing.map((e) => e.seq)) + 1 : 0
-
-  const next: StoredEvent = {
-    seq: nextSeq,
-    type: event.event,
-    payload: event.data,
-    ts: new Date().toISOString(),
-  }
-
-  const updated = [...existing, next].slice(-EVENTS_KEEP)
-
-  await db.updateRow<SessionRow>(APPWRITE_DATABASE_ID, APPWRITE_TABLE_GAME_SESSIONS, pin, {
-    events: JSON.stringify(updated),
-    updatedAt: next.ts,
-  })
 }
 
 /**
