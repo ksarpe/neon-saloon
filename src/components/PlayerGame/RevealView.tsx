@@ -3,16 +3,21 @@
 import { motion } from 'framer-motion'
 import { Beer, Star } from 'lucide-react'
 
+import { GameCardStack } from '@/components/Card'
+import type { CardLike } from '@/components/Card/types'
+import { PlaceIcon } from '@/components/GameSummary/PlaceIcon'
 import type { VotesRevealedPayload } from '@/lib/game-types'
 
 interface Props {
   data: VotesRevealedPayload
+  card: CardLike
   countdown: number | null
 }
 
-export function RevealView({ data, countdown }: Props) {
+export function RevealView({ data, card, countdown }: Props) {
   const correctAnswer = data.correctAnswer?.trim()
   const isNeverCard = !correctAnswer
+  const revealedCard = { ...card, answer: correctAnswer }
   const drinkScores = data.scores
     .filter((score) => (score.drinks ?? 0) > 0)
     .sort((a, b) => (b.drinks ?? 0) - (a.drinks ?? 0))
@@ -26,22 +31,11 @@ export function RevealView({ data, countdown }: Props) {
       animate={{ opacity: 1, y: 0 }}
       className="mx-auto flex w-full max-w-sm flex-col gap-3"
     >
+      <GameCardStack card={revealedCard} isFlipped={true} isRevealed onFlip={() => {}} />
+
       <p className="text-text-muted text-center text-xs font-semibold tracking-normal uppercase">
         OTO WYNIKI
       </p>
-
-      {correctAnswer && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="border-saloon-border bg-saloon-card rounded-2xl border p-4 text-center shadow-lg"
-        >
-          <p className="text-text-muted text-[11px] font-bold tracking-normal uppercase">
-            Prawidłowa odpowiedź
-          </p>
-          <p className="mt-1 text-lg leading-snug font-black text-emerald-300">{correctAnswer}</p>
-        </motion.div>
-      )}
 
       {/* Per-player vote rows */}
       {data.votes.map((v, i) => {
@@ -130,7 +124,9 @@ export function RevealView({ data, countdown }: Props) {
                 key={s.playerId}
                 className="bg-saloon-card border-saloon-border flex items-center gap-3 rounded-xl border p-3 shadow-lg"
               >
-                <span className="text-neon-pink w-6 text-center font-black">{i + 1}.</span>
+                <span className="flex w-7 shrink-0 justify-center">
+                  <PlaceIcon rank={i + 1} size={22} />
+                </span>
                 <span className="text-text-primary flex-1 text-sm font-bold">{s.playerName}</span>
                 <div className="flex items-center gap-1 rounded-lg bg-black/30 px-2 py-1">
                   <Star

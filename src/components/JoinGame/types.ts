@@ -1,4 +1,4 @@
-export type Step = 'pin' | 'name' | 'mode' | 'team' | 'waiting' | 'playing'
+export type Step = 'pin' | 'name' | 'team' | 'waiting' | 'playing'
 
 export interface LiveTeam {
   teamId: string

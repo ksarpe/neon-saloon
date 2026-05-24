@@ -27,7 +27,6 @@ import {
   savePlayerSession,
 } from '@/lib/session-player-secret'
 
-import { ModeSelector } from './ModeSelector'
 import { NameInput } from './NameInput'
 import { PinInput } from './PinInput'
 import { TeamPicker } from './TeamPicker'
@@ -41,7 +40,6 @@ export default function JoinGameForm() {
   const [pin, setPin] = useState('')
   const [playerName, setPlayerName] = useState('')
   const [avatar, setAvatar] = useState<string | null>(null)
-  const [newTeamName, setNewTeamName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const joiningRef = useRef(false)
@@ -108,7 +106,7 @@ export default function JoinGameForm() {
       const p = pinRef.current
       const s = stepRef.current
       if (!pid || !p) return
-      if (s !== 'waiting' && s !== 'team' && s !== 'mode') return
+      if (s !== 'waiting' && s !== 'team') return
       const stored = getPlayerSession(p)
       const secret = stored?.playerId === pid ? stored.playerSecret : null
       navigator.sendBeacon(
@@ -413,12 +411,12 @@ export default function JoinGameForm() {
     }
 
     refreshGameState()
-    const id = window.setInterval(refreshGameState, 1500)
+    const id = window.setInterval(refreshGameState, 5000)
     return () => window.clearInterval(id)
   }, [pin, playerInfo, step, tryResume])
 
   const doJoin = useCallback(
-    async (teamId: string | null, teamName: string | null) => {
+    async (teamId: string | null) => {
       if (joiningRef.current) return
       joiningRef.current = true
       setLoading(true)
@@ -430,14 +428,13 @@ export default function JoinGameForm() {
         const res = await fetch(`/api/sessions/${pin}/join`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ playerName, avatar, teamId, newTeamName: teamName }),
+          body: JSON.stringify({ playerName, avatar, teamId }),
         })
         if (!res.ok) throw new Error()
         const data = await res.json()
         const resolvedPlayerName =
           typeof data.playerName === 'string' ? data.playerName : playerName
-        const resolvedTeamName =
-          typeof data.teamName === 'string' ? data.teamName : (teamName ?? null)
+        const resolvedTeamName = typeof data.teamName === 'string' ? data.teamName : null
         if (typeof data.playerSecret === 'string') {
           savePlayerSession(pin, {
             playerId: data.playerId,
@@ -577,27 +574,11 @@ export default function JoinGameForm() {
                 avatar={avatar}
                 onAvatarChange={setAvatar}
                 onSubmit={() => {
-                  if (gameMode === 'battle-royale') doJoin(null, null)
+                  if (gameMode === 'battle-royale') doJoin(null)
                   else if (gameMode === 'highlow') setStep('team')
-                  else setStep('mode')
+                  else doJoin(null)
                 }}
                 onBack={() => setStep('pin')}
-              />
-            </motion.div>
-          )}
-          {step === 'mode' && (
-            <motion.div
-              key="mode"
-              variants={slide}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              transition={{ duration: 0.18, ease: 'easeInOut' }}
-            >
-              <ModeSelector
-                onSolo={() => doJoin(null, null)}
-                onTeam={() => setStep('team')}
-                loading={loading}
               />
             </motion.div>
           )}
@@ -612,13 +593,9 @@ export default function JoinGameForm() {
             >
               <TeamPicker
                 teams={liveTeams}
-                newTeamName={newTeamName}
-                onNewTeamNameChange={setNewTeamName}
-                onJoinTeam={(id, name) => doJoin(id, name)}
-                onCreateTeam={() => doJoin(null, newTeamName.trim())}
-                onBack={() => setStep(gameMode === 'highlow' ? 'name' : 'mode')}
+                onJoinTeam={(id) => doJoin(id)}
+                onBack={() => setStep('name')}
                 loading={loading}
-                hideCreate={gameMode === 'highlow'}
               />
             </motion.div>
           )}

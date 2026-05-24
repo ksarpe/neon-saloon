@@ -75,8 +75,8 @@ export function LobbyView({ pin, players, onStart }: Props) {
                 transition={{ type: 'spring', stiffness: 280, damping: 22 }}
                 className="flex items-center gap-2 rounded-full border px-4 py-2.5"
                 style={{
-                  borderColor: p.teamId ? 'var(--neon-pink)' : 'var(--saloon-border)',
-                  backgroundColor: p.teamId ? 'rgba(255,16,240,0.08)' : 'var(--saloon-surface)',
+                  borderColor: 'var(--saloon-border)',
+                  backgroundColor: 'var(--saloon-surface)',
                 }}
               >
                 <PlayerAvatar avatar={p.avatar} size={22} />

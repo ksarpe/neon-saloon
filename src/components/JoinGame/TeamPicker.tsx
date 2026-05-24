@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowLeft, Loader2, UserPlus } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 
@@ -9,24 +9,16 @@ import type { LiveTeam } from './types'
 
 interface Props {
   teams: LiveTeam[]
-  newTeamName: string
-  onNewTeamNameChange: (v: string) => void
   onJoinTeam: (id: string, name: string) => void
-  onCreateTeam: () => void
   onBack: () => void
   loading: boolean
-  hideCreate?: boolean
 }
 
 export function TeamPicker({
   teams,
-  newTeamName,
-  onNewTeamNameChange,
   onJoinTeam,
-  onCreateTeam,
   onBack,
   loading,
-  hideCreate,
 }: Props) {
   return (
     <div className="flex w-full flex-col items-center gap-5">
@@ -36,19 +28,19 @@ export function TeamPicker({
           className="mt-2 text-3xl tracking-normal"
           style={{ fontFamily: 'var(--font-app)', color: 'var(--neon-pink)' }}
         >
-          Wybierz swoją bandę
+          Wybierz drużynę
         </h2>
       </div>
 
       {/* Existing teams */}
       <div className="flex w-full max-w-xs flex-col gap-2">
         <p className="text-text-muted text-[10px] font-semibold tracking-normal uppercase">
-          Obecne bandy
+          Drużyny
         </p>
         <AnimatePresence>
           {teams.length === 0 && (
             <p className="text-text-muted py-3 text-center text-xs opacity-60">
-              Nie ma jeszcze żadnej bandy
+              Host nie utworzył jeszcze drużyn
             </p>
           )}
           {teams.map((t) => (
@@ -81,40 +73,6 @@ export function TeamPicker({
           ))}
         </AnimatePresence>
       </div>
-
-      {/* Create new team */}
-      {!hideCreate && (
-        <div className="flex w-full max-w-xs flex-col gap-2">
-          <p className="text-text-muted text-[10px] font-semibold tracking-normal uppercase">
-            Stwórz nową bandę
-          </p>
-          <div className="flex gap-2">
-            <input
-              id="new-team-name-input"
-              type="text"
-              value={newTeamName}
-              onChange={(e) => onNewTeamNameChange(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && newTeamName.trim() && onCreateTeam()}
-              maxLength={20}
-              placeholder="Nazwa bandy…"
-              className="bg-saloon-surface border-saloon-border text-text-primary placeholder:text-text-muted flex-1 rounded-xl border px-3 py-3 text-sm focus:outline-none"
-            />
-            <motion.button
-              id="create-team-btn"
-              disabled={!newTeamName.trim() || loading}
-              whileTap={{ scale: 0.93 }}
-              onClick={onCreateTeam}
-              className="border-neon-pink bg-neon-pink-dim flex h-12 w-12 items-center justify-center rounded-xl border disabled:opacity-30"
-            >
-              {loading ? (
-                <Loader2 size={16} className="animate-spin" style={{ color: 'var(--neon-pink)' }} />
-              ) : (
-                <UserPlus size={16} style={{ color: 'var(--neon-pink)' }} />
-              )}
-            </motion.button>
-          </div>
-        </div>
-      )}
 
       <Button type="outline" onClick={onBack}>
         <ArrowLeft size={14} /> Wróć

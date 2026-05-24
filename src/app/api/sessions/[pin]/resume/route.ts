@@ -15,20 +15,43 @@ type RouteContext = { params: Promise<{ pin: string }> }
 
 export async function GET(request: Request, { params }: RouteContext) {
   const { pin } = await params
-  const limit = await consumeRateLimit(`session-resume:${getClientIp(request)}`, {
-    limit: 60,
-    windowMs: 60_000,
-  })
-  if (!limit.allowed) {
-    return NextResponse.json(
-      { error: 'Too many requests', retryAfter: limit.retryAfter },
-      { status: 429, headers: rateLimitHeaders(limit) }
-    )
-  }
 
   const secret = request.headers.get(PLAYER_SECRET_HEADER)
   if (!secret) {
+    const limit = await consumeRateLimit(`session-resume-missing-secret:${getClientIp(request)}`, {
+      limit: 30,
+      windowMs: 60_000,
+    })
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests', retryAfter: limit.retryAfter },
+        { status: 429, headers: rateLimitHeaders(limit) }
+      )
+    }
     return NextResponse.json({ error: 'Missing player secret' }, { status: 401 })
+  }
+
+  const ipLimit = await consumeRateLimit(`session-resume-ip:${getClientIp(request)}`, {
+    limit: 600,
+    windowMs: 60_000,
+  })
+  if (!ipLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests', retryAfter: ipLimit.retryAfter },
+      { status: 429, headers: rateLimitHeaders(ipLimit) }
+    )
+  }
+
+  const providedHash = hashPlayerSecret(secret)
+  const playerLimit = await consumeRateLimit(`session-resume:${pin}:${providedHash}`, {
+    limit: 90,
+    windowMs: 60_000,
+  })
+  if (!playerLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests', retryAfter: playerLimit.retryAfter },
+      { status: 429, headers: rateLimitHeaders(playerLimit) }
+    )
   }
 
   const session = await getSession(pin)
@@ -37,7 +60,6 @@ export async function GET(request: Request, { params }: RouteContext) {
   }
 
   // Find the player whose secret matches — we don't trust a client-supplied playerId.
-  const providedHash = hashPlayerSecret(secret)
   const matchedPlayer = session.players.find(
     (p) => p.playerSecretHash && p.playerSecretHash === providedHash
   )
@@ -56,6 +78,7 @@ export async function GET(request: Request, { params }: RouteContext) {
     finished?: {
       scores: typeof session.scores
       teamScores: typeof session.teamScores
+      showPlayerPoints?: boolean
     }
     classic?: {
       cardIndex: number
@@ -104,6 +127,7 @@ export async function GET(request: Request, { params }: RouteContext) {
     response.finished = {
       scores: session.scores ?? [],
       teamScores: session.teamScores ?? [],
+      showPlayerPoints: !isNeverOnlyDeck(session.deck ?? []),
     }
     return NextResponse.json(response)
   }
@@ -172,4 +196,8 @@ export async function GET(request: Request, { params }: RouteContext) {
   }
 
   return NextResponse.json(response)
+}
+
+function isNeverOnlyDeck(deck: Array<{ type?: string }>) {
+  return deck.length > 0 && deck.every((card) => card.type === 'NEVER')
 }

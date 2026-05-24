@@ -80,6 +80,7 @@ export async function POST(request: Request, { params }: RouteContext) {
       settings?: unknown
       scores?: unknown
       teamScores?: unknown
+      showPlayerPoints?: unknown
     }>(request, 64 * 1024)
     const action = requiredString(body.action, 'action', INPUT_LIMITS.action)
 
@@ -105,10 +106,11 @@ export async function POST(request: Request, { params }: RouteContext) {
     } else if (action === 'finish') {
       const scores = assertSmallArray<ScoreEntry>(body.scores, 'scores')
       const teamScores = assertSmallArray<TeamScoreEntry>(body.teamScores, 'teamScores')
+      const showPlayerPoints = body.showPlayerPoints !== false
       await updateSession(pin, { status: 'finished', votes: [], scores, teamScores })
       await triggerSessionEvent(pin, {
         event: 'game-finished',
-        data: { scores, teamScores },
+        data: { scores, teamScores, showPlayerPoints },
       })
       // Fire-and-forget: purge ephemeral game-events rows for this session.
       // Errors are swallowed inside cleanupSessionEvents.

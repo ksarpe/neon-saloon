@@ -8,7 +8,7 @@ import { useSession } from 'next-auth/react'
 import { useBackButton } from '@/lib/back-button-context'
 
 const NAV_BTN =
-  'pointer-events-auto flex items-center gap-2 rounded-xl border border-[#ffdcb4]/25 bg-[#0a0414]/25 px-4 py-2 text-xs font-semibold text-[#ffdcb4]/85 backdrop-blur-sm transition-all duration-300 hover:border-[#ffd700]/55 hover:bg-[#ffd700]/12 hover:text-[#ffeb96] hover:shadow-[0_0_14px_rgba(255,215,0,0.18)] active:scale-[0.96]'
+  'pointer-events-auto flex h-10 min-w-10 items-center justify-center gap-2 rounded-xl border border-[#ffdcb4]/25 bg-[#0a0414]/25 px-3 text-xs font-semibold text-[#ffdcb4]/85 backdrop-blur-sm transition-all duration-300 hover:border-[#ffd700]/55 hover:bg-[#ffd700]/12 hover:text-[#ffeb96] hover:shadow-[0_0_14px_rgba(255,215,0,0.18)] active:scale-[0.96] sm:px-4'
 
 export default function PageTransition({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -47,12 +47,14 @@ export default function PageTransition({ children }: { children: React.ReactNode
             <motion.button
               onClick={handleBack}
               className={NAV_BTN}
+              aria-label="Wróć"
+              title="Wróć"
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.25 }}
             >
               <ArrowLeft size={13} />
-              Wróć
+              <span className="hidden sm:inline">Wróć</span>
             </motion.button>
           ) : (
             <span /> /* spacer so session button stays right */
@@ -63,6 +65,8 @@ export default function PageTransition({ children }: { children: React.ReactNode
             <motion.button
               onClick={() => router.push(session ? '/panel' : '/login')}
               className={NAV_BTN}
+              aria-label={session ? (session.user?.name ?? 'Panel') : 'Zaloguj się'}
+              title={session ? (session.user?.name ?? 'Panel') : 'Zaloguj się'}
               initial={{ opacity: 0, x: 8 }}
               animate={{
                 opacity: status === 'loading' ? 0 : 1,
@@ -73,12 +77,14 @@ export default function PageTransition({ children }: { children: React.ReactNode
               {session ? (
                 <>
                   <Settings size={13} />
-                  {session.user?.name ?? 'Panel'}
+                  <span className="hidden max-w-32 truncate sm:inline">
+                    {session.user?.name ?? 'Panel'}
+                  </span>
                 </>
               ) : (
                 <>
                   <LogIn size={13} />
-                  Zaloguj się
+                  <span className="hidden sm:inline">Zaloguj się</span>
                 </>
               )}
             </motion.button>

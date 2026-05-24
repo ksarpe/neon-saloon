@@ -1,3 +1,5 @@
+import Image from 'next/image'
+
 interface Props {
   avatar: string
   size?: number
@@ -6,11 +8,12 @@ interface Props {
 
 export function PlayerAvatar({ avatar, size = 32, className }: Props) {
   return (
-    <img
+    <Image
       src={`/player-avatars/${avatar}`}
       alt=""
       width={size}
       height={size}
+      sizes={`${size}px`}
       draggable={false}
       className={className}
       style={{ objectFit: 'contain', display: 'inline-block' }}

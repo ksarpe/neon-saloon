@@ -24,6 +24,8 @@ interface Props {
   scores: ScoreEntry[]
   answerCountdown: number | null
   countdown: number | null
+  hostCardFlipped: boolean
+  onHostCardFlip: () => void
   hostPlayerId: string | null
   hostHasVoted: boolean
   onHostVote: (answerIndex: number, answerText: string) => void
@@ -41,6 +43,8 @@ export function ActiveCardView({
   scores,
   answerCountdown,
   countdown,
+  hostCardFlipped,
+  onHostCardFlip,
   hostPlayerId,
   hostHasVoted,
   onHostVote,
@@ -50,13 +54,13 @@ export function ActiveCardView({
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col items-center justify-center gap-6">
-      {/* Card — always face-up on host screen */}
+      {/* Card — host also reveals it locally, just like players do. */}
       <GameCardStack
         card={card}
         cardsLeft={totalCards - cardIndex}
-        isFlipped={true}
+        isFlipped={hostCardFlipped}
         isRevealed={isRevealed}
-        onFlip={() => {}}
+        onFlip={onHostCardFlip}
       />
 
       {!isRevealed && answerCountdown !== null && (
@@ -122,6 +126,7 @@ export function ActiveCardView({
         card={card}
         isHostPlayer={isHostPlayer}
         isRevealed={isRevealed}
+        canVote={hostCardFlipped}
         hostHasVoted={hostHasVoted}
         hostLoading={hostLoading}
         onHostVote={onHostVote}

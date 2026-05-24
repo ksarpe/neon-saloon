@@ -9,6 +9,7 @@ interface Props {
   card: GameCard
   isHostPlayer: boolean
   isRevealed: boolean
+  canVote: boolean
   hostHasVoted: boolean
   hostLoading: boolean
   onHostVote: (answerIndex: number, answerText: string) => void
@@ -18,13 +19,14 @@ export function HostVoteButtons({
   card,
   isHostPlayer,
   isRevealed,
+  canVote,
   hostHasVoted,
   hostLoading,
   onHostVote,
 }: Props) {
   return (
     <AnimatePresence>
-      {isHostPlayer && !isRevealed && (
+      {isHostPlayer && !isRevealed && canVote && (
         <motion.div
           key="host-vote"
           initial={{ opacity: 0, y: 10 }}

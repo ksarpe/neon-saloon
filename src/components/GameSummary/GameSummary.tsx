@@ -15,6 +15,8 @@ interface Props {
   drinksScores?: SummaryScore[]
   egzekwoScores?: SummaryScore[]
   homeHref?: string
+  currentPlayerId?: string
+  showPlayerPoints?: boolean
 }
 
 export function GameSummary({
@@ -23,10 +25,12 @@ export function GameSummary({
   drinksScores,
   egzekwoScores,
   homeHref = '/graj',
+  currentPlayerId,
+  showPlayerPoints = true,
 }: Props) {
-  const hasPlayerPoints = scores.length > 0
+  const hasPlayerPoints = showPlayerPoints && scores.length > 0
   const hasTeams = !!teamScores && teamScores.length > 0
-  const hasDrinks = !!drinksScores && drinksScores.length > 0
+  const hasDrinks = !showPlayerPoints || (!!drinksScores && drinksScores.length > 0)
   const hasEgzekwo = !!egzekwoScores && egzekwoScores.length > 0
   const tabCount =
     Number(hasPlayerPoints) + Number(hasTeams) + Number(hasDrinks) + Number(hasEgzekwo)
@@ -41,6 +45,13 @@ export function GameSummary({
           ? 'egzekwo'
           : 'players'
   const [tab, setTab] = useState<Tab>(defaultTab)
+  const activeTab =
+    (tab === 'players' && hasPlayerPoints) ||
+    (tab === 'teams' && hasTeams) ||
+    (tab === 'drinks' && hasDrinks) ||
+    (tab === 'egzekwo' && hasEgzekwo)
+      ? tab
+      : defaultTab
 
   return (
     <div className="mx-auto flex w-full max-w-md flex-col items-center gap-6 text-center">
@@ -57,8 +68,7 @@ export function GameSummary({
           className="text-sheriff-pink text-[clamp(2rem,12vw,6rem)] leading-[1.1] tracking-wide whitespace-nowrap uppercase"
           style={{ fontFamily: 'var(--font-logo)' }}
         >
-          Game Over,
-          <br /> Cowgirls!
+          It&apos;s over!
         </motion.h1>
       </motion.div>
 
@@ -76,9 +86,11 @@ export function GameSummary({
               onClick={() => setTab('players')}
               className="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-bold tracking-normal uppercase transition-all duration-200"
               style={{
-                backgroundColor: tab === 'players' ? 'rgba(255,16,240,0.12)' : 'transparent',
-                color: tab === 'players' ? 'var(--neon-pink)' : 'rgba(255,220,180,0.45)',
-                boxShadow: tab === 'players' ? 'inset 0 0 0 1px rgba(255,16,240,0.2)' : 'none',
+                backgroundColor:
+                  activeTab === 'players' ? 'rgba(255,16,240,0.12)' : 'transparent',
+                color: activeTab === 'players' ? 'var(--neon-pink)' : 'rgba(255,220,180,0.45)',
+                boxShadow:
+                  activeTab === 'players' ? 'inset 0 0 0 1px rgba(255,16,240,0.2)' : 'none',
               }}
             >
               <User size={13} />
@@ -91,9 +103,10 @@ export function GameSummary({
               onClick={() => setTab('teams')}
               className="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-bold tracking-normal uppercase transition-all duration-200"
               style={{
-                backgroundColor: tab === 'teams' ? 'rgba(249,74,255,0.12)' : 'transparent',
-                color: tab === 'teams' ? 'var(--sheriff-pink)' : 'rgba(255,220,180,0.45)',
-                boxShadow: tab === 'teams' ? 'inset 0 0 0 1px rgba(249,74,255,0.2)' : 'none',
+                backgroundColor: activeTab === 'teams' ? 'rgba(249,74,255,0.12)' : 'transparent',
+                color: activeTab === 'teams' ? 'var(--sheriff-pink)' : 'rgba(255,220,180,0.45)',
+                boxShadow:
+                  activeTab === 'teams' ? 'inset 0 0 0 1px rgba(249,74,255,0.2)' : 'none',
               }}
             >
               <Users size={13} />
@@ -106,12 +119,13 @@ export function GameSummary({
               onClick={() => setTab('drinks')}
               className="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-bold tracking-normal uppercase transition-all duration-200"
               style={{
-                backgroundColor: tab === 'drinks' ? 'rgba(255,215,0,0.12)' : 'transparent',
-                color: tab === 'drinks' ? '#ffd700' : 'rgba(255,220,180,0.45)',
-                boxShadow: tab === 'drinks' ? 'inset 0 0 0 1px rgba(255,215,0,0.2)' : 'none',
+                backgroundColor: activeTab === 'drinks' ? 'rgba(255,215,0,0.12)' : 'transparent',
+                color: activeTab === 'drinks' ? '#ffd700' : 'rgba(255,220,180,0.45)',
+                boxShadow:
+                  activeTab === 'drinks' ? 'inset 0 0 0 1px rgba(255,215,0,0.2)' : 'none',
               }}
             >
-              🍺 Pijacy
+              Pijacy
             </button>
           )}
 
@@ -120,25 +134,37 @@ export function GameSummary({
               onClick={() => setTab('egzekwo')}
               className="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-bold tracking-normal uppercase transition-all duration-200"
               style={{
-                backgroundColor: tab === 'egzekwo' ? 'rgba(239,68,68,0.12)' : 'transparent',
-                color: tab === 'egzekwo' ? '#f87171' : 'rgba(255,220,180,0.45)',
-                boxShadow: tab === 'egzekwo' ? 'inset 0 0 0 1px rgba(239,68,68,0.2)' : 'none',
+                backgroundColor: activeTab === 'egzekwo' ? 'rgba(239,68,68,0.12)' : 'transparent',
+                color: activeTab === 'egzekwo' ? '#f87171' : 'rgba(255,220,180,0.45)',
+                boxShadow:
+                  activeTab === 'egzekwo' ? 'inset 0 0 0 1px rgba(239,68,68,0.2)' : 'none',
               }}
             >
-              ⚡ Egzekwo
+              Egzekwo
             </button>
           )}
         </motion.div>
       )}
 
       {/* Ranking */}
-      {tab === 'players' && hasPlayerPoints && <RankingList scores={scores} unit="pkt" />}
-      {tab === 'teams' && hasTeams && <RankingList scores={teamScores!} unit="pkt" />}
-      {tab === 'drinks' && hasDrinks && (
-        <RankingList scores={drinksScores!} unit="łyków" icon="🍺" />
+      {activeTab === 'players' && hasPlayerPoints && (
+        <RankingList scores={scores} unit="pkt" currentId={currentPlayerId} />
       )}
-      {tab === 'egzekwo' && hasEgzekwo && (
-        <RankingList scores={egzekwoScores!} unit="egzekucji" icon="⚡" />
+      {activeTab === 'teams' && hasTeams && <RankingList scores={teamScores!} unit="pkt" />}
+      {activeTab === 'drinks' && hasDrinks && (
+        <RankingList
+          scores={drinksScores ?? []}
+          unit="łyków"
+          currentId={currentPlayerId}
+          emptyLabel="Nikt nie pił w tej rozgrywce."
+        />
+      )}
+      {activeTab === 'egzekwo' && hasEgzekwo && (
+        <RankingList
+          scores={egzekwoScores!}
+          unit="egzekucji"
+          currentId={currentPlayerId}
+        />
       )}
 
       {/* Home button */}

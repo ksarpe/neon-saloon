@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { Star, Trophy } from 'lucide-react'
 
+import { PlaceIcon } from '@/components/GameSummary/PlaceIcon'
 import { PlayerAvatar } from '@/components/PlayerAvatar'
 import type { ScoreEntry } from '@/lib/game-types'
 
@@ -78,7 +79,9 @@ export function PlayerFinished({ avatar, playerName, teamName, playerId, myScore
                   backgroundColor: s.playerId === playerId ? 'rgba(255,215,0,0.06)' : 'transparent',
                 }}
               >
-                <span className="text-text-muted w-5 text-xs">#{i + 1}</span>
+                <span className="flex w-7 shrink-0 justify-center">
+                  <PlaceIcon rank={i + 1} size={24} />
+                </span>
                 <span
                   className="flex-1 text-left text-sm font-semibold"
                   style={{
@@ -86,6 +89,9 @@ export function PlayerFinished({ avatar, playerName, teamName, playerId, myScore
                   }}
                 >
                   {s.playerName}
+                  {s.playerId === playerId && (
+                    <span className="ml-1 whitespace-nowrap text-xs font-black">(TY)</span>
+                  )}
                   {s.playerTeamName && (
                     <span className="text-text-muted ml-1 text-xs">({s.playerTeamName})</span>
                   )}

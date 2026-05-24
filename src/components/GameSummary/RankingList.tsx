@@ -2,11 +2,9 @@
 
 import { motion } from 'framer-motion'
 import { Star } from 'lucide-react'
-import React from 'react'
 
+import { PlaceIcon } from './PlaceIcon'
 import type { SummaryScore } from './types'
-
-const MEDALS = ['🥇', '🥈', '🥉']
 
 const RANK_STYLES = [
   { border: 'rgba(192,192,192,0.5)', bg: 'rgba(192,192,192,0.06)' },
@@ -16,13 +14,22 @@ const RANK_STYLES = [
 interface Props {
   scores: SummaryScore[]
   unit?: string
-  icon?: React.ReactNode
+  currentId?: string
+  emptyLabel?: string
 }
 
-export function RankingList({ scores, unit = 'pkt', icon }: Props) {
+export function RankingList({ scores, unit = 'pkt', currentId, emptyLabel }: Props) {
   const sorted = [...scores].sort((a, b) => b.score - a.score)
   const winner = sorted[0] ?? null
   const rest = sorted.slice(1)
+  const renderName = (score: SummaryScore) => (
+    <>
+      {score.name}
+      {score.id === currentId && (
+        <span className="ml-1 whitespace-nowrap text-xs font-black tracking-normal">(TY)</span>
+      )}
+    </>
+  )
 
   return (
     <>
@@ -38,13 +45,13 @@ export function RankingList({ scores, unit = 'pkt', icon }: Props) {
             boxShadow: '0 0 48px rgba(255,215,0,0.22)',
           }}
         >
-          <motion.span
-            className="text-5xl"
+          <motion.div
+            className="relative h-16 w-16"
             animate={{ rotate: [0, -8, 8, -8, 0] }}
             transition={{ delay: 0.5, duration: 0.6 }}
           >
-            {icon ?? '👑'}
-          </motion.span>
+            <PlaceIcon rank={1} size={64} />
+          </motion.div>
           <p
             className="text-3xl leading-tight font-black tracking-wide"
             style={{
@@ -54,7 +61,7 @@ export function RankingList({ scores, unit = 'pkt', icon }: Props) {
               textShadow: '0 0 24px rgba(255,215,0,0.6)',
             }}
           >
-            {winner.name}
+            {renderName(winner)}
           </p>
           <div className="flex items-center gap-1.5">
             <Star size={16} fill="var(--sheriff-pink)" style={{ color: 'var(--sheriff-pink)' }} />
@@ -71,7 +78,7 @@ export function RankingList({ scores, unit = 'pkt', icon }: Props) {
           transition={{ delay: 0.2 }}
           className="text-text-muted text-sm"
         >
-          Tym razem nikt nie zdobył punktów
+          {emptyLabel ?? 'Tym razem nikt nie zdobył punktów'}
         </motion.p>
       )}
 
@@ -92,13 +99,11 @@ export function RankingList({ scores, unit = 'pkt', icon }: Props) {
                 className="flex items-center gap-3 rounded-xl border px-4 py-3.5"
                 style={{ borderColor: style.border, backgroundColor: style.bg }}
               >
-                <span className="w-8 shrink-0 text-center text-xl">
-                  {MEDALS[rank - 1] ?? (
-                    <span className="text-text-muted text-xs font-bold">{rank}.</span>
-                  )}
+                <span className="flex w-8 shrink-0 justify-center">
+                  <PlaceIcon rank={rank} size={30} />
                 </span>
                 <span className="text-text-primary flex-1 text-left text-sm font-bold">
-                  {s.name}
+                  {renderName(s)}
                 </span>
                 <div className="flex shrink-0 items-center gap-1">
                   <Star

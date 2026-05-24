@@ -28,6 +28,7 @@ export function GameCardStack({
   // Różne grafiki dla całego decku (aktywna + cienie), stabilnie po id karty.
   const deckBgs = pickDeckBackgrounds(card.id, shadows + 1)
   const activeBg = deckBgs[0]
+  const hasAnswer = Boolean(card.answer)
 
   return (
     <div
@@ -92,8 +93,21 @@ export function GameCardStack({
           ) : (
             <div className="flex h-full w-full flex-col items-center justify-center px-6 text-center">
               <p
-                className="text-base leading-snug font-bold sm:text-lg"
-                style={{ color: '#1a1a1a' }}
+                className={
+                  hasAnswer
+                    ? 'text-base leading-snug font-bold sm:text-lg'
+                    : 'text-4xl leading-none font-black sm:text-5xl'
+                }
+                style={
+                  hasAnswer
+                    ? { color: '#1a1a1a' }
+                    : {
+                        color: 'var(--neon-pink)',
+                        fontFamily: 'var(--font-logo)',
+                        textShadow:
+                          '0 0 12px var(--neon-pink), 0 0 30px rgba(221,84,162,0.55)',
+                      }
+                }
               >
                 {card.answer ?? 'Last Rodeo'}
               </p>

@@ -62,6 +62,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
   const [cards, setCards] = useState<GameCard[]>(initialCards)
   const [cardIndex, setCardIndex] = useState(0)
   const [cardStartedAt, setCardStartedAt] = useState<number | null>(null)
+  const [hostCardFlipped, setHostCardFlipped] = useState(false)
   const [revealStartedAt, setRevealStartedAt] = useState<number | null>(null)
   const [currentVotes, setCurrentVotes] = useState<VoteCastPayload[]>([])
   const [isRevealed, setIsRevealed] = useState(false)
@@ -132,6 +133,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
         if (stored?.hostPlayerId && Array.isArray(data.votes)) {
           if (data.votes.some((v: { playerId: string }) => v.playerId === stored.hostPlayerId)) {
             setHostHasVoted(true)
+            setHostCardFlipped(true)
           }
         }
       })
@@ -190,6 +192,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
       setTeamScores(d.teamScores ?? [])
       setRevealStartedAt(d.revealStartedAt ?? Date.now())
       setIsRevealed(true)
+      setHostCardFlipped(true)
     }, []),
     onNextCard: useCallback((d: NextCardPayload) => {
       setCardIndex(d.cardIndex)
@@ -199,8 +202,12 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
       setIsRevealed(false)
       setRevealedVotes([])
       setHostHasVoted(false)
+      setHostCardFlipped(false)
     }, []),
-    onGameStarted: useCallback(() => setPhase('active'), []),
+    onGameStarted: useCallback(() => {
+      setHostCardFlipped(false)
+      setPhase('active')
+    }, []),
     onGameFinished: useCallback(() => setPhase('finished'), []),
   })
 
@@ -253,6 +260,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
 
     const startedAt = Date.now()
     setCardStartedAt(startedAt)
+    setHostCardFlipped(false)
     await fetch(`/api/sessions/${pin}`, {
       method: 'POST',
       headers: hostJsonHeaders(pin),
@@ -334,6 +342,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
     const data = await response.json().catch(() => ({}))
     setRevealStartedAt(typeof data.revealStartedAt === 'number' ? data.revealStartedAt : Date.now())
     setIsRevealed(true)
+    setHostCardFlipped(true)
     setRevealedVotes(votes)
     setScores(normalizedScores)
     setTeamScores(updatedTeamScores)
@@ -344,6 +353,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
     if (next >= cards.length) {
       const finalScores = ensurePointScoreEntries(scores, players, cards)
       const finalTeamScores = computeTeamScores(finalScores)
+      const showPlayerPoints = !isNeverOnlyDeck(cards)
       await fetch(`/api/sessions/${pin}`, {
         method: 'POST',
         headers: hostJsonHeaders(pin),
@@ -351,6 +361,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
           action: 'finish',
           scores: finalScores,
           teamScores: finalTeamScores,
+          showPlayerPoints,
         }),
       })
       setScores(finalScores)
@@ -371,11 +382,13 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
     setIsRevealed(false)
     setRevealedVotes([])
     setHostHasVoted(false)
+    setHostCardFlipped(false)
   }, [pin, cardIndex, cards, scores, players])
 
   const handleForceFinish = useCallback(async () => {
     const finalScores = ensurePointScoreEntries(scores, players, cards)
     const finalTeamScores = computeTeamScores(finalScores)
+    const showPlayerPoints = !isNeverOnlyDeck(cards)
     setPhase('finished')
     setScores(finalScores)
     setTeamScores(finalTeamScores)
@@ -387,6 +400,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
           action: 'finish',
           scores: finalScores,
           teamScores: finalTeamScores,
+          showPlayerPoints,
         }),
       })
     } catch (err) {
@@ -461,6 +475,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
   const egzekwoScores = scores
     .filter((s) => (s.egzekwo ?? 0) > 0)
     .map((s) => ({ id: s.playerId, name: s.playerName, score: s.egzekwo! }))
+  const showPlayerPoints = !isNeverOnlyDeck(cards)
 
   // ── Render ────────────────────────────────────────────────────────────────────
   return (
@@ -539,6 +554,8 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
                   scores={scores}
                   answerCountdown={answerCountdown}
                   countdown={countdown}
+                  hostCardFlipped={hostCardFlipped}
+                  onHostCardFlip={() => setHostCardFlipped(true)}
                   hostPlayerId={hostPlayerId}
                   hostHasVoted={hostHasVoted}
                   onHostVote={handleHostVote}
@@ -569,6 +586,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
                   }
                   drinksScores={drinksScores.length > 0 ? drinksScores : undefined}
                   egzekwoScores={egzekwoScores.length > 0 ? egzekwoScores : undefined}
+                  showPlayerPoints={showPlayerPoints}
                 />
               </motion.div>
             )}
@@ -602,4 +620,8 @@ function ensurePointScoreEntries(
   })
 
   return next
+}
+
+function isNeverOnlyDeck(cards: GameCard[]) {
+  return cards.length > 0 && cards.every((card) => card.type === 'NEVER')
 }

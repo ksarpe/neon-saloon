@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { Beer, Star } from 'lucide-react'
 
+import { PlaceIcon } from '@/components/GameSummary/PlaceIcon'
 import type { GameCard } from '@/lib/store'
 
 import type { ScoreEntry, VoteRecord } from './types'
@@ -119,8 +120,8 @@ export function RevealedResults({ card, revealedVotes, scores, hostPlayerId, cou
           </p>
           {pointScores.map((s, i) => (
             <div key={s.playerId} className="flex items-center gap-2 text-sm">
-              <span className="text-text-muted w-4 text-center text-[10px] font-bold">
-                {i + 1}
+              <span className="flex w-5 shrink-0 justify-center">
+                <PlaceIcon rank={i + 1} size={18} />
               </span>
               <span className="text-text-primary flex-1 truncate text-xs font-semibold">
                 {s.playerName}

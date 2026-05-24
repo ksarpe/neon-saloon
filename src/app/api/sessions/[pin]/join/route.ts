@@ -89,28 +89,35 @@ export async function POST(request: Request, { params }: RouteContext) {
 
       const resolvedPlayerName = allocatePlayerName(playerName, session.players)
       const resolvedAvatar = resolveAvatar(chosenAvatar, session.players)
-      const selectedTeam = teamId ? session.teams.find((team) => team.teamId === teamId) : null
-      if (teamId && !selectedTeam) {
+      if (session.gameMode !== 'highlow' && (teamId || newTeamName)) {
+        return {
+          response: NextResponse.json(
+            { error: 'Teams are only available in Mniej więcej' },
+            { status: 400 }
+          ),
+        }
+      }
+
+      if (session.gameMode === 'highlow' && newTeamName) {
+        return {
+          response: NextResponse.json({ error: 'Team creation is host-controlled' }, { status: 400 }),
+        }
+      }
+
+      if (session.gameMode === 'highlow' && !teamId) {
+        return { response: NextResponse.json({ error: 'Team is required' }, { status: 400 }) }
+      }
+
+      const selectedTeam =
+        session.gameMode === 'highlow'
+          ? session.teams.find((team) => team.teamId === teamId)
+          : null
+      if (session.gameMode === 'highlow' && !selectedTeam) {
         return { response: NextResponse.json({ error: 'Team not found' }, { status: 400 }) }
       }
 
-      let resolvedTeamId = teamId
-      let resolvedTeamName = selectedTeam?.teamName ?? null
-      const newTeam =
-        newTeamName && !teamId
-          ? {
-              teamId: `team_${Date.now()}`,
-              teamName: newTeamName,
-              color: '#FF10F0',
-              emoji: '\uD83E\uDD20',
-            }
-          : null
-
-      if (newTeam) {
-        resolvedTeamId = newTeam.teamId
-        resolvedTeamName = newTeam.teamName
-        session.teams = [...session.teams, newTeam]
-      }
+      const resolvedTeamId = session.gameMode === 'highlow' ? teamId : null
+      const resolvedTeamName = session.gameMode === 'highlow' ? selectedTeam?.teamName ?? null : null
 
       const player = {
         playerId,
@@ -128,17 +135,10 @@ export async function POST(request: Request, { params }: RouteContext) {
         ? session.players.filter((p) => p.teamId === resolvedTeamId).length
         : 0
 
-      return { player, playerSecret, newTeam, teamMemberCount }
+      return { player, playerSecret, teamMemberCount }
     })
 
     if ('response' in joined) return joined.response
-
-    if (joined.newTeam) {
-      await triggerSessionEvent(pin, {
-        event: 'team-created',
-        data: joined.newTeam,
-      })
-    }
 
     await triggerSessionEvent(pin, {
       event: 'player-joined',

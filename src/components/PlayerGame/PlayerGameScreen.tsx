@@ -155,7 +155,7 @@ export default function PlayerGameScreen({
     }
 
     void refreshState()
-    const id = window.setInterval(refreshState, 1500)
+    const id = window.setInterval(refreshState, 3000)
     return () => window.clearInterval(id)
   }, [applyClassicState, pin, playerId])
 
@@ -250,7 +250,7 @@ export default function PlayerGameScreen({
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <RevealView data={revealData} countdown={countdown} />
+                <RevealView data={revealData} card={currentCard} countdown={countdown} />
               </motion.div>
             )}
 
@@ -262,7 +262,7 @@ export default function PlayerGameScreen({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
               >
-                <GameOverView data={finishData} />
+                <GameOverView data={finishData} currentPlayerId={playerId} />
               </motion.div>
             )}
           </AnimatePresence>

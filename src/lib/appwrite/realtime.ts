@@ -231,6 +231,7 @@ export type GameStartedPayload = {
 export type GameFinishedPayload = {
   scores: ScoreEntry[]
   teamScores: TeamScoreEntry[]
+  showPlayerPoints?: boolean
 }
 
 export type PlayerLeftPayload = {
