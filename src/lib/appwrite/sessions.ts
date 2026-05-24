@@ -40,6 +40,16 @@ export type HighLowSessionData = {
   guessingCaptainId: string
   votingCaptainId: string
   currentNumber?: string
+  currentResult?: {
+    correctAnswer: number
+    unit: string
+    guessingTeamGuess: number
+    correctVote: 'mniej' | 'wiecej'
+    captainVote: 'mniej' | 'wiecej'
+    winningTeamId: string
+    winningTeamName: string
+    scores: StoredScoreEntry[]
+  }
   // Persisted so reconnecting players can rebuild the round view without realtime
   questionText?: string
   questionUnit?: string

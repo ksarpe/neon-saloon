@@ -13,6 +13,7 @@ import { useBackButton } from '@/lib/back-button-context'
 import type {
   BRRoundStartPayload,
   GameStartedPayload,
+  HighLowRoundResultPayload,
   HighLowRoundStartPayload,
   StandardGameSettings,
   TeamCreatedPayload,
@@ -52,6 +53,7 @@ export default function JoinGameForm() {
   const [gameStartData, setGameStartData] = useState<GameStartedPayload | null>(null)
   // HighLow first round data
   const [hlRoundData, setHlRoundData] = useState<HighLowRoundStartPayload | null>(null)
+  const [hlResultData, setHlResultData] = useState<HighLowRoundResultPayload | null>(null)
   // Battle Royale: store first round data so BattleRoyalePlayer can initialize immediately
   const [brRoundData, setBrRoundData] = useState<BRRoundStartPayload | null>(null)
 
@@ -115,6 +117,7 @@ export default function JoinGameForm() {
           type: 'application/json',
         })
       )
+      clearPlayerSession(p)
     }
     window.addEventListener('beforeunload', leave)
     return () => {
@@ -179,6 +182,7 @@ export default function JoinGameForm() {
     }, []),
     onHighLowRoundStart: useCallback((d: HighLowRoundStartPayload) => {
       setHlRoundData(d)
+      setHlResultData(null)
       setStep('playing')
     }, []),
     onBRRoundStart: useCallback((d: BRRoundStartPayload) => {
@@ -232,6 +236,7 @@ export default function JoinGameForm() {
           guessingCaptainId: string
           votingCaptainId: string
           submittedNumber: string | null
+          currentResult?: HighLowRoundResultPayload | null
         }
       }
     ) => {
@@ -290,6 +295,7 @@ export default function JoinGameForm() {
           votingCaptainId: data.highlow.votingCaptainId,
         })
         setHlSubmittedNumber(data.highlow.submittedNumber)
+        setHlResultData(data.highlow.currentResult ?? null)
         setStep('playing')
       } else if (data.classic) {
         setGameStartData({
@@ -407,6 +413,8 @@ export default function JoinGameForm() {
     if (step !== 'waiting' || !pin || !playerInfo) return
 
     const refreshGameState = () => {
+      if (window.location.pathname !== '/graj/join') return
+      if (document.visibilityState !== 'visible') return
       void tryResume(pin)
     }
 
@@ -478,6 +486,7 @@ export default function JoinGameForm() {
           avatar={playerInfo.avatar}
           initialRoundData={hlRoundData}
           initialSubmittedNumber={hlSubmittedNumber}
+          initialResultData={hlResultData}
         />
       )
     }

@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Star, Trophy } from 'lucide-react'
+import { Trophy, Users } from 'lucide-react'
 
 import { PlaceIcon } from '@/components/GameSummary/PlaceIcon'
 import { PlayerAvatar } from '@/components/PlayerAvatar'
@@ -17,6 +17,27 @@ interface Props {
 }
 
 export function PlayerFinished({ avatar, playerName, teamName, playerId, myScore, scores }: Props) {
+  const teamScores = Array.from(
+    scores.reduce((map, score) => {
+      const id = score.playerTeamId ?? score.playerTeamName ?? score.playerId
+      const name = score.playerTeamName ?? score.playerName
+      const existing = map.get(id)
+      map.set(id, {
+        id,
+        name,
+        score: Math.max(existing?.score ?? 0, score.score),
+      })
+      return map
+    }, new Map<string, { id: string; name: string; score: number }>())
+  )
+    .map(([, value]) => value)
+    .sort((a, b) => b.score - a.score)
+
+  const myTeamScore =
+    teamScores.find((score) => score.name === teamName)?.score ??
+    scores.find((score) => score.playerId === playerId)?.score ??
+    myScore
+
   return (
     <motion.div
       key="finished"
@@ -51,7 +72,7 @@ export function PlayerFinished({ avatar, playerName, teamName, playerId, myScore
         className="flex items-center gap-2 rounded-xl border px-6 py-3"
         style={{ borderColor: 'rgba(255,215,0,0.4)', backgroundColor: 'rgba(255,215,0,0.08)' }}
       >
-        <Star size={16} fill="var(--sheriff-pink)" style={{ color: 'var(--sheriff-pink)' }} />
+        <Users size={16} style={{ color: 'var(--sheriff-pink)' }} />
         <span
           className="text-2xl font-black"
           style={{
@@ -60,52 +81,49 @@ export function PlayerFinished({ avatar, playerName, teamName, playerId, myScore
             letterSpacing: '0.1em',
           }}
         >
-          {myScore} PUNKTÓW
+          {myTeamScore} PKT
         </span>
       </div>
 
-      {scores.length > 0 && (
+      {teamScores.length > 0 && (
         <div className="flex w-full flex-col gap-2">
-          <p className="text-text-muted text-xs tracking-normal uppercase">Wyniki końcowe</p>
-          {[...scores]
-            .sort((a, b) => b.score - a.score)
-            .map((s, i) => (
+          <p className="text-text-muted text-xs tracking-normal uppercase">Wyniki zespołów</p>
+          {teamScores.map((score, index) => {
+            const isMyTeam = score.name === teamName
+            return (
               <div
-                key={s.playerId}
+                key={score.id}
                 className="flex items-center gap-3 rounded-xl border p-3"
                 style={{
-                  borderColor:
-                    s.playerId === playerId ? 'rgba(255,215,0,0.35)' : 'rgba(255,220,180,0.1)',
-                  backgroundColor: s.playerId === playerId ? 'rgba(255,215,0,0.06)' : 'transparent',
+                  borderColor: isMyTeam ? 'rgba(255,215,0,0.35)' : 'rgba(255,220,180,0.1)',
+                  backgroundColor: isMyTeam ? 'rgba(255,215,0,0.06)' : 'transparent',
                 }}
               >
                 <span className="flex w-7 shrink-0 justify-center">
-                  <PlaceIcon rank={i + 1} size={24} />
+                  <PlaceIcon rank={index + 1} size={24} />
                 </span>
                 <span
                   className="flex-1 text-left text-sm font-semibold"
                   style={{
-                    color: s.playerId === playerId ? 'var(--sheriff-pink)' : 'var(--text-primary)',
+                    color: isMyTeam ? 'var(--sheriff-pink)' : 'var(--text-primary)',
                   }}
                 >
-                  {s.playerName}
-                  {s.playerId === playerId && (
+                  {score.name}
+                  {isMyTeam && (
                     <span className="ml-1 whitespace-nowrap text-xs font-black">(TY)</span>
-                  )}
-                  {s.playerTeamName && (
-                    <span className="text-text-muted ml-1 text-xs">({s.playerTeamName})</span>
                   )}
                 </span>
                 <span
                   className="text-sm font-bold"
                   style={{
-                    color: s.playerId === playerId ? 'var(--sheriff-pink)' : 'var(--text-primary)',
+                    color: isMyTeam ? 'var(--sheriff-pink)' : 'var(--text-primary)',
                   }}
                 >
-                  {s.score}
+                  {score.score}
                 </span>
               </div>
-            ))}
+            )
+          })}
         </div>
       )}
     </motion.div>

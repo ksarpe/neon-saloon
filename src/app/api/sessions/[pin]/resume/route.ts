@@ -113,6 +113,24 @@ export async function GET(request: Request, { params }: RouteContext) {
       guessingCaptainId: string
       votingCaptainId: string
       submittedNumber: string | null
+      currentResult?: {
+        correctAnswer: number
+        unit: string
+        guessingTeamGuess: number
+        correctVote: 'mniej' | 'wiecej'
+        captainVote: 'mniej' | 'wiecej'
+        winningTeamId: string
+        winningTeamName: string
+        scores: Array<{
+          playerId: string
+          playerName: string
+          score: number
+          drinks?: number
+          egzekwo?: number
+          playerTeamId?: string
+          playerTeamName?: string
+        }>
+      }
     }
   }
 
@@ -173,6 +191,7 @@ export async function GET(request: Request, { params }: RouteContext) {
         guessingCaptainId: hl.guessingCaptainId,
         votingCaptainId: hl.votingCaptainId,
         submittedNumber: hl.currentNumber ?? null,
+        currentResult: hl.currentResult,
       }
     }
   } else if (session.currentCard) {

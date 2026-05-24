@@ -55,6 +55,7 @@ export async function POST(request: Request, { params }: RouteContext) {
         guessingCaptainId,
         votingCaptainId,
         currentNumber: undefined,
+        currentResult: undefined,
         questionText,
         questionUnit,
         guessingTeamName,

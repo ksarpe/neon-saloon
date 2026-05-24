@@ -55,6 +55,9 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
   const [hostPlayerId, setHostPlayerId] = useState<string | null>(null)
   const [hostHasVoted, setHostHasVoted] = useState(false)
   const [hostLoading, setHostLoading] = useState(false)
+  const [hostActionLoading, setHostActionLoading] = useState<
+    'start' | 'reveal' | 'next' | 'finish' | null
+  >(null)
 
   // ── Game state ───────────────────────────────────────────────────────────────
   const [phase, setPhase] = useState<HostPhase>('setup')
@@ -221,9 +224,10 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
 
   const handleStart = useCallback(async () => {
     const firstCard = cards[0]
-    if (!firstCard || !hostName.trim() || !hostAvatar) return
+    if (!firstCard || !hostName.trim() || !hostAvatar || hostActionLoading) return
 
     // Join host as a player first
+    setHostActionLoading('start')
     try {
       const res = await fetch(`/api/sessions/${pin}/join`, {
         method: 'POST',
@@ -258,28 +262,33 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
       // Continue even if join fails — game still works for others
     }
 
-    const startedAt = Date.now()
-    setCardStartedAt(startedAt)
-    setHostCardFlipped(false)
-    await fetch(`/api/sessions/${pin}`, {
-      method: 'POST',
-      headers: hostJsonHeaders(pin),
-      body: JSON.stringify({
-        action: 'start',
-        card: firstCard,
-        deck: cards,
-        settings: {
-          revealCountdownSeconds: gameSettings.revealCountdownSeconds,
-          answerTimeLimitSeconds: gameSettings.answerTimeLimitSeconds,
-        },
-      }),
-    })
-    setPhase('active')
-  }, [pin, cards, hostName, hostAvatar, gameSettings])
+    try {
+      const startedAt = Date.now()
+      setCardStartedAt(startedAt)
+      setHostCardFlipped(false)
+      await fetch(`/api/sessions/${pin}`, {
+        method: 'POST',
+        headers: hostJsonHeaders(pin),
+        body: JSON.stringify({
+          action: 'start',
+          card: firstCard,
+          deck: cards,
+          settings: {
+            revealCountdownSeconds: gameSettings.revealCountdownSeconds,
+            answerTimeLimitSeconds: gameSettings.answerTimeLimitSeconds,
+          },
+        }),
+      })
+      setPhase('active')
+    } finally {
+      setHostActionLoading(null)
+    }
+  }, [pin, cards, hostName, hostAvatar, gameSettings, hostActionLoading])
 
   const handleReveal = useCallback(async () => {
     const card = cards[cardIndex]
-    if (!card || isRevealed) return
+    if (!card || isRevealed || hostActionLoading) return
+    setHostActionLoading('reveal')
 
     const votes = [...currentVotes]
     const updatedScores = [...scores]
@@ -326,64 +335,76 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
       })
     }
 
-    const normalizedScores = ensurePointScoreEntries(updatedScores, players, cards)
-    const updatedTeamScores = computeTeamScores(normalizedScores)
-    const response = await fetch(`/api/sessions/${pin}/reveal`, {
-      method: 'POST',
-      headers: hostJsonHeaders(pin),
-      body: JSON.stringify({
-        cardIndex,
-        correctAnswer: card.answer,
-        votes,
-        scores: normalizedScores,
-        teamScores: updatedTeamScores,
-      }),
-    })
-    const data = await response.json().catch(() => ({}))
-    setRevealStartedAt(typeof data.revealStartedAt === 'number' ? data.revealStartedAt : Date.now())
-    setIsRevealed(true)
-    setHostCardFlipped(true)
-    setRevealedVotes(votes)
-    setScores(normalizedScores)
-    setTeamScores(updatedTeamScores)
-  }, [pin, cardIndex, currentVotes, scores, cards, isRevealed, players])
-
-  const handleNextCard = useCallback(async () => {
-    const next = cardIndex + 1
-    if (next >= cards.length) {
-      const finalScores = ensurePointScoreEntries(scores, players, cards)
-      const finalTeamScores = computeTeamScores(finalScores)
-      const showPlayerPoints = !isNeverOnlyDeck(cards)
-      await fetch(`/api/sessions/${pin}`, {
+    try {
+      const normalizedScores = ensurePointScoreEntries(updatedScores, players, cards)
+      const updatedTeamScores = computeTeamScores(normalizedScores)
+      const response = await fetch(`/api/sessions/${pin}/reveal`, {
         method: 'POST',
         headers: hostJsonHeaders(pin),
         body: JSON.stringify({
-          action: 'finish',
-          scores: finalScores,
-          teamScores: finalTeamScores,
-          showPlayerPoints,
+          cardIndex,
+          correctAnswer: card.answer,
+          votes,
+          scores: normalizedScores,
+          teamScores: updatedTeamScores,
         }),
       })
-      setScores(finalScores)
-      setTeamScores(finalTeamScores)
-      setPhase('finished')
-      return
+      const data = await response.json().catch(() => ({}))
+      setRevealStartedAt(
+        typeof data.revealStartedAt === 'number' ? data.revealStartedAt : Date.now()
+      )
+      setIsRevealed(true)
+      setHostCardFlipped(true)
+      setRevealedVotes(votes)
+      setScores(normalizedScores)
+      setTeamScores(updatedTeamScores)
+    } finally {
+      setHostActionLoading(null)
     }
-    const response = await fetch(`/api/sessions/${pin}/next-card`, {
-      method: 'POST',
-      headers: hostJsonHeaders(pin),
-      body: JSON.stringify({ cardIndex: next, card: cards[next] }),
-    })
-    const data = await response.json().catch(() => ({}))
-    setCardIndex(next)
-    setCardStartedAt(typeof data.cardStartedAt === 'number' ? data.cardStartedAt : Date.now())
-    setRevealStartedAt(null)
-    setCurrentVotes([])
-    setIsRevealed(false)
-    setRevealedVotes([])
-    setHostHasVoted(false)
-    setHostCardFlipped(false)
-  }, [pin, cardIndex, cards, scores, players])
+  }, [pin, cardIndex, currentVotes, scores, cards, isRevealed, players, hostActionLoading])
+
+  const handleNextCard = useCallback(async () => {
+    if (hostActionLoading) return
+    setHostActionLoading('next')
+    try {
+      const next = cardIndex + 1
+      if (next >= cards.length) {
+        const finalScores = ensurePointScoreEntries(scores, players, cards)
+        const finalTeamScores = computeTeamScores(finalScores)
+        const showPlayerPoints = !isNeverOnlyDeck(cards)
+        await fetch(`/api/sessions/${pin}`, {
+          method: 'POST',
+          headers: hostJsonHeaders(pin),
+          body: JSON.stringify({
+            action: 'finish',
+            scores: finalScores,
+            teamScores: finalTeamScores,
+            showPlayerPoints,
+          }),
+        })
+        setScores(finalScores)
+        setTeamScores(finalTeamScores)
+        setPhase('finished')
+        return
+      }
+      const response = await fetch(`/api/sessions/${pin}/next-card`, {
+        method: 'POST',
+        headers: hostJsonHeaders(pin),
+        body: JSON.stringify({ cardIndex: next, card: cards[next] }),
+      })
+      const data = await response.json().catch(() => ({}))
+      setCardIndex(next)
+      setCardStartedAt(typeof data.cardStartedAt === 'number' ? data.cardStartedAt : Date.now())
+      setRevealStartedAt(null)
+      setCurrentVotes([])
+      setIsRevealed(false)
+      setRevealedVotes([])
+      setHostHasVoted(false)
+      setHostCardFlipped(false)
+    } finally {
+      setHostActionLoading(null)
+    }
+  }, [pin, cardIndex, cards, scores, players, hostActionLoading])
 
   const handleForceFinish = useCallback(async () => {
     const finalScores = ensurePointScoreEntries(scores, players, cards)
@@ -530,6 +551,7 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
                   hostAvatar={hostAvatar!}
                   hostName={hostName}
                   onStart={handleStart}
+                  starting={hostActionLoading === 'start'}
                 />
               </motion.div>
             )}

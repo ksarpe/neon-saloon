@@ -13,7 +13,11 @@ import type {
   VotesRevealedPayload,
   WireCard,
 } from '@/lib/game-types'
-import { playerAuthHeaders, playerJsonHeaders } from '@/lib/session-player-secret'
+import {
+  clearPlayerSession,
+  playerAuthHeaders,
+  playerJsonHeaders,
+} from '@/lib/session-player-secret'
 
 import { GameOverView } from './GameOverView'
 import { PlayerHeader } from './PlayerHeader'
@@ -126,13 +130,19 @@ export default function PlayerGameScreen({
       setPhase('playing')
     }, []),
     onGameFinished: useCallback((d: GameFinishedPayload) => {
+      clearPlayerSession(pin)
       setFinishData(d)
       setPhase('finished')
-    }, []),
+    }, [pin]),
   })
 
   useEffect(() => {
+    if (phase === 'finished') return
+
     const refreshState = async () => {
+      if (window.location.pathname !== '/graj/join') return
+      if (document.visibilityState !== 'visible') return
+
       try {
         const response = await fetch(`/api/sessions/${pin}/resume`, {
           headers: playerAuthHeaders(pin, playerId),
@@ -141,6 +151,7 @@ export default function PlayerGameScreen({
         const data = await response.json()
 
         if (data.session?.status === 'finished' && data.finished) {
+          clearPlayerSession(pin)
           setFinishData(data.finished)
           setPhase('finished')
           return
@@ -155,9 +166,10 @@ export default function PlayerGameScreen({
     }
 
     void refreshState()
-    const id = window.setInterval(refreshState, 3000)
+    const intervalMs = phase === 'voted' || phase === 'reveal' ? 5000 : 8000
+    const id = window.setInterval(refreshState, intervalMs)
     return () => window.clearInterval(id)
-  }, [applyClassicState, pin, playerId])
+  }, [applyClassicState, phase, pin, playerId])
 
   const castVote = useCallback(
     async (answerIndex: number, answerText: string) => {

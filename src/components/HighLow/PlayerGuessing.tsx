@@ -113,7 +113,7 @@ export function PlayerGuessing({
           color: 'var(--neon-pink)',
         }}
       >
-        Twoja drużyna zgaduje
+        Twoja banda zgaduje
       </div>
 
       <div
@@ -135,7 +135,7 @@ export function PlayerGuessing({
           >
             {submittedNumber} <span className="text-2xl">{roundData.questionUnit}</span>
           </p>
-          <p className="text-text-muted mt-1 text-xs">Czekaj na głos drużyny przeciwnej…</p>
+          <p className="text-text-muted mt-1 text-xs">Czekaj na głos bandy przeciwnej…</p>
           <PulsingDots color="var(--neon-pink)" />
         </div>
       ) : (

@@ -35,7 +35,7 @@ export function PlayerWaiting({ avatar, teamName }: Props) {
         </h1>
         {teamName && (
           <p className="text-text-muted mt-1 text-xs">
-            Drużyna: <span className="text-text-primary font-bold">{teamName}</span>
+            banda: <span className="text-text-primary font-bold">{teamName}</span>
           </p>
         )}
       </div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, Loader2 } from 'lucide-react'
 
 import type { SessionTeam } from '@/lib/appwrite/sessions'
 import type { HighLowRoundResultPayload } from '@/lib/game-types'
@@ -12,6 +12,7 @@ interface Props {
   votingTeam: SessionTeam
   questionHint?: string
   onNextRound: () => void
+  nextLoading?: boolean
 }
 
 export function HostReveal({
@@ -20,6 +21,7 @@ export function HostReveal({
   votingTeam,
   questionHint,
   onNextRound,
+  nextLoading = false,
 }: Props) {
   const voteCorrect = resultData.captainVote === resultData.correctVote
 
@@ -97,7 +99,8 @@ export function HostReveal({
       <motion.button
         whileTap={{ scale: 0.97 }}
         onClick={onNextRound}
-        className="flex items-center gap-2 rounded-2xl px-8 py-4 text-white"
+        disabled={nextLoading}
+        className="flex items-center gap-2 rounded-2xl px-8 py-4 text-white disabled:opacity-40"
         style={{
           background: 'linear-gradient(135deg,var(--neon-pink),#c800c8)',
           fontFamily: 'var(--font-app)',
@@ -105,7 +108,15 @@ export function HostReveal({
           fontSize: '1.1rem',
         }}
       >
-        Następna runda <ChevronRight size={18} />
+        {nextLoading ? (
+          <>
+            <Loader2 size={18} className="animate-spin" /> Ładuję...
+          </>
+        ) : (
+          <>
+            Następna runda <ChevronRight size={18} />
+          </>
+        )}
       </motion.button>
     </motion.div>
   )

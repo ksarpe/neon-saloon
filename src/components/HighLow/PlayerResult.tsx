@@ -34,7 +34,7 @@ export function PlayerResult({ resultData, teamId, myScore }: Props) {
             className="text-3xl font-black tracking-normal"
             style={{ color: '#10b981', fontFamily: 'var(--font-app)' }}
           >
-            Wasza drużyna wygrywa!
+            Wasza banda wygrywa!
           </p>
           <div
             className="flex items-center gap-1.5 rounded-full px-3 py-1.5"
@@ -44,17 +44,7 @@ export function PlayerResult({ resultData, teamId, myScore }: Props) {
             <span className="text-xs font-bold">+1 punkt dla każdego!</span>
           </div>
         </motion.div>
-      ) : (
-        <div className="flex flex-col items-center gap-2">
-          <div className="text-5xl">😬</div>
-          <p
-            className="text-3xl font-black tracking-normal"
-            style={{ color: '#ef4444', fontFamily: 'var(--font-app)' }}
-          >
-            Nie tym razem
-          </p>
-        </div>
-      )}
+      ) : null}
 
       <div
         className="w-full rounded-2xl border-2 p-5"

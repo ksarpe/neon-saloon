@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import { HIGHLOW_QUESTIONS } from '@/config/games/highlow'
 import { triggerGameEvent as triggerSessionEvent } from '@/lib/appwrite/realtime'
 import { saveSession } from '@/lib/appwrite/sessions'
+import { seededShuffleItems } from '@/lib/games/question-limit'
 import { readLimitedJson, requiredString, validationErrorResponse } from '@/lib/request-validation'
 import { enforceSessionActionRateLimit } from '@/lib/session-action-rate-limit'
 import { requirePlayerSession } from '@/lib/session-api'
@@ -42,7 +43,8 @@ export async function POST(request: Request, { params }: RouteContext) {
       return NextResponse.json({ error: 'No number submitted yet' }, { status: 400 })
     }
 
-    const question = HIGHLOW_QUESTIONS[hl.questionIndex % HIGHLOW_QUESTIONS.length]
+    const question =
+      seededShuffleItems(HIGHLOW_QUESTIONS, pin)[hl.questionIndex % HIGHLOW_QUESTIONS.length]
     const guess = parseFloat(hl.currentNumber)
     const correctVote: 'mniej' | 'wiecej' = guess < question.answer ? 'wiecej' : 'mniej'
     // Exact guess means the guessing team wins immediately.
@@ -51,7 +53,7 @@ export async function POST(request: Request, { params }: RouteContext) {
 
     const winningTeamId = captainWon ? hl.votingTeamId : hl.guessingTeamId
     const winningTeam = session.teams.find((t) => t.teamId === winningTeamId)
-    const winningTeamName = winningTeam?.teamName ?? 'Nieznana drużyna'
+    const winningTeamName = winningTeam?.teamName ?? 'Nieznana banda'
 
     const winningPlayers = session.players.filter((p) => p.teamId === winningTeamId)
     const updatedScores = [...(session.scores ?? [])]
@@ -70,24 +72,27 @@ export async function POST(request: Request, { params }: RouteContext) {
       }
     })
 
+    const result = {
+      correctAnswer: question.answer,
+      unit: question.unit,
+      guessingTeamGuess: guess,
+      correctVote: guessedExactly ? vote : correctVote,
+      captainVote: vote,
+      winningTeamId,
+      winningTeamName,
+      scores: updatedScores,
+    }
+
     session.scores = updatedScores
+    session.highlowData = { ...hl, currentResult: result }
     await saveSession(session)
 
     await triggerSessionEvent(pin, {
       event: 'highlow-round-result',
-      data: {
-        correctAnswer: question.answer,
-        unit: question.unit,
-        guessingTeamGuess: guess,
-        correctVote: guessedExactly ? vote : correctVote,
-        captainVote: vote,
-        winningTeamId,
-        winningTeamName,
-        scores: updatedScores,
-      },
+      data: result,
     })
 
-    return NextResponse.json({ ok: true, winningTeamId, scores: updatedScores })
+    return NextResponse.json({ ok: true, result })
   } catch (err) {
     const validationResponse = validationErrorResponse(err)
     if (validationResponse) return validationResponse

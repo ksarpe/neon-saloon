@@ -1,11 +1,10 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { Play } from 'lucide-react'
-
-import { PlayerAvatar } from '@/components/PlayerAvatar'
+import { Loader2, Play } from 'lucide-react'
 
 import { JoinQrCode } from '@/components/JoinQrCode'
+import { PlayerAvatar } from '@/components/PlayerAvatar'
 import { Button } from '@/components/ui/button'
 import type { SessionPlayer, SessionTeam } from '@/lib/appwrite/sessions'
 
@@ -15,16 +14,16 @@ interface Props {
   team1: SessionTeam
   team2: SessionTeam
   onStart: () => void
+  starting?: boolean
 }
 
-export function HostLobby({ pin, players, team1, team2, onStart }: Props) {
+export function HostLobby({ pin, players, team1, team2, onStart, starting = false }: Props) {
   const team1Players = players.filter((p) => p.teamId === team1.teamId)
   const team2Players = players.filter((p) => p.teamId === team2.teamId)
   const canStart = team1Players.length > 0 && team2Players.length > 0
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-8">
-      {/* PIN */}
       <div className="flex flex-col items-center gap-3">
         <div className="flex flex-col items-center gap-5">
           <div className="flex flex-col items-center gap-3">
@@ -56,12 +55,11 @@ export function HostLobby({ pin, players, team1, team2, onStart }: Props) {
         </p>
       </div>
 
-      {/* Teams */}
       <div className="grid w-full grid-cols-2 gap-4">
         {[
           { team: team1, players: team1Players, accent: 'var(--neon-pink)' },
           { team: team2, players: team2Players, accent: 'var(--sheriff-pink)' },
-        ].map(({ team, players: tp, accent }) => (
+        ].map(({ team, players: teamPlayers, accent }) => (
           <div
             key={team.teamId}
             className="flex flex-col gap-3 rounded-2xl border p-4"
@@ -72,7 +70,7 @@ export function HostLobby({ pin, players, team1, team2, onStart }: Props) {
             </p>
             <div className="flex flex-wrap gap-2">
               <AnimatePresence>
-                {tp.map((p) => (
+                {teamPlayers.map((p) => (
                   <motion.div
                     key={p.playerId}
                     layout
@@ -91,16 +89,24 @@ export function HostLobby({ pin, players, team1, team2, onStart }: Props) {
                   </motion.div>
                 ))}
               </AnimatePresence>
-              {tp.length === 0 && (
-                <p className="text-text-muted text-xs opacity-50">Oczekuję na graczy…</p>
+              {teamPlayers.length === 0 && (
+                <p className="text-text-muted text-xs opacity-50">Oczekuję na graczy...</p>
               )}
             </div>
           </div>
         ))}
       </div>
 
-      <Button type="primary" disabled={!canStart} onClick={onStart} size="lg">
-        <Play size={22} /> Rozpocznij grę
+      <Button type="primary" disabled={!canStart || starting} onClick={onStart} size="lg">
+        {starting ? (
+          <>
+            <Loader2 size={22} className="animate-spin" /> Rozpoczynam...
+          </>
+        ) : (
+          <>
+            <Play size={22} /> Rozpocznij grę
+          </>
+        )}
       </Button>
     </div>
   )

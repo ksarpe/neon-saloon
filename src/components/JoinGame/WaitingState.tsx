@@ -38,7 +38,7 @@ export function WaitingState({ playerName, teamName, avatar }: Props) {
         </p>
         {teamName && (
           <p className="mt-1 text-xs" style={{ color: 'var(--neon-pink)' }}>
-            Drużyna: {teamName}
+            banda: {teamName}
           </p>
         )}
       </div>

@@ -64,7 +64,7 @@ export function PlayerVoting({
 
         <div className="flex flex-col items-center gap-3">
           <p className="text-text-muted text-sm">
-            Czekaj na odpowiedź drużyny{' '}
+            Czekaj na odpowiedź bandy{' '}
             <span className="text-text-primary font-bold">{roundData.guessingTeamName}</span>…
           </p>
           <PulsingDots color="#a78bfa" />
@@ -105,7 +105,7 @@ export function PlayerVoting({
 
         <div>
           <p className="text-text-muted mb-1 text-xs tracking-normal uppercase">
-            Odpowiedź drużyny {roundData.guessingTeamName}
+            Odpowiedź bandy {roundData.guessingTeamName}
           </p>
           <p
             className="text-6xl font-black"
@@ -202,7 +202,7 @@ export function PlayerVoting({
           color: '#a78bfa',
         }}
       >
-        Twoja drużyna głosuje
+        Twoja banda głosuje
       </div>
 
       <div
@@ -217,7 +217,7 @@ export function PlayerVoting({
 
       {submittedNumber !== null ? (
         <div className="flex flex-col items-center gap-2">
-          <p className="text-text-muted text-xs">Odpowiedź drużyny {roundData.guessingTeamName}</p>
+          <p className="text-text-muted text-xs">Odpowiedź bandy {roundData.guessingTeamName}</p>
           <p
             className="text-4xl font-black"
             style={{ color: 'var(--sheriff-pink)', fontFamily: 'var(--font-app)' }}
@@ -230,7 +230,7 @@ export function PlayerVoting({
       ) : (
         <div className="flex flex-col items-center gap-3">
           <p className="text-text-muted text-sm">
-            Czekaj na odpowiedź drużyny{' '}
+            Czekaj na odpowiedź bandy{' '}
             <span className="text-text-primary font-bold">{roundData.guessingTeamName}</span>…
           </p>
           <PulsingDots color="#a78bfa" />

@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Check } from 'lucide-react'
+import { Check, Loader2 } from 'lucide-react'
 import { useState } from 'react'
 
 import { IdentityForm } from '@/components/IdentityForm'
@@ -12,16 +12,17 @@ interface Props {
   team1: SessionTeam
   team2: SessionTeam
   onContinue: (name: string, avatar: string, teamId: string) => void
+  loading?: boolean
 }
 
-export function HostSetupView({ team1, team2, onContinue }: Props) {
+export function HostSetupView({ team1, team2, onContinue, loading = false }: Props) {
   const [name, setName] = useState('')
   const [avatar, setAvatar] = useState<string | null>(null)
   const [teamId, setTeamId] = useState<string | null>(null)
 
   const canContinue = Boolean(name.trim() && avatar && teamId)
   const submit = () => {
-    if (canContinue) onContinue(name.trim(), avatar!, teamId!)
+    if (canContinue && !loading) onContinue(name.trim(), avatar!, teamId!)
   }
 
   return (
@@ -37,7 +38,7 @@ export function HostSetupView({ team1, team2, onContinue }: Props) {
       {/* Team picker */}
       <div className="flex w-full flex-col gap-3">
         <p className="text-text-muted text-center text-[10px] font-semibold tracking-normal uppercase">
-          Wybierz drużynę
+          Wybierz bandę
         </p>
         <div className="grid grid-cols-2 gap-3">
           {[
@@ -58,6 +59,7 @@ export function HostSetupView({ team1, team2, onContinue }: Props) {
               key={team.teamId}
               whileTap={{ scale: 0.95 }}
               onClick={() => setTeamId(team.teamId)}
+              disabled={loading}
               className="flex flex-col items-center gap-2 rounded-2xl border-2 p-4 transition-all"
               style={{
                 borderColor: teamId === team.teamId ? accent : 'var(--saloon-border)',
@@ -74,8 +76,14 @@ export function HostSetupView({ team1, team2, onContinue }: Props) {
         </div>
       </div>
 
-      <Button type="primary" disabled={!canContinue} onClick={submit} className="w-full">
-        Dalej
+      <Button type="primary" disabled={!canContinue || loading} onClick={submit} className="w-full">
+        {loading ? (
+          <>
+            <Loader2 size={18} className="animate-spin" /> Ładuję...
+          </>
+        ) : (
+          'Dalej'
+        )}
       </Button>
     </div>
   )

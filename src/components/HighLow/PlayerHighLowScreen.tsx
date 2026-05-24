@@ -2,7 +2,7 @@
 
 import { AnimatePresence } from 'framer-motion'
 import { Star } from 'lucide-react'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
 import type {
@@ -10,7 +10,7 @@ import type {
   HighLowRoundStartPayload,
   ScoreEntry,
 } from '@/lib/game-types'
-import { playerJsonHeaders } from '@/lib/session-player-secret'
+import { playerAuthHeaders, playerJsonHeaders } from '@/lib/session-player-secret'
 
 import { PlayerFinished } from './PlayerFinished'
 import { PlayerGuessing } from './PlayerGuessing'
@@ -37,6 +37,7 @@ interface Props {
   avatar: string
   initialRoundData?: HighLowRoundStartPayload | null
   initialSubmittedNumber?: string | null
+  initialResultData?: HighLowRoundResultPayload | null
 }
 
 function derivePhase(
@@ -65,11 +66,14 @@ export default function PlayerHighLowScreen({
   avatar,
   initialRoundData,
   initialSubmittedNumber,
+  initialResultData,
 }: Props) {
   const [phase, setPhase] = useState<PlayerHLPhase>(
-    initialRoundData
-      ? derivePhase(initialRoundData, playerId, teamId, Boolean(initialSubmittedNumber))
-      : 'waiting'
+    initialResultData
+      ? 'result'
+      : initialRoundData
+        ? derivePhase(initialRoundData, playerId, teamId, Boolean(initialSubmittedNumber))
+        : 'waiting'
   )
   const [roundData, setRoundData] = useState<HighLowRoundStartPayload | null>(
     initialRoundData ?? null
@@ -77,8 +81,10 @@ export default function PlayerHighLowScreen({
   const [submittedNumber, setSubmittedNumber] = useState<string | null>(
     initialSubmittedNumber ?? null
   )
-  const [resultData, setResultData] = useState<HighLowRoundResultPayload | null>(null)
-  const [scores, setScores] = useState<ScoreEntry[]>([])
+  const [resultData, setResultData] = useState<HighLowRoundResultPayload | null>(
+    initialResultData ?? null
+  )
+  const [scores, setScores] = useState<ScoreEntry[]>(initialResultData?.scores ?? [])
   const [numberInput, setNumberInput] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [voted, setVoted] = useState(false)
@@ -86,50 +92,125 @@ export default function PlayerHighLowScreen({
 
   const myScore = scores.find((s) => s.playerId === playerId)?.score ?? 0
 
+  const applyRoundStart = useCallback(
+    (round: HighLowRoundStartPayload, hasSubmittedNumber: boolean) => {
+      setRoundData(round)
+      setSubmittedNumber(null)
+      setResultData(null)
+      setNumberInput('')
+      setVoted(false)
+      setVotedChoice(null)
+      setSubmitting(false)
+      setPhase(derivePhase(round, playerId, teamId, hasSubmittedNumber))
+    },
+    [playerId, teamId]
+  )
+
+  const applyNumberSubmitted = useCallback((number: string) => {
+    setSubmittedNumber(number)
+    setSubmitting(false)
+    setPhase((prev) => {
+      if (prev === 'guessing-captain') return 'guessing-member'
+      if (prev === 'voting-captain-waiting') return 'voting-captain-ready'
+      return prev
+    })
+  }, [])
+
+  const applyRoundResult = useCallback((result: HighLowRoundResultPayload) => {
+    setResultData(result)
+    setScores(result.scores)
+    setSubmitting(false)
+    setVoted(true)
+    setPhase('result')
+  }, [])
+
   useGameSocket(pin, {
     onHighLowRoundStart: useCallback(
       (d: HighLowRoundStartPayload) => {
-        setRoundData(d)
-        setSubmittedNumber(null)
-        setResultData(null)
-        setNumberInput('')
-        setVoted(false)
-        setVotedChoice(null)
-        setSubmitting(false)
-        setPhase(derivePhase(d, playerId, teamId, false))
+        applyRoundStart(d, false)
       },
-      [playerId, teamId]
+      [applyRoundStart]
     ),
-    onHighLowNumberSubmitted: useCallback((d: { number: string }) => {
-      setSubmittedNumber(d.number)
-      setPhase((prev) => {
-        if (prev === 'guessing-captain') return 'guessing-member'
-        if (prev === 'voting-captain-waiting') return 'voting-captain-ready'
-        return prev
-      })
-    }, []),
-    onHighLowRoundResult: useCallback((d: HighLowRoundResultPayload) => {
-      setResultData(d)
-      setScores(d.scores)
-      setPhase('result')
-    }, []),
+    onHighLowNumberSubmitted: useCallback(
+      (d: { number: string }) => {
+        applyNumberSubmitted(d.number)
+      },
+      [applyNumberSubmitted]
+    ),
+    onHighLowRoundResult: useCallback(
+      (d: HighLowRoundResultPayload) => {
+        applyRoundResult(d)
+      },
+      [applyRoundResult]
+    ),
     onGameFinished: useCallback(() => setPhase('finished'), []),
   })
+
+  useEffect(() => {
+    if (phase === 'finished') return
+
+    const refreshState = async () => {
+      if (window.location.pathname !== '/graj/join') return
+      if (document.visibilityState !== 'visible') return
+
+      try {
+        const response = await fetch(`/api/sessions/${pin}/resume`, {
+          headers: playerAuthHeaders(pin, playerId),
+        })
+        if (!response.ok) return
+        const data = await response.json()
+        const highlow = data.highlow
+        if (!highlow) return
+
+        const resumedRound: HighLowRoundStartPayload = {
+          roundIndex: highlow.roundIndex,
+          questionText: highlow.questionText,
+          questionUnit: highlow.questionUnit,
+          guessingTeamId: highlow.guessingTeamId,
+          guessingTeamName: highlow.guessingTeamName,
+          votingTeamId: highlow.votingTeamId,
+          votingTeamName: highlow.votingTeamName,
+          guessingCaptainId: highlow.guessingCaptainId,
+          votingCaptainId: highlow.votingCaptainId,
+        }
+        if (!roundData || roundData.roundIndex !== highlow.roundIndex) {
+          applyRoundStart(resumedRound, Boolean(highlow.submittedNumber))
+        }
+
+        if (highlow.currentResult) {
+          applyRoundResult(highlow.currentResult)
+          return
+        }
+
+        if (highlow.submittedNumber) {
+          applyNumberSubmitted(highlow.submittedNumber)
+        }
+      } catch {
+        // Realtime is primary; this is only the recovery path.
+      }
+    }
+
+    void refreshState()
+    const id = window.setInterval(refreshState, 5000)
+    return () => window.clearInterval(id)
+  }, [applyNumberSubmitted, applyRoundResult, applyRoundStart, phase, pin, playerId, roundData])
 
   const handleSubmitNumber = useCallback(async () => {
     const num = numberInput.trim()
     if (!num || submitting) return
     setSubmitting(true)
     try {
-      await fetch(`/api/sessions/${pin}/highlow/number`, {
+      const response = await fetch(`/api/sessions/${pin}/highlow/number`, {
         method: 'POST',
         headers: playerJsonHeaders(pin, playerId),
         body: JSON.stringify({ playerId, number: num }),
       })
+      if (response.ok) applyNumberSubmitted(num)
+      else setSubmitting(false)
     } catch {
       setSubmitting(false)
     }
-  }, [pin, playerId, numberInput, submitting])
+  }, [applyNumberSubmitted, pin, playerId, numberInput, submitting])
 
   const handleVote = useCallback(
     async (vote: 'mniej' | 'wiecej') => {
@@ -138,18 +219,27 @@ export default function PlayerHighLowScreen({
       setVotedChoice(vote)
       setSubmitting(true)
       try {
-        await fetch(`/api/sessions/${pin}/highlow/vote`, {
+        const response = await fetch(`/api/sessions/${pin}/highlow/vote`, {
           method: 'POST',
           headers: playerJsonHeaders(pin, playerId),
           body: JSON.stringify({ playerId, vote }),
         })
+        if (!response.ok) {
+          setVoted(false)
+          setVotedChoice(null)
+          setSubmitting(false)
+          return
+        }
+        const data = await response.json().catch(() => null)
+        if (data?.result) applyRoundResult(data.result)
+        else setSubmitting(false)
       } catch {
         setVoted(false)
         setVotedChoice(null)
         setSubmitting(false)
       }
     },
-    [pin, playerId, voted, submitting]
+    [applyRoundResult, pin, playerId, voted, submitting]
   )
 
   return (

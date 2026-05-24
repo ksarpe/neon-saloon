@@ -1,7 +1,7 @@
 ﻿'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { CheckCircle2, Clock, Play, Skull, Trophy } from 'lucide-react'
+import { CheckCircle2, Clock, Loader2, Play, Skull, Trophy } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { LobbyView } from '@/components/Host/LobbyView'
@@ -390,6 +390,7 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder, timer
                   hostAvatar={hostAvatar!}
                   hostName={hostName}
                   onStart={handleStart}
+                  starting={loading}
                 />
               </motion.div>
             )}
@@ -574,7 +575,13 @@ export default function BattleRoyaleHost({ pin, categoryId, questionOrder, timer
                     onClick={() => handleRevealRef.current?.()}
                     size="lg"
                   >
-                    Odsłoń wyniki
+                    {loading ? (
+                      <>
+                        <Loader2 size={18} className="animate-spin" /> Odsłaniam...
+                      </>
+                    ) : (
+                      'Odsłoń wyniki'
+                    )}
                   </Button>
                 </div>
               </motion.div>

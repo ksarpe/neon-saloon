@@ -115,7 +115,7 @@ export function HostRound({
               color: 'var(--neon-pink)',
             }}
           >
-            {guessingTeam.teamName} zgaduje
+            kolej na {guessingTeam.teamName}
           </div>
 
           {isHostGuessingCaptain ? (
@@ -128,7 +128,7 @@ export function HostRound({
                   color: 'var(--neon-pink)',
                 }}
               >
-                🎯 Ty jesteś kapitanem — podaj liczbę!
+                Ty jesteś głową bandy — podaj liczbę!
               </div>
               <input
                 type="number"
@@ -136,7 +136,7 @@ export function HostRound({
                 value={numberInput}
                 onChange={(e) => onNumberInputChange(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && onHostSubmitNumber()}
-                placeholder={`Liczba w ${currentQuestion.unit}…`}
+                placeholder={`Liczba w "${currentQuestion.unit}"`}
                 autoFocus
                 className="bg-saloon-surface text-text-primary placeholder:text-text-muted w-full rounded-xl border-2 px-4 py-4 text-center text-3xl font-black transition-colors focus:outline-none"
                 style={{
@@ -194,7 +194,7 @@ export function HostRound({
             style={{ borderColor: 'rgba(255,215,0,0.4)', backgroundColor: 'rgba(255,215,0,0.06)' }}
           >
             <p className="text-text-muted mb-1 text-xs tracking-normal uppercase">
-              Odpowiedź drużyny {guessingTeam.teamName}
+              Odpowiedź bandy {guessingTeam.teamName}
             </p>
             <p
               className="text-5xl font-black"
@@ -212,7 +212,7 @@ export function HostRound({
               color: '#a78bfa',
             }}
           >
-            {votingTeam.teamName} odpowiada
+            kolej na {votingTeam.teamName} 
           </div>
 
           {isHostVotingCaptain ? (
@@ -225,14 +225,11 @@ export function HostRound({
                   color: '#a78bfa',
                 }}
               >
-                ⚡ Ty jesteś kapitanem — Twój głos decyduje!
+                Ty jesteś głową bandy — Twój głos decyduje!
               </div>
-              <p className="text-text-muted text-sm font-medium">
-                Prawdziwa wartość jest — Mniej czy Więcej?
-              </p>
               <div className="flex w-full gap-3">
                 <motion.button
-                  disabled={hostVoted}
+                  disabled={hostVoted || hostSubmitting}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => onHostVote('mniej')}
                   className="flex flex-1 flex-col items-center gap-2 rounded-2xl border-2 py-7 font-bold transition-all disabled:opacity-50"
@@ -263,7 +260,7 @@ export function HostRound({
                   )}
                 </motion.button>
                 <motion.button
-                  disabled={hostVoted}
+                  disabled={hostVoted || hostSubmitting}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => onHostVote('wiecej')}
                   className="flex flex-1 flex-col items-center gap-2 rounded-2xl border-2 py-7 font-bold transition-all disabled:opacity-50"
@@ -315,4 +312,3 @@ export function HostRound({
     </motion.div>
   )
 }
-

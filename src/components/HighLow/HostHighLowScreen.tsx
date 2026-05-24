@@ -1,7 +1,7 @@
 ﻿'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { Flag, Menu, X, Zap } from 'lucide-react'
+import { Flag, Loader2, Menu, X, Zap } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { GameSummary } from '@/components/GameSummary'
@@ -11,7 +11,7 @@ import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
 import type { SessionPlayer, SessionTeam } from '@/lib/appwrite/sessions'
 import { useBackButton } from '@/lib/back-button-context'
 import type { HighLowRoundResultPayload, PlayerJoinedPayload, ScoreEntry } from '@/lib/game-types'
-import { limitQuestions, QUESTIONS_PER_GAME } from '@/lib/games/question-limit'
+import { QUESTIONS_PER_GAME, seededShuffleAndLimitQuestions } from '@/lib/games/question-limit'
 import {
   getHostSession,
   hostAuthHeaders,
@@ -66,14 +66,18 @@ export default function HostHighLowScreen({
   const [hostSubmitting, setHostSubmitting] = useState(false)
   const [hostVoted, setHostVoted] = useState(false)
   const [hostVotedChoice, setHostVotedChoice] = useState<'mniej' | 'wiecej' | null>(null)
+  const [hostActionLoading, setHostActionLoading] = useState<
+    'setup' | 'start' | 'next' | 'finish' | null
+  >(null)
   const teamScores = useMemo(
     () =>
       [team1, team2].map((team) => ({
         teamId: team.teamId,
         teamName: team.teamName,
-        score: scores
-          .filter((score) => score.playerTeamId === team.teamId)
-          .reduce((sum, score) => sum + score.score, 0),
+        score: Math.max(
+          0,
+          ...scores.filter((score) => score.playerTeamId === team.teamId).map((score) => score.score)
+        ),
       })),
     [scores, team1, team2]
   )
@@ -82,8 +86,8 @@ export default function HostHighLowScreen({
   const guessingTeam = guessingTeamId === team1.teamId ? team1 : team2
   const votingTeam = votingTeamId === team1.teamId ? team1 : team2
   const highLowQuestions = useMemo(
-    () => limitQuestions(HIGHLOW_QUESTIONS, questionLimit),
-    [questionLimit]
+    () => seededShuffleAndLimitQuestions(HIGHLOW_QUESTIONS, pin, questionLimit),
+    [pin, questionLimit]
   )
 
   const teamPlayers = useCallback(
@@ -127,11 +131,21 @@ export default function HostHighLowScreen({
           if (typeof hl.questionIndex === 'number') setRoundIndex(hl.questionIndex)
           if (typeof hl.guessingTeamId === 'string') setGuessingTeamId(hl.guessingTeamId)
           if (typeof hl.currentNumber === 'string') setSubmittedNumber(hl.currentNumber)
+          if (hl.currentResult) {
+            setResultData(hl.currentResult)
+            setScores(hl.currentResult.scores)
+          }
         }
         const hasIdentity = Boolean(stored?.hostPlayerId)
         if (data.status === 'finished') setPhase('finished')
         else if (data.status === 'active') {
-          setPhase(data.highlowData?.currentNumber ? 'voting' : 'guessing')
+          setPhase(
+            data.highlowData?.currentResult
+              ? 'revealed'
+              : data.highlowData?.currentNumber
+                ? 'voting'
+                : 'guessing'
+          )
         } else if (hasIdentity) setPhase('lobby')
       })
       .catch(() => {})
@@ -143,6 +157,20 @@ export default function HostHighLowScreen({
     onPlayers: setPlayers,
   })
 
+  const applyNumberSubmitted = useCallback((number: string) => {
+    setSubmittedNumber(number)
+    setHostSubmitting(false)
+    setPhase('voting')
+  }, [])
+
+  const applyRoundResult = useCallback((result: HighLowRoundResultPayload) => {
+    setResultData(result)
+    setScores(result.scores)
+    setHostSubmitting(false)
+    setHostVoted(true)
+    setPhase('revealed')
+  }, [])
+
   useGameSocket(pin, {
     onPlayerJoined: useCallback((d: PlayerJoinedPayload) => {
       setPlayers((p) =>
@@ -151,22 +179,58 @@ export default function HostHighLowScreen({
           : [...p, { ...d, teamName: d.teamName ?? null }]
       )
     }, []),
-    onHighLowNumberSubmitted: useCallback((d: { number: string }) => {
-      setSubmittedNumber(d.number)
-      setHostSubmitting(false)
-      setPhase('voting')
-    }, []),
-    onHighLowRoundResult: useCallback((d: HighLowRoundResultPayload) => {
-      setResultData(d)
-      setScores(d.scores)
-      setHostSubmitting(false)
-      setPhase('revealed')
-    }, []),
+    onHighLowNumberSubmitted: useCallback(
+      (d: { number: string }) => {
+        applyNumberSubmitted(d.number)
+      },
+      [applyNumberSubmitted]
+    ),
+    onHighLowRoundResult: useCallback(
+      (d: HighLowRoundResultPayload) => {
+        applyRoundResult(d)
+      },
+      [applyRoundResult]
+    ),
     onGameFinished: useCallback(() => setPhase('finished'), []),
   })
 
+  useEffect(() => {
+    if (phase !== 'guessing' && phase !== 'voting') return
+
+    const refreshRoundState = async () => {
+      if (document.visibilityState !== 'visible') return
+
+      try {
+        const response = await fetch(`/api/sessions/${pin}/host-resume`, {
+          headers: hostAuthHeaders(pin),
+        })
+        if (!response.ok) return
+        const data = await response.json()
+        const highlow = data.highlowData
+        if (!highlow) return
+
+        if (highlow.currentResult) {
+          applyRoundResult(highlow.currentResult)
+          return
+        }
+
+        if (typeof highlow.currentNumber === 'string') {
+          applyNumberSubmitted(highlow.currentNumber)
+        }
+      } catch {
+        // Realtime is primary; this is only the recovery path.
+      }
+    }
+
+    void refreshRoundState()
+    const id = window.setInterval(refreshRoundState, 5000)
+    return () => window.clearInterval(id)
+  }, [applyNumberSubmitted, applyRoundResult, phase, pin])
+
   const handleSetupComplete = useCallback(
     async (name: string, avatar: string, chosenTeamId: string) => {
+      if (hostActionLoading) return
+      setHostActionLoading('setup')
       const chosenTeam = chosenTeamId === team1.teamId ? team1 : team2
       try {
         const res = await fetch(`/api/sessions/${pin}/join`, {
@@ -209,10 +273,12 @@ export default function HostHighLowScreen({
         }
       } catch {
         // Non-fatal — host proceeds to lobby without player identity
+      } finally {
+        setHostActionLoading(null)
       }
       setPhase('lobby')
     },
-    [pin, team1, team2]
+    [pin, team1, team2, hostActionLoading]
   )
 
   const resetCaptainState = useCallback(() => {
@@ -257,31 +323,46 @@ export default function HostHighLowScreen({
     [currentCaptain, highLowQuestions, pin, team1, team2, resetCaptainState]
   )
 
-  const handleStart = useCallback(() => startRound(0, team1.teamId), [startRound, team1.teamId])
+  const handleStart = useCallback(async () => {
+    if (hostActionLoading) return
+    setHostActionLoading('start')
+    try {
+      await startRound(0, team1.teamId)
+    } finally {
+      setHostActionLoading(null)
+    }
+  }, [hostActionLoading, startRound, team1.teamId])
 
   const handleNextRound = useCallback(async () => {
-    const nextRoundIndex = roundIndex + 1
-    if (nextRoundIndex >= highLowQuestions.length) {
-      await fetch(`/api/sessions/${pin}`, {
-        method: 'POST',
-        headers: hostJsonHeaders(pin),
-        body: JSON.stringify({ action: 'finish', scores, teamScores }),
-      })
-      setPhase('finished')
-      return
-    }
+    if (hostActionLoading) return
+    setHostActionLoading('next')
+    try {
+      const nextRoundIndex = roundIndex + 1
+      if (nextRoundIndex >= highLowQuestions.length) {
+        await fetch(`/api/sessions/${pin}`, {
+          method: 'POST',
+          headers: hostJsonHeaders(pin),
+          body: JSON.stringify({ action: 'finish', scores, teamScores }),
+        })
+        setPhase('finished')
+        return
+      }
 
-    const nextGuessingTeamId = votingTeamId
-    const newCaptainIndices = {
-      ...captainIndices,
-      [guessingTeamId]: (captainIndices[guessingTeamId] ?? 0) + 1,
-      [votingTeamId]: (captainIndices[votingTeamId] ?? 0) + 1,
+      const nextGuessingTeamId = votingTeamId
+      const newCaptainIndices = {
+        ...captainIndices,
+        [guessingTeamId]: (captainIndices[guessingTeamId] ?? 0) + 1,
+        [votingTeamId]: (captainIndices[votingTeamId] ?? 0) + 1,
+      }
+      setRoundIndex(nextRoundIndex)
+      setGuessingTeamId(nextGuessingTeamId)
+      setCaptainIndices(newCaptainIndices)
+      await startRound(nextRoundIndex, nextGuessingTeamId)
+    } finally {
+      setHostActionLoading(null)
     }
-    setRoundIndex(nextRoundIndex)
-    setGuessingTeamId(nextGuessingTeamId)
-    setCaptainIndices(newCaptainIndices)
-    await startRound(nextRoundIndex, nextGuessingTeamId)
   }, [
+    hostActionLoading,
     roundIndex,
     highLowQuestions.length,
     pin,
@@ -294,29 +375,37 @@ export default function HostHighLowScreen({
   ])
 
   const handleFinish = useCallback(async () => {
+    if (hostActionLoading) return
+    setHostActionLoading('finish')
     setMenuOpen(false)
-    await fetch(`/api/sessions/${pin}`, {
-      method: 'POST',
-      headers: hostJsonHeaders(pin),
-      body: JSON.stringify({ action: 'finish', scores, teamScores }),
-    })
-    setPhase('finished')
-  }, [pin, scores, teamScores])
+    try {
+      await fetch(`/api/sessions/${pin}`, {
+        method: 'POST',
+        headers: hostJsonHeaders(pin),
+        body: JSON.stringify({ action: 'finish', scores, teamScores }),
+      })
+      setPhase('finished')
+    } finally {
+      setHostActionLoading(null)
+    }
+  }, [pin, scores, teamScores, hostActionLoading])
 
   const handleHostSubmitNumber = useCallback(async () => {
     const num = numberInput.trim()
     if (!num || hostSubmitting || !hostPlayerId) return
     setHostSubmitting(true)
     try {
-      await fetch(`/api/sessions/${pin}/highlow/number`, {
+      const response = await fetch(`/api/sessions/${pin}/highlow/number`, {
         method: 'POST',
         headers: playerJsonHeaders(pin, hostPlayerId),
         body: JSON.stringify({ playerId: hostPlayerId, number: num }),
       })
+      if (response.ok) applyNumberSubmitted(num)
+      else setHostSubmitting(false)
     } catch {
       setHostSubmitting(false)
     }
-  }, [pin, hostPlayerId, numberInput, hostSubmitting])
+  }, [applyNumberSubmitted, pin, hostPlayerId, numberInput, hostSubmitting])
 
   const handleHostVote = useCallback(
     async (vote: 'mniej' | 'wiecej') => {
@@ -325,18 +414,27 @@ export default function HostHighLowScreen({
       setHostVotedChoice(vote)
       setHostSubmitting(true)
       try {
-        await fetch(`/api/sessions/${pin}/highlow/vote`, {
+        const response = await fetch(`/api/sessions/${pin}/highlow/vote`, {
           method: 'POST',
           headers: playerJsonHeaders(pin, hostPlayerId),
           body: JSON.stringify({ playerId: hostPlayerId, vote }),
         })
+        if (!response.ok) {
+          setHostVoted(false)
+          setHostVotedChoice(null)
+          setHostSubmitting(false)
+          return
+        }
+        const data = await response.json().catch(() => null)
+        if (data?.result) applyRoundResult(data.result)
+        else setHostSubmitting(false)
       } catch {
         setHostVoted(false)
         setHostVotedChoice(null)
         setHostSubmitting(false)
       }
     },
-    [pin, hostPlayerId, hostVoted, hostSubmitting]
+    [applyRoundResult, pin, hostPlayerId, hostVoted, hostSubmitting]
   )
 
   return (
@@ -405,6 +503,7 @@ export default function HostHighLowScreen({
                       >
                         <button
                           onClick={handleFinish}
+                          disabled={hostActionLoading === 'finish'}
                           className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold"
                           style={{ color: '#ef4444' }}
                           onMouseEnter={(e) =>
@@ -414,7 +513,12 @@ export default function HostHighLowScreen({
                             (e.currentTarget.style.backgroundColor = 'transparent')
                           }
                         >
-                          <Flag size={14} /> Zakończ grę
+                          {hostActionLoading === 'finish' ? (
+                            <Loader2 size={14} className="animate-spin" />
+                          ) : (
+                            <Flag size={14} />
+                          )}{' '}
+                          Zakończ grę
                         </button>
                       </motion.div>
                     )}
@@ -437,7 +541,12 @@ export default function HostHighLowScreen({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
               >
-                <HostSetupView team1={team1} team2={team2} onContinue={handleSetupComplete} />
+                <HostSetupView
+                  team1={team1}
+                  team2={team2}
+                  onContinue={handleSetupComplete}
+                  loading={hostActionLoading === 'setup'}
+                />
               </motion.div>
             )}
 
@@ -454,6 +563,7 @@ export default function HostHighLowScreen({
                   team1={team1}
                   team2={team2}
                   onStart={handleStart}
+                  starting={hostActionLoading === 'start'}
                 />
               </motion.div>
             )}
@@ -492,6 +602,7 @@ export default function HostHighLowScreen({
                   votingTeam={votingTeam}
                   questionHint={currentQuestion.hint}
                   onNextRound={handleNextRound}
+                  nextLoading={hostActionLoading === 'next'}
                 />
               </motion.div>
             )}
@@ -503,11 +614,7 @@ export default function HostHighLowScreen({
                 animate={{ opacity: 1, y: 0 }}
               >
                 <GameSummary
-                  scores={scores.map((s) => ({
-                    id: s.playerId,
-                    name: s.playerName,
-                    score: s.score,
-                  }))}
+                  scores={[]}
                   teamScores={[team1, team2].map((t) => ({
                     id: t.teamId,
                     name: t.teamName,

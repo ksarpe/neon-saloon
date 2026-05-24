@@ -2068,4 +2068,910 @@ export const NEVER_CARDS: Omit<GameCard, 'id'>[] = [
     type: 'NEVER',
     description: 'Nigdy przenigdy nie zrobiłam czegoś, co idealnie opisuje zdanie "młoda byłam, nie wiedziałam".',
   },
+
+  // === DODATKOWE OSTRE / WULGARNE PYTANIA ===
+
+  // --- Seks oralny – bez ogródek ---
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zrobiłam komuś loda.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie połknęłam podczas robienia loda.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zrobiłam komuś loda w samochodzie podczas jazdy.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zrobiłam komuś loda pod stołem w restauracji.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie pozwoliłam, żeby ktoś skończył mi na twarz.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie pozwoliłam, żeby ktoś skończył mi na cycki.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zrobiłam loda komuś, którego imienia nie znałam.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie skończyłam wyłącznie od seksu oralnego.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie robiłam 69.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie udawałam, że uwielbiam robić loda, choć tego nie znoszę.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zrobiłam komuś loda tylko po to, żeby mieć to z głowy.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie liczyłam w myślach, jak długo jeszcze muszę robić loda.',
+  },
+
+  // --- Pozycje i akty – konkretnie ---
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu analnego.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu analnego po pijaku i rano tego żałowałam.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie powiedziałam "tylko nie tam" i po chwili zmieniłam zdanie.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie skończyłam, będąc na górze.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu na stojąco pod prysznicem.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie próbowałam pozycji, po której bolały mnie mięśnie przez dwa dni.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spadłam z łóżka podczas seksu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zaliczyłam szybkiego numerku w mniej niż pięć minut.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie musiałam zrobić przerwy na wodę w trakcie seksu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zmieniłam pozycji, bo zdrętwiała mi noga.',
+  },
+
+  // --- Masturbacja ---
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie masturbowałam się w pracy.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie masturbowałam się w cudzym łóżku.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie masturbowałam się, myśląc o kimś, kogo znam osobiście.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie masturbowałam się, myśląc o partnerze przyjaciółki.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie masturbowałam się więcej niż trzy razy jednego dnia.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie masturbowałam się, gdy ktoś spał tuż obok mnie.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie używałam strumienia wody pod prysznicem dla przyjemności.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie skończyłam od samego ocierania się przez ubranie.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie masturbowałam się podczas rozmowy wideo z kimś.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zostałam przyłapana na masturbacji.',
+  },
+
+  // --- Zabawki i akcesoria ---
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie miałam wibratora głośniejszego, niż się spodziewałam.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie chowałam zabawek erotycznych przed rodziną podczas jej wizyty.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zabrałam wibratora na wakacje i nie tłumaczyłam się na kontroli na lotnisku.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie wstydziłam się odebrać paczki z zabawką erotyczną.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie używałam kajdanek w sypialni.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie miałam zabawki, której bateria padła w najgorszym momencie.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie używałam wibratora razem z partnerem.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie korzystałam z zabawki erotycznej w wannie.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie miałam więcej niż trzy różne zabawki erotyczne naraz.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie schowałam zabawki tak dobrze, że sama nie mogłam jej znaleźć.',
+  },
+
+  // --- Grupówki, swingers, podglądactwo ---
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie byłam na imprezie swingerskiej.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu z dwiema różnymi osobami tej samej nocy.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie patrzyłam na żywo, jak inni uprawiają seks.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie brałam udziału w czymś, co spokojnie można nazwać orgią.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie wymieniłam się partnerem z inną parą.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie dołączyłam do pary jako trzecia osoba.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie całowałam się z dwiema osobami jednocześnie.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu, gdy ktoś inny patrzył za zgodą wszystkich.',
+  },
+
+  // --- BDSM i ostra strona ---
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie dostałam klapsa tak mocnego, że został ślad.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie byłam związana tak, że nie mogłam się ruszyć.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie miałam zawiązanych oczu w łóżku.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie miałam zatkanych lub zaknebowanych ust podczas seksu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie ustaliłam z kimś słowa bezpieczeństwa.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie ciągnęłam kogoś za włosy podczas seksu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie podrapałam komuś pleców do krwi.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie ugryzłam kogoś za mocno w ferworze.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie dominowałam nad kimś w łóżku i bardzo mi się to spodobało.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie błagałam o pozwolenie podczas seksu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie założyłam komuś obroży lub smyczy w sypialni.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie używałam pejcza lub paska na partnerze.',
+  },
+
+  // --- Fetysze i przebieranki ---
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spotkałam się z fetyszem, którego do dziś nie rozumiem.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spełniłam komuś fetyszu stóp.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu w lateksie lub skórze.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie wcielałam się w pielęgniarkę dla partnera.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie założyłam stroju, który nadawał się wyłącznie do zdjęcia.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie odgrywałam scenki "szef i sekretarka".',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie odgrywałam scenki "nieznajomi, którzy właśnie się poznali".',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spełniłam komuś fantazji, o której nie powiem na głos.',
+  },
+
+  // --- Squirt, orgazm, głośność ---
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie miałam squirtu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zmoczyłam materaca podczas seksu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie krzyczałam tak głośno, że sąsiedzi zapukali w ścianę.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie miałam orgazmu we śnie.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie miałam orgazmu na siłowni od samych ćwiczeń.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie miałam orgazmu w miejscu publicznym bez niczyjej pomocy.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie musiałam zasłaniać ust poduszką, żeby być cicho.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie miałam tak intensywnego orgazmu, że się rozpłakałam.',
+  },
+
+  // --- Miejsca publiczne – konkretnie ---
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu w toalecie samolotu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu w przebieralni sklepu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu w pociągu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu w domu rodziców partnera, gdy byli w pokoju obok.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu na biurku w pracy.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu w saunie lub na basenie.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu w parku w biały dzień.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu w kuchni, gdy goście byli w salonie.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu w aucie zaparkowanym pod blokiem rodziców.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu w garażu lub na klatce schodowej.',
+  },
+
+  // --- Z konkretnymi typami ---
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spałam z trenerem personalnym.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spałam z instruktorem — jazdy, narciarstwa albo czegokolwiek.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spałam z kolegą partnera.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spałam z barmanem po zamknięciu lokalu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spałam z ochroniarzem, żeby wejść do klubu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spałam z muzykiem po koncercie.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spałam z kimś tylko dlatego, że miał świetne auto lub motocykl.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spałam z kimś znacznie ode mnie bogatszym dla samego doświadczenia.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spałam z kimś poznanym na siłowni.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spałam z kimś z pracy podczas wyjazdu integracyjnego.',
+  },
+
+  // --- Romans i zdrada bez owijania ---
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu z żonatym mężczyzną.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spałam ze swoim szefem.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spałam z kimś w toalecie podczas imprezy firmowej.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu z dwoma facetami z tej samej paczki znajomych.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spałam z kimś poznanym tego samego wieczoru w aucie pod klubem.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spałam z kimś i jego współlokatorem — nie tej samej nocy.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu z kimś, wiedząc, że ma dziewczynę.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie wysłałam nagiego zdjęcia żonatemu mężczyźnie.',
+  },
+
+  // --- Sexting, OnlyFans, kamerki ---
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie nagrałam głosówki o jednoznacznej treści.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie wysłałam nagiego zdjęcia z widoczną twarzą.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie myślałam o założeniu konta na OnlyFans.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie sprzedałam ani nie sprzedałabym komuś swoich zdjęć albo bielizny.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie prowadziłam wideorozmowy o jednoznacznym charakterze.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie szeptałam komuś świństw do ucha na parkiecie.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie wysłałam komuś listy rzeczy, które chcę mu zrobić.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie wysłałam komuś nagrania, na którym się rozbieram.',
+  },
+
+  // --- Wieczór panieński i striptizer ---
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie całowałam striptizera na czyimś wieczorze panieńskim.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie wsadziłam striptizerowi pieniędzy za pasek bielizny.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zamówiłam striptizera na imprezę.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie flirtowałam ze striptizerem po jego występie.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zrobiłam na wieczorze panieńskim czegoś, o czym panna młoda nie powinna pamiętać.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie całowałam się z kimś na wieczorze panieńskim koleżanki.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie dałam striptizerowi swojego numeru telefonu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie wzięłam udziału w grze, w której trzeba było zaczepiać obcych facetów.',
+  },
+
+  // --- Wpadki seksualne bez upiększania ---
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie puściłam bąka podczas seksu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie złapał mnie skurcz w trakcie seksu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zaśmiałam się na widok czyjegoś penisa.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie powiedziałam na głos złego imienia w łóżku.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie strąciłam czegoś z półki lub szafki podczas seksu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie musiałam tłumaczyć dziwnych odgłosów współlokatorom.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zostawiłam malinki w widocznym miejscu przed ważnym dniem.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zapomniałam zdjąć skarpetek w namiętnej chwili.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zwymiotowałam tuż przed albo po seksie z powodu alkoholu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zepsułam mebla lub łóżka podczas seksu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie utknęłam w ubraniu, którego nie mogłam zdjąć w odpowiednim momencie.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zasnęłam zaraz po seksie, zostawiając partnera samego.',
+  },
+
+  // --- Szczerość do bólu ---
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie kazałam komuś wyjść zaraz po seksie.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie udawałam, że śpię, żeby uniknąć drugiej rundy.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie sprawdzałam telefonu w trakcie seksu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie myślałam o liście zakupów podczas seksu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zerkałam na zegarek podczas seksu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie oceniałam czyjegoś rozmiaru i nie opowiedziałam o tym przyjaciółce.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie skłamałam komuś, że był najlepszy, choć daleko mu było do tego.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie porównywałam z przyjaciółką rozmiarów dwóch facetów.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zrobiłam komuś zdjęcia, gdy spał nago.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie ziewnęłam podczas seksu.',
+  },
+
+  // --- Liczby i przerwy ---
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zaliczyłam więcej niż trzech osób w jednym miesiącu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie straciłam rachuby, z iloma osobami spałam.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zaokrąglałam w dół liczby swoich partnerów.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie miałam z własnego wyboru przerwy w seksie dłuższej niż pół roku.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spałam z dwiema osobami w odstępie krótszym niż doba.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zaliczyłam kogoś szybciej, niż zajęło zamówienie pizzy.',
+  },
+
+  // --- Po alkoholu i jedna noc ---
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie obudziłam się kompletnie naga i nie pamiętałam jak.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie znalazłam rano w torebce czyjejś bielizny.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie wróciłam do domu bez własnej bielizny.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zostawiłam u kogoś bielizny i nigdy po nią nie wróciłam.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu tak pijana, że pamiętam tylko fragmenty.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie wymknęłam się rano, zostawiając tylko karteczkę.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie byłam rano w stanie przypomnieć sobie imienia osoby leżącej obok.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie wysłałam pijackiej wiadomości z propozycją seksu i nie dostałam "tak".',
+  },
+
+  // --- Odważne i ekshibicjonistyczne ---
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie poszłam do klubu BDSM lub fetyszowego.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie brałam udziału w sesji zdjęciowej topless lub nago.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie pozowałam komuś nago do rysunku lub obrazu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie tańczyłam topless dla kogoś prywatnie.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie błysnęłam piersiami w miejscu publicznym.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zdjęłam stanika w klubie i nie schowałam go do torebki.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie wyszłam z domu bez majtek całkowicie celowo.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie pokazałam komuś przez kamerę więcej, niż planowałam.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie kąpałam się nago tam, gdzie ktoś mógł mnie zobaczyć.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie opalałam się topless tam, gdzie nie było to do końca dozwolone.',
+  },
+
+  // --- Dominacja, uległość i prośby ---
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie poprosiłam partnera o coś, co go zaszokowało.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie powiedziałam partnerowi dokładnie, co ma robić, krok po kroku.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie odmówiłam komuś czegoś w łóżku i nie poczułam się z tym świetnie.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zgodziłam się na coś w łóżku tylko po to, żeby nie psuć nastroju.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie nakręciłam się od samego dirty talku, bez żadnego dotyku.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie kazałam komuś błagać.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie lubiłam być prowadzona i nie przyznałam się do tego głośno.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie lubiłam prowadzić i nie przyznałam się do tego głośno.',
+  },
+
+  // --- Finał – mocne ---
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu trzy razy w ciągu jednego dnia.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie miałam seksu z kimś i jego najlepszym przyjacielem w odstępie tygodnia.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie wróciłam do kogoś tylko dla seksu, choć go nie znosiłam jako osobę.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu na pierwszej randce i nie urwał się potem kontakt na zawsze.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu z kimś, kogo już nigdy nie zobaczyłam, i tak to zaplanowałam.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie prowadziłam jednocześnie pikantnej korespondencji z kilkoma osobami.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu ze świadomością, że ktoś nas słyszy zza ściany — i to mnie kręciło.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie nakręciłam się na samą myśl, że ktoś mógłby wejść.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zrobiłam komuś striptizu przy muzyce, którą wcześniej specjalnie wybrałam.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uwiodłam kogoś, kto był pewien, że nie ma u mnie szans.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zaproponowałam komuś seksu wprost, bez owijania w bawełnę.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu na pierwszej randce i nie był to początek dłuższej relacji.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spałam z kimś z mojej listy "absolutnie nigdy" — i było warto.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spałam z kimś z mojej listy "absolutnie nigdy" — i absolutnie nie było warto.',
+  },
+
+  // --- Dodatkowa porcja pikantnych ---
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu rano i nie spóźniłam się przez to do pracy.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu w czasie przerwy obiadowej.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu w łóżku współlokatorki pod jej nieobecność.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie robiłam striptizu przez kamerę komuś, kogo znałam tylko z internetu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu z kimś znacznie bardziej doświadczonym, kto narzucał tempo.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uczyłam kogoś, co ma robić, bo nie miał o niczym pojęcia.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu z kimś, zanim wypiliśmy choćby wspólną kawę.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu bez słowa — tylko na spojrzenia i gesty.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zaplanowałam całego wieczoru tak, żeby skończył się w łóżku — i tak się stało.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zrobiłam pierwszego kroku w łóżku, choć zawsze udaję nieśmiałą.',
+  },
+
+  // --- Bonus ---
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie całowałam się z kobietą, żeby zwrócić na siebie uwagę facetów.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu z kobietą i nie powiedziałam o tym nikomu.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie pocałowałam przyjaciółki i nie było w tym czegoś więcej niż żart.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie fantazjowałam o trójkącie z konkretną parą znajomych.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu z byłym partnerem mojej przyjaciółki.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spałam z kimś tylko po to, żeby sprawdzić plotki na jego temat.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie spałam z kimś tej samej nocy, żeby zapomnieć o kimś innym.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu na kanapie, którą ktoś potem musiał wyczyścić.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zostawiłam komuś tylu malinek, że musiał się z nich tłumaczyć.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu przy włączonym filmie, którego i tak nikt nie oglądał.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu w hotelu w obawie, że obsługa nas słyszy.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie zamówiłam do pokoju hotelowego czegoś, co podkręciło wieczór.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie dolałam sobie odwagi drinkiem przed zrobieniem pierwszego kroku.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie wysłałam komuś zdjęcia w samej bieliźnie z firmowej toalety.',
+  },
+  {
+    type: 'NEVER',
+    description: 'Nigdy przenigdy nie uprawiałam seksu i nie zapomniałam, że okno jest otwarte.',
+  },
 ]

@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { Play, Users } from 'lucide-react'
+import { Loader2, Play, Users } from 'lucide-react'
 
 import { JoinQrCode } from '@/components/JoinQrCode'
 import { PlayerAvatar } from '@/components/PlayerAvatar'
@@ -15,12 +15,12 @@ interface Props {
   hostAvatar: string
   hostName: string
   onStart: () => void
+  starting?: boolean
 }
 
-export function LobbyView({ pin, players, onStart }: Props) {
+export function LobbyView({ pin, players, onStart, starting = false }: Props) {
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-8">
-      {/* PIN */}
       <div className="flex flex-col items-center gap-3">
         <div className="flex flex-col items-center gap-5">
           <div className="flex flex-col items-center gap-3">
@@ -52,7 +52,6 @@ export function LobbyView({ pin, players, onStart }: Props) {
         </p>
       </div>
 
-      {/* Players */}
       <div className="w-full">
         <div className="mb-3 flex items-center justify-center gap-2">
           <Users size={14} style={{ color: 'var(--sheriff-pink)' }} />
@@ -85,7 +84,7 @@ export function LobbyView({ pin, players, onStart }: Props) {
             ))}
           </AnimatePresence>
           {players.length === 0 && (
-            <p className="text-text-muted text-sm opacity-50">Oczekuję na kowbojki …</p>
+            <p className="text-text-muted text-sm opacity-50">Oczekuję na kowbojki ...</p>
           )}
         </div>
       </div>
@@ -93,11 +92,19 @@ export function LobbyView({ pin, players, onStart }: Props) {
       <Button
         id="host-start-btn"
         type="primary"
-        disabled={players.length < 1}
+        disabled={players.length < 1 || starting}
         onClick={onStart}
         size="lg"
       >
-        <Play size={22} /> Rozpocznij grę
+        {starting ? (
+          <>
+            <Loader2 size={22} className="animate-spin" /> Rozpoczynam...
+          </>
+        ) : (
+          <>
+            <Play size={22} /> Rozpocznij grę
+          </>
+        )}
       </Button>
     </div>
   )

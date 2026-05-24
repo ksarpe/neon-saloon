@@ -23,19 +23,18 @@ export function TeamPicker({
   return (
     <div className="flex w-full flex-col items-center gap-5">
       <div className="text-center">
-        <span className="text-4xl">🏇</span>
         <h2
           className="mt-2 text-3xl tracking-normal"
           style={{ fontFamily: 'var(--font-app)', color: 'var(--neon-pink)' }}
         >
-          Wybierz drużynę
+          Wybierz bandę
         </h2>
       </div>
 
       {/* Existing teams */}
       <div className="flex w-full max-w-xs flex-col gap-2">
         <p className="text-text-muted text-[10px] font-semibold tracking-normal uppercase">
-          Drużyny
+          Bandy
         </p>
         <AnimatePresence>
           {teams.length === 0 && (
@@ -59,13 +58,12 @@ export function TeamPicker({
                 backgroundColor: `${t.color}0f`,
               }}
             >
-              <span className="text-xl">{t.emoji}</span>
               <div className="flex-1">
                 <p className="text-sm font-bold" style={{ color: t.color }}>
                   {t.teamName}
                 </p>
                 <p className="text-text-muted text-[10px]">
-                  {t.memberCount} kowbojka{t.memberCount !== 1 ? 's' : ''}
+                  {t.memberCount} gracz{t.memberCount !== 1 ? 'y' : ''}
                 </p>
               </div>
               <span className="text-text-muted text-xs">Dołącz →</span>
