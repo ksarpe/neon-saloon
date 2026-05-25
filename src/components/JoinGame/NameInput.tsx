@@ -19,6 +19,10 @@ export function NameInput({ value, onChange, avatar, onAvatarChange, onSubmit, o
 
   return (
     <div className="flex flex-col items-center gap-6">
+      <Button type="outline" onClick={onBack} className="self-start px-4 py-2 text-sm">
+        <ArrowLeft size={14} /> Wróć
+      </Button>
+
       <IdentityForm
         name={value}
         onNameChange={onChange}
@@ -27,16 +31,13 @@ export function NameInput({ value, onChange, avatar, onAvatarChange, onSubmit, o
         onEnter={() => canSubmit && onSubmit()}
       />
 
-      <div className="flex w-full max-w-md gap-3">
-        <Button type="outline" onClick={onBack} className="flex-1">
-          <ArrowLeft size={14} /> Wróć
-        </Button>
+      <div className="flex w-full max-w-md">
         <Button
           id="name-continue-btn"
           type="primary"
           disabled={!canSubmit}
           onClick={onSubmit}
-          className="flex-1"
+          className="w-full"
         >
           Dalej
         </Button>

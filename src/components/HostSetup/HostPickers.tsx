@@ -7,27 +7,16 @@ import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { ProModal } from '@/components/ui/ContentGate'
+import { QUESTION_CATEGORIES } from '@/config/games/categories'
+import { ALL_CATEGORIES_OPTION } from '@/config/games/category-selection'
 import { useContentAccess } from '@/hooks/useContentAccess'
 import type { SessionTeam } from '@/lib/appwrite/sessions'
 import { useBackButton } from '@/lib/back-button-context'
-import { QUESTION_CATEGORIES } from '@/config/games/categories'
 import { checkAccess } from '@/lib/content-access'
 import { QUESTIONS_PER_GAME } from '@/lib/games/question-limit'
 import { hostJsonHeaders } from '@/lib/session-host-secret'
 
-export type NeverSource = 'app' | 'own' | 'all'
-
-export const ALL_CATEGORIES_ID = 'all-categories'
-
-const ALL_CATEGORIES_OPTION = {
-  id: ALL_CATEGORIES_ID,
-  name: 'Wszystko na raz',
-  description: 'Losuje pytania ze wszystkich kategorii w jednej grze',
-  color: '#22c55e',
-  border: 'rgba(34,197,94,0.5)',
-  bg: 'rgba(34,197,94,0.07)',
-  questions: QUESTION_CATEGORIES.flatMap((cat) => cat.questions),
-} satisfies (typeof QUESTION_CATEGORIES)[number]
+export type NeverSource = 'classic' | 'spicy' | 'uncensored' | 'own' | 'all'
 
 // ─── Shared picker shell ───────────────────────────────────────────────────────
 
@@ -185,12 +174,30 @@ const NEVER_SOURCES: Array<{
   isPremium?: boolean
 }> = [
   {
-    id: 'app',
-    label: 'Pytania aplikacji',
-    desc: 'Gotowe wyznania dołączone do gry — działają zawsze, bez konfiguracji.',
+    id: 'classic',
+    label: 'Klasyczne',
+    desc: 'Lżejsze wyznania na start imprezy — dostępne za darmo.',
     color: 'var(--sheriff-pink)',
     border: 'rgba(255,215,0,0.5)',
     bg: 'rgba(255,215,0,0.07)',
+  },
+  {
+    id: 'spicy',
+    label: 'Pikantne',
+    desc: 'Mocniejsze pytania, które szybciej podkręcają atmosferę.',
+    color: 'var(--neon-pink)',
+    border: 'rgba(255,16,240,0.5)',
+    bg: 'rgba(255,16,240,0.07)',
+    isPremium: true,
+  },
+  {
+    id: 'uncensored',
+    label: 'Bez cenzury',
+    desc: 'Najostrzejsza talia PRO — dla ekip, które naprawdę chcą zobaczyć, co tam jest.',
+    color: '#ef4444',
+    border: 'rgba(239,68,68,0.5)',
+    bg: 'rgba(239,68,68,0.07)',
+    isPremium: true,
   },
   {
     id: 'own',
@@ -204,7 +211,7 @@ const NEVER_SOURCES: Array<{
   {
     id: 'all',
     label: 'Wszystkie razem',
-    desc: 'Łączy gotowe wyznania aplikacji z Twoimi własnymi — największa talia.',
+    desc: 'Łączy klasyczne, pikantne, bez cenzury i Twoje własne wyznania.',
     color: '#a78bfa',
     border: 'rgba(167,139,250,0.5)',
     bg: 'rgba(167,139,250,0.07)',
@@ -225,8 +232,8 @@ export function NeverSourcePicker({
 
   return (
     <PickerShell
-      title="Wybierz źródło pytań"
-      subtitle="Skąd mają pochodzić wyznania w tej rundzie?"
+      title="Wybierz talię"
+      subtitle="Klasyczne są darmowe. Najostrzejsze wyznania są w PRO."
       glowColor="var(--neon-pink)"
       onBack={onBack}
     >
@@ -270,6 +277,44 @@ export function NeverSourcePicker({
         ))}
       </div>
       {proModalOpen && <ProModal onClose={() => setProModalOpen(false)} />}
+    </PickerShell>
+  )
+}
+
+export function NeverDeckState({
+  loading,
+  error,
+  onBack,
+}: {
+  loading: boolean
+  error: string | null
+  onBack: () => void
+}) {
+  return (
+    <PickerShell
+      title="Nigdy przenigdy"
+      subtitle={loading ? 'Tasuję wybraną talię' : 'Nie udało się przygotować talii'}
+      glowColor="var(--neon-pink)"
+      onBack={onBack}
+    >
+      <div
+        className="flex flex-col items-center gap-4 rounded-2xl border p-6 text-center"
+        style={{ borderColor: 'var(--saloon-border)', background: 'rgba(255,220,180,0.045)' }}
+      >
+        {loading ? (
+          <>
+            <Loader2 size={24} className="animate-spin" style={{ color: 'var(--neon-pink)' }} />
+            <p className="text-text-muted text-sm">Pobieram pytania do rundy...</p>
+          </>
+        ) : (
+          <>
+            <p className="text-sm text-red-300">{error ?? 'Talia jest pusta.'}</p>
+            <Button type="outline" onClick={onBack}>
+              Wróć do wyboru talii
+            </Button>
+          </>
+        )}
+      </div>
     </PickerShell>
   )
 }

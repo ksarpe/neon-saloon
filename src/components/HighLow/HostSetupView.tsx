@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Check, Loader2 } from 'lucide-react'
+import { ArrowLeft, Check, Loader2 } from 'lucide-react'
 import { useState } from 'react'
 
 import { IdentityForm } from '@/components/IdentityForm'
@@ -12,10 +12,11 @@ interface Props {
   team1: SessionTeam
   team2: SessionTeam
   onContinue: (name: string, avatar: string, teamId: string) => void
+  onBack?: () => void
   loading?: boolean
 }
 
-export function HostSetupView({ team1, team2, onContinue, loading = false }: Props) {
+export function HostSetupView({ team1, team2, onContinue, onBack, loading = false }: Props) {
   const [name, setName] = useState('')
   const [avatar, setAvatar] = useState<string | null>(null)
   const [teamId, setTeamId] = useState<string | null>(null)
@@ -27,6 +28,12 @@ export function HostSetupView({ team1, team2, onContinue, loading = false }: Pro
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-6">
+      {onBack && (
+        <Button type="outline" onClick={onBack} className="self-start px-4 py-2 text-sm">
+          <ArrowLeft size={14} /> Wróć
+        </Button>
+      )}
+
       <IdentityForm
         name={name}
         onNameChange={setName}

@@ -63,7 +63,16 @@
       "WebSearch",
       "Bash(tee /tmp/tsc5.out)",
       "Bash(node -e ' *)",
-      "Bash(node validate_questions.cjs)"
+      "Bash(node validate_questions.cjs)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" --max-time 4 http://localhost:3000/api/sessions/000000)",
+      "Bash(npx playwright *)",
+      "Bash(curl -s -X POST http://localhost:3000/api/sessions -H \"content-type: application/json\" -H \"x-forwarded-for: 10.1.2.3\" -d '{\"hostName\":\"Test\",\"gameMode\":\"classic\"}' -w \"\\\\nHTTP_STATUS:%{http_code}\\\\n\" --max-time 10)",
+      "Bash(Select-String -Pattern \"page.tsx|landing-sample\")",
+      "Bash(Select-Object -First 30)",
+      "Bash(echo \"TSC_EXIT_$?\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" --max-time 2 http://localhost:3100/api/sessions/000000)",
+      "Bash(taskkill //F //IM node.exe //FI \"WINDOWTITLE eq next*\")",
+      "Bash(pkill -f \"next dev -p 3100\")"
     ]
   }
 }

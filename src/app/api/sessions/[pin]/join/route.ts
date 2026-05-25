@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 
 import { PLAYER_AVATARS } from '@/config/player-avatars'
-import { triggerGameEvent as triggerSessionEvent } from '@/lib/appwrite/realtime'
 import { withSessionTransaction } from '@/lib/appwrite/sessions'
 import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
 import {
@@ -135,32 +134,33 @@ export async function POST(request: Request, { params }: RouteContext) {
         ? session.players.filter((p) => p.teamId === resolvedTeamId).length
         : 0
 
+      // Broadcast atomically with the state write (see withSessionTransaction).
+      store.appendEvent(pin, {
+        event: 'player-joined',
+        data: {
+          playerId: player.playerId,
+          playerName: player.playerName,
+          avatar: player.avatar,
+          teamId: player.teamId,
+          teamName: player.teamName,
+        },
+      })
+
+      if (player.teamId) {
+        store.appendEvent(pin, {
+          event: 'team-updated',
+          data: {
+            teamId: player.teamId,
+            teamName: player.teamName ?? '',
+            memberCount: teamMemberCount,
+          },
+        })
+      }
+
       return { player, playerSecret, teamMemberCount }
     })
 
     if ('response' in joined) return joined.response
-
-    await triggerSessionEvent(pin, {
-      event: 'player-joined',
-      data: {
-        playerId: joined.player.playerId,
-        playerName: joined.player.playerName,
-        avatar: joined.player.avatar,
-        teamId: joined.player.teamId,
-        teamName: joined.player.teamName,
-      },
-    })
-
-    if (joined.player.teamId) {
-      await triggerSessionEvent(pin, {
-        event: 'team-updated',
-        data: {
-          teamId: joined.player.teamId,
-          teamName: joined.player.teamName ?? '',
-          memberCount: joined.teamMemberCount,
-        },
-      })
-    }
 
     return NextResponse.json(
       {

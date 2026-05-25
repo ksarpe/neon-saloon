@@ -1,80 +1,30 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import {
-  BookOpen,
-  Brain,
   Check,
   ChevronRight,
-  Heart,
-  type LucideIcon,
   Minus,
   MonitorPlay,
   PartyPopper,
   Smartphone,
-  TrendingUp,
 } from 'lucide-react'
-import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 
+import { GameCardStack } from '@/components/Card'
 import { Button } from '@/components/ui/button'
+import { LANDING_SAMPLE_CARDS } from '@/config/landing-sample-cards'
 
-interface GameModeCard {
-  id: string
-  icon: LucideIcon
-  label: string
-  gradient: string
-  accent: string
-  image: string | null
-  isPremium?: boolean
+const shuffleIndices = (length: number): number[] => {
+  const order = Array.from({ length }, (_, i) => i)
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[order[i], order[j]] = [order[j], order[i]]
+  }
+  return order
 }
-
-const GAME_MODES: GameModeCard[] = [
-  {
-    id: 'trivia',
-    icon: Brain,
-    label: 'Quiz o Pannie Młodej',
-    gradient: 'linear-gradient(160deg, #2d0040 0%, #6b0080 55%, #c0458a 100%)',
-    accent: '#dd54a2',
-    image: null,
-  },
-  {
-    id: 'categories',
-    icon: BookOpen,
-    label: 'Skategoryzowane pytania',
-    gradient: 'linear-gradient(160deg, #0d0030 0%, #2a0075 55%, #8b72e0 100%)',
-    accent: '#a78bfa',
-    image: '/showcase/categories-game.png',
-  },
-  {
-    id: 'never',
-    icon: Heart,
-    label: 'Nigdy Przenigdy',
-    gradient: 'linear-gradient(160deg, #1a0c00 0%, #4a2800 55%, #c47d00 100%)',
-    accent: '#f59e0b',
-    image: null,
-  },
-  {
-    id: 'highlow',
-    icon: TrendingUp,
-    label: 'Mniej czy Więcej',
-    gradient: 'linear-gradient(160deg, #001a0d 0%, #004020 55%, #0d9e6a 100%)',
-    accent: '#10b981',
-    image: null,
-    isPremium: true,
-  },
-  {
-    id: 'deadoralive',
-    icon: MonitorPlay,
-    label: 'Żywy czy Martwy?',
-    gradient: 'linear-gradient(160deg, #1a0c00 0%, #4a2800 55%, #c47d00 100%)',
-    accent: '#f59e0b',
-    image: null,
-    isPremium: true,
-  },
-]
 
 const PRICING_PLANS = [
   {
@@ -150,7 +100,7 @@ const HOW_IT_WORKS = [
   {
     step: '02',
     icon: Smartphone,
-    title: 'Kowboje dołączają',
+    title: 'Gracze dołączają',
     desc: 'Wpisz PIN lub zeskanuj kod QR. Wszyscy lądują w tym samym salonie - bez bałaganu.',
     color: '#dd54a2',
   },
@@ -163,104 +113,39 @@ const HOW_IT_WORKS = [
   },
 ]
 
-function ModeCardContent({ mode, isActive }: { mode: GameModeCard; isActive: boolean }) {
-  return (
-    <>
-      {mode.image && (
-        <Image
-          src={mode.image}
-          alt=""
-          fill
-          draggable={false}
-          priority={isActive}
-          sizes="(max-width: 768px) 78vw, 520px"
-          className="pointer-events-none rounded-[24px] object-cover select-none"
-          style={{
-            filter: isActive ? 'none' : 'blur(6px)',
-            transition: 'filter 0.4s ease',
-          }}
-        />
-      )}
-
-      {/* Top edge shine */}
-      <div
-        className="absolute top-0 right-0 left-0 h-px"
-        style={{
-          background: `linear-gradient(90deg, transparent, ${mode.accent}70, transparent)`,
-        }}
-      />
-
-      {/* Label pill — centered on the top border. Inactive labels hidden on mobile to avoid overlap. */}
-      <div
-        className={`absolute top-0 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 px-2 ${isActive ? '' : 'hidden sm:block'}`}
-      >
-        <motion.span
-          animate={isActive ? { scale: [1, 1.05, 1] } : { scale: 1 }}
-          transition={
-            isActive ? { duration: 2.4, repeat: Infinity, ease: 'easeInOut' } : { duration: 0.3 }
-          }
-          className="inline-flex items-center gap-2 rounded-full font-bold whitespace-nowrap"
-          style={{
-            fontSize: isActive ? '18px' : '11px',
-            padding: isActive ? '9px 20px' : '6px 14px',
-            color: isActive ? '#fff' : 'rgba(255,255,255,0.85)',
-            background: 'rgba(13,8,24,0.85)',
-            backdropFilter: 'blur(10px)',
-            border: `1px solid ${mode.accent}${isActive ? 'ff' : '55'}`,
-            boxShadow: isActive
-              ? `0 0 22px ${mode.accent}88, 0 0 46px ${mode.accent}44, 0 6px 18px rgba(0,0,0,0.5)`
-              : `0 4px 14px rgba(0,0,0,0.4)`,
-            textShadow: isActive ? `0 0 14px ${mode.accent}aa` : 'none',
-            transition: 'font-size 0.4s, padding 0.4s, box-shadow 0.4s, border-color 0.4s',
-          }}
-        >
-          {mode.label}
-        </motion.span>
-      </div>
-    </>
-  )
-}
-
 export default function LandingPage() {
   const router = useRouter()
   const { data: session } = useSession()
-  const [{ activeMode, prevActiveMode }, setModeState] = useState({
-    activeMode: 0,
-    prevActiveMode: 0,
-  })
+  // Deterministyczny porządek na pierwszy render (SSR), tasowany po zamontowaniu —
+  // dzięki temu unikamy niezgodności hydratacji, a gracz i tak dostaje losową talię.
+  const [order, setOrder] = useState<number[]>(() =>
+    Array.from({ length: LANDING_SAMPLE_CARDS.length }, (_, i) => i),
+  )
+  const [position, setPosition] = useState(0)
+  const [isSampleFlipped, setIsSampleFlipped] = useState(false)
 
-  // Rozstaw kart liczony z rzeczywistej szerokości karty (px-capowanej przez
-  // min(480px, 73vw)) — dzięki temu peek jest spójny na mobile, tablecie i desktopie.
-  // Współczynnik 0.8 = sąsiednie karty stykają się ze środkową i peekują na brzegach.
-  const [viewportW, setViewportW] = useState(1280)
   useEffect(() => {
-    const update = () => setViewportW(window.innerWidth)
-    update()
-    window.addEventListener('resize', update)
-    return () => window.removeEventListener('resize', update)
+    setOrder(shuffleIndices(LANDING_SAMPLE_CARDS.length))
   }, [])
-  const cardWidthPx = Math.min(480, viewportW * 0.73)
-  const cardGapPx = cardWidthPx * 0.8
 
-  const totalModes = GAME_MODES.length
-  const halfModes = totalModes / 2
-  const wrapOffset = (i: number, active: number) => {
-    let o = i - active
-    if (o > halfModes) o -= totalModes
-    else if (o < -halfModes) o += totalModes
-    return o
-  }
-  const goNext = () => {
-    setModeState((current) => ({
-      activeMode: (current.activeMode + 1) % totalModes,
-      prevActiveMode: current.activeMode,
-    }))
-  }
-  const goPrev = () => {
-    setModeState((current) => ({
-      activeMode: (current.activeMode - 1 + totalModes) % totalModes,
-      prevActiveMode: current.activeMode,
-    }))
+  const sample = LANDING_SAMPLE_CARDS[order[position]]
+
+  // Każda karta pokazuje się raz; po wyczerpaniu talii tasujemy ją od nowa,
+  // pilnując, by pierwsza karta nowego rozdania nie powtórzyła ostatniej.
+  const drawRandomSample = () => {
+    const next = position + 1
+    if (next < order.length) {
+      setPosition(next)
+    } else {
+      const lastShown = order[position]
+      const reshuffled = shuffleIndices(LANDING_SAMPLE_CARDS.length)
+      if (reshuffled.length > 1 && reshuffled[0] === lastShown) {
+        ;[reshuffled[0], reshuffled[1]] = [reshuffled[1], reshuffled[0]]
+      }
+      setOrder(reshuffled)
+      setPosition(0)
+    }
+    setIsSampleFlipped(false)
   }
 
   const handlePricingCta = (planId: string) => {
@@ -277,7 +162,7 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="shimmer-text text-[clamp(4rem,22vw,10rem)] leading-[0.85] tracking-wide uppercase"
+          className="shimmer-text pt-2 pb-1 text-[clamp(4rem,22vw,10rem)] leading-[0.95] tracking-wide uppercase"
           style={{ fontFamily: 'var(--font-logo)' }}
         >
           Last <br className="md:hidden" />Rodeo
@@ -422,87 +307,35 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── GAME MODES ────────────────────────────────────────────────────── */}
-      <section className="relative z-10 flex w-full flex-col items-center gap-12 overflow-hidden py-20">
+      {/* ── GAME SAMPLE ───────────────────────────────────────────────────── */}
+      <section className="relative z-10 mx-auto flex w-full max-w-7xl flex-col px-4 py-24 sm:px-6 md:py-32">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="px-6 text-center"
+          transition={{ duration: 0.55 }}
+          className="mx-auto flex w-full max-w-[760px] flex-col items-center gap-5"
         >
-          <h2
-            className="text-neon-pink text-5xl tracking-normal sm:text-6xl"
-            style={{ fontFamily: 'var(--font-app)' }}
-          >
-            Tryby gry
-          </h2>
-          <p className="mt-3 text-sm mb-16" style={{ color: 'rgba(240,223,192,0.5)' }}>
-            Każda runda inna, każda niezapomniana.
-          </p>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={sample.id}
+              initial={{ opacity: 0, y: 34, scale: 0.94, rotate: 3 }}
+              animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
+              exit={{ opacity: 0, y: -42, scale: 0.9, rotate: -5 }}
+              transition={{ type: 'spring', stiffness: 360, damping: 28 }}
+            >
+              <GameCardStack
+                card={sample}
+                cardsLeft={order.length - position}
+                isFlipped={isSampleFlipped}
+                maxWidth={760}
+                textScale={1.45}
+                onFlip={() => setIsSampleFlipped(true)}
+                onFlippedClick={drawRandomSample}
+              />
+            </motion.div>
+          </AnimatePresence>
         </motion.div>
-
-        {/* Featured carousel — center card prominent, sides peek */}
-        <div
-          className="relative flex w-full items-center justify-center"
-          style={{ height: 'clamp(340px, 82vw, 500px)' }}
-        >
-          {GAME_MODES.map((mode, i) => {
-            const offset = wrapOffset(i, activeMode)
-            const prevOffset = wrapOffset(i, prevActiveMode)
-            const isWrapping = Math.abs(offset - prevOffset) > 1.5
-            const absOffset = Math.abs(offset)
-            const isActive = absOffset === 0
-
-            return (
-              <motion.button
-                key={mode.id}
-                type="button"
-                onClick={(e) => {
-                  // Liczy się strona ekranu, nie konkretna karta:
-                  // klik w lewą połowę → krok w lewo, w prawą → krok w prawo.
-                  if (e.clientX < window.innerWidth / 2) goPrev()
-                  else goNext()
-                }}
-                drag="x"
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.2}
-                onDragEnd={(_, info) => {
-                  if (info.offset.x < -60) goNext()
-                  else if (info.offset.x > 60) goPrev()
-                }}
-                animate={{
-                  x: `${offset * cardGapPx}px`,
-                  scale: isActive ? 1 : 0.7,
-                  opacity: absOffset > halfModes ? 0 : isActive ? 1 : 0.92,
-                  zIndex: 20 - absOffset,
-                }}
-                transition={{
-                  type: 'spring',
-                  stiffness: 220,
-                  damping: 30,
-                  x: isWrapping ? { duration: 0 } : { type: 'spring', stiffness: 220, damping: 30 },
-                  opacity: { duration: 0.35 },
-                }}
-                className="absolute cursor-pointer select-none"
-                style={{
-                  width: 'min(600px, 73vw)',
-                  aspectRatio: '1 / 1',
-                  borderRadius: '24px',
-                  border: `1px solid ${mode.accent}35`,
-                  boxShadow: isActive
-                    ? `0 24px 35px ${mode.accent}20, 0 0 1px ${mode.accent}40`
-                    : `0 10px 40px rgba(0,0,0,0.35)`,
-                  filter: isActive ? 'none' : 'brightness(0.7) saturate(0.85)',
-                  WebkitTapHighlightColor: 'transparent',
-                  pointerEvents: absOffset > halfModes ? 'none' : 'auto',
-                }}
-              >
-                <ModeCardContent mode={mode} isActive={isActive} />
-              </motion.button>
-            )
-          })}
-        </div>
       </section>
 
       {/* ── PRICING ───────────────────────────────────────────────────────── */}
@@ -522,7 +355,7 @@ export default function LandingPage() {
             Plany
           </h2>
           <p className="mt-3 text-sm" style={{ color: 'rgba(240,223,192,0.5)' }}>
-            Jedno wesele. Jedna szansa. Spraw żeby było epickie.
+            Jedna szansa. Spraw żeby było epickie.
           </p>
         </motion.div>
 
@@ -623,10 +456,17 @@ export default function LandingPage() {
               </ul>
 
               {/* CTA */}
-              <button
+              <motion.button
                 type="button"
                 onClick={() => handlePricingCta(plan.id)}
-                className="mt-auto w-full cursor-pointer rounded-xl py-2.5 text-sm font-semibold tracking-wide transition-all duration-200"
+                whileHover={{
+                  y: -2,
+                  scale: 1.025,
+                  boxShadow: `0 0 24px ${plan.accent}44, 0 10px 24px rgba(0,0,0,0.28)`,
+                }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: 'spring', stiffness: 360, damping: 22 }}
+                className="mt-auto w-full cursor-pointer rounded-xl py-2.5 text-sm font-semibold tracking-wide transition-colors duration-200"
                 style={
                   plan.isPrimary
                     ? {
@@ -648,7 +488,7 @@ export default function LandingPage() {
                 }
               >
                 {plan.cta}
-              </button>
+              </motion.button>
             </motion.div>
           ))}
         </div>
@@ -673,7 +513,7 @@ export default function LandingPage() {
           className="shimmer-text text-5xl tracking-normal sm:text-7xl"
           style={{ fontFamily: 'var(--font-app)' }}
         >
-          Gotowe na
+          Gotowi na
           <br />
           Wielki Finał?
         </motion.h2>
@@ -686,12 +526,11 @@ export default function LandingPage() {
           className="max-w-sm text-sm leading-relaxed"
           style={{ color: 'rgba(240,223,192,0.6)' }}
         >
-          Zaproście uczestniczki, podłączcie TV i niech się zacznie ostatnie wielkie rodeo
-          Andżeliki.
+          Jeden zwycięzca. Reszta idzie spać ze wstydem.
         </motion.p>
 
         <Button onClick={() => router.push('/graj')} type="primary" size="lg">
-          Wejdź do salonu
+          Odważ się i zacznij grę!
         </Button>
       </section>
 

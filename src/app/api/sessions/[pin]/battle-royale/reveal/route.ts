@@ -1,6 +1,6 @@
 ﻿import { NextResponse } from 'next/server'
 
-import { QUESTION_CATEGORIES } from '@/config/games/categories'
+import { getQuestionCategorySelection } from '@/config/games/category-selection'
 import type { BRAnswerResult } from '@/lib/appwrite/realtime'
 import { triggerGameEvent } from '@/lib/appwrite/realtime'
 import type { BRAnswer } from '@/lib/appwrite/sessions'
@@ -33,7 +33,7 @@ export async function POST(_request: Request, { params }: RouteContext) {
     const br = session.battleRoyaleData
     if (!br) return NextResponse.json({ error: 'Not a battle-royale session' }, { status: 400 })
 
-    const category = QUESTION_CATEGORIES.find((c) => c.id === br.categoryId)
+    const category = getQuestionCategorySelection(br.categoryId)
     const question = category
       ? getOrderedQuestion(category.questions, br.questionIndex, br.questionOrder)
       : undefined
@@ -101,6 +101,7 @@ export async function POST(_request: Request, { params }: RouteContext) {
       eliminatedPlayers: updatedEliminated,
       roundAnswers: allAnswers,
     }
+    if (gameOver) session.status = 'finished'
     await saveSession(session)
 
     await triggerGameEvent(pin, {

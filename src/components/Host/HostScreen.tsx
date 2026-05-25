@@ -532,6 +532,9 @@ export default function HostScreen({ pin, initialCards }: HostScreenProps) {
                   avatar={hostAvatar}
                   onAvatarChange={setHostAvatar}
                   onContinue={handleSetupComplete}
+                  onBack={() => {
+                    window.location.href = '/graj/host'
+                  }}
                 />
               </motion.div>
             )}

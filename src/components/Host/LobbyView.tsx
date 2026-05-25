@@ -84,7 +84,7 @@ export function LobbyView({ pin, players, onStart, starting = false }: Props) {
             ))}
           </AnimatePresence>
           {players.length === 0 && (
-            <p className="text-text-muted text-sm opacity-50">Oczekuję na kowbojki ...</p>
+            <p className="text-text-muted text-sm opacity-50">Oczekuję na graczy ...</p>
           )}
         </div>
       </div>

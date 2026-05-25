@@ -7,19 +7,19 @@ import BattleRoyaleHost from '@/components/BattleRoyale/BattleRoyaleHost'
 import HostHighLowScreen from '@/components/HighLow/HostHighLowScreen'
 import HostScreen from '@/components/Host'
 import {
-  ALL_CATEGORIES_ID,
   CategoryPicker,
   HighLowTeamSetup,
+  NeverDeckState,
   type NeverSource,
   NeverSourcePicker,
   TriviaDeckState,
 } from '@/components/HostSetup/HostPickers'
-import type { SessionTeam } from '@/lib/appwrite/sessions'
 import { QUESTION_CATEGORIES } from '@/config/games/categories'
+import { ALL_CATEGORIES_ID, PREMIUM_CATEGORY_IDS } from '@/config/games/category-selection'
+import type { SessionTeam } from '@/lib/appwrite/sessions'
 import { QUESTIONS_PER_GAME, shuffleAndLimitQuestions } from '@/lib/games/question-limit'
 import { hostAuthHeaders, hostJsonHeaders } from '@/lib/session-host-secret'
 import type { GameCard } from '@/lib/store'
-import { buildDeck } from '@/lib/store'
 
 type QuizApiQuestion = {
   id: string
@@ -28,14 +28,17 @@ type QuizApiQuestion = {
   options: string[]
 }
 
+const APP_NEVER_SOURCES = new Set<NeverSource>(['classic', 'spicy', 'uncensored', 'all'])
+
 export default function HostPage() {
   const { pin } = useParams<{ pin: string }>()
   const searchParams = useSearchParams()
   const router = useRouter()
   const mode = searchParams.get('mode') ?? 'classic'
 
-  const fullDeck = useMemo(() => buildDeck(), [])
-
+  const [appNeverCards, setAppNeverCards] = useState<GameCard[]>([])
+  const [appNeverLoading, setAppNeverLoading] = useState(false)
+  const [appNeverError, setAppNeverError] = useState<string | null>(null)
   const [customCards, setCustomCards] = useState<GameCard[]>([])
   const [quizCards, setQuizCards] = useState<GameCard[]>([])
   const [quizLoading, setQuizLoading] = useState(mode === 'trivia')
@@ -74,8 +77,8 @@ export default function HostPage() {
       .catch(() => {})
   }, [mode, pin])
 
-  // Predefined cards from the store (filtered by mode)
-  const appNeverCards = useMemo(() => fullDeck.filter((c) => c.type === 'NEVER'), [fullDeck])
+  // Predefined "Nigdy przenigdy" cards are loaded through the API so PRO decks
+  // are not shipped to non-premium clients in the initial bundle.
   const categoryCards = useMemo<GameCard[]>(() => {
     if (mode !== 'categories' || !selectedCategory) return []
     const selectedCategories =
@@ -120,10 +123,49 @@ export default function HostPage() {
       .finally(() => setQuizLoading(false))
   }, [mode])
 
+  // "never" mode: fetch selected app deck. Premium decks are authorized server-side.
+  useEffect(() => {
+    if (mode !== 'never' || !neverSource || !APP_NEVER_SOURCES.has(neverSource)) return
+
+    const controller = new AbortController()
+    setAppNeverCards([])
+    setAppNeverError(null)
+    setAppNeverLoading(true)
+
+    fetch(`/api/decks/never?deck=${neverSource}`, { signal: controller.signal })
+      .then(async (r) => {
+        if (r.status === 403) throw new Error('premium_required')
+        if (!r.ok) throw new Error('failed')
+        return r.json()
+      })
+      .then((data: GameCard[]) => {
+        if (!Array.isArray(data)) {
+          setAppNeverCards([])
+          return
+        }
+        setAppNeverCards(data)
+      })
+      .catch((err) => {
+        if (err instanceof DOMException && err.name === 'AbortError') return
+        setAppNeverCards([])
+        setAppNeverError(
+          err instanceof Error && err.message === 'premium_required'
+            ? 'Ta talia wymaga dostępu PRO.'
+            : 'Nie udało się pobrać talii Nigdy przenigdy.'
+        )
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setAppNeverLoading(false)
+      })
+
+    return () => controller.abort()
+  }, [mode, neverSource])
+
   // "never" mode: fetch user's custom questions when needed
   useEffect(() => {
     if (mode !== 'never' || !neverSource) return
-    if (neverSource === 'app') return // no DB fetch needed
+    if (neverSource !== 'own' && neverSource !== 'all') return
+    setCustomCards([])
     fetch('/api/questions/never')
       .then((r) => (r.ok ? r.json() : []))
       .then((data: Array<{ id: string; text: string }>) => {
@@ -144,7 +186,9 @@ export default function HostPage() {
     if (mode === 'trivia') return shuffleAndLimitQuestions(quizCards)
     if (mode === 'categories') return shuffleAndLimitQuestions(categoryCards)
     if (mode === 'never') {
-      if (neverSource === 'app') return shuffleAndLimitQuestions(appNeverCards)
+      if (neverSource === 'classic' || neverSource === 'spicy' || neverSource === 'uncensored') {
+        return shuffleAndLimitQuestions(appNeverCards)
+      }
       if (neverSource === 'own') return shuffleAndLimitQuestions(customCards)
       if (neverSource === 'all') return shuffleAndLimitQuestions([...appNeverCards, ...customCards])
       return []
@@ -160,13 +204,28 @@ export default function HostPage() {
         onSelect={setSelectedCategory}
         onBack={() => router.push('/graj/host')}
         includeAllOption
-        premiumCategoryIds={[ALL_CATEGORIES_ID, 'stats', 'alcohol']}
+        premiumCategoryIds={PREMIUM_CATEGORY_IDS}
       />
     )
   }
 
   if (mode === 'never' && !neverSource) {
     return <NeverSourcePicker onSelect={setNeverSource} onBack={() => router.push('/graj/host')} />
+  }
+
+  if (
+    mode === 'never' &&
+    neverSource &&
+    APP_NEVER_SOURCES.has(neverSource) &&
+    (appNeverLoading || appNeverError || deck.length === 0)
+  ) {
+    return (
+      <NeverDeckState
+        loading={appNeverLoading || (!appNeverError && deck.length === 0)}
+        error={appNeverError}
+        onBack={() => setNeverSource(null)}
+      />
+    )
   }
 
   if (mode === 'trivia' && (quizLoading || deck.length === 0)) {
@@ -205,6 +264,8 @@ export default function HostPage() {
           }}
           onBack={() => router.push('/graj/host')}
           loading={brSetupLoading}
+          includeAllOption
+          premiumCategoryIds={PREMIUM_CATEGORY_IDS}
         />
       )
     }

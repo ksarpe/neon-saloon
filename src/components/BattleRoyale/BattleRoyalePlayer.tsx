@@ -1,9 +1,10 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { CheckCircle2, Clock, Skull, Trophy } from 'lucide-react'
+import { CheckCircle2, Clock, Skull } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { BattleRoyaleGameOverPanel } from '@/components/BattleRoyale/BattleRoyaleGameOverPanel'
 import { PlayerAvatar } from '@/components/PlayerAvatar'
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
 import type { BRGameOverPayload, BRRoundRevealPayload, BRRoundStartPayload } from '@/lib/game-types'
@@ -117,6 +118,11 @@ export default function BattleRoyalePlayer({
       setGameOver(d)
       setPhase('gameover')
     }, []),
+
+    onGameFinished: useCallback(() => {
+      setGameOver({ survivingPlayers: [] })
+      setPhase('gameover')
+    }, []),
   })
 
   const submitAnswer = useCallback(
@@ -146,6 +152,15 @@ export default function BattleRoyalePlayer({
 
   const timerPct = roundData ? (timerLeft / roundData.timerDuration) * 100 : 100
   const myRevealEntry = revealData?.answers.find((a) => a.playerId === playerId)
+  const winnerName = gameOver?.winner ?? revealData?.winner
+  const isWinner = winnerName === playerName
+  const finalPlayer = {
+    id: playerId,
+    name: playerName,
+    avatar,
+    isWinner,
+    survived: isWinner || (!winnerName && !isEliminated),
+  }
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -460,46 +475,13 @@ export default function BattleRoyalePlayer({
                 key="gameover"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="flex flex-col items-center gap-6 text-center"
+                className="w-full"
               >
-                {gameOver?.winner === playerName || !isEliminated ? (
-                  <>
-                    <motion.div
-                      animate={{ rotate: [0, -10, 10, -10, 10, 0], scale: [1, 1.2, 1] }}
-                      transition={{ duration: 0.8 }}
-                    >
-                      <Trophy size={72} style={{ color: 'var(--sheriff-pink)' }} />
-                    </motion.div>
-                    <div>
-                      <p
-                        className="text-sheriff-pink text-5xl tracking-normal"
-                        style={{ fontFamily: 'var(--font-app)' }}
-                      >
-                        Wygrałeś!
-                      </p>
-                      <p className="mt-2 text-sm" style={{ color: 'var(--text-muted)' }}>
-                        Jesteś ostatnim ocalałym
-                      </p>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <Skull size={72} style={{ color: '#ef4444', opacity: 0.6 }} />
-                    <div>
-                      <p
-                        className="text-4xl font-bold"
-                        style={{ fontFamily: 'var(--font-app)', color: 'var(--text-muted)' }}
-                      >
-                        Koniec gry
-                      </p>
-                      {gameOver?.winner && (
-                        <p className="mt-2 text-sm" style={{ color: 'var(--sheriff-pink)' }}>
-                          Zwyciężył: <strong>{gameOver.winner}</strong>
-                        </p>
-                      )}
-                    </div>
-                  </>
-                )}
+                <BattleRoyaleGameOverPanel
+                  winnerName={winnerName}
+                  players={[finalPlayer]}
+                  currentPlayerId={playerId}
+                />
               </motion.div>
             )}
           </AnimatePresence>

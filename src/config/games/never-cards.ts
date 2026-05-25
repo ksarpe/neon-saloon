@@ -2975,3 +2975,22 @@ export const NEVER_CARDS: Omit<GameCard, 'id'>[] = [
     description: 'Nigdy przenigdy nie uprawiałam seksu i nie zapomniałam, że okno jest otwarte.',
   },
 ]
+
+export type NeverDeckId = 'classic' | 'spicy' | 'uncensored' | 'all'
+
+const NEVER_SPICY_START_INDEX = 186
+const NEVER_UNCENSORED_START_INDEX = 500
+
+export const NEVER_DECKS: Record<Exclude<NeverDeckId, 'all'>, Omit<GameCard, 'id'>[]> = {
+  classic: NEVER_CARDS.slice(0, NEVER_SPICY_START_INDEX),
+  spicy: NEVER_CARDS.slice(NEVER_SPICY_START_INDEX, NEVER_UNCENSORED_START_INDEX),
+  uncensored: NEVER_CARDS.slice(NEVER_UNCENSORED_START_INDEX),
+}
+
+export function getNeverDeck(deckId: NeverDeckId) {
+  if (deckId === 'all') {
+    return [...NEVER_DECKS.classic, ...NEVER_DECKS.spicy, ...NEVER_DECKS.uncensored]
+  }
+
+  return NEVER_DECKS[deckId]
+}

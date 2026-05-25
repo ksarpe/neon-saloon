@@ -128,7 +128,7 @@ export function BotProtection({
         }}
         onError={() => setScriptError(true)}
       />
-      <div className="flex min-h-[65px] flex-col items-center justify-center gap-2">
+      <div className="flex flex-col items-center justify-center gap-2">
         <div ref={containerRef} />
         {!scriptLoaded && !scriptError && (
           <p className="text-text-muted text-center text-xs">Ładuję zabezpieczenie...</p>

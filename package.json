@@ -10,6 +10,7 @@
     "test": "playwright test --workers=1",
     "test:e2e": "playwright test --workers=1",
     "test:all": "tsc --noEmit --pretty false && playwright test --workers=1",
+    "test:logic": "playwright test --grep @logic --reporter=list",
     "test:perf": "playwright test performance.spec.ts --project=chromium --reporter=list",
     "postinstall": "prisma generate"
   },

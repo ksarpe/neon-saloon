@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { Loader2 } from 'lucide-react'
 
+import { AgeNotice } from '@/components/ui/AgeNotice'
 import { Button } from '@/components/ui/button'
 import { SESSION_PIN_LENGTH } from '@/lib/session-pin'
 
@@ -91,8 +92,9 @@ export function PinInput({ value, onChange, onSubmit, loading, error }: Props) {
         className="w-full max-w-[240px]"
       >
         {loading && <Loader2 size={18} className="animate-spin" />}
-        {loading ? 'Sprawdzanie...' : 'Wejdź do salonu'}
+        {loading ? 'Sprawdzanie...' : 'Dołącz do gry'}
       </Button>
+      <AgeNotice actionLabel="Dołącz" className="-mt-3 max-w-[240px]" />
     </div>
   )
 }

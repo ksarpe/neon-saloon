@@ -10,8 +10,8 @@ const sections: LegalSection[] = [
       <div className="space-y-3">
         <p>
           Niniejszy Regulamin określa zasady korzystania z serwisu internetowego{' '}
-          <strong>{COMPANY.brand}</strong>, dostępnego pod adresem{' '}
-          <strong>{COMPANY.domain}</strong> (dalej: „Serwis”).
+          <strong>{COMPANY.brand}</strong>, dostępnego pod adresem <strong>{COMPANY.domain}</strong>{' '}
+          (dalej: „Serwis”).
         </p>
         <p>Operatorem i sprzedawcą jest:</p>
         <p className="leading-relaxed">
@@ -54,9 +54,15 @@ const sections: LegalSection[] = [
     content: (
       <ul className="space-y-2">
         {[
-          ['Serwis', `platforma internetowa ${COMPANY.brand} dostępna pod adresem ${COMPANY.domain}`],
+          [
+            'Serwis',
+            `platforma internetowa ${COMPANY.brand} dostępna pod adresem ${COMPANY.domain}`,
+          ],
           ['Operator / Usługodawca / Sprzedawca', COMPANY.legalName],
-          ['Użytkownik', 'osoba fizyczna, prawna lub jednostka organizacyjna korzystająca z Serwisu'],
+          [
+            'Użytkownik',
+            'osoba fizyczna, prawna lub jednostka organizacyjna korzystająca z Serwisu',
+          ],
           [
             'Konsument',
             'Użytkownik będący osobą fizyczną dokonujący czynności niezwiązanej bezpośrednio z jego działalnością gospodarczą lub zawodową',
@@ -70,13 +76,28 @@ const sections: LegalSection[] = [
             'indywidualny, zabezpieczony hasłem zbiór zasobów Użytkownika w Serwisie, umożliwiający m.in. zapisywanie własnych pytań i dostęp do planów płatnych',
           ],
           ['Host', 'Użytkownik tworzący i prowadzący Sesję rozgrywki'],
-          ['Gracz', 'osoba dołączająca do Sesji za pomocą kodu PIN, bez konieczności posiadania Konta'],
-          ['Sesja', 'jednorazowa rozgrywka utworzona przez Hosta i dostępna dla dołączających Graczy'],
-          ['Treści Użytkownika', 'pytania, odpowiedzi i inne materiały tworzone lub wprowadzane przez Użytkownika'],
+          [
+            'Gracz',
+            'osoba dołączająca do Sesji za pomocą kodu PIN, bez konieczności posiadania Konta',
+          ],
+          [
+            'Sesja',
+            'jednorazowa rozgrywka utworzona przez Hosta i dostępna dla dołączających Graczy',
+          ],
+          [
+            'Treści Użytkownika',
+            'pytania, odpowiedzi i inne materiały tworzone lub wprowadzane przez Użytkownika',
+          ],
           ['Plan', 'określony zakres funkcji i warunków świadczenia usług (bezpłatny lub płatny)'],
           ['Subskrypcja', 'płatny Plan rozliczany cyklicznie i odnawiany automatycznie'],
-          ['Dostęp dożywotni', 'płatny Plan udostępniany w zamian za jednorazową opłatę, bez cyklicznych płatności'],
-          ['Umowa', 'umowa o świadczenie usług drogą elektroniczną zawierana między Użytkownikiem a Operatorem na zasadach Regulaminu'],
+          [
+            'Dostęp dożywotni',
+            'płatny Plan udostępniany w zamian za jednorazową opłatę, bez cyklicznych płatności',
+          ],
+          [
+            'Umowa',
+            'umowa o świadczenie usług drogą elektroniczną zawierana między Użytkownikiem a Operatorem na zasadach Regulaminu',
+          ],
         ].map(([term, def]) => (
           <li key={term} className="flex gap-2">
             <span className="shrink-0 font-bold" style={{ color: 'var(--sheriff-pink)' }}>
@@ -121,8 +142,9 @@ const sections: LegalSection[] = [
         <p>Operator świadczy za pośrednictwem Serwisu następujące usługi drogą elektroniczną:</p>
         <ul className="list-inside list-disc space-y-1.5 pl-2">
           <li>
-            <strong>Rozgrywka bez rejestracji</strong> — dołączanie do Sesji jako Gracz oraz
-            tworzenie podstawowych Sesji nie wymaga zakładania Konta.
+            <strong>Rozgrywka bez rejestracji</strong> — dołączanie do Sesji jako Gracz nie wymaga
+            zakładania Konta, jednakże{' '}
+            <strong>jest dozwolone wyłącznie dla osób pełnoletnich</strong>.
           </li>
           <li>
             <strong>Konto Użytkownika</strong> — zapisywanie własnych pytań, ustawień rozgrywki i
@@ -139,9 +161,9 @@ const sections: LegalSection[] = [
           praw nabytych Użytkowników płatnych Planów w opłaconym okresie.
         </p>
         <p>
-          Umowa o korzystanie z funkcji bezpłatnych zawierana jest z chwilą rozpoczęcia korzystania z
-          Serwisu i ma charakter jednorazowy lub ciągły (do zaprzestania korzystania). Umowa o Konto
-          zawierana jest z chwilą jego założenia.
+          Umowa o korzystanie z funkcji bezpłatnych zawierana jest z chwilą rozpoczęcia korzystania
+          z Serwisu i ma charakter jednorazowy lub ciągły (do zaprzestania korzystania). Umowa o
+          Konto zawierana jest z chwilą jego założenia.
         </p>
       </div>
     ),
@@ -152,10 +174,11 @@ const sections: LegalSection[] = [
     content: (
       <div className="space-y-3">
         <p>
-          Założenie Konta wymaga podania adresu e-mail i ustawienia hasła oraz akceptacji Regulaminu.
-          Konto zakładać mogą osoby pełnoletnie, posiadające pełną zdolność do czynności prawnych.
-          Osoby ograniczone w zdolności do czynności prawnych mogą korzystać z Serwisu za zgodą
-          przedstawiciela ustawowego.
+          Założenie Konta wymaga podania adresu e-mail i ustawienia hasła oraz akceptacji
+          Regulaminu. Ze względu na charakter udostępnianianych Treści, z Serwisu mogą korzystać{' '}
+          <strong>wyłącznie osoby pełnoletnie</strong> (które ukończyły 18 lat), posiadające pełną
+          zdolność do czynności prawnych. Zakładając Konto, Użytkownik oświadcza, że spełnia to
+          kryterium.
         </p>
         <p>
           Użytkownik zobowiązuje się podać dane prawdziwe i aktualne. Podanie danych nieprawdziwych
@@ -167,8 +190,8 @@ const sections: LegalSection[] = [
           skontaktować się z Operatorem pod adresem <strong>{COMPANY.email}</strong>.
         </p>
         <p>
-          Hasła przechowywane są w postaci zahaszowanej. Operator nie ma dostępu do hasła Użytkownika
-          w postaci jawnej.
+          Hasła przechowywane są w postaci zahaszowanej. Operator nie ma dostępu do hasła
+          Użytkownika w postaci jawnej.
         </p>
       </div>
     ),
@@ -184,15 +207,24 @@ const sections: LegalSection[] = [
           udziału w Sesji.
         </p>
         <p>
-          Użytkownik może wprowadzać Treści Użytkownika (np. własne pytania i odpowiedzi). Użytkownik
-          oświadcza, że posiada prawa do wprowadzanych treści i ponosi za nie pełną odpowiedzialność.
+          Użytkownik może wprowadzać Treści Użytkownika (np. własne pytania i odpowiedzi).
+          Użytkownik oświadcza, że posiada prawa do wprowadzanych treści i ponosi za nie pełną
+          odpowiedzialność.
         </p>
         <p>Zabronione jest wprowadzanie i rozpowszechnianie treści:</p>
         <ul className="list-inside list-disc space-y-1 pl-2">
-          <li>niezgodnych z prawem, obraźliwych, wulgarnych, dyskryminujących lub nawołujących do nienawiści,</li>
-          <li>naruszających prawa osób trzecich (w tym prawa autorskie, dobra osobiste, dane osobowe),</li>
+          <li>
+            niezgodnych z prawem, obraźliwych, wulgarnych, dyskryminujących lub nawołujących do
+            nienawiści,
+          </li>
+          <li>
+            naruszających prawa osób trzecich (w tym prawa autorskie, dobra osobiste, dane osobowe),
+          </li>
           <li>o charakterze reklamowym lub spamu, bez zgody Operatora,</li>
-          <li>szkodliwych technicznie (złośliwe oprogramowanie, skrypty zakłócające działanie Serwisu).</li>
+          <li>
+            szkodliwych technicznie (złośliwe oprogramowanie, skrypty zakłócające działanie
+            Serwisu).
+          </li>
         </ul>
         <p>
           Wprowadzając Treści Użytkownika do Serwisu, Użytkownik udziela Operatorowi niewyłącznej,
@@ -202,8 +234,8 @@ const sections: LegalSection[] = [
           prawnych.
         </p>
         <p>
-          Operator może usunąć Treści Użytkownika naruszające Regulamin lub prawo, a w razie rażących
-          lub powtarzających się naruszeń — zawiesić lub usunąć Konto.
+          Operator może usunąć Treści Użytkownika naruszające Regulamin lub prawo, a w razie
+          rażących lub powtarzających się naruszeń — zawiesić lub usunąć Konto.
         </p>
       </div>
     ),
@@ -219,9 +251,9 @@ const sections: LegalSection[] = [
         </p>
         <ul className="list-inside list-disc space-y-1.5 pl-2">
           <li>
-            <strong>Subskrypcja</strong> — opłata cykliczna (miesięczna lub roczna), pobierana z góry
-            za dany okres rozliczeniowy; subskrypcja odnawia się automatycznie na kolejny okres,
-            chyba że zostanie wcześniej anulowana.
+            <strong>Subskrypcja</strong> — opłata cykliczna (miesięczna lub roczna), pobierana z
+            góry za dany okres rozliczeniowy; subskrypcja odnawia się automatycznie na kolejny
+            okres, chyba że zostanie wcześniej anulowana.
           </li>
           <li>
             <strong>Dostęp dożywotni</strong> — jednorazowa opłata za bezterminowy dostęp do funkcji
@@ -249,9 +281,10 @@ const sections: LegalSection[] = [
           ). Realizacja płatności podlega regulaminowi dostawcy płatności.
         </p>
         <p>
-          Subskrypcję można anulować w każdej chwili w ustawieniach Konta; anulowanie odnosi skutek z
-          końcem bieżącego, opłaconego okresu rozliczeniowego — dostęp do funkcji premium pozostaje
-          aktywny do tego czasu. Zmiana ceny Subskrypcji nie dotyczy okresu już opłaconego.
+          Subskrypcję można anulować w każdej chwili w ustawieniach Konta; anulowanie odnosi skutek
+          z końcem bieżącego, opłaconego okresu rozliczeniowego — dostęp do funkcji premium
+          pozostaje aktywny do tego czasu. Zmiana ceny Subskrypcji nie dotyczy okresu już
+          opłaconego.
         </p>
         <p>
           Na żądanie Użytkownika Operator wystawia fakturę. W tym celu należy podać dane do faktury
@@ -275,7 +308,10 @@ const sections: LegalSection[] = [
           niezwłocznie po zawarciu umowy. Przy zakupie Użytkownik proszony jest o:
         </p>
         <ul className="list-inside list-disc space-y-1 pl-2">
-          <li>wyraźną zgodę na rozpoczęcie spełniania świadczenia przed upływem terminu odstąpienia, oraz</li>
+          <li>
+            wyraźną zgodę na rozpoczęcie spełniania świadczenia przed upływem terminu odstąpienia,
+            oraz
+          </li>
           <li>
             przyjęcie do wiadomości, że w związku z tym utraci prawo odstąpienia po pełnym wykonaniu
             usługi.
@@ -316,8 +352,8 @@ const sections: LegalSection[] = [
         </p>
         <p>
           W razie niezgodności usługi cyfrowej z umową Konsumentowi przysługują uprawnienia
-          przewidziane w ustawie (m.in. doprowadzenie do zgodności, obniżenie ceny lub odstąpienie od
-          umowy na warunkach ustawowych).
+          przewidziane w ustawie (m.in. doprowadzenie do zgodności, obniżenie ceny lub odstąpienie
+          od umowy na warunkach ustawowych).
         </p>
       </div>
     ),
@@ -330,8 +366,13 @@ const sections: LegalSection[] = [
         <p>Użytkownik zobowiązuje się do:</p>
         <ul className="list-inside list-disc space-y-1 pl-2">
           <li>korzystania z Serwisu zgodnie z prawem, dobrymi obyczajami i Regulaminem,</li>
-          <li>niepodejmowania działań zakłócających działanie Serwisu lub naruszających prawa innych osób,</li>
-          <li>nieobchodzenia zabezpieczeń, niestosowania botów ani automatów bez zgody Operatora,</li>
+          <li>
+            niepodejmowania działań zakłócających działanie Serwisu lub naruszających prawa innych
+            osób,
+          </li>
+          <li>
+            nieobchodzenia zabezpieczeń, niestosowania botów ani automatów bez zgody Operatora,
+          </li>
           <li>nieudostępniania danych logowania osobom trzecim,</li>
           <li>niewykorzystywania Serwisu do rozsyłania treści bezprawnych lub niezamówionych.</li>
         </ul>
@@ -340,8 +381,8 @@ const sections: LegalSection[] = [
           działania Serwisu oraz do informacji o istotnych zmianach.
         </p>
         <p>
-          Zakazane jest dostarczanie przez Użytkownika treści o charakterze bezprawnym (art. 8 ust. 3
-          ustawy o świadczeniu usług drogą elektroniczną).
+          Zakazane jest dostarczanie przez Użytkownika treści o charakterze bezprawnym (art. 8 ust.
+          3 ustawy o świadczeniu usług drogą elektroniczną).
         </p>
       </div>
     ),
@@ -353,16 +394,17 @@ const sections: LegalSection[] = [
       <div className="space-y-3">
         <p>
           Serwis oraz jego elementy (oprogramowanie, interfejs, grafiki, logotypy, nazwa{' '}
-          {COMPANY.brand}, treści przygotowane przez Operatora) podlegają ochronie prawnej i stanowią
-          własność Operatora lub jego licencjodawców.
+          {COMPANY.brand}, treści przygotowane przez Operatora) podlegają ochronie prawnej i
+          stanowią własność Operatora lub jego licencjodawców.
         </p>
         <p>
           Operator udziela Użytkownikowi niewyłącznego, nieprzenoszalnego prawa do korzystania z
           Serwisu wyłącznie na własny użytek, w zakresie wynikającym z Regulaminu i wybranego Planu.
         </p>
         <p>
-          Zabronione jest kopiowanie, modyfikowanie, dekompilacja, odsprzedaż lub inne wykorzystywanie
-          Serwisu wykraczające poza dozwolony użytek, bez uprzedniej pisemnej zgody Operatora.
+          Zabronione jest kopiowanie, modyfikowanie, dekompilacja, odsprzedaż lub inne
+          wykorzystywanie Serwisu wykraczające poza dozwolony użytek, bez uprzedniej pisemnej zgody
+          Operatora.
         </p>
       </div>
     ),
@@ -373,10 +415,10 @@ const sections: LegalSection[] = [
     content: (
       <div className="space-y-3">
         <p>
-          Operator dokłada starań, aby Serwis działał poprawnie i nieprzerwanie, jednak nie gwarantuje
-          całkowitego braku przerw — w szczególności wynikających z konserwacji, aktualizacji,
-          działania siły wyższej lub czynników niezależnych od Operatora. Planowane przerwy będą w
-          miarę możliwości zapowiadane.
+          Operator dokłada starań, aby Serwis działał poprawnie i nieprzerwanie, jednak nie
+          gwarantuje całkowitego braku przerw — w szczególności wynikających z konserwacji,
+          aktualizacji, działania siły wyższej lub czynników niezależnych od Operatora. Planowane
+          przerwy będą w miarę możliwości zapowiadane.
         </p>
         <p>
           Operator nie ponosi odpowiedzialności za skutki korzystania z Serwisu niezgodnie z
@@ -389,6 +431,15 @@ const sections: LegalSection[] = [
           dopuszczalnych prawem. Ograniczenia te nie dotyczą Konsumentów ani przedsiębiorców na
           prawach konsumenta i nie wyłączają odpowiedzialności, której zgodnie z prawem wyłączyć nie
           można.
+        </p>
+        <p>
+          <strong>Zastrzeżenie dotyczące zdrowia i bezpieczeństwa:</strong> Serwis i dostępne w nim
+          Treści (np. gry imprezowe) mają charakter wyłącznie rozrywkowy. Operator nie zachęca do
+          nadmiernego spożywania alkoholu ani do podejmowania jakichkolwiek działań ryzykownych lub
+          niezgodnych z prawem. Decyzja o wykonywaniu zadań czy odpowiadaniu na pytania podczas
+          Sesji należy wyłącznie do Użytkownika. Operator nie ponosi żadnej odpowiedzialności za
+          szkody na zdrowiu, mieniu lub szkody niemajątkowe wynikające z zachowania Użytkowników
+          podczas korzystania z Serwisu, zarówno w świecie rzeczywistym, jak i wirtualnym.
         </p>
       </div>
     ),
@@ -423,7 +474,11 @@ const sections: LegalSection[] = [
         <p>
           Administratorem danych osobowych Użytkowników jest Operator. Zasady przetwarzania danych
           oraz prawa osób, których dane dotyczą, opisano w{' '}
-          <a href="/polityka-prywatnosci" className="underline" style={{ color: 'var(--neon-pink)' }}>
+          <a
+            href="/polityka-prywatnosci"
+            className="underline"
+            style={{ color: 'var(--neon-pink)' }}
+          >
             Polityce prywatności
           </a>
           .
@@ -488,9 +543,9 @@ const sections: LegalSection[] = [
       <div className="space-y-3">
         <p>
           W sprawach nieuregulowanych Regulaminem zastosowanie mają przepisy prawa polskiego, w
-          szczególności Kodeksu cywilnego, ustawy o świadczeniu usług drogą elektroniczną oraz ustawy
-          o prawach konsumenta. Wybór prawa polskiego nie pozbawia Konsumenta ochrony wynikającej z
-          bezwzględnie obowiązujących przepisów państwa jego zwykłego pobytu.
+          szczególności Kodeksu cywilnego, ustawy o świadczeniu usług drogą elektroniczną oraz
+          ustawy o prawach konsumenta. Wybór prawa polskiego nie pozbawia Konsumenta ochrony
+          wynikającej z bezwzględnie obowiązujących przepisów państwa jego zwykłego pobytu.
         </p>
         <p>
           Spory z udziałem Konsumenta rozstrzyga sąd właściwy według przepisów ogólnych. Spory z

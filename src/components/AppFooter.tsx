@@ -3,7 +3,10 @@
 import { Zap } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
+import packageJson from '../../package.json'
+
 const FOOTER_PATHS = ['/', '/login']
+const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION || packageJson.version
 
 export function AppFooter() {
   const pathname = usePathname()
@@ -22,9 +25,18 @@ export function AppFooter() {
         className="pointer-events-auto flex flex-wrap items-center justify-center gap-2 text-[11px] tracking-wide"
         style={{ color: 'rgba(255,220,180,0.4)' }}
       >
+        <span
+          className="rounded-full border px-1.5 py-px text-[10px] font-bold"
+          style={{
+            borderColor: 'rgba(255,16,240,0.35)',
+            color: 'rgba(255,84,162,0.85)',
+          }}
+        >
+          18+
+        </span>
         Last Rodeo{' '}
         <span style={{ color: 'rgba(255,220,180,0.22)' }}>
-          v{process.env.NEXT_PUBLIC_APP_VERSION}
+          v{APP_VERSION}
         </span>
         {' · '}
         <a href="https://aknsoftware.com" style={{ color: 'rgba(255,220,180,0.4)' }}>

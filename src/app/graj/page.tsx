@@ -85,10 +85,10 @@ export default function GrajPage() {
             </div>
             <div className="relative z-10 flex-1">
               <p className="text-base font-bold" style={{ color: 'var(--neon-pink)' }}>
-                Dołącz do rozgrywki kowbojko.
+                Dołącz do rozgrywki.
               </p>
               <p className="mt-0.5 text-xs" style={{ color: 'rgba(255,220,180,0.6)' }}>
-                Wpisz PIN lub zeskanuj kod QR.
+                Wpisz PIN lub zeskanuj kod QR od szeryfa.
               </p>
             </div>
             <ChevronRight

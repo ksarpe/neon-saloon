@@ -545,6 +545,9 @@ export default function HostHighLowScreen({
                   team1={team1}
                   team2={team2}
                   onContinue={handleSetupComplete}
+                  onBack={() => {
+                    window.location.href = '/graj/host'
+                  }}
                   loading={hostActionLoading === 'setup'}
                 />
               </motion.div>

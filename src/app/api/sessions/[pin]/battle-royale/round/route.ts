@@ -1,6 +1,6 @@
 ﻿import { NextResponse } from 'next/server'
 
-import { QUESTION_CATEGORIES } from '@/config/games/categories'
+import { getQuestionCategorySelection } from '@/config/games/category-selection'
 import { triggerGameEvent } from '@/lib/appwrite/realtime'
 import { saveSession } from '@/lib/appwrite/sessions'
 import { getLimitedQuestionTotal, getOrderedQuestion } from '@/lib/games/question-limit'
@@ -22,7 +22,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     const br = session.battleRoyaleData
     if (!br) return NextResponse.json({ error: 'Not a battle-royale session' }, { status: 400 })
 
-    const category = QUESTION_CATEGORIES.find((c) => c.id === br.categoryId)
+    const category = getQuestionCategorySelection(br.categoryId)
     if (!category) return NextResponse.json({ error: 'Category not found' }, { status: 400 })
 
     if (br.questionIndex >= getLimitedQuestionTotal(category.questions.length, br.questionOrder)) {

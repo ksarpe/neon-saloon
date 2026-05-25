@@ -50,13 +50,31 @@ const sections: LegalSection[] = [
         <p>W zależności od sposobu korzystania z Serwisu przetwarzamy następujące dane:</p>
         <ul className="space-y-2">
           {[
-            ['Dane konta', 'adres e-mail, opcjonalna nazwa (nick) oraz hasło przechowywane w postaci zahaszowanej'],
-            ['Treści użytkownika', 'pytania, odpowiedzi i ustawienia rozgrywki zapisywane na koncie'],
-            ['Dane rozgrywki', 'pseudonim (nick) i awatar wybierane przez graczy w trakcie sesji — przechowywane tymczasowo'],
-            ['Dane płatności i subskrypcji', 'identyfikatory klienta i subskrypcji u dostawcy płatności, status i okres subskrypcji; pełnych danych karty nie przechowujemy'],
+            [
+              'Dane konta',
+              'adres e-mail, opcjonalna nazwa (nick) oraz hasło przechowywane w postaci zahaszowanej',
+            ],
+            [
+              'Treści użytkownika',
+              'pytania, odpowiedzi i ustawienia rozgrywki zapisywane na koncie',
+            ],
+            [
+              'Dane rozgrywki',
+              'pseudonim (nick) i awatar wybierane przez graczy w trakcie sesji — przechowywane tymczasowo',
+            ],
+            [
+              'Dane płatności i subskrypcji',
+              'identyfikatory klienta i subskrypcji u dostawcy płatności, status i okres subskrypcji; pełnych danych karty nie przechowujemy',
+            ],
             ['Dane rozliczeniowe', 'dane podane do faktury, jeżeli jej zażądasz'],
-            ['Dane techniczne', 'adres IP, typ przeglądarki i urządzenia, logi zdarzeń i błędów — zbierane automatycznie'],
-            ['Dane bezpieczeństwa', 'informacje z mechanizmu ochrony przed botami (Cloudflare Turnstile) oraz dane wykorzystywane do limitowania liczby zapytań'],
+            [
+              'Dane techniczne',
+              'adres IP, typ przeglądarki i urządzenia, logi zdarzeń i błędów — zbierane automatycznie',
+            ],
+            [
+              'Dane bezpieczeństwa',
+              'informacje z mechanizmu ochrony przed botami (Cloudflare Turnstile) oraz dane wykorzystywane do limitowania liczby zapytań',
+            ],
             ['Cookies', 'szczegóły w sekcji „Pliki cookies"'],
           ].map(([term, def]) => (
             <li key={term} className="flex gap-2">
@@ -90,8 +108,9 @@ const sections: LegalSection[] = [
             reklamacji (art. 6 ust. 1 lit. c RODO).
           </li>
           <li>
-            <strong>Bezpieczeństwo Serwisu</strong> — ochrona przed botami i nadużyciami, limitowanie
-            zapytań, diagnostyka błędów (prawnie uzasadniony interes — art. 6 ust. 1 lit. f RODO).
+            <strong>Bezpieczeństwo Serwisu</strong> — ochrona przed botami i nadużyciami,
+            limitowanie zapytań, diagnostyka błędów (prawnie uzasadniony interes — art. 6 ust. 1
+            lit. f RODO).
           </li>
           <li>
             <strong>Komunikacja</strong> — odpowiadanie na zapytania i informowanie o istotnych
@@ -100,6 +119,12 @@ const sections: LegalSection[] = [
           <li>
             <strong>Ustalenie i dochodzenie roszczeń</strong> lub obrona przed nimi (prawnie
             uzasadniony interes — art. 6 ust. 1 lit. f RODO).
+          </li>
+          <li>
+            <strong>Marketing bezpośredni</strong> — wysyłanie informacji o nowościach w Serwisie,
+            nowych taliach kart lub promocjach. Działania te prowadzimy wyłącznie, jeśli wyrazisz na
+            to wyraźną, opcjonalną zgodę, którą możesz w każdej chwili wycofać (podstawa: zgoda —
+            art. 6 ust. 1 lit. a RODO).
           </li>
         </ul>
       </div>
@@ -112,10 +137,22 @@ const sections: LegalSection[] = [
       <div className="space-y-3">
         <p>Przechowujemy dane przez okres niezbędny do realizacji celów, dla których je zebrano:</p>
         <ul className="list-inside list-disc space-y-1.5 pl-2">
-          <li>Dane konta i treści użytkownika — do czasu usunięcia konta przez Użytkownika lub Operatora.</li>
-          <li>Dane sesji rozgrywki — przez czas trwania sesji, usuwane automatycznie po jej zakończeniu (nie dłużej niż 24 godziny).</li>
-          <li>Dane płatności i faktury — przez okres wymagany przepisami podatkowymi (co do zasady 5 lat od końca roku, w którym dokonano transakcji).</li>
-          <li>Dane techniczne i logi bezpieczeństwa — co do zasady do 90 dni, następnie usuwane lub anonimizowane.</li>
+          <li>
+            Dane konta i treści użytkownika — do czasu usunięcia konta przez Użytkownika lub
+            Operatora.
+          </li>
+          <li>
+            Dane sesji rozgrywki — przez czas trwania sesji, usuwane automatycznie po jej
+            zakończeniu (nie dłużej niż 24 godziny).
+          </li>
+          <li>
+            Dane płatności i faktury — przez okres wymagany przepisami podatkowymi (co do zasady 5
+            lat od końca roku, w którym dokonano transakcji).
+          </li>
+          <li>
+            Dane techniczne i logi bezpieczeństwa — co do zasady do 90 dni, następnie usuwane lub
+            anonimizowane.
+          </li>
           <li>Dane przetwarzane na potrzeby roszczeń — do upływu okresów przedawnienia.</li>
         </ul>
         <p>Po upływie okresu przechowywania dane są trwale usuwane lub anonimizowane.</p>
@@ -133,13 +170,37 @@ const sections: LegalSection[] = [
         </p>
         <ul className="space-y-2">
           {[
-            ['Vercel', 'hosting aplikacji i serwerów Serwisu', 'https://vercel.com/legal/privacy-policy'],
-            ['Neon', 'hostowana baza danych PostgreSQL (dane konta, treści użytkownika)', 'https://neon.tech/privacy-policy'],
-            ['Appwrite Cloud (Frankfurt, UE)', 'infrastruktura sesji rozgrywki w czasie rzeczywistym', 'https://appwrite.io/privacy'],
+            [
+              'Vercel',
+              'hosting aplikacji i serwerów Serwisu',
+              'https://vercel.com/legal/privacy-policy',
+            ],
+            [
+              'Neon',
+              'hostowana baza danych PostgreSQL (dane konta, treści użytkownika)',
+              'https://neon.tech/privacy-policy',
+            ],
+            [
+              'Appwrite Cloud (Frankfurt, UE)',
+              'infrastruktura sesji rozgrywki w czasie rzeczywistym',
+              'https://appwrite.io/privacy',
+            ],
             ['Stripe', 'obsługa płatności i subskrypcji', 'https://stripe.com/privacy'],
-            ['Resend (Irlandia, UE)', 'wysyłka wiadomości e-mail (np. reset hasła)', 'https://resend.com/legal/privacy-policy'],
-            ['Upstash (Frankfurt, UE)', 'baza Redis do limitowania liczby zapytań (m.in. adres IP)', 'https://upstash.com/trust/privacy.pdf'],
-            ['Cloudflare', 'ochrona przed botami (Turnstile)', 'https://www.cloudflare.com/privacypolicy/'],
+            [
+              'Resend (Irlandia, UE)',
+              'wysyłka wiadomości e-mail transakcyjnych (np. reset hasła) oraz powiadomień marketingowych, o ile wyrazisz na nie zgodę',
+              'https://resend.com/legal/privacy-policy',
+            ],
+            [
+              'Upstash (Frankfurt, UE)',
+              'baza Redis do limitowania liczby zapytań (m.in. adres IP)',
+              'https://upstash.com/trust/privacy.pdf',
+            ],
+            [
+              'Cloudflare',
+              'ochrona przed botami (Turnstile)',
+              'https://www.cloudflare.com/privacypolicy/',
+            ],
           ].map(([term, def, url]) => (
             <li key={term} className="flex gap-2">
               <span className="shrink-0 font-bold" style={{ color: 'var(--sheriff-pink)' }}>
@@ -200,14 +261,16 @@ const sections: LegalSection[] = [
           e-maili (Resend, Irlandia) odbywają się w EOG.
         </p>
         <p>
-          Część dostawców to jednak podmioty z USA lub korzystające z globalnej infrastruktury (m.in.
-          Stripe, Cloudflare, Vercel, Neon), co może wiązać się z przekazaniem danych poza EOG. W
-          takich przypadkach przekazanie odbywa się na podstawie odpowiednich zabezpieczeń
+          Część dostawców to jednak podmioty z USA lub korzystające z globalnej infrastruktury
+          (m.in. Stripe, Cloudflare, Vercel, Neon), co może wiązać się z przekazaniem danych poza
+          EOG. W takich przypadkach przekazanie odbywa się na podstawie odpowiednich zabezpieczeń
           przewidzianych w RODO, w szczególności:
         </p>
         <ul className="list-inside list-disc space-y-1 pl-2">
           <li>standardowych klauzul umownych (SCC) zatwierdzonych przez Komisję Europejską, lub</li>
-          <li>uczestnictwa dostawcy w programie Data Privacy Framework (EU–US), jeśli ma zastosowanie.</li>
+          <li>
+            uczestnictwa dostawcy w programie Data Privacy Framework (EU–US), jeśli ma zastosowanie.
+          </li>
         </ul>
         <p>
           Możesz uzyskać więcej informacji o stosowanych zabezpieczeniach, kontaktując się pod
@@ -227,7 +290,10 @@ const sections: LegalSection[] = [
         </p>
         <ul className="space-y-2">
           {[
-            ['Niezbędne', 'wymagane do działania Serwisu — uwierzytelnianie, utrzymanie sesji, bezpieczeństwo (m.in. Cloudflare Turnstile); nie wymagają zgody'],
+            [
+              'Niezbędne',
+              'wymagane do działania Serwisu — uwierzytelnianie, utrzymanie sesji, bezpieczeństwo (m.in. Cloudflare Turnstile); nie wymagają zgody',
+            ],
             ['Funkcjonalne', 'zapamiętują preferencje Użytkownika, np. ustawienia muzyki w grze'],
           ].map(([term, def]) => (
             <li key={term} className="flex gap-2">
@@ -288,14 +354,15 @@ const sections: LegalSection[] = [
           kierować do inspektora ochrony danych Cloudflare: dpo@cloudflare.com.
         </p>
         <p>
-          Obecnie Serwis <strong>nie korzysta z analitycznych ani marketingowych narzędzi
-          śledzących</strong> (np. Google Analytics) i nie profiluje Użytkowników w celach
-          reklamowych. W razie wprowadzenia takich narzędzi w przyszłości zaktualizujemy niniejszą
-          Politykę i — jeśli będzie to wymagane — poprosimy o zgodę.
+          Obecnie Serwis{' '}
+          <strong>nie korzysta z analitycznych ani marketingowych narzędzi śledzących</strong> (np.
+          Google Analytics) i nie profiluje Użytkowników w celach reklamowych. W razie wprowadzenia
+          takich narzędzi w przyszłości zaktualizujemy niniejszą Politykę i — jeśli będzie to
+          wymagane — poprosimy o zgodę.
         </p>
         <p>
-          Ustawieniami cookies możesz zarządzać w swojej przeglądarce. Wyłączenie cookies niezbędnych
-          może uniemożliwić prawidłowe działanie Serwisu.
+          Ustawieniami cookies możesz zarządzać w swojej przeglądarce. Wyłączenie cookies
+          niezbędnych może uniemożliwić prawidłowe działanie Serwisu.
         </p>
       </div>
     ),
@@ -336,7 +403,8 @@ const sections: LegalSection[] = [
             <strong>przenoszenia danych</strong> w ustrukturyzowanym, powszechnie używanym formacie,
           </li>
           <li>
-            <strong>sprzeciwu</strong> wobec przetwarzania opartego na prawnie uzasadnionym interesie,
+            <strong>sprzeciwu</strong> wobec przetwarzania opartego na prawnie uzasadnionym
+            interesie,
           </li>
           <li>
             <strong>cofnięcia zgody</strong> w dowolnym momencie, jeżeli przetwarzanie odbywa się na
@@ -378,15 +446,19 @@ const sections: LegalSection[] = [
     ),
   },
   {
-    id: 'dzieci',
-    heading: 'Dane dzieci',
+    id: 'wiek-uzytkownikow',
+    heading: 'Wiek użytkowników',
     content: (
       <div className="space-y-3">
         <p>
-          Konta i funkcje płatne przeznaczone są dla osób pełnoletnich. Serwis nie jest kierowany do
-          dzieci i nie zbieramy świadomie danych osób poniżej 16. roku życia bez zgody opiekuna.
-          Jeżeli uznasz, że przetwarzamy dane dziecka bez właściwej podstawy, skontaktuj się z nami —
-          niezwłocznie je usuniemy.
+          Ze względu na charakter Serwisu i zawarte w nim treści, konta oraz funkcje rozgrywki
+          przeznaczone są <strong>wyłącznie dla osób pełnoletnich (powyżej 18. roku życia)</strong>.
+        </p>
+        <p>
+          Nie zbieramy świadomie danych osób niepełnoletnich. Jeżeli jesteś rodzicem lub opiekunem i
+          dowiesz się, że osoba niepełnoletnia przekazała nam swoje dane, skontaktuj się z nami pod
+          adresem <strong>{COMPANY.email}</strong> — niezwłocznie zablokujemy takie konto i usuniemy
+          powiązane z nim dane.
         </p>
       </div>
     ),

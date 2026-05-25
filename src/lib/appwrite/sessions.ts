@@ -148,6 +148,10 @@ export type SessionData = {
 }
 import { AppwriteException, Models } from 'node-appwrite'
 
+import { appendEventsInTransaction } from './realtime'
+import type { SessionEvent } from './realtime'
+import { retryOnConflict } from './retry'
+
 const DEFAULT_SESSION_TTL_HOURS = 24
 
 // ─── Status mapping ──────────────────────────────────────────────────────────
@@ -328,38 +332,79 @@ export async function updateSession(
   pin: string,
   patch: Partial<Omit<SessionData, 'pin'>>
 ): Promise<SessionData | null> {
-  const existing = await getSession(pin)
-  if (!existing) return null
-  const updated = { ...existing, ...patch }
-  await saveSession(updated)
-  return updated
+  return withSessionTransaction(async (store) => {
+    const existing = await store.getSession(pin)
+    if (!existing) return null
+    const updated = { ...existing, ...patch }
+    await store.saveSession(updated)
+    return updated
+  })
 }
 
 export async function withSessionTransaction<T>(
   callback: (store: {
     getSession: (pin: string) => Promise<SessionData | null>
     saveSession: (data: SessionData) => Promise<void>
+    /**
+     * Buffer a realtime event to broadcast. It is written to the session row's
+     * `events` column inside THIS transaction (after the callback returns), so
+     * the state change and its event commit atomically and are conflict-detected
+     * together — the key to not losing events when many players act at once.
+     */
+    appendEvent: (pin: string, event: SessionEvent) => void
   }) => Promise<T>
 ): Promise<T> {
-  const db = getTablesDB()
-  const transaction = await db.createTransaction()
-  const transactionId = transaction.$id
+  // Retry the whole transaction with jittered backoff: concurrent callers (e.g.
+  // many players joining/voting at once) contend on the same session row, and
+  // without retries the losers throw — dropping a join or a vote. Each retry
+  // re-runs the callback against a fresh transaction, so the read-modify-write
+  // is recomputed on the latest committed state (no stale writes, no dupes).
+  //
+  // This is a heavier critical section than a single event append (transaction
+  // create + read + write + commit), so it gets a larger attempt budget and a
+  // wider backoff window to spread ~10 simultaneous writers far enough apart.
+  return retryOnConflict(
+    async () => {
+      const db = getTablesDB()
+      const transaction = await db.createTransaction()
+      const transactionId = transaction.$id
+      // Fresh per attempt: a retry re-runs the callback and re-buffers events.
+      const pendingEvents: Array<{ pin: string; event: SessionEvent }> = []
 
-  try {
-    const result = await callback({
-      getSession: (pin) => getSession(pin, transactionId),
-      saveSession: (data) => saveSession(data, transactionId),
-    })
-    await db.updateTransaction(transactionId, true)
-    return result
-  } catch (err) {
-    try {
-      await db.updateTransaction(transactionId, false, true)
-    } catch {
-      // Ignore rollback errors so callers receive the original failure.
-    }
-    throw err
-  }
+      try {
+        const result = await callback({
+          getSession: (pin) => getSession(pin, transactionId),
+          saveSession: (data) => saveSession(data, transactionId),
+          appendEvent: (pin, event) => {
+            pendingEvents.push({ pin, event })
+          },
+        })
+
+        // Flush buffered events within the same transaction so state + events
+        // commit atomically. Group by pin (one session per tx in practice).
+        const eventsByPin = new Map<string, SessionEvent[]>()
+        for (const { pin, event } of pendingEvents) {
+          const list = eventsByPin.get(pin) ?? []
+          list.push(event)
+          eventsByPin.set(pin, list)
+        }
+        for (const [pin, events] of eventsByPin) {
+          await appendEventsInTransaction(transactionId, pin, events)
+        }
+
+        await db.updateTransaction(transactionId, true)
+        return result
+      } catch (err) {
+        try {
+          await db.updateTransaction(transactionId, false, true)
+        } catch {
+          // Ignore rollback errors so callers receive the original failure.
+        }
+        throw err
+      }
+    },
+    { maxAttempts: 20, baseDelayMs: 50, maxDelayMs: 1500 }
+  )
 }
 
 /**

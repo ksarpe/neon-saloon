@@ -1,6 +1,7 @@
 // Server-only: re-exports server.ts which uses APPWRITE_API_KEY.
 import { AppwriteException } from 'node-appwrite'
 
+import { isRetryableAppwriteError } from './retry'
 import { APPWRITE_DATABASE_ID, APPWRITE_TABLE_GAME_SESSIONS, getTablesDB } from './server'
 import type { SessionRow } from './sessions'
 
@@ -25,9 +26,10 @@ import type { SessionRow } from './sessions'
 //     grow unbounded for long-running sessions.
 
 const EVENTS_KEEP = 50
-const EVENT_APPEND_RETRIES = 3
+const EVENT_APPEND_ATTEMPTS = 12
 
 type StoredEvent = {
+  id: string
   seq: number
   type: string
   payload: unknown
@@ -40,6 +42,8 @@ function parseStoredEvents(value: string | undefined): StoredEvent[] {
 
 function nextStoredEvent(existing: StoredEvent[], event: SessionEvent): StoredEvent {
   return {
+    // Unique tag so we can verify our append actually survived (see below).
+    id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`,
     seq: existing.length > 0 ? Math.max(...existing.map((e) => e.seq)) + 1 : 0,
     type: event.event,
     payload: event.data,
@@ -51,21 +55,32 @@ function isMissingRowError(err: unknown) {
   return err instanceof AppwriteException && err.code === 404
 }
 
-function retryDelay(attempt: number) {
-  return new Promise((resolve) => setTimeout(resolve, 35 * (attempt + 1)))
+function appendBackoff(attempt: number) {
+  const cap = Math.min(500, 25 * 2 ** attempt)
+  return new Promise((resolve) => setTimeout(resolve, Math.random() * cap)) // full jitter
 }
 
 /**
  * Append an event to the session's `events` array on the `game-sessions` row.
  * Subscribers to the per-row Realtime channel receive the row update and
  * dispatch the new event(s) to their handlers.
+ *
+ * Concurrency note: this is a read-modify-write on a single hot row. Appwrite's
+ * transaction does NOT reliably reject a *concurrent* read-modify-write — two
+ * writers can each read the same baseline, append their event, and both commit,
+ * silently clobbering one of the events (no error thrown, so a plain retry never
+ * fires). We therefore tag each event with a unique id and, after committing,
+ * re-read the row to confirm our event survived; if it was clobbered we re-read
+ * fresh state and try again with jittered backoff. This converges a burst of
+ * simultaneous players (e.g. 10 voting at once) without dropping events.
  */
 export async function triggerGameEvent(pin: string, event: SessionEvent): Promise<void> {
   const db = getTablesDB()
 
-  for (let attempt = 0; attempt < EVENT_APPEND_RETRIES; attempt++) {
+  for (let attempt = 0; attempt < EVENT_APPEND_ATTEMPTS; attempt++) {
     const transaction = await db.createTransaction()
     const transactionId = transaction.$id
+    let appended: StoredEvent
 
     try {
       const row = await db.getRow<SessionRow>(
@@ -76,23 +91,19 @@ export async function triggerGameEvent(pin: string, event: SessionEvent): Promis
         transactionId
       )
       const existing = parseStoredEvents(row.events)
-      const next = nextStoredEvent(existing, event)
-      const updated = [...existing, next].slice(-EVENTS_KEEP)
+      appended = nextStoredEvent(existing, event)
+      const updated = [...existing, appended].slice(-EVENTS_KEEP)
 
       await db.updateRow<SessionRow>(
         APPWRITE_DATABASE_ID,
         APPWRITE_TABLE_GAME_SESSIONS,
         pin,
-        {
-          events: JSON.stringify(updated),
-          updatedAt: next.ts,
-        },
+        { events: JSON.stringify(updated), updatedAt: appended.ts },
         undefined,
         transactionId
       )
 
       await db.updateTransaction(transactionId, true)
-      return
     } catch (err) {
       try {
         await db.updateTransaction(transactionId, false, true)
@@ -105,15 +116,73 @@ export async function triggerGameEvent(pin: string, event: SessionEvent): Promis
         console.warn(`[Appwrite RT] triggerGameEvent: row ${pin} not found, skipping`)
         return
       }
-
-      if (attempt < EVENT_APPEND_RETRIES - 1) {
-        await retryDelay(attempt)
-        continue
-      }
-
-      throw err
+      if (!isRetryableAppwriteError(err) || attempt === EVENT_APPEND_ATTEMPTS - 1) throw err
+      await appendBackoff(attempt)
+      continue
     }
+
+    // Verify our event actually survived a possible concurrent clobber.
+    try {
+      const check = await db.getRow<SessionRow>(
+        APPWRITE_DATABASE_ID,
+        APPWRITE_TABLE_GAME_SESSIONS,
+        pin
+      )
+      if (parseStoredEvents(check.events).some((e) => e.id === appended.id)) return
+    } catch (err) {
+      if (isMissingRowError(err)) return
+      // Verify read failed transiently — fall through and retry to be safe.
+    }
+
+    if (attempt === EVENT_APPEND_ATTEMPTS - 1) {
+      console.warn(
+        `[Appwrite RT] event "${event.event}" for ${pin} was clobbered after ${EVENT_APPEND_ATTEMPTS} attempts`
+      )
+      return
+    }
+    await appendBackoff(attempt)
   }
+}
+
+/**
+ * Append events to the session row's `events` column INSIDE an existing
+ * transaction (identified by `transactionId`). Used by withSessionTransaction so
+ * a player's state change and its broadcast event commit atomically as one unit.
+ *
+ * This is the concurrency-safe path: because the event rides on the same
+ * transaction as the state write, Appwrite conflict-detects them together, and
+ * the caller's retry re-runs the whole read-modify-write on fresh state — so a
+ * burst of simultaneous players can't clobber each other's events.
+ */
+export async function appendEventsInTransaction(
+  transactionId: string,
+  pin: string,
+  events: SessionEvent[]
+): Promise<void> {
+  if (events.length === 0) return
+
+  const db = getTablesDB()
+  const row = await db.getRow<SessionRow>(
+    APPWRITE_DATABASE_ID,
+    APPWRITE_TABLE_GAME_SESSIONS,
+    pin,
+    undefined,
+    transactionId
+  )
+
+  let stored = parseStoredEvents(row.events)
+  for (const event of events) {
+    stored = [...stored, nextStoredEvent(stored, event)]
+  }
+
+  await db.updateRow<SessionRow>(
+    APPWRITE_DATABASE_ID,
+    APPWRITE_TABLE_GAME_SESSIONS,
+    pin,
+    { events: JSON.stringify(stored.slice(-EVENTS_KEEP)), updatedAt: new Date().toISOString() },
+    undefined,
+    transactionId
+  )
 }
 
 /**

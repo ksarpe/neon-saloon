@@ -11,20 +11,35 @@ import { CARD_H, CARD_W } from './types'
 interface Props {
   card: CardLike
   cardsLeft?: number
+  textScale?: number
   isFlipped: boolean
   isRevealed?: boolean
+  maxWidth?: number
   onFlip: () => void
+  onFlippedClick?: () => void
 }
 
 export function GameCardStack({
   card,
   cardsLeft = 4,
+  textScale = 1,
   isFlipped,
   isRevealed = false,
+  maxWidth,
   onFlip,
+  onFlippedClick,
 }: Props) {
   const shadows = Math.min((cardsLeft ?? 1) - 1, 3)
   const stackPadding = 20
+  const stackWidth = maxWidth ?? CARD_W + stackPadding
+  const promptFontSize = `${1.125 * textScale}rem`
+  const promptFontSizeSm = `${1.25 * textScale}rem`
+  const answerFontSize = `${1 * textScale}rem`
+  const answerFontSizeSm = `${1.125 * textScale}rem`
+  const brandFontSize = `${2.25 * textScale}rem`
+  const brandFontSizeSm = `${3 * textScale}rem`
+  const backLabelFontSize = `${0.875 * textScale}rem`
+  const backLabelFontSizeSm = `${1 * textScale}rem`
   // Różne grafiki dla całego decku (aktywna + cienie), stabilnie po id karty.
   const deckBgs = pickDeckBackgrounds(card.id, shadows + 1)
   const activeBg = deckBgs[0]
@@ -35,7 +50,7 @@ export function GameCardStack({
       className="relative flex items-center justify-center"
       style={{
         perspective: '1200px',
-        width: `min(calc(100vw - 32px), ${CARD_W + stackPadding}px)`,
+        width: `min(calc(100vw - 32px), ${stackWidth}px)`,
         aspectRatio: `${CARD_W + stackPadding} / ${CARD_H + stackPadding}`,
       }}
     >
@@ -73,7 +88,7 @@ export function GameCardStack({
           y: isFlipped || isRevealed ? 8 : 0,
         }}
         transition={{ type: 'spring', stiffness: 180, damping: 22 }}
-        onClick={!isFlipped ? onFlip : undefined}
+        onClick={isFlipped ? onFlippedClick : onFlip}
         whileHover={!isFlipped ? { rotateX: 14, rotateZ: -4, scale: 1.04, y: -3 } : {}}
       >
         {/* BACK face */}
@@ -81,9 +96,10 @@ export function GameCardStack({
           {!isRevealed ? (
             <div className="flex h-full w-full items-center justify-center">
               <p
-                className="text-sm font-bold tracking-[0.25em] uppercase sm:text-base"
+                className="font-bold tracking-[0.25em] uppercase"
                 style={{
                   color: 'var(--neon-pink)',
+                  fontSize: `clamp(${backLabelFontSize}, 3vw, ${backLabelFontSizeSm})`,
                   textShadow: '0 0 12px var(--neon-pink), 0 0 30px rgba(221,84,162,0.5)',
                 }}
               >
@@ -95,15 +111,19 @@ export function GameCardStack({
               <p
                 className={
                   hasAnswer
-                    ? 'text-base leading-snug font-bold sm:text-lg'
-                    : 'text-4xl leading-none font-black sm:text-5xl'
+                    ? 'leading-snug font-bold'
+                    : 'leading-none font-black'
                 }
                 style={
                   hasAnswer
-                    ? { color: '#1a1a1a' }
+                    ? {
+                        color: '#1a1a1a',
+                        fontSize: `clamp(${answerFontSize}, 4.2vw, ${answerFontSizeSm})`,
+                      }
                     : {
                         color: 'var(--neon-pink)',
                         fontFamily: 'var(--font-logo)',
+                        fontSize: `clamp(${brandFontSize}, 7vw, ${brandFontSizeSm})`,
                         textShadow:
                           '0 0 12px var(--neon-pink), 0 0 30px rgba(221,84,162,0.55)',
                       }
@@ -118,7 +138,13 @@ export function GameCardStack({
         {/* FRONT face */}
         <CardFace flipped background={activeBg}>
           <div className="flex h-full w-full flex-col items-center justify-center p-5 text-center sm:p-7">
-            <p className="text-lg leading-snug font-bold sm:text-xl" style={{ color: '#1a1a1a' }}>
+            <p
+              className="leading-snug font-bold"
+              style={{
+                color: '#1a1a1a',
+                fontSize: `clamp(${promptFontSize}, 4.8vw, ${promptFontSizeSm})`,
+              }}
+            >
               {card.description}
             </p>
           </div>

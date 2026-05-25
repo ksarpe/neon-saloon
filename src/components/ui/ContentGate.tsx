@@ -137,7 +137,7 @@ export function ProModal({ onClose }: { onClose: () => void }) {
           <h2 className="shimmer-text text-3xl tracking-wide">Odblokuj Last Rodeo PRO</h2>
           <p className="text-text-muted mt-2 max-w-2xl text-sm leading-relaxed">
             Wybierz dostęp miesięczny albo jednorazowy plan dożywotni. Oba odblokowują tryby
-            premium, własne wyzwania Nigdy przenigdy i dodatkowe talie.
+            premium, talie Pikantne i Bez cenzury w Nigdy przenigdy oraz własne wyzwania.
           </p>
         </div>
 
@@ -243,7 +243,7 @@ export function ProModal({ onClose }: { onClose: () => void }) {
             >
               <p className="font-bold">Darmowy</p>
               <p className="text-text-muted mt-1 text-xs leading-relaxed">
-                Podstawowe tryby i standardowe talie.
+                Podstawowe tryby i klasyczne talie.
               </p>
             </div>
             <div
@@ -257,8 +257,8 @@ export function ProModal({ onClose }: { onClose: () => void }) {
                 PRO
               </p>
               <p className="text-text-primary mt-1 text-xs leading-relaxed">
-                Wszystkie tryby premium, pełne paczki kart i przyszłe rozszerzenia bez kolejnych
-                blokad w aplikacji.
+                Wszystkie tryby premium, najostrzejsze talie Nigdy przenigdy i przyszłe
+                rozszerzenia bez kolejnych blokad w aplikacji.
               </p>
             </div>
           </div>
@@ -294,8 +294,8 @@ const PLANS: Array<{
     cta: 'Wybierz miesięczny',
     features: [
       'Mniej czy więcej, Dead or alive i kolejne tryby premium',
+      'Talie Pikantne i Bez cenzury w Nigdy przenigdy',
       'Własne wyzwania Nigdy przenigdy',
-      'Pełne paczki kart oraz pytań',
       'Dostęp do nowych rozszerzeń PRO',
     ],
   },
@@ -310,6 +310,7 @@ const PLANS: Array<{
     cta: 'Wybierz dożywotni',
     features: [
       'Stały dostęp do obecnych trybów PRO',
+      'Talie Pikantne i Bez cenzury w Nigdy przenigdy',
       'Własne wyzwania Nigdy przenigdy',
       'Przyszłe paczki i rozszerzenia premium',
       'Brak cyklicznego rozliczania',

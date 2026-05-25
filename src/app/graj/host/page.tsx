@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
+import { AgeNotice } from '@/components/ui/AgeNotice'
 import { BotProtection, isBotProtectionConfigured } from '@/components/ui/BotProtection'
 import { Button } from '@/components/ui/button'
 import { ProModal } from '@/components/ui/ContentGate'
@@ -231,7 +232,7 @@ export default function HostSetupPage() {
   }
 
   return (
-    <div className="flex min-h-dvh w-full flex-col items-center justify-center overflow-y-auto p-6">
+    <div className="flex min-h-dvh w-full flex-col items-center justify-start overflow-y-auto px-6 pt-20 pb-6 sm:justify-center sm:p-6">
       <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col gap-8 sm:gap-10">
         {/* Game mode selector */}
         <motion.div
@@ -352,6 +353,7 @@ export default function HostSetupPage() {
               <>Otwórz salon na dzikim zachodzie</>
             )}
           </Button>
+          <AgeNotice actionLabel="Otwórz salon" className="mx-auto mt-3 max-w-xl" />
           {!creating && !selectedMode && (
             <motion.p
               initial={{ opacity: 0 }}

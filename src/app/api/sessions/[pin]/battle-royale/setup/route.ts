@@ -1,7 +1,7 @@
 ﻿import { NextResponse } from 'next/server'
 
 import { BR_TIMER_SECONDS } from '@/config/game'
-import { QUESTION_CATEGORIES } from '@/config/games/categories'
+import { getQuestionCategorySelection } from '@/config/games/category-selection'
 import { saveSession } from '@/lib/appwrite/sessions'
 import { createQuestionOrder } from '@/lib/games/question-limit'
 import { readLimitedJson, requiredString, validationErrorResponse } from '@/lib/request-validation'
@@ -29,7 +29,7 @@ export async function POST(request: Request, { params }: RouteContext) {
       body.timerDuration <= 60
         ? body.timerDuration
         : BR_TIMER_SECONDS
-    const category = QUESTION_CATEGORIES.find((c) => c.id === categoryId)
+    const category = getQuestionCategorySelection(categoryId)
     if (!category) return NextResponse.json({ error: 'Invalid category' }, { status: 400 })
     const questionOrder = createQuestionOrder(category.questions.length)
 

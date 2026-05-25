@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { triggerGameEvent as triggerSessionEvent } from '@/lib/appwrite/realtime'
-import { getSession, saveSession } from '@/lib/appwrite/sessions'
+import { withSessionTransaction } from '@/lib/appwrite/sessions'
 import {
   optionalString,
   readLimitedJson,
@@ -21,35 +21,49 @@ export async function POST(request: Request, { params }: RouteContext) {
     const playerId = requiredString(body.playerId, 'playerId', 80)
     const playerSecret = optionalString(body.playerSecret, 'playerSecret', 256) ?? undefined
 
-    const session = await getSession(pin)
-    if (!session) return NextResponse.json({ ok: true })
-    const player = getAuthorizedPlayer(request, session, playerId, playerSecret)
-    if (!player) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    const result = await withSessionTransaction(async (store) => {
+      const session = await store.getSession(pin)
+      if (!session) return { alreadyGone: true }
 
-    const rateLimitResponse = await enforceSessionActionRateLimit(
-      'playerLeave',
-      pin,
-      player.playerId
-    )
-    if (rateLimitResponse) return rateLimitResponse
+      const player = getAuthorizedPlayer(request, session, playerId, playerSecret)
+      if (!player) {
+        return { response: NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
+      }
 
-    const teamId = player.teamId
-    const teamName = player.teamName
-    session.players = session.players.filter((p) => p.playerId !== playerId)
-    await saveSession(session)
+      const rateLimitResponse = await enforceSessionActionRateLimit(
+        'playerLeave',
+        pin,
+        player.playerId
+      )
+      if (rateLimitResponse) return { response: rateLimitResponse }
+
+      const teamId = player.teamId
+      const teamName = player.teamName
+      session.players = session.players.filter((p) => p.playerId !== playerId)
+      await store.saveSession(session)
+
+      return {
+        teamId,
+        teamName,
+        memberCount: teamId ? session.players.filter((p) => p.teamId === teamId).length : 0,
+      }
+    })
+
+    if ('response' in result) return result.response
+    if ('alreadyGone' in result) return NextResponse.json({ ok: true })
 
     await triggerSessionEvent(pin, {
       event: 'player-left',
       data: { playerId },
     })
 
-    if (teamId) {
+    if (result.teamId) {
       await triggerSessionEvent(pin, {
         event: 'team-updated',
         data: {
-          teamId,
-          teamName: teamName ?? '',
-          memberCount: session.players.filter((p) => p.teamId === teamId).length,
+          teamId: result.teamId,
+          teamName: result.teamName ?? '',
+          memberCount: result.memberCount,
         },
       })
     }
