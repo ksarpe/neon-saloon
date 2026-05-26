@@ -39,8 +39,10 @@ export function usePartyConnection(options: UsePartyConnectionOptions): UseParty
   const connectionRef = useRef<PartyConnection | null>(null)
   const handlersRef = useRef(handlers)
   const snapshotCbRef = useRef(onSnapshot)
-  handlersRef.current = handlers
-  snapshotCbRef.current = onSnapshot
+  useEffect(() => {
+    handlersRef.current = handlers
+    snapshotCbRef.current = onSnapshot
+  }, [handlers, onSnapshot])
 
   useEffect(() => {
     if (!pin || !partyToken || !role) {

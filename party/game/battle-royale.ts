@@ -17,7 +17,7 @@ import {
   getLimitedQuestionTotal,
   getOrderedQuestion,
 } from '../../src/lib/games/question-limit'
-import type { BRStoredAnswer, BattleRoyaleData, RoomState } from '../state'
+import type { BattleRoyaleData, BRStoredAnswer, RoomState } from '../state'
 import type { ReducerResult } from './classic'
 
 const DEFAULT_TIMER_SECONDS = 20

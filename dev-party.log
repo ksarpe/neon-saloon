@@ -41,9 +41,11 @@ Loading environment variables from .env
 
 [2K[1A[2K[G[pk:inf] Updated and ready on http://0.0.0.0:63021
 
-pk:inf] GET /parties/main/209641 101 Switching Protocols (9ms)
+[2K[1A[2K[GBuild succeeded, starting server...
 
-[2K[1A[2K[G[pk:inf] GET /parties/main/490761 101 Switching Protocols (10ms)
+[2K[1A[2K[G[pk:inf] Updated and ready on http://0.0.0.0:63021
+
+itching Protocols (10ms)
 
 [2K[1A[2K[G[pk:inf] GET /parties/main/957003 101 Switching Protocols (8ms)
 
@@ -708,6 +710,10 @@ pk:inf] GET /parties/main/209641 101 Switching Protocols (9ms)
 [2K[1A[2K[G[pk:inf] GET /parties/main/290317 101 Switching Protocols (3ms)
 
 [2K[1A[2K[G[pk:inf] GET /parties/main/290317 200 OK (1ms)
+
+[2K[1A[2K[GBuild succeeded, starting server...
+
+[2K[1A[2K[G[pk:inf] Updated and ready on http://0.0.0.0:1999
 
 [2K[1A[2K[GBuild succeeded, starting server...
 

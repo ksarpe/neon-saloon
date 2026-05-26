@@ -7,11 +7,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { BattleRoyaleGameOverPanel } from '@/components/BattleRoyale/BattleRoyaleGameOverPanel'
 import { LobbyView } from '@/components/Host/LobbyView'
 import { SetupView } from '@/components/Host/SetupView'
+import { CategoryPicker } from '@/components/HostSetup/HostPickers'
 import { PlayerAvatar } from '@/components/PlayerAvatar'
 import { Button } from '@/components/ui/button'
 import { BR_AUTO_NEXT_SECONDS } from '@/config/game'
-import { ALL_CATEGORIES_ID, PREMIUM_CATEGORY_IDS } from '@/config/games/category-selection'
-import { CategoryPicker } from '@/components/HostSetup/HostPickers'
+import { PREMIUM_CATEGORY_IDS } from '@/config/games/category-selection'
 import { useAutoCountdown } from '@/hooks/useAutoCountdown'
 import { usePartyConnection } from '@/hooks/usePartyConnection'
 import { useBackButton } from '@/lib/back-button-context'
@@ -114,7 +114,7 @@ export function PartyBattleRoyaleHost({ pin, partyToken }: Props) {
     () => () => {
       if (timerRef.current) clearInterval(timerRef.current)
     },
-    [],
+    []
   )
 
   useEffect(() => {
@@ -165,7 +165,7 @@ export function PartyBattleRoyaleHost({ pin, partyToken }: Props) {
         setPhase('gameover')
       },
     }),
-    [startTimer],
+    [startTimer]
   )
 
   const { send, snapshot } = usePartyConnection({ pin, partyToken, role: 'host', handlers })
@@ -235,7 +235,7 @@ export function PartyBattleRoyaleHost({ pin, partyToken }: Props) {
         setBrSetupLoading(false)
       }
     },
-    [send, brSetupLoading, timerDuration],
+    [send, brSetupLoading, timerDuration]
   )
 
   const handleRevealRef = useRef<(() => Promise<void>) | null>(null)
@@ -285,7 +285,7 @@ export function PartyBattleRoyaleHost({ pin, partyToken }: Props) {
     } finally {
       setLoading(false)
     }
-  }, [loading, send, timerDuration, startTimer])
+  }, [loading, send])
   useEffect(() => {
     handleNextRoundRef.current = handleNextRound
   }, [handleNextRound])
@@ -780,7 +780,7 @@ export function PartyBattleRoyaleHost({ pin, partyToken }: Props) {
                             <span className="text-[#ffe6c7]">
                               {revealData.eliminatedThisRound
                                 .map(
-                                  (id) => players.find((p) => p.playerId === id)?.playerName ?? id,
+                                  (id) => players.find((p) => p.playerId === id)?.playerName ?? id
                                 )
                                 .join(', ')}
                             </span>
@@ -822,9 +822,7 @@ export function PartyBattleRoyaleHost({ pin, partyToken }: Props) {
                                     backgroundColor: answer.isEliminated
                                       ? 'rgba(239,68,68,0.18)'
                                       : 'rgba(255,220,180,0.08)',
-                                    color: answer.isEliminated
-                                      ? '#f87171'
-                                      : 'var(--sheriff-pink)',
+                                    color: answer.isEliminated ? '#f87171' : 'var(--sheriff-pink)',
                                     fontFamily: 'var(--font-app)',
                                   }}
                                 >

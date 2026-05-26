@@ -3,9 +3,8 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { Check, Clock3 } from 'lucide-react'
 
-import { PlayerAvatar } from '@/components/PlayerAvatar'
-
 import { GameCardStack } from '@/components/Card'
+import { PlayerAvatar } from '@/components/PlayerAvatar'
 import type { VoteCastPayload } from '@/lib/game-types'
 import type { GameCard } from '@/lib/store'
 
