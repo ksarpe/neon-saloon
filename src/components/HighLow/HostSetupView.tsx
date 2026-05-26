@@ -6,7 +6,7 @@ import { useState } from 'react'
 
 import { IdentityForm } from '@/components/IdentityForm'
 import { Button } from '@/components/ui/button'
-import type { SessionTeam } from '@/lib/appwrite/sessions'
+import type { SessionTeam } from '@/lib/session-types'
 
 interface Props {
   team1: SessionTeam

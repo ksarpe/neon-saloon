@@ -6,7 +6,7 @@ import { Loader2, Play } from 'lucide-react'
 import { JoinQrCode } from '@/components/JoinQrCode'
 import { PlayerAvatar } from '@/components/PlayerAvatar'
 import { Button } from '@/components/ui/button'
-import type { SessionPlayer, SessionTeam } from '@/lib/appwrite/sessions'
+import type { SessionPlayer, SessionTeam } from '@/lib/session-types'
 
 interface Props {
   pin: string

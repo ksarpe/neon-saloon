@@ -283,7 +283,7 @@ test.describe("PartyKit — tryb classic @party", () => {
       await host.start({ deck: makeDeck(1) });
       await host.waitForEvent((e) => e.event === "game-started");
 
-      // The whole point: simultaneous votes via Promise.all. On the OLD Appwrite
+      // The whole point: simultaneous votes via Promise.all. On the old REST
       // path this dropped events; on PartyKit DOs it serialises by construction
       // so every vote-cast event must arrive.
       const results = await Promise.all(

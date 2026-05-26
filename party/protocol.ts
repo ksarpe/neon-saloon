@@ -4,7 +4,7 @@
 // Phase 2 fills in the game-action handlers (host:start, player:vote, etc.).
 //
 // Event payload types are re-used from src/lib/game-types via TYPE-ONLY imports,
-// so the PartyKit bundle gets the shapes but never drags any Appwrite runtime.
+// so the PartyKit bundle gets the shapes without dragging browser/server runtime.
 
 import type {
   ScoreEntry,
@@ -78,6 +78,72 @@ export type ClientPing = {
   requestId: string
 }
 
+// ─── HighLow ────────────────────────────────────────────────────────────────
+
+export type ClientHostHighLowSetup = {
+  type: 'host:highlow-setup'
+  requestId: string
+  team1Name: string
+  team2Name: string
+}
+
+export type ClientHostHighLowRound = {
+  type: 'host:highlow-round'
+  requestId: string
+  roundIndex: number
+  questionText: string
+  questionUnit: string
+  guessingTeamId: string
+  guessingTeamName: string
+  votingTeamId: string
+  votingTeamName: string
+  guessingCaptainId: string
+  votingCaptainId: string
+}
+
+export type ClientPlayerHighLowNumber = {
+  type: 'player:highlow-number'
+  requestId: string
+  number: string
+}
+
+export type ClientPlayerHighLowVote = {
+  type: 'player:highlow-vote'
+  requestId: string
+  vote: 'mniej' | 'wiecej'
+}
+
+// ─── Battle Royale ──────────────────────────────────────────────────────────
+
+export type ClientHostBattleRoyaleSetup = {
+  type: 'host:br-setup'
+  requestId: string
+  categoryId: string
+  timerDuration?: number
+}
+
+export type ClientHostBattleRoyaleRound = {
+  type: 'host:br-round'
+  requestId: string
+}
+
+export type ClientHostBattleRoyaleReveal = {
+  type: 'host:br-reveal'
+  requestId: string
+}
+
+export type ClientHostBattleRoyaleNext = {
+  type: 'host:br-next'
+  requestId: string
+}
+
+export type ClientPlayerBattleRoyaleAnswer = {
+  type: 'player:br-answer'
+  requestId: string
+  answerIndex: number
+  answerText?: string
+}
+
 export type ClientMessage =
   | ClientPing
   | ClientHostStart
@@ -86,6 +152,15 @@ export type ClientMessage =
   | ClientHostFinish
   | ClientPlayerVote
   | ClientPlayerLeave
+  | ClientHostHighLowSetup
+  | ClientHostHighLowRound
+  | ClientPlayerHighLowNumber
+  | ClientPlayerHighLowVote
+  | ClientHostBattleRoyaleSetup
+  | ClientHostBattleRoyaleRound
+  | ClientHostBattleRoyaleReveal
+  | ClientHostBattleRoyaleNext
+  | ClientPlayerBattleRoyaleAnswer
 
 // ─── Server → Client ─────────────────────────────────────────────────────────
 
@@ -111,7 +186,41 @@ export type GameStateSnapshot = {
     emoji: string
   }>
   currentCard?: WireCard
-  // Mode-specific snapshots (highlow / battle-royale) appear here in their phases.
+  // ─── Mode-specific slices ────────────────────────────────────────────────
+  highlow?: {
+    questionIndex: number
+    guessingTeamId: string
+    guessingTeamName: string
+    votingTeamId: string
+    votingTeamName: string
+    guessingCaptainId: string
+    votingCaptainId: string
+    questionText?: string
+    questionUnit?: string
+    currentNumber?: string
+    currentResult?: {
+      correctAnswer: number
+      unit: string
+      guessingTeamGuess: number
+      correctVote: 'mniej' | 'wiecej'
+      captainVote: 'mniej' | 'wiecej'
+      winningTeamId: string
+      winningTeamName: string
+      scores: ScoreEntry[]
+    }
+  }
+  battleRoyale?: {
+    categoryId: string
+    questionText?: string
+    options?: string[]
+    questionIndex: number
+    totalQuestions: number
+    timerDuration: number
+    eliminatedPlayers: string[]
+    alivePlayers?: string[]
+    answeredPlayerIds?: string[]
+    roundStartTime?: number
+  }
 }
 
 export type ServerPong = { type: 'pong'; requestId: string }

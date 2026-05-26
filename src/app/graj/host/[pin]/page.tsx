@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
@@ -6,20 +6,18 @@ import { useEffect, useMemo, useState } from 'react'
 import BattleRoyaleHost from '@/components/BattleRoyale/BattleRoyaleHost'
 import HostHighLowScreen from '@/components/HighLow/HostHighLowScreen'
 import HostScreen from '@/components/Host'
-import { readHostCredentials } from '@/lib/party-ticket-client'
 import {
   CategoryPicker,
-  HighLowTeamSetup,
   NeverDeckState,
   type NeverSource,
   NeverSourcePicker,
   TriviaDeckState,
 } from '@/components/HostSetup/HostPickers'
+import { Button } from '@/components/ui/button'
 import { QUESTION_CATEGORIES } from '@/config/games/categories'
 import { ALL_CATEGORIES_ID, PREMIUM_CATEGORY_IDS } from '@/config/games/category-selection'
-import type { SessionTeam } from '@/lib/appwrite/sessions'
 import { QUESTIONS_PER_GAME, shuffleAndLimitQuestions } from '@/lib/games/question-limit'
-import { hostAuthHeaders, hostJsonHeaders } from '@/lib/session-host-secret'
+import { readHostCredentials } from '@/lib/party-ticket-client'
 import type { GameCard } from '@/lib/store'
 
 type QuizApiQuestion = {
@@ -35,7 +33,9 @@ export default function HostPage() {
   const { pin } = useParams<{ pin: string }>()
   const searchParams = useSearchParams()
   const router = useRouter()
-  const mode = searchParams.get('mode') ?? 'classic'
+  const mode = searchParams.get('mode') ?? 'trivia'
+  const storedHost = readHostCredentials()
+  const partyToken = storedHost?.pin === pin ? storedHost.partyToken : null
 
   const [appNeverCards, setAppNeverCards] = useState<GameCard[]>([])
   const [appNeverLoading, setAppNeverLoading] = useState(false)
@@ -45,41 +45,7 @@ export default function HostPage() {
   const [quizLoading, setQuizLoading] = useState(mode === 'trivia')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [neverSource, setNeverSource] = useState<NeverSource | null>(null)
-  const [brCategoryId, setBrCategoryId] = useState<string | null>(null)
-  const [brQuestionOrder, setBrQuestionOrder] = useState<number[] | null>(null)
-  const [brRoundTimerDuration, setBrRoundTimerDuration] = useState(20)
-  const [brSetupLoading, setBrSetupLoading] = useState(false)
-  const [brTimerSeconds, setBrTimerSeconds] = useState(20)
-  useEffect(() => {
-    if (mode !== 'battle-royale') return
-    fetch('/api/settings')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (d?.brTimerSeconds) setBrTimerSeconds(d.brTimerSeconds)
-      })
-      .catch(() => {})
-  }, [mode])
 
-  // HighLow teams (null = not yet set up)
-  const [hlTeam1, setHlTeam1] = useState<SessionTeam | null>(null)
-  const [hlTeam2, setHlTeam2] = useState<SessionTeam | null>(null)
-
-  // If navigating back to this page after teams were already set up, restore them
-  useEffect(() => {
-    if (mode !== 'highlow') return
-    fetch(`/api/sessions/${pin}`, { headers: hostAuthHeaders(pin) })
-      .then((r) => r.json())
-      .then((data) => {
-        if (Array.isArray(data.teams) && data.teams.length >= 2) {
-          setHlTeam1(data.teams[0])
-          setHlTeam2(data.teams[1])
-        }
-      })
-      .catch(() => {})
-  }, [mode, pin])
-
-  // Predefined "Nigdy przenigdy" cards are loaded through the API so PRO decks
-  // are not shipped to non-premium clients in the initial bundle.
   const categoryCards = useMemo<GameCard[]>(() => {
     if (mode !== 'categories' || !selectedCategory) return []
     const selectedCategories =
@@ -99,7 +65,6 @@ export default function HostPage() {
     )
   }, [mode, selectedCategory])
 
-  // "trivia" mode: Quiz o Pannie Młodej uses only the user's panel questions.
   useEffect(() => {
     if (mode !== 'trivia') return
     fetch('/api/questions/quiz')
@@ -113,7 +78,7 @@ export default function HostPage() {
           data.map((q) => ({
             id: `quiz-${q.id}`,
             type: 'QUIZ' as const,
-            title: 'Quiz o Pannie Młodej',
+            title: 'Quiz o Pannie Mlodej',
             description: q.text,
             answer: q.answer,
             options: q.options,
@@ -124,7 +89,6 @@ export default function HostPage() {
       .finally(() => setQuizLoading(false))
   }, [mode])
 
-  // "never" mode: fetch selected app deck. Premium decks are authorized server-side.
   useEffect(() => {
     if (mode !== 'never' || !neverSource || !APP_NEVER_SOURCES.has(neverSource)) return
 
@@ -140,19 +104,15 @@ export default function HostPage() {
         return r.json()
       })
       .then((data: GameCard[]) => {
-        if (!Array.isArray(data)) {
-          setAppNeverCards([])
-          return
-        }
-        setAppNeverCards(data)
+        setAppNeverCards(Array.isArray(data) ? data : [])
       })
       .catch((err) => {
         if (err instanceof DOMException && err.name === 'AbortError') return
         setAppNeverCards([])
         setAppNeverError(
           err instanceof Error && err.message === 'premium_required'
-            ? 'Ta talia wymaga dostępu PRO.'
-            : 'Nie udało się pobrać talii Nigdy przenigdy.'
+            ? 'Ta talia wymaga dostepu PRO.'
+            : 'Nie udalo sie pobrac talii Nigdy przenigdy.'
         )
       })
       .finally(() => {
@@ -162,7 +122,6 @@ export default function HostPage() {
     return () => controller.abort()
   }, [mode, neverSource])
 
-  // "never" mode: fetch user's custom questions when needed
   useEffect(() => {
     if (mode !== 'never' || !neverSource) return
     if (neverSource !== 'own' && neverSource !== 'all') return
@@ -182,7 +141,6 @@ export default function HostPage() {
       .catch(() => {})
   }, [mode, neverSource])
 
-  // Assemble final deck
   const deck = useMemo(() => {
     if (mode === 'trivia') return shuffleAndLimitQuestions(quizCards)
     if (mode === 'categories') return shuffleAndLimitQuestions(categoryCards)
@@ -197,7 +155,34 @@ export default function HostPage() {
     return []
   }, [mode, neverSource, appNeverCards, quizCards, categoryCards, customCards])
 
-  // ── Pickers shown before the lobby ──────────────────────────────────────────
+  if (!partyToken) {
+    return (
+      <div className="flex min-h-dvh w-full flex-col items-center justify-center gap-4 px-6 text-center">
+        <h1 className="text-text-primary text-2xl font-black">Brak tokenu hosta</h1>
+        <p className="text-text-muted max-w-md text-sm">
+          Ten salon dziala na PartyKit. Utworz go ponownie z tego urzadzenia albo wroc do aktywnej
+          sesji z ekranu tworzenia salonu.
+        </p>
+        <Button type="primary" onClick={() => router.push('/graj/host')}>
+          Wroc do tworzenia salonu
+        </Button>
+      </div>
+    )
+  }
+
+  if (mode === 'battle-royale') {
+    return <BattleRoyaleHost pin={pin} partyToken={partyToken} />
+  }
+
+  if (mode === 'highlow') {
+    return (
+      <HostHighLowScreen
+        pin={pin}
+        partyToken={partyToken}
+        questionLimit={QUESTIONS_PER_GAME}
+      />
+    )
+  }
 
   if (mode === 'categories' && !selectedCategory) {
     return (
@@ -239,77 +224,5 @@ export default function HostPage() {
     )
   }
 
-  // ── Battle Royale: category selection then host screen ───────────────────────
-
-  if (mode === 'battle-royale') {
-    if (!brCategoryId) {
-      return (
-        <CategoryPicker
-          onSelect={async (catId) => {
-            setBrSetupLoading(true)
-            try {
-              const res = await fetch(`/api/sessions/${pin}/battle-royale/setup`, {
-                method: 'POST',
-                headers: hostJsonHeaders(pin),
-                body: JSON.stringify({ categoryId: catId, timerDuration: brTimerSeconds }),
-              })
-              const data = await res.json()
-              setBrQuestionOrder(Array.isArray(data.questionOrder) ? data.questionOrder : null)
-              setBrRoundTimerDuration(
-                typeof data.timerDuration === 'number' ? data.timerDuration : brTimerSeconds
-              )
-              setBrCategoryId(catId)
-            } finally {
-              setBrSetupLoading(false)
-            }
-          }}
-          onBack={() => router.push('/graj/host')}
-          loading={brSetupLoading}
-          includeAllOption
-          premiumCategoryIds={PREMIUM_CATEGORY_IDS}
-        />
-      )
-    }
-    return (
-      <BattleRoyaleHost
-        pin={pin}
-        categoryId={brCategoryId}
-        questionOrder={brQuestionOrder}
-        timerDuration={brRoundTimerDuration}
-      />
-    )
-  }
-
-  // ── HighLow: team setup step then lobby ──────────────────────────────────
-
-  if (mode === 'highlow') {
-    if (!hlTeam1 || !hlTeam2) {
-      return (
-        <HighLowTeamSetup
-          pin={pin}
-          onSetup={(t1, t2) => {
-            setHlTeam1(t1)
-            setHlTeam2(t2)
-          }}
-          onBack={() => router.push('/graj/host')}
-        />
-      )
-    }
-    return (
-      <HostHighLowScreen
-        pin={pin}
-        team1={hlTeam1}
-        team2={hlTeam2}
-        initialPlayers={[]}
-        questionLimit={QUESTIONS_PER_GAME}
-      />
-    )
-  }
-
-  // For PartyKit-backed modes (classic family) the page sits behind the host's
-  // signed party token stored at /graj/host creation time. We pass it down to
-  // HostScreen which then opens a WebSocket to the room. Appwrite-backed modes
-  // ignore this prop entirely.
-  const partyToken = readHostCredentials()?.partyToken
   return <HostScreen pin={pin} initialCards={deck} gameMode={mode} partyToken={partyToken} />
 }

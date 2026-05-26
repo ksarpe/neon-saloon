@@ -7,8 +7,8 @@ import type {
   StandardGameSettings,
   TeamScoreEntry,
   WireCard,
-} from "../src/lib/game-types"
-import type { StoredCard } from "./wire-card"
+} from '../src/lib/game-types'
+import type { StoredCard } from './wire-card'
 
 export type GameMode = "classic" | "highlow" | "battle-royale"
 export type SessionStatus = "waiting" | "active" | "finished"
@@ -46,6 +46,59 @@ export type CurrentReveal = {
   votes: StoredVote[]
 }
 
+// ─── HighLow ─────────────────────────────────────────────────────────────────
+
+export type HighLowResult = {
+  correctAnswer: number
+  unit: string
+  guessingTeamGuess: number
+  correctVote: 'mniej' | 'wiecej'
+  captainVote: 'mniej' | 'wiecej'
+  winningTeamId: string
+  winningTeamName: string
+  scores: ScoreEntry[]
+}
+
+export type HighLowData = {
+  questionIndex: number
+  guessingTeamId: string
+  guessingTeamName: string
+  votingTeamId: string
+  votingTeamName: string
+  guessingCaptainId: string
+  votingCaptainId: string
+  // The host echoes display text + unit so reconnects don't need to re-derive.
+  questionText?: string
+  questionUnit?: string
+  currentNumber?: string
+  currentResult?: HighLowResult
+}
+
+// ─── Battle Royale ───────────────────────────────────────────────────────────
+
+export type BRStoredAnswer = {
+  playerId: string
+  playerName: string
+  avatar: string
+  answerIndex: number // -1 = no answer (timed out)
+  answerText: string
+  answeredAt: number // ms since epoch; -1 = timed out
+  isCorrect: boolean
+}
+
+export type BattleRoyaleData = {
+  categoryId: string
+  questionOrder?: number[]
+  questionIndex: number
+  totalQuestions: number
+  eliminatedPlayers: string[]
+  roundAnswers: BRStoredAnswer[]
+  timerDuration: number
+  roundStartTime?: number
+}
+
+// ─── Room state ──────────────────────────────────────────────────────────────
+
 export type RoomState = {
   pin: string
   hostName: string
@@ -63,6 +116,8 @@ export type RoomState = {
   teamScores?: TeamScoreEntry[]
   currentReveal?: CurrentReveal
   settings?: StandardGameSettings
+  highlow?: HighLowData
+  battleRoyale?: BattleRoyaleData
 }
 
 export function initialRoomState(args: {

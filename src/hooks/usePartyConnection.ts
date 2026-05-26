@@ -20,7 +20,7 @@ export type UsePartyConnectionOptions = {
   pin: string | null
   partyToken: string | null
   role: 'host' | 'player' | null
-  /** Same handler interface useRealtimeGame consumes — easy drop-in. */
+  /** Event handler interface for room broadcasts. */
   handlers?: GameSocketHandlers
   /** Called every time the room re-broadcasts a snapshot (incl. on reconnect). */
   onSnapshot?: (snapshot: GameStateSnapshot) => void
@@ -80,8 +80,7 @@ export function usePartyConnection(options: UsePartyConnectionOptions): UseParty
   return { status, snapshot, send }
 }
 
-// Mirror of the dispatch table in src/hooks/useGameEvents.ts so components that
-// take a GameSocketHandlers object keep working unchanged.
+// Dispatch PartyKit room events into optional component handlers.
 function dispatchEvent(handlers: GameSocketHandlers | undefined, event: SessionEvent): void {
   if (!handlers) return
   switch (event.event) {

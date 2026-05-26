@@ -48,8 +48,7 @@ export interface HostScreenProps {
   pin: string
   initialCards: GameCard[]
   gameMode?: string
-  /** PartyKit auth token. When present, HostScreen runs on PartyKit WS instead
-   *  of the legacy Appwrite REST + Realtime path. */
+  /** PartyKit auth token used by the host WebSocket connection. */
   partyToken?: string
 }
 

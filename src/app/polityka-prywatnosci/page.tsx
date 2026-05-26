@@ -180,11 +180,6 @@ const sections: LegalSection[] = [
               'hostowana baza danych PostgreSQL (dane konta, treści użytkownika)',
               'https://neon.tech/privacy-policy',
             ],
-            [
-              'Appwrite Cloud (Frankfurt, UE)',
-              'infrastruktura sesji rozgrywki w czasie rzeczywistym',
-              'https://appwrite.io/privacy',
-            ],
             ['Stripe', 'obsługa płatności i subskrypcji', 'https://stripe.com/privacy'],
             [
               'Resend (Irlandia, UE)',
@@ -257,7 +252,7 @@ const sections: LegalSection[] = [
       <div className="space-y-3">
         <p>
           Tam, gdzie to możliwe, wybraliśmy przetwarzanie danych w Unii Europejskiej — sesje
-          rozgrywki (Appwrite, Frankfurt), limitowanie zapytań (Upstash, Frankfurt) oraz wysyłka
+          limitowanie zapytań (Upstash, Frankfurt) oraz wysyłka
           e-maili (Resend, Irlandia) odbywają się w EOG.
         </p>
         <p>

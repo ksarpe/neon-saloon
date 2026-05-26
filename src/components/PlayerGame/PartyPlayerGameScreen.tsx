@@ -1,8 +1,7 @@
 'use client'
 
 // PartyKit-backed player screen for the classic family of game modes.
-// Mirrors the legacy PlayerGameScreen UI flow but speaks WebSocket to the
-// Durable Object instead of HTTP to /api/sessions/* + Appwrite Realtime.
+// Mirrors the classic player UI flow and speaks WebSocket to the Durable Object.
 
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -18,7 +17,7 @@ import type {
   VotesRevealedPayload,
   WireCard,
 } from '@/lib/game-types'
-import { clearPlayerSession } from '@/lib/session-player-secret'
+import { clearPlayerCredentials } from '@/lib/party-ticket-client'
 
 import { GameOverView } from './GameOverView'
 import { PlayerHeader } from './PlayerHeader'
@@ -102,12 +101,12 @@ export default function PartyPlayerGameScreen({
         setPhase('playing')
       },
       onGameFinished: (data: GameFinishedPayload) => {
-        clearPlayerSession(pin)
+        clearPlayerCredentials()
         setFinishData(data)
         setPhase('finished')
       },
     }),
-    [pin],
+    [],
   )
 
   const { send, snapshot, status } = usePartyConnection({

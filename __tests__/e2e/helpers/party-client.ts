@@ -289,6 +289,52 @@ export class HostHandle extends BaseHandle {
       showPlayerPoints: opts?.showPlayerPoints,
     })
   }
+
+  // ─── HighLow ───────────────────────────────────────────────────────────────
+
+  highLowSetup(opts: { team1Name: string; team2Name: string }) {
+    return this.sendAndAwait({
+      type: 'host:highlow-setup',
+      team1Name: opts.team1Name,
+      team2Name: opts.team2Name,
+    })
+  }
+
+  highLowRound(opts: {
+    roundIndex: number
+    questionText: string
+    questionUnit: string
+    guessingTeamId: string
+    guessingTeamName: string
+    votingTeamId: string
+    votingTeamName: string
+    guessingCaptainId: string
+    votingCaptainId: string
+  }) {
+    return this.sendAndAwait({ type: 'host:highlow-round', ...opts })
+  }
+
+  // ─── Battle Royale ─────────────────────────────────────────────────────────
+
+  brSetup(opts: { categoryId: string; timerDuration?: number }) {
+    return this.sendAndAwait({
+      type: 'host:br-setup',
+      categoryId: opts.categoryId,
+      timerDuration: opts.timerDuration,
+    })
+  }
+
+  brRound() {
+    return this.sendAndAwait({ type: 'host:br-round' })
+  }
+
+  brReveal() {
+    return this.sendAndAwait({ type: 'host:br-reveal' })
+  }
+
+  brNext() {
+    return this.sendAndAwait({ type: 'host:br-next' })
+  }
 }
 
 export class PlayerHandle extends BaseHandle {
@@ -326,6 +372,22 @@ export class PlayerHandle extends BaseHandle {
 
   leave() {
     return this.sendAndAwait({ type: 'player:leave' })
+  }
+
+  highLowNumber(number: string) {
+    return this.sendAndAwait({ type: 'player:highlow-number', number })
+  }
+
+  highLowVote(vote: 'mniej' | 'wiecej') {
+    return this.sendAndAwait({ type: 'player:highlow-vote', vote })
+  }
+
+  brAnswer(opts: { answerIndex: number; answerText?: string }) {
+    return this.sendAndAwait({
+      type: 'player:br-answer',
+      answerIndex: opts.answerIndex,
+      answerText: opts.answerText ?? '',
+    })
   }
 
   /** Build a vote payload the way the host would echo it in reveal. */

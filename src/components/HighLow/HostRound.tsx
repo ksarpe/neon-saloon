@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import { Loader2, Star, TrendingDown, TrendingUp } from 'lucide-react'
 
-import type { SessionPlayer, SessionTeam } from '@/lib/appwrite/sessions'
+import type { SessionPlayer, SessionTeam } from '@/lib/session-types'
 import type { ScoreEntry } from '@/lib/game-types'
 import type { HighLowQuestion } from '@/config/games/highlow'
 

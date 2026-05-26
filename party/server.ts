@@ -4,10 +4,19 @@
 // reducer, persists the new state to room.storage, and broadcasts the resulting
 // realtime events. Because the DO is a single in-memory actor, all writes are
 // naturally serialised — no transaction conflicts, no per-pin lock, no retry
-// dance. This replaces the Appwrite hot-row contention the project used to fight.
+// dance. This avoids hot-row contention in the game runtime.
 
 import type * as Party from 'partykit/server'
 
+import {
+  applyBattleRoyaleAnswer,
+  applyBattleRoyaleNext,
+  applyBattleRoyaleReveal,
+  applyBattleRoyaleRound,
+  applyBattleRoyaleSetup,
+} from './game/battle-royale'
+import { getQuestionCategorySelection } from '../src/config/games/category-selection'
+import { getOrderedQuestion } from '../src/lib/games/question-limit'
 import {
   applyFinish,
   applyJoin,
@@ -18,6 +27,12 @@ import {
   applyVote,
   type ReducerResult,
 } from './game/classic'
+import {
+  applyHighLowNumber,
+  applyHighLowRound,
+  applyHighLowSetup,
+  applyHighLowVote,
+} from './game/highlow'
 import type {
   ClientMessage,
   GameStateSnapshot,
@@ -161,6 +176,27 @@ export default class GameServer implements Party.Server {
     // (or session finish) is what removes a player from the lobby.
   }
 
+  async onRequest(request: Party.Request) {
+    if (request.method !== 'GET') {
+      return new Response('Method not allowed', { status: 405 })
+    }
+    if (!this.state) {
+      return Response.json({ error: 'Room not found' }, { status: 404 })
+    }
+
+    const snapshot = this.snapshot()
+    return Response.json({
+      pin: snapshot.pin,
+      gameMode: snapshot.gameMode,
+      status: snapshot.status,
+      playersCount: snapshot.players.length,
+      teams: snapshot.teams.map((team) => ({
+        ...team,
+        memberCount: snapshot.players.filter((player) => player.teamId === team.teamId).length,
+      })),
+    })
+  }
+
   // ─── Message dispatch ───────────────────────────────────────────────────────
 
   async onMessage(rawMessage: string, sender: Party.Connection) {
@@ -266,6 +302,111 @@ export default class GameServer implements Party.Server {
           return
         }
 
+        // ─── HighLow ──────────────────────────────────────────────────────
+        case 'host:highlow-setup':
+          this.requireHost(meta, msg.type)
+          this.requireState()
+          await this.runReducer(sender, msg.requestId, () =>
+            applyHighLowSetup(this.state!, {
+              team1Name: msg.team1Name,
+              team2Name: msg.team2Name,
+            }),
+          )
+          return
+
+        case 'host:highlow-round':
+          this.requireHost(meta, msg.type)
+          this.requireState()
+          await this.runReducer(sender, msg.requestId, () =>
+            applyHighLowRound(this.state!, {
+              roundIndex: msg.roundIndex,
+              questionText: msg.questionText,
+              questionUnit: msg.questionUnit,
+              guessingTeamId: msg.guessingTeamId,
+              guessingTeamName: msg.guessingTeamName,
+              votingTeamId: msg.votingTeamId,
+              votingTeamName: msg.votingTeamName,
+              guessingCaptainId: msg.guessingCaptainId,
+              votingCaptainId: msg.votingCaptainId,
+            }),
+          )
+          return
+
+        case 'player:highlow-number': {
+          if (meta.role !== 'player') {
+            throw new ValidationError(`Only players can send ${msg.type}`, 403)
+          }
+          this.requireState()
+          await this.runReducer(sender, msg.requestId, () =>
+            applyHighLowNumber(this.state!, { playerId: meta.playerId, number: msg.number }),
+          )
+          return
+        }
+
+        case 'player:highlow-vote': {
+          if (meta.role !== 'player') {
+            throw new ValidationError(`Only players can send ${msg.type}`, 403)
+          }
+          this.requireState()
+          await this.runReducer(sender, msg.requestId, () =>
+            applyHighLowVote(this.state!, { playerId: meta.playerId, vote: msg.vote }),
+          )
+          return
+        }
+
+        // ─── Battle Royale ────────────────────────────────────────────────
+        case 'host:br-setup':
+          this.requireHost(meta, msg.type)
+          this.requireState()
+          await this.runReducer(sender, msg.requestId, () =>
+            applyBattleRoyaleSetup(this.state!, {
+              categoryId: msg.categoryId,
+              timerDuration: msg.timerDuration,
+            }),
+          )
+          return
+
+        case 'host:br-round':
+          this.requireHost(meta, msg.type)
+          this.requireState()
+          await this.runReducer(sender, msg.requestId, () =>
+            applyBattleRoyaleRound(this.state!),
+          )
+          return
+
+        case 'host:br-reveal':
+          this.requireHost(meta, msg.type)
+          this.requireState()
+          await this.runReducer(sender, msg.requestId, () =>
+            applyBattleRoyaleReveal(this.state!),
+          )
+          return
+
+        case 'host:br-next':
+          this.requireHost(meta, msg.type)
+          this.requireState()
+          await this.runReducer(sender, msg.requestId, () =>
+            applyBattleRoyaleNext(this.state!),
+          )
+          return
+
+        case 'player:br-answer': {
+          if (meta.role !== 'player') {
+            throw new ValidationError(`Only players can send ${msg.type}`, 403)
+          }
+          this.requireState()
+          await this.runReducer(sender, msg.requestId, () =>
+            applyBattleRoyaleAnswer(this.state!, {
+              playerId: meta.playerId,
+              playerName: meta.playerName,
+              avatar: meta.avatar ?? 'default.png',
+              answerIndex: msg.answerIndex,
+              answerText: msg.answerText ?? '',
+            }),
+          )
+          return
+        }
+
         default: {
           const unknown = (msg as { type?: string }).type ?? 'unknown'
           this.send(sender, {
@@ -365,6 +506,21 @@ export default class GameServer implements Party.Server {
         teams: [],
       }
     }
+    const hl = this.state.highlow
+    const br = this.state.battleRoyale
+    const brQuestion =
+      br && br.roundStartTime
+        ? getOrderedQuestion(
+            getQuestionCategorySelection(br.categoryId)?.questions ?? [],
+            br.questionIndex,
+            br.questionOrder,
+          )
+        : undefined
+    const brAlivePlayers = br
+      ? this.state.players
+          .filter((p) => !br.eliminatedPlayers.includes(p.playerId))
+          .map((p) => p.playerId)
+      : undefined
     return {
       pin: this.state.pin,
       gameMode: this.state.gameMode,
@@ -379,6 +535,46 @@ export default class GameServer implements Party.Server {
       })),
       teams: this.state.teams,
       currentCard: this.state.currentCard,
+      highlow: hl
+        ? {
+            questionIndex: hl.questionIndex,
+            guessingTeamId: hl.guessingTeamId,
+            guessingTeamName: hl.guessingTeamName,
+            votingTeamId: hl.votingTeamId,
+            votingTeamName: hl.votingTeamName,
+            guessingCaptainId: hl.guessingCaptainId,
+            votingCaptainId: hl.votingCaptainId,
+            questionText: hl.questionText,
+            questionUnit: hl.questionUnit,
+            currentNumber: hl.currentNumber,
+            currentResult: hl.currentResult
+              ? {
+                  correctAnswer: hl.currentResult.correctAnswer,
+                  unit: hl.currentResult.unit,
+                  guessingTeamGuess: hl.currentResult.guessingTeamGuess,
+                  correctVote: hl.currentResult.correctVote,
+                  captainVote: hl.currentResult.captainVote,
+                  winningTeamId: hl.currentResult.winningTeamId,
+                  winningTeamName: hl.currentResult.winningTeamName,
+                  scores: hl.currentResult.scores,
+                }
+              : undefined,
+          }
+        : undefined,
+      battleRoyale: br
+        ? {
+            categoryId: br.categoryId,
+            questionText: brQuestion?.text,
+            options: brQuestion?.options,
+            questionIndex: br.questionIndex,
+            totalQuestions: br.totalQuestions,
+            timerDuration: br.timerDuration,
+            eliminatedPlayers: br.eliminatedPlayers,
+            alivePlayers: brAlivePlayers,
+            answeredPlayerIds: br.roundAnswers.map((a) => a.playerId),
+            roundStartTime: br.roundStartTime,
+          }
+        : undefined,
     }
   }
 

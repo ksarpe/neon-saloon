@@ -12,26 +12,20 @@ import { Button } from '@/components/ui/button'
 import { ProModal } from '@/components/ui/ContentGate'
 import { useContentAccess } from '@/hooks/useContentAccess'
 import { checkAccess } from '@/lib/content-access'
-import { fetchHostTicket, storeHostCredentials } from '@/lib/party-ticket-client'
 import {
-  clearHostSession,
-  clearOtherHostSessions,
-  getStoredHostSessions,
-  hostAuthHeaders,
-  hostJsonHeaders,
-  saveHostSecret,
-} from '@/lib/session-host-secret'
-
-// Modes that have been migrated to PartyKit (classic family). BR + HighLow still
-// use Appwrite sessions until phase 5 ports them too.
-const PARTYKIT_MODES = new Set(['trivia', 'categories', 'never'])
+  clearHostCredentials,
+  fetchHostTicket,
+  fetchPartyRoomLookup,
+  readHostCredentials,
+  storeHostCredentials,
+} from '@/lib/party-ticket-client'
 
 const GAME_MODES = [
   {
     id: 'trivia',
     icon: 'icons/veil-icon.png',
-    label: 'Quiz o Pannie Młodej',
-    description: 'Kto tu zna pannę najlepiej? Strzelaj i głosuj. Czas pokaże.',
+    label: 'Quiz o Pannie Mlodej',
+    description: 'Kto tu zna panne najlepiej? Strzelaj i glosuj. Czas pokaze.',
     color: 'var(--neon-pink)',
     border: 'rgba(255,16,240,0.5)',
     bg: 'rgba(255,16,240,0.07)',
@@ -40,7 +34,7 @@ const GAME_MODES = [
     id: 'categories',
     icon: 'icons/groins.png',
     label: 'Skategoryzowane pytania',
-    description: 'Seks? Anatomia? Kto jest ekspertem? Sprawdźcie to!',
+    description: 'Seks? Anatomia? Kto jest ekspertem? Sprawdzcie to!',
     color: '#a78bfa',
     border: 'rgba(167,139,250,0.5)',
     bg: 'rgba(167,139,250,0.07)',
@@ -49,7 +43,7 @@ const GAME_MODES = [
     id: 'never',
     icon: 'icons/plug.png',
     label: 'Nigdy przenigdy',
-    description: 'Masz coś do ukrycia, kowboju? Tu nic nie zostaje w siodle.',
+    description: 'Masz cos do ukrycia, kowboju? Tu nic nie zostaje w siodle.',
     color: 'rgba(255,215,0,0.5)',
     border: 'rgba(255,215,0,0.5)',
     bg: 'rgba(255,215,0,0.07)',
@@ -57,8 +51,8 @@ const GAME_MODES = [
   {
     id: 'highlow',
     icon: 'icons/breast.png',
-    label: 'Mniej czy więcej',
-    description: 'Dwie bandy, jeden strzał. Zgadnij — wyżej czy niżej. Bez drugiej szansy.',
+    label: 'Mniej czy wiecej',
+    description: 'Dwie bandy, jeden strzal. Zgadnij: wyzej czy nizej. Bez drugiej szansy.',
     color: '#10b981',
     border: 'rgba(16,185,129,0.5)',
     bg: 'rgba(16,185,129,0.07)',
@@ -69,7 +63,7 @@ const GAME_MODES = [
     icon: 'icons/pistols.png',
     label: 'Dead or alive',
     description:
-      'Wszyscy strzelają naraz. Pomylisz się — odpadasz. Najwolniejszy też ginie. Jeden ocaleje.',
+      'Wszyscy strzelaja naraz. Pomylisz sie: odpadasz. Najwolniejszy tez ginie. Jeden ocaleje.',
     color: '#ef4444',
     border: 'rgba(239,68,68,0.5)',
     bg: 'rgba(239,68,68,0.07)',
@@ -96,6 +90,7 @@ export default function HostSetupPage() {
   const [activeHostSession, setActiveHostSession] = useState<ActiveHostSession | null>(null)
   const access = useContentAccess()
   const botProtectionEnabled = isBotProtectionConfigured()
+
   const resetBotProtection = useCallback(() => {
     setBotProtectionToken(null)
     setBotProtectionKey((key) => key + 1)
@@ -106,50 +101,24 @@ export default function HostSetupPage() {
     let cancelled = false
 
     async function checkActiveHostSession() {
-      const storedSessions = getStoredHostSessions()
-      const activeSessions: ActiveHostSession[] = []
+      const stored = readHostCredentials()
+      if (!stored) return
 
-      for (const stored of storedSessions) {
-        try {
-          const response = await fetch(`/api/sessions/${stored.pin}/host-resume`, {
-            headers: hostAuthHeaders(stored.pin),
-          })
-
-          if (response.status === 401 || response.status === 404) {
-            clearHostSession(stored.pin)
-            continue
-          }
-          if (!response.ok) continue
-
-          const data = await response.json()
-          if (data.status === 'finished') {
-            clearHostSession(stored.pin)
-            continue
-          }
-
-          const playersCount = Array.isArray(data.players) ? data.players.length : 0
-          if (data.status === 'waiting' && playersCount === 0) {
-            clearHostSession(stored.pin)
-            continue
-          }
-
-          if ((data.status === 'waiting' || data.status === 'active') && !cancelled) {
-            activeSessions.push({
-              pin: stored.pin,
-              status: data.status,
-              gameMode: typeof data.gameMode === 'string' ? data.gameMode : 'trivia',
-              playersCount,
-            })
-          }
-        } catch {
-          // Keep the stored session when the network is unavailable.
+      try {
+        const room = await fetchPartyRoomLookup(stored.pin)
+        if (!room || room.status === 'finished') {
+          clearHostCredentials()
+          return
         }
-      }
-
-      const sessionToResume = activeSessions[0]
-      if (sessionToResume && !cancelled) {
-        clearOtherHostSessions(sessionToResume.pin)
-        setActiveHostSession(sessionToResume)
+        if (cancelled) return
+        setActiveHostSession({
+          pin: stored.pin,
+          status: room.status,
+          gameMode: stored.gameMode,
+          playersCount: room.playersCount,
+        })
+      } catch {
+        // Keep the local token when the network is temporarily unavailable.
       }
     }
 
@@ -164,50 +133,29 @@ export default function HostSetupPage() {
     if (!selectedMode) return
     if (activeHostSession) return
     if (botProtectionEnabled && !botProtectionToken) {
-      setError('Potwierdź, że nie jesteś botem.')
+      setError('Potwierdz, ze nie jestes botem.')
       return
     }
+
     setCreating(true)
     setError(null)
     try {
-      if (PARTYKIT_MODES.has(selectedMode)) {
-        // Classic family runs on PartyKit — the room is materialised on first
-        // WebSocket connect; this endpoint only mints a signed token.
-        const ticket = await fetchHostTicket({
-          hostName: 'Host',
-          gameMode: 'classic',
-          botProtectionToken,
-        })
-        storeHostCredentials({
-          pin: ticket.pin,
-          partyToken: ticket.partyToken,
-          gameMode: selectedMode,
-        })
-        router.push(`/graj/host/${ticket.pin}?mode=${selectedMode}`)
-      } else {
-        // Battle-royale + HighLow still on Appwrite until phase 5.
-        const res = await fetch('/api/sessions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            gameMode: selectedMode,
-            botProtectionToken,
-          }),
-        })
-        const payload = await res.json().catch(() => ({}))
-        if (!res.ok) {
-          throw new Error(
-            typeof payload.error === 'string' ? payload.error : 'Nie udało się utworzyć gry.'
-          )
-        }
-        const { pin, hostSecret } = payload
-        if (typeof hostSecret === 'string') {
-          saveHostSecret(pin, hostSecret)
-        }
-        router.push(`/graj/host/${pin}?mode=${selectedMode}`)
-      }
+      const ticket = await fetchHostTicket({
+        hostName: 'Host',
+        gameMode:
+          selectedMode === 'trivia' || selectedMode === 'categories' || selectedMode === 'never'
+            ? 'classic'
+            : selectedMode,
+        botProtectionToken,
+      })
+      storeHostCredentials({
+        pin: ticket.pin,
+        partyToken: ticket.partyToken,
+        gameMode: selectedMode,
+      })
+      router.push(`/graj/host/${ticket.pin}?mode=${selectedMode}`)
     } catch (createError) {
-      setError(createError instanceof Error ? createError.message : 'Nie udało się utworzyć gry.')
+      setError(createError instanceof Error ? createError.message : 'Nie udalo sie utworzyc gry.')
       setCreating(false)
       resetBotProtection()
     }
@@ -218,45 +166,16 @@ export default function HostSetupPage() {
     router.push(`/graj/host/${activeHostSession.pin}?mode=${activeHostSession.gameMode}`)
   }
 
-  const handleEndExisting = async () => {
-    if (!activeHostSession) return
-    const sessionToEnd = activeHostSession
+  const handleEndExisting = () => {
     setEndingExisting(true)
-    setError(null)
-
-    try {
-      const response = await fetch(`/api/sessions/${sessionToEnd.pin}`, {
-        method: 'POST',
-        headers: hostJsonHeaders(sessionToEnd.pin),
-        body: JSON.stringify({ action: 'finish', scores: [], teamScores: [] }),
-      })
-
-      if (!response.ok && response.status !== 401 && response.status !== 404) {
-        const payload = await response.json().catch(() => ({}))
-        throw new Error(
-          typeof payload.error === 'string'
-            ? payload.error
-            : 'Nie udało się zakończyć aktywnej sesji.'
-        )
-      }
-
-      clearHostSession(sessionToEnd.pin)
-      setActiveHostSession(null)
-    } catch (endError) {
-      setError(
-        endError instanceof Error
-          ? endError.message
-          : 'Nie udało się zakończyć aktywnej sesji.'
-      )
-    } finally {
-      setEndingExisting(false)
-    }
+    clearHostCredentials()
+    setActiveHostSession(null)
+    setEndingExisting(false)
   }
 
   return (
     <div className="flex min-h-dvh w-full flex-col items-center justify-start overflow-y-auto px-6 pt-20 pb-6 sm:justify-center sm:p-6">
       <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col gap-8 sm:gap-10">
-        {/* Game mode selector */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -306,22 +225,13 @@ export default function HostSetupPage() {
                       border: `1px solid ${mode.border}`,
                     }}
                   >
-                    {mode.icon ? (
-                      <Image src={`/${mode.icon}`} alt="" width={64} height={64} aria-hidden />
-                    ) : (
-                      <span
-                        className="h-2.5 w-2.5 rounded-full"
-                        style={{ backgroundColor: mode.color }}
-                      />
-                    )}
+                    <Image src={`/${mode.icon}`} alt="" width={64} height={64} aria-hidden />
                   </div>
 
                   <div className="relative z-10 flex-1">
                     <p
                       className="text-sm font-bold transition-colors duration-200"
-                      style={{
-                        color: active ? mode.color : 'var(--text-primary)',
-                      }}
+                      style={{ color: active ? mode.color : 'var(--text-primary)' }}
                     >
                       {mode.label}
                     </p>
@@ -337,7 +247,7 @@ export default function HostSetupPage() {
                       className="relative z-10 flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
                       style={{ backgroundColor: mode.color }}
                     >
-                      <span className="text-[10px] text-white">✓</span>
+                      <span className="text-[10px] text-white">OK</span>
                     </motion.div>
                   )}
                 </motion.button>
@@ -346,7 +256,6 @@ export default function HostSetupPage() {
           </div>
         </motion.div>
 
-        {/* Create button */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
@@ -372,10 +281,10 @@ export default function HostSetupPage() {
                 <Loader2 size={18} className="animate-spin" /> Tworze salon...
               </>
             ) : (
-              <>Otwórz salon na dzikim zachodzie</>
+              <>Otworz salon na dzikim zachodzie</>
             )}
           </Button>
-          <AgeNotice actionLabel="Otwórz salon" className="mx-auto mt-3 max-w-xl" />
+          <AgeNotice actionLabel="Otworz salon" className="mx-auto mt-3 max-w-xl" />
           {!creating && !selectedMode && (
             <motion.p
               initial={{ opacity: 0 }}
@@ -383,7 +292,7 @@ export default function HostSetupPage() {
               className="mt-3 text-center text-xs"
               style={{ color: 'rgba(255,220,180,0.45)' }}
             >
-              Wybierz tryb gry, żeby zacząć
+              Wybierz tryb gry, zeby zaczac
             </motion.p>
           )}
           {error && (
@@ -448,11 +357,11 @@ function ActiveSessionModal({
           <AlertTriangle size={24} aria-hidden />
         </div>
 
-        <h2 className="text-text-primary text-2xl font-black">Masz aktywną sesję</h2>
+        <h2 className="text-text-primary text-2xl font-black">Masz aktywna sesje</h2>
         <p className="text-text-muted mt-2 text-sm leading-relaxed">
           Ten telefon lub komputer jest zapisany jako host salonu{' '}
-          <span className="text-text-primary font-bold">#{session.pin}</span>. Wróć do tej gry albo
-          zakończ ją, żeby utworzyć nową.
+          <span className="text-text-primary font-bold">#{session.pin}</span>. Wroc do tej gry albo
+          zakoncz lokalny token hosta, zeby utworzyc nowa.
         </p>
 
         <div
@@ -472,18 +381,18 @@ function ActiveSessionModal({
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <Button type="primary" onClick={onResume} disabled={ending} className="flex-1" size="md">
             <RotateCcw size={18} aria-hidden />
-            Wróć do sesji
+            Wroc do sesji
           </Button>
           <Button type="outline" onClick={onEnd} disabled={ending} className="flex-1" size="md">
             {ending ? (
               <>
                 <Loader2 size={18} className="animate-spin" aria-hidden />
-                Kończę...
+                Koncze...
               </>
             ) : (
               <>
                 <Trash2 size={18} aria-hidden />
-                Zakończ i twórz nową
+                Zakoncz i tworz nowa
               </>
             )}
           </Button>

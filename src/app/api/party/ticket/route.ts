@@ -5,7 +5,7 @@
 //
 // Two flows:
 //   create-host → caller becomes the host of a new room (premium-gated for
-//                 highlow/battle-royale; bot-protected like /api/sessions)
+//                 highlow/battle-royale; bot-protected)
 //   join        → caller becomes a player in an existing PIN
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
@@ -26,8 +26,7 @@ import { SESSION_PIN_LENGTH } from '@/lib/session-pin'
 const PREMIUM_GAME_MODES = new Set(['highlow', 'battle-royale'])
 const TOKEN_TTL_HOURS = 24
 
-// Same per-IP and global limits as the old /api/sessions endpoint, applied per
-// action so issuing a host ticket is throttled like creating a session was.
+// Per-IP and global limits are applied per action so issuing a host ticket is throttled.
 const GLOBAL_CREATE_LIMITS = [
   { suffix: 'burst', limit: 120, windowMs: 60_000 },
   { suffix: 'sustained', limit: 600, windowMs: 15 * 60_000 },
@@ -118,9 +117,16 @@ export async function POST(request: Request) {
       const gameMode = optionalString(body.gameMode, 'gameMode', 32) ?? 'classic'
 
       if (PREMIUM_GAME_MODES.has(gameMode)) {
-        const session = await getServerSession(authOptions)
-        if (!session?.user?.isPremium) {
-          return NextResponse.json({ error: 'Premium access required' }, { status: 403 })
+        // Dev-only escape hatch so E2E tests can drive HL + BR without seeding a
+        // premium user. Gated by NODE_ENV so it can NEVER be set in production.
+        const devBypass =
+          process.env.NODE_ENV !== 'production' &&
+          process.env.DISABLE_PREMIUM_GATE === 'true'
+        if (!devBypass) {
+          const session = await getServerSession(authOptions)
+          if (!session?.user?.isPremium) {
+            return NextResponse.json({ error: 'Premium access required' }, { status: 403 })
+          }
         }
       }
 

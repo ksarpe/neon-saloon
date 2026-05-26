@@ -2,9 +2,7 @@
 // no Next.js / Node-specific imports — so the Workers bundle doesn't drag
 // `next/server` (which exists in request-validation.ts in the Next.js tree).
 //
-// After Phase 6 (Appwrite fully gone) these can be merged with src/lib's
-// validators; until then keeping a copy here is cheaper than risking a
-// transitive Next-import sneaking into the room build.
+// Keep these local to avoid a transitive Next-import sneaking into the room build.
 
 export const INPUT_LIMITS = {
   playerName: 24,

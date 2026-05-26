@@ -2,11 +2,11 @@
 
 // PartyKit-backed host screen for the classic family of game modes.
 // Mirrors the legacy HostScreen UI flow (setup → lobby → active → finished)
-// but talks to a Durable Object over WebSocket instead of the Appwrite REST +
+// but talks to a Durable Object over WebSocket instead of the old REST path +
 // Realtime stack — so a roomful of players never collides on a hot DB row.
 //
-// The host's identity (display name, avatar) stays in localStorage via the
-// existing session-host-secret helpers; only the *auth + transport* moved.
+// The host's identity (display name, avatar) stays in localStorage and the
+// game transport is entirely PartyKit.
 
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -23,7 +23,7 @@ import type {
   VoteCastPayload,
   VotesRevealedPayload,
 } from '@/lib/game-types'
-import { getHostSession, updateHostSession } from '@/lib/session-host-secret'
+import { readHostProfile, updateHostProfile } from '@/lib/party-ticket-client'
 import type { GameCard } from '@/lib/store'
 
 import { ActiveCardView } from './ActiveCardView'
@@ -62,7 +62,7 @@ export default function PartyHostScreen({ pin, initialCards, partyToken }: Props
   >(null)
 
   useEffect(() => {
-    const stored = getHostSession(pin)
+    const stored = readHostProfile(pin)
     if (stored?.hostName) setHostName(stored.hostName)
     if (stored?.hostAvatar) setHostAvatar(stored.hostAvatar)
   }, [pin])
@@ -148,7 +148,7 @@ export default function PartyHostScreen({ pin, initialCards, partyToken }: Props
 
   const handleSetupComplete = useCallback(() => {
     if (!hostName.trim() || !hostAvatar) return
-    updateHostSession(pin, { hostName: hostName.trim(), hostAvatar })
+    updateHostProfile(pin, { hostName: hostName.trim(), hostAvatar })
     setPhase('lobby')
   }, [pin, hostName, hostAvatar])
 

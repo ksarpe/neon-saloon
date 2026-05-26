@@ -1,7 +1,7 @@
 // Pure reducers for the classic ("trivia") game mode. Each function takes the
 // current RoomState + a validated input, returns the next state plus any
 // events to broadcast — or an error with an HTTP-ish status code so the server
-// can ack the originating message accordingly. No I/O, no Appwrite, no
+// can ack the originating message accordingly. No I/O, no framework imports, no
 // PartyKit internals — easy to unit-test in isolation.
 
 import type {
@@ -42,13 +42,24 @@ export function applyJoin(
     return { ok: true, state, events: [], extra: { player: existing } }
   }
 
+  // HighLow players belong to a team; resolve the name from the teams array
+  // (which the host populated via applyHighLowSetup before players join).
+  let teamId: string | null = null
+  let teamName: string | null = null
+  if (state.gameMode === 'highlow' && input.teamId) {
+    const team = state.teams.find((t) => t.teamId === input.teamId)
+    if (!team) return { ok: false, error: 'Team not found', code: 400 }
+    teamId = team.teamId
+    teamName = team.teamName
+  }
+
   const allocatedName = allocatePlayerName(input.playerName, state.players)
   const player: RoomPlayer = {
     playerId: input.playerId,
     playerName: allocatedName,
     avatar: input.avatar ?? "default.png",
-    teamId: null,
-    teamName: null,
+    teamId,
+    teamName,
     joinedAt: Date.now(),
   }
 

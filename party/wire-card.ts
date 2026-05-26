@@ -1,6 +1,5 @@
-// Card / score-entry sanitisers for the PartyKit room. Mirrors the shape and
-// behaviour of src/lib/session-payloads.ts but is self-contained (depends only
-// on party/validators.ts) so the Workers bundle is clean.
+// Card / score-entry sanitisers for the PartyKit room. Self-contained
+// (depends only on party/validators.ts) so the Workers bundle is clean.
 
 import type {
   ScoreEntry,

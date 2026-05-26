@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import { ChevronRight, Loader2 } from 'lucide-react'
 
-import type { SessionTeam } from '@/lib/appwrite/sessions'
+import type { SessionTeam } from '@/lib/session-types'
 import type { HighLowRoundResultPayload } from '@/lib/game-types'
 
 interface Props {

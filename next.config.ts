@@ -1,9 +1,5 @@
 import type { NextConfig } from 'next'
 
-const appwriteOrigin = getOrigin(
-  process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT,
-  'https://cloud.appwrite.io'
-)
 const contentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
@@ -14,7 +10,7 @@ const contentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline'",
   "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
   "frame-src 'self' https://challenges.cloudflare.com",
-  `connect-src 'self' ${appwriteOrigin} wss://cloud.appwrite.io https://api.stripe.com https://*.stripe.com https://challenges.cloudflare.com`,
+  "connect-src 'self' https://api.stripe.com https://*.stripe.com https://challenges.cloudflare.com",
   'upgrade-insecure-requests',
 ].join('; ')
 const productionSecurityHeaders =
@@ -24,15 +20,6 @@ const productionSecurityHeaders =
         { key: 'Content-Security-Policy', value: contentSecurityPolicy },
       ]
     : []
-
-function getOrigin(value: string | undefined, fallback: string) {
-  if (!value) return fallback
-  try {
-    return new URL(value).origin
-  } catch {
-    return fallback
-  }
-}
 
 const nextConfig: NextConfig = {
   reactCompiler: true,

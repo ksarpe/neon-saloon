@@ -10,11 +10,9 @@ import { ProModal } from '@/components/ui/ContentGate'
 import { QUESTION_CATEGORIES } from '@/config/games/categories'
 import { ALL_CATEGORIES_OPTION } from '@/config/games/category-selection'
 import { useContentAccess } from '@/hooks/useContentAccess'
-import type { SessionTeam } from '@/lib/appwrite/sessions'
 import { useBackButton } from '@/lib/back-button-context'
 import { checkAccess } from '@/lib/content-access'
 import { QUESTIONS_PER_GAME } from '@/lib/games/question-limit'
-import { hostJsonHeaders } from '@/lib/session-host-secret'
 
 export type NeverSource = 'classic' | 'spicy' | 'uncensored' | 'own' | 'all'
 
@@ -387,109 +385,6 @@ export function TriviaDeckState({
           </>
         )}
       </div>
-    </PickerShell>
-  )
-}
-
-// ─── HighLow team setup ────────────────────────────────────────────────────────
-
-export function HighLowTeamSetup({
-  pin,
-  onSetup,
-  onBack,
-}: {
-  pin: string
-  onSetup: (t1: SessionTeam, t2: SessionTeam) => void
-  onBack: () => void
-}) {
-  const [name1, setName1] = useState('Dziewice')
-  const [name2, setName2] = useState('Zdziry')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const handleSetup = async () => {
-    if (!name1.trim() || !name2.trim() || loading) return
-    setLoading(true)
-    setError(null)
-    try {
-      const res = await fetch(`/api/sessions/${pin}/highlow/setup`, {
-        method: 'POST',
-        headers: hostJsonHeaders(pin),
-        body: JSON.stringify({ team1Name: name1.trim(), team2Name: name2.trim() }),
-      })
-      if (!res.ok) throw new Error()
-      const { team1, team2 } = await res.json()
-      onSetup(team1, team2)
-    } catch {
-      setError('Nie udało się utworzyć drużyn. Spróbuj ponownie.')
-      setLoading(false)
-    }
-  }
-
-  return (
-    <PickerShell
-      title="Utwórz bandy"
-      subtitle="Gracze dołączą do jednej z dwóch band przed rozpoczęciem gry"
-      onBack={onBack}
-    >
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="flex flex-col gap-5"
-      >
-        {/* Team 1 */}
-        <div className="flex flex-col gap-2">
-          <label className="text-text-muted text-xs font-semibold tracking-normal uppercase">
-            Banda 1
-          </label>
-          <input
-            type="text"
-            value={name1}
-            onChange={(e) => setName1(e.target.value)}
-            maxLength={20}
-            placeholder="np. Dziewice"
-            className="bg-saloon-surface text-text-primary placeholder:text-text-muted w-full rounded-xl border-2 px-4 py-3 text-base font-bold transition-colors focus:outline-none"
-            style={{
-              borderColor: name1.trim() ? 'var(--neon-pink)' : 'var(--saloon-border)',
-            }}
-          />
-        </div>
-
-        {/* Team 2 */}
-        <div className="flex flex-col gap-2">
-          <label className="text-text-muted text-xs font-semibold tracking-normal uppercase">
-            Banda 2
-          </label>
-          <input
-            type="text"
-            value={name2}
-            onChange={(e) => setName2(e.target.value)}
-            maxLength={20}
-            placeholder="np. Zdziry"
-            className="bg-saloon-surface text-text-primary placeholder:text-text-muted w-full rounded-xl border-2 px-4 py-3 text-base font-bold transition-colors focus:outline-none"
-            style={{
-              borderColor: name2.trim() ? 'var(--sheriff-pink)' : 'var(--saloon-border)',
-            }}
-          />
-        </div>
-
-        {error && <p className="text-center text-xs text-red-400">{error}</p>}
-
-        <Button
-          type="primary"
-          size="lg"
-          disabled={!name1.trim() || !name2.trim() || loading}
-          onClick={handleSetup}
-          className="w-full"
-        >
-          {loading ? (
-            <Loader2 size={18} className="animate-spin" />
-          ) : (
-            'Utwórz bandy i otwórz poczekalnie'
-          )}
-        </Button>
-      </motion.div>
     </PickerShell>
   )
 }
