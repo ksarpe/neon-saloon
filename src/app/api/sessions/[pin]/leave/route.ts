@@ -21,7 +21,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     const playerId = requiredString(body.playerId, 'playerId', 80)
     const playerSecret = optionalString(body.playerSecret, 'playerSecret', 256) ?? undefined
 
-    const result = await withSessionTransaction(async (store) => {
+    const result = await withSessionTransaction(pin, async (store) => {
       const session = await store.getSession(pin)
       if (!session) return { alreadyGone: true }
 

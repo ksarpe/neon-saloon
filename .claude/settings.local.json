@@ -72,7 +72,10 @@
       "Bash(echo \"TSC_EXIT_$?\")",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" --max-time 2 http://localhost:3100/api/sessions/000000)",
       "Bash(taskkill //F //IM node.exe //FI \"WINDOWTITLE eq next*\")",
-      "Bash(pkill -f \"next dev -p 3100\")"
+      "Bash(pkill -f \"next dev -p 3100\")",
+      "Bash(bun add *)",
+      "Bash(E2E_BASE_URL=http://localhost:3001 npx playwright test party-skeleton --reporter=list)",
+      "Bash(E2E_BASE_URL=http://localhost:3001 npx playwright test classic-flow --reporter=list)"
     ]
   }
 }

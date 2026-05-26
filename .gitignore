@@ -37,6 +37,11 @@ yarn-error.log*
 .env*
 !.env.example
 
+# partykit local dev secrets + build cache
+.dev.vars
+!.dev.vars.example
+.partykit/
+
 # vercel
 .vercel
 

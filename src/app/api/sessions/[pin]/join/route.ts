@@ -74,7 +74,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     const playerId = `player_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`
     const playerSecret = createPlayerSecret()
 
-    const joined = await withSessionTransaction(async (store) => {
+    const joined = await withSessionTransaction(pin, async (store) => {
       const session = await store.getSession(pin)
       if (!session) {
         return { response: NextResponse.json({ error: 'Session not found' }, { status: 404 }) }

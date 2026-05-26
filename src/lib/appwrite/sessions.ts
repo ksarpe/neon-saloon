@@ -332,7 +332,7 @@ export async function updateSession(
   pin: string,
   patch: Partial<Omit<SessionData, 'pin'>>
 ): Promise<SessionData | null> {
-  return withSessionTransaction(async (store) => {
+  return withSessionTransaction(pin, async (store) => {
     const existing = await store.getSession(pin)
     if (!existing) return null
     const updated = { ...existing, ...patch }
@@ -341,7 +341,27 @@ export async function updateSession(
   })
 }
 
+// Per-pin in-process serialization queue. Concurrent writes to the SAME session
+// (10 players voting at once) chain here so they hit Appwrite one-at-a-time —
+// no transaction conflicts on the hot row from this instance. Cross-instance
+// races still rely on retryOnConflict as fallback. Independent pins do not
+// contend with each other, so cross-session throughput is unaffected.
+const pinWriteQueues = new Map<string, Promise<unknown>>()
+
+function runSerialPerPin<T>(pin: string, operation: () => Promise<T>): Promise<T> {
+  const previous = pinWriteQueues.get(pin) ?? Promise.resolve()
+  // Ignore previous failures when chaining — they're already handled by their own caller.
+  const current = previous.catch(() => undefined).then(operation)
+  pinWriteQueues.set(pin, current)
+  // Free the map entry once the chain has fully drained (no later queuers).
+  void current.finally(() => {
+    if (pinWriteQueues.get(pin) === current) pinWriteQueues.delete(pin)
+  })
+  return current
+}
+
 export async function withSessionTransaction<T>(
+  pin: string,
   callback: (store: {
     getSession: (pin: string) => Promise<SessionData | null>
     saveSession: (data: SessionData) => Promise<void>
@@ -354,16 +374,10 @@ export async function withSessionTransaction<T>(
     appendEvent: (pin: string, event: SessionEvent) => void
   }) => Promise<T>
 ): Promise<T> {
-  // Retry the whole transaction with jittered backoff: concurrent callers (e.g.
-  // many players joining/voting at once) contend on the same session row, and
-  // without retries the losers throw — dropping a join or a vote. Each retry
-  // re-runs the callback against a fresh transaction, so the read-modify-write
-  // is recomputed on the latest committed state (no stale writes, no dupes).
-  //
-  // This is a heavier critical section than a single event append (transaction
-  // create + read + write + commit), so it gets a larger attempt budget and a
-  // wider backoff window to spread ~10 simultaneous writers far enough apart.
-  return retryOnConflict(
+  // Two layers of concurrency control: serialize per pin in-process so calls
+  // from this instance don't fight, then retry with jittered backoff so a true
+  // cross-instance collision converges instead of dropping a write.
+  return runSerialPerPin(pin, () => retryOnConflict(
     async () => {
       const db = getTablesDB()
       const transaction = await db.createTransaction()
@@ -403,8 +417,8 @@ export async function withSessionTransaction<T>(
         throw err
       }
     },
-    { maxAttempts: 20, baseDelayMs: 50, maxDelayMs: 1500 }
-  )
+    { maxAttempts: 10, baseDelayMs: 50, maxDelayMs: 800 }
+  ))
 }
 
 /**

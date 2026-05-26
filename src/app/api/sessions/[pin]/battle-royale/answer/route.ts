@@ -32,7 +32,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     const answerIndex = requiredInteger(body.answerIndex, 'answerIndex', -1, 20)
     const answerText = optionalString(body.answerText, 'answerText', INPUT_LIMITS.answerText) ?? ''
 
-    const result = await withSessionTransaction(async (store) => {
+    const result = await withSessionTransaction(pin, async (store) => {
       const session = await store.getSession(pin)
       if (!session) return { response: sessionNotFoundResponse() }
 

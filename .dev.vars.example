@@ -1,0 +1,4 @@
+# Copy to .dev.vars (gitignored) for local PartyKit development.
+# The value MUST match PARTY_AUTH_SECRET in .env.local so tokens issued by
+# Next.js's /api/party/ticket are accepted by the PartyKit room.
+PARTY_AUTH_SECRET=replace-with-a-long-random-string
