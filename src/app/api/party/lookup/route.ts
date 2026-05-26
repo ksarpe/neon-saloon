@@ -5,13 +5,17 @@ import { SESSION_PIN_LENGTH } from '@/lib/session-pin'
 
 function getPartyKitBaseUrl(): string {
   const configured =
-    process.env.PARTYKIT_HOST ??
-    process.env.NEXT_PUBLIC_PARTYKIT_HOST ??
-    '127.0.0.1:1999'
+    process.env.PARTYKIT_HOST ?? process.env.NEXT_PUBLIC_PARTYKIT_HOST ?? '127.0.0.1:1999'
+
   if (configured.startsWith('http://') || configured.startsWith('https://')) {
     return configured.replace(/\/$/, '')
   }
-  return `http://${configured.replace(/\/$/, '')}`
+
+  // Jeśli to localhost lub 127.0.0.1, użyj http. W przeciwnym razie wymuś https.
+  const isLocal = configured.includes('localhost') || configured.includes('127.0.0.1')
+  const protocol = isLocal ? 'http://' : 'https://'
+
+  return `${protocol}${configured.replace(/\/$/, '')}`
 }
 
 function cleanPin(value: string | null): string | null {
@@ -27,7 +31,7 @@ export async function GET(request: Request) {
   if (!limit.allowed) {
     return NextResponse.json(
       { error: 'Too many requests', retryAfter: limit.retryAfter },
-      { status: 429, headers: rateLimitHeaders(limit) },
+      { status: 429, headers: rateLimitHeaders(limit) }
     )
   }
 

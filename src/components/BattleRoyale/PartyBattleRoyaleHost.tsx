@@ -309,7 +309,7 @@ export function PartyBattleRoyaleHost({ pin, partyToken }: Props) {
     } finally {
       setLoading(false)
     }
-  }, [loading, send, timerDuration, startTimer])
+  }, [loading, send])
 
   const handleFinish = useCallback(async () => {
     if (finishLoading || !send) return
@@ -434,7 +434,7 @@ export function PartyBattleRoyaleHost({ pin, partyToken }: Props) {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.92, y: -6 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute top-10 right-0 z-[100] min-w-[180px] rounded-2xl border p-1.5 shadow-xl"
+                        className="absolute top-10 right-0 z-100 min-w-[180px] rounded-2xl border p-1.5 shadow-xl"
                         style={{
                           borderColor: 'rgba(255,220,180,0.15)',
                           backgroundColor: 'rgba(13,8,24,0.95)',
