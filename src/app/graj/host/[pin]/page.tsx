@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from 'react'
 import BattleRoyaleHost from '@/components/BattleRoyale/BattleRoyaleHost'
 import HostHighLowScreen from '@/components/HighLow/HostHighLowScreen'
 import HostScreen from '@/components/Host'
+import { readHostCredentials } from '@/lib/party-ticket-client'
 import {
   CategoryPicker,
   HighLowTeamSetup,
@@ -305,5 +306,10 @@ export default function HostPage() {
     )
   }
 
-  return <HostScreen pin={pin} initialCards={deck} gameMode={mode} />
+  // For PartyKit-backed modes (classic family) the page sits behind the host's
+  // signed party token stored at /graj/host creation time. We pass it down to
+  // HostScreen which then opens a WebSocket to the room. Appwrite-backed modes
+  // ignore this prop entirely.
+  const partyToken = readHostCredentials()?.partyToken
+  return <HostScreen pin={pin} initialCards={deck} gameMode={mode} partyToken={partyToken} />
 }

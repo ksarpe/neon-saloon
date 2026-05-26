@@ -12,71 +12,71 @@ import type {
   StandardGameSettings,
   TeamScoreEntry,
   WireCard,
-} from "../src/lib/game-types";
+} from '../src/lib/game-types'
 
-export type { SessionEvent } from "../src/lib/game-types";
+export type { SessionEvent } from '../src/lib/game-types'
 
 // ─── Client → Server ─────────────────────────────────────────────────────────
 // Every command carries a `requestId` so the server can ack the exact request
 // and the client can resolve a promise / surface errors.
 
 export type ClientHostStart = {
-  type: "host:start";
-  requestId: string;
-  card: WireCard;
-  deck?: WireCard[];
-  settings?: StandardGameSettings;
-};
+  type: 'host:start'
+  requestId: string
+  card: WireCard
+  deck?: WireCard[]
+  settings?: StandardGameSettings
+}
 
 export type ClientHostReveal = {
-  type: "host:reveal";
-  requestId: string;
-  cardIndex: number;
-  correctAnswer?: string;
+  type: 'host:reveal'
+  requestId: string
+  cardIndex: number
+  correctAnswer?: string
   votes: Array<{
-    playerId: string;
-    playerName: string;
-    teamId?: string | null;
-    teamName?: string | null;
-    answerIndex: number;
-    answerText: string;
-  }>;
-  scores: ScoreEntry[];
-  teamScores: TeamScoreEntry[];
-};
+    playerId: string
+    playerName: string
+    teamId?: string | null
+    teamName?: string | null
+    answerIndex: number
+    answerText: string
+  }>
+  scores: ScoreEntry[]
+  teamScores: TeamScoreEntry[]
+}
 
 export type ClientHostNext = {
-  type: "host:next";
-  requestId: string;
-  cardIndex: number;
-  card?: WireCard;
-};
+  type: 'host:next'
+  requestId: string
+  cardIndex: number
+  card?: WireCard
+}
 
 export type ClientHostFinish = {
-  type: "host:finish";
-  requestId: string;
-  scores: ScoreEntry[];
-  teamScores: TeamScoreEntry[];
-  showPlayerPoints?: boolean;
-};
+  type: 'host:finish'
+  requestId: string
+  scores: ScoreEntry[]
+  teamScores: TeamScoreEntry[]
+  showPlayerPoints?: boolean
+}
 
 export type ClientPlayerVote = {
-  type: "player:vote";
-  requestId: string;
-  cardIndex: number;
-  answerIndex: number;
-  answerText?: string;
-};
+  type: 'player:vote'
+  requestId: string
+  cardIndex: number
+  answerIndex: number
+  answerText?: string
+}
 
 export type ClientPlayerLeave = {
-  type: "player:leave";
-  requestId: string;
-};
+  type: 'player:leave'
+  requestId: string
+}
 
 export type ClientPing = {
-  type: "ping";
-  requestId: string;
-};
+  type: 'ping'
+  requestId: string
+}
 
 export type ClientMessage =
   | ClientPing
@@ -85,41 +85,41 @@ export type ClientMessage =
   | ClientHostNext
   | ClientHostFinish
   | ClientPlayerVote
-  | ClientPlayerLeave;
+  | ClientPlayerLeave
 
 // ─── Server → Client ─────────────────────────────────────────────────────────
 
-export type GameMode = "classic" | "highlow" | "battle-royale";
-export type SessionStatus = "waiting" | "active" | "finished";
+export type GameMode = 'classic' | 'highlow' | 'battle-royale'
+export type SessionStatus = 'waiting' | 'active' | 'finished'
 
 export type GameStateSnapshot = {
-  pin: string;
-  gameMode: GameMode;
-  status: SessionStatus;
-  cardIndex: number;
+  pin: string
+  gameMode: GameMode
+  status: SessionStatus
+  cardIndex: number
   players: Array<{
-    playerId: string;
-    playerName: string;
-    avatar: string;
-    teamId: string | null;
-    teamName: string | null;
-  }>;
+    playerId: string
+    playerName: string
+    avatar: string
+    teamId: string | null
+    teamName: string | null
+  }>
   teams: Array<{
-    teamId: string;
-    teamName: string;
-    color: string;
-    emoji: string;
-  }>;
-  currentCard?: WireCard;
+    teamId: string
+    teamName: string
+    color: string
+    emoji: string
+  }>
+  currentCard?: WireCard
   // Mode-specific snapshots (highlow / battle-royale) appear here in their phases.
-};
+}
 
-export type ServerPong = { type: "pong"; requestId: string };
-export type ServerAckOk = { type: "ack"; requestId: string; ok: true };
-export type ServerAckFail = { type: "ack"; requestId: string; ok: false; error: string };
-export type ServerError = { type: "error"; requestId?: string; message: string };
-export type ServerStateSnapshot = { type: "state-snapshot"; state: GameStateSnapshot };
-export type ServerEvent = { type: "event"; event: SessionEvent };
+export type ServerPong = { type: 'pong'; requestId: string }
+export type ServerAckOk = { type: 'ack'; requestId: string; ok: true }
+export type ServerAckFail = { type: 'ack'; requestId: string; ok: false; error: string }
+export type ServerError = { type: 'error'; requestId?: string; message: string }
+export type ServerStateSnapshot = { type: 'state-snapshot'; state: GameStateSnapshot }
+export type ServerEvent = { type: 'event'; event: SessionEvent }
 
 export type ServerMessage =
   | ServerPong
@@ -127,4 +127,4 @@ export type ServerMessage =
   | ServerAckFail
   | ServerError
   | ServerStateSnapshot
-  | ServerEvent;
+  | ServerEvent

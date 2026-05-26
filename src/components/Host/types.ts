@@ -48,6 +48,9 @@ export interface HostScreenProps {
   pin: string
   initialCards: GameCard[]
   gameMode?: string
+  /** PartyKit auth token. When present, HostScreen runs on PartyKit WS instead
+   *  of the legacy Appwrite REST + Realtime path. */
+  partyToken?: string
 }
 
 export function computeTeamScores(scores: ScoreEntry[]): TeamScoreEntry[] {

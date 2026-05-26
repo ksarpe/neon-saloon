@@ -1,6 +1,6 @@
 {
   "$schema": "https://www.partykit.io/schema.json",
-  "name": "neon-saloon",
+  "name": "lastrodeo",
   "main": "party/server.ts",
   "compatibilityDate": "2024-11-12"
 }

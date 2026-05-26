@@ -20,6 +20,7 @@ import {
 } from '@/lib/session-player-secret'
 
 import { GameOverView } from './GameOverView'
+import PartyPlayerGameScreen from './PartyPlayerGameScreen'
 import { PlayerHeader } from './PlayerHeader'
 import { PlayingView } from './PlayingView'
 import { RevealView } from './RevealView'
@@ -47,7 +48,28 @@ export default function PlayerGameScreen({
   initialCardStartedAt,
   initialHasVoted,
   initialSettings,
+  partyToken,
 }: PlayerGameScreenProps) {
+  // PartyKit-backed rooms route to the WebSocket implementation. Without a
+  // party token we stay on the legacy Appwrite REST + Realtime path below.
+  if (partyToken) {
+    return (
+      <PartyPlayerGameScreen
+        pin={pin}
+        partyToken={partyToken}
+        playerId={playerId}
+        playerName={playerName}
+        teamId={teamId}
+        teamName={teamName}
+        avatar={avatar}
+        initialCard={initialCard}
+        initialCardIndex={initialCardIndex}
+        initialCardStartedAt={initialCardStartedAt}
+        initialHasVoted={initialHasVoted}
+        initialSettings={initialSettings}
+      />
+    )
+  }
   const [phase, setPhase] = useState<Phase>(initialHasVoted ? 'voted' : 'playing')
   const [isFlipped, setIsFlipped] = useState(Boolean(initialHasVoted))
   const [currentCard, setCurrentCard] = useState<WireCard>(initialCard)

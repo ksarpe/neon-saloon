@@ -75,7 +75,9 @@
       "Bash(pkill -f \"next dev -p 3100\")",
       "Bash(bun add *)",
       "Bash(E2E_BASE_URL=http://localhost:3001 npx playwright test party-skeleton --reporter=list)",
-      "Bash(E2E_BASE_URL=http://localhost:3001 npx playwright test classic-flow --reporter=list)"
+      "Bash(E2E_BASE_URL=http://localhost:3001 npx playwright test classic-flow --reporter=list)",
+      "Bash(E2E_BASE_URL=http://localhost:3001 npx playwright test party-classic --reporter=list)",
+      "Bash(E2E_BASE_URL=http://localhost:3001 npx playwright test --grep @party --reporter=list)"
     ]
   }
 }

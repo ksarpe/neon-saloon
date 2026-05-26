@@ -15,4 +15,6 @@ export interface PlayerGameScreenProps {
   // Set on resume when the player has already voted for the current card
   initialHasVoted?: boolean
   initialSettings?: StandardGameSettings
+  /** PartyKit auth token. When present, the screen runs on PartyKit WS. */
+  partyToken?: string
 }

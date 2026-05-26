@@ -28,6 +28,7 @@ import type { GameCard } from '@/lib/store'
 import { ActiveCardView } from './ActiveCardView'
 import { HostHeader } from './HostHeader'
 import { LobbyView } from './LobbyView'
+import PartyHostScreen from './PartyHostScreen'
 import { SetupView } from './SetupView'
 import type {
   HostPhase,
@@ -39,7 +40,12 @@ import type {
 } from './types'
 import { computeTeamScores } from './types'
 
-export default function HostScreen({ pin, initialCards }: HostScreenProps) {
+export default function HostScreen({ pin, initialCards, partyToken }: HostScreenProps) {
+  // PartyKit-backed modes route to the WebSocket implementation. Modes without
+  // a party token (battle-royale, highlow) continue on the Appwrite path below.
+  if (partyToken) {
+    return <PartyHostScreen pin={pin} initialCards={initialCards} partyToken={partyToken} />
+  }
   const { setHidden: setBackHidden } = useBackButton()
   useEffect(() => {
     setBackHidden(true)

@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { ProModal } from '@/components/ui/ContentGate'
 import { useContentAccess } from '@/hooks/useContentAccess'
 import { checkAccess } from '@/lib/content-access'
+import { fetchHostTicket, storeHostCredentials } from '@/lib/party-ticket-client'
 import {
   clearHostSession,
   clearOtherHostSessions,
@@ -20,6 +21,10 @@ import {
   hostJsonHeaders,
   saveHostSecret,
 } from '@/lib/session-host-secret'
+
+// Modes that have been migrated to PartyKit (classic family). BR + HighLow still
+// use Appwrite sessions until phase 5 ports them too.
+const PARTYKIT_MODES = new Set(['trivia', 'categories', 'never'])
 
 const GAME_MODES = [
   {
@@ -165,25 +170,42 @@ export default function HostSetupPage() {
     setCreating(true)
     setError(null)
     try {
-      const res = await fetch('/api/sessions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          gameMode: selectedMode,
+      if (PARTYKIT_MODES.has(selectedMode)) {
+        // Classic family runs on PartyKit — the room is materialised on first
+        // WebSocket connect; this endpoint only mints a signed token.
+        const ticket = await fetchHostTicket({
+          hostName: 'Host',
+          gameMode: 'classic',
           botProtectionToken,
-        }),
-      })
-      const payload = await res.json().catch(() => ({}))
-      if (!res.ok) {
-        throw new Error(
-          typeof payload.error === 'string' ? payload.error : 'Nie udało się utworzyć gry.'
-        )
+        })
+        storeHostCredentials({
+          pin: ticket.pin,
+          partyToken: ticket.partyToken,
+          gameMode: selectedMode,
+        })
+        router.push(`/graj/host/${ticket.pin}?mode=${selectedMode}`)
+      } else {
+        // Battle-royale + HighLow still on Appwrite until phase 5.
+        const res = await fetch('/api/sessions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            gameMode: selectedMode,
+            botProtectionToken,
+          }),
+        })
+        const payload = await res.json().catch(() => ({}))
+        if (!res.ok) {
+          throw new Error(
+            typeof payload.error === 'string' ? payload.error : 'Nie udało się utworzyć gry.'
+          )
+        }
+        const { pin, hostSecret } = payload
+        if (typeof hostSecret === 'string') {
+          saveHostSecret(pin, hostSecret)
+        }
+        router.push(`/graj/host/${pin}?mode=${selectedMode}`)
       }
-      const { pin, hostSecret } = payload
-      if (typeof hostSecret === 'string') {
-        saveHostSecret(pin, hostSecret)
-      }
-      router.push(`/graj/host/${pin}?mode=${selectedMode}`)
     } catch (createError) {
       setError(createError instanceof Error ? createError.message : 'Nie udało się utworzyć gry.')
       setCreating(false)

@@ -9,6 +9,7 @@ import PlayerHighLowScreen from '@/components/HighLow/PlayerHighLowScreen'
 import PlayerGameScreen from '@/components/PlayerGame'
 import { useRealtimeGame as useGameSocket } from '@/hooks/useRealtimeGame'
 import { ensureAnonymousSession } from '@/lib/appwrite/client'
+import { fetchJoinTicket } from '@/lib/party-ticket-client'
 import { useBackButton } from '@/lib/back-button-context'
 import type {
   BRRoundStartPayload,
@@ -48,6 +49,9 @@ export default function JoinGameForm() {
   const [liveTeams, setLiveTeams] = useState<LiveTeam[]>([])
   const [playerInfo, setPlayerInfo] = useState<PlayerInfo | null>(null)
   const [gameMode, setGameMode] = useState<string>('trivia')
+  // Set when the room is on PartyKit (classic family). Routes the playing
+  // screen straight to PartyPlayerGameScreen via PlayerGameScreen's branch.
+  const [partyToken, setPartyToken] = useState<string | null>(null)
 
   // Regular game start data (quiz/never/categories)
   const [gameStartData, setGameStartData] = useState<GameStartedPayload | null>(null)
@@ -438,6 +442,34 @@ export default function JoinGameForm() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ playerName, avatar, teamId }),
         })
+
+        // If Appwrite says the session doesn't exist, the host may have created
+        // it on PartyKit instead — try the WebSocket flow before giving up.
+        if (res.status === 404) {
+          try {
+            const ticket = await fetchJoinTicket({
+              pin,
+              playerName,
+              avatar: avatar ?? undefined,
+              teamId: teamId ?? undefined,
+            })
+            setPartyToken(ticket.partyToken)
+            setPlayerInfo({
+              playerId: ticket.playerId,
+              avatar: avatar ?? 'default.png',
+              teamId: null,
+              teamName: null,
+            })
+            // PartyPlayerGameScreen handles the waiting-for-host phase itself,
+            // so we transition straight into "playing" — no separate WaitingState.
+            setStep('playing')
+            return
+          } catch (partyErr) {
+            console.warn('[PartyKit] join ticket failed:', partyErr)
+            // Fall through to error message below.
+          }
+        }
+
         if (!res.ok) throw new Error()
         const data = await res.json()
         const resolvedPlayerName =
@@ -500,6 +532,30 @@ export default function JoinGameForm() {
           initialRoundData={brRoundData}
           initialIsEliminated={brIsEliminated}
           initialHasAnswered={brHasAnswered}
+        />
+      )
+    }
+    // PartyKit-backed flow: PartyPlayerGameScreen handles the "waiting for host
+    // to start" state internally via the room's snapshot, so we don't gate on
+    // gameStartData (it's only produced by the legacy Appwrite Realtime path).
+    if (partyToken) {
+      return (
+        <PlayerGameScreen
+          pin={pin}
+          playerId={playerInfo.playerId}
+          playerName={playerName}
+          teamId={playerInfo.teamId}
+          teamName={playerInfo.teamName}
+          avatar={playerInfo.avatar}
+          // Card/index are unknown until the host starts the game — the WS
+          // snapshot fills them in. Pass safe placeholders.
+          initialCard={{
+            id: 'placeholder',
+            type: 'QUIZ',
+            description: 'Waiting for host…',
+          } as WireCard}
+          initialCardIndex={0}
+          partyToken={partyToken}
         />
       )
     }
