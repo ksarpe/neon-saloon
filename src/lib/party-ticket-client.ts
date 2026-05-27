@@ -10,6 +10,7 @@ const STORAGE_KEY_HOST_PROFILE_PREFIX = 'neon-saloon:party-host-profile:'
 
 export type HostTicket = { pin: string; partyToken: string; role: 'host' }
 export type JoinTicket = { playerId: string; partyToken: string; role: 'player' }
+export type ConnectTicket = { connectToken: string; expiresAt: number }
 export type PartyRoomLookup = {
   pin: string
   gameMode: 'classic' | 'highlow' | 'battle-royale'
@@ -89,9 +90,37 @@ export function fetchJoinTicket(args: {
   })
 }
 
-export async function fetchPartyRoomLookup(pin: string): Promise<PartyRoomLookup | null> {
+export function fetchPartyConnectToken(partyToken: string): Promise<ConnectTicket> {
+  return postPartyConnectToken<ConnectTicket>({ partyToken })
+}
+
+async function postPartyConnectToken<T>(body: Record<string, unknown>): Promise<T> {
+  const res = await fetch('/api/party/connect-token', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    let message = `Connect token request failed (${res.status})`
+    try {
+      const data = (await res.json()) as { error?: string }
+      if (data.error) message = data.error
+    } catch {
+      // ignore
+    }
+    throw new Error(message)
+  }
+  return (await res.json()) as T
+}
+
+export async function fetchPartyRoomLookup(
+  pin: string,
+  options?: { authToken?: string | null; hostToken?: string | null }
+): Promise<PartyRoomLookup | null> {
+  const authToken = options?.authToken ?? options?.hostToken
   const res = await fetch(`/api/party/lookup?pin=${encodeURIComponent(pin)}`, {
     cache: 'no-store',
+    headers: authToken ? { 'x-party-token': authToken } : undefined,
   })
   if (res.status === 404) return null
   if (!res.ok) {

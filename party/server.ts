@@ -70,11 +70,17 @@ type PlayerMeta = {
 type ConnectionMeta = HostMeta | PlayerMeta
 
 const STORAGE_KEY = 'state'
+const MAX_CLIENT_MESSAGE_CHARS = 64 * 1024
 
 function getAuthSecret(env: unknown): string | null {
   if (!env || typeof env !== 'object') return null
   const value = (env as Record<string, unknown>).PARTY_AUTH_SECRET
   return typeof value === 'string' && value.length >= 16 ? value : null
+}
+
+function readAuthToken(request: { url: string }): string | null {
+  const url = new URL(request.url)
+  return url.searchParams.get('token')
 }
 
 export default class GameServer implements Party.Server {
@@ -96,8 +102,7 @@ export default class GameServer implements Party.Server {
   }
 
   static async onBeforeConnect(request: Party.Request, lobby: Party.Lobby) {
-    const url = new URL(request.url)
-    const token = url.searchParams.get('token')
+    const token = readAuthToken(request)
     if (!token) return new Response('Missing token', { status: 401 })
 
     const secret = getAuthSecret(lobby.env)
@@ -107,6 +112,9 @@ export default class GameServer implements Party.Server {
 
     const result = await verifyPartyToken(token, secret)
     if (!result.ok) return new Response(`Invalid token: ${result.reason}`, { status: 401 })
+    if (result.payload.tokenKind !== 'connect') {
+      return new Response('Invalid token purpose', { status: 401 })
+    }
     if (result.payload.pin !== lobby.id) {
       return new Response(
         `Token PIN ${result.payload.pin} does not match room ${lobby.id}`,
@@ -208,6 +216,11 @@ export default class GameServer implements Party.Server {
   // ─── Message dispatch ───────────────────────────────────────────────────────
 
   async onMessage(rawMessage: string, sender: Party.Connection) {
+    if (rawMessage.length > MAX_CLIENT_MESSAGE_CHARS) {
+      sender.close(1009, 'Message too large')
+      return
+    }
+
     let msg: ClientMessage
     try {
       msg = JSON.parse(rawMessage) as ClientMessage
@@ -500,8 +513,7 @@ export default class GameServer implements Party.Server {
     connection: Party.Connection,
     ctx: Party.ConnectionContext,
   ): Promise<PartyTokenPayload | null> {
-    const url = new URL(ctx.request.url)
-    const token = url.searchParams.get('token') ?? ''
+    const token = readAuthToken(ctx.request) ?? ''
     const secret = getAuthSecret(this.room.env)
     if (!secret) {
       connection.close(1011, 'PARTY_AUTH_SECRET missing')
@@ -510,6 +522,10 @@ export default class GameServer implements Party.Server {
     const result = await verifyPartyToken(token, secret)
     if (!result.ok) {
       connection.close(1008, `invalid token: ${result.reason}`)
+      return null
+    }
+    if (result.payload.tokenKind !== 'connect') {
+      connection.close(1008, 'invalid token purpose')
       return null
     }
     return result.payload

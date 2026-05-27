@@ -10,6 +10,7 @@
 export type HostTokenPayload = {
   pin: string;
   role: "host";
+  tokenKind: "party" | "connect";
   hostId: string;
   hostName: string;
   gameMode: string;
@@ -20,6 +21,7 @@ export type HostTokenPayload = {
 export type PlayerTokenPayload = {
   pin: string;
   role: "player";
+  tokenKind: "party" | "connect";
   playerId: string;
   playerName: string;
   avatar?: string;
@@ -111,6 +113,9 @@ function isPartyTokenPayload(value: unknown): value is PartyTokenPayload {
   if (!value || typeof value !== "object") return false;
   const v = value as Record<string, unknown>;
   if (typeof v.pin !== "string" || typeof v.iat !== "number" || typeof v.exp !== "number") {
+    return false;
+  }
+  if (v.tokenKind !== "party" && v.tokenKind !== "connect") {
     return false;
   }
   if (v.role === "host") {

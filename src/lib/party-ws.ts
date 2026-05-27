@@ -19,6 +19,7 @@ import type {
   SessionEvent,
 } from '../../party/protocol'
 import { getPartyKitHost } from './party-host'
+import { fetchPartyConnectToken } from './party-ticket-client'
 
 export type ConnectionStatus = 'connecting' | 'connected' | 'closed' | 'error'
 
@@ -57,7 +58,9 @@ export class PartyConnection {
       host: options.host ?? getPartyKitHost(),
       room: options.pin,
       party: 'main',
-      query: { token: options.partyToken, role: options.role },
+      query: async () => ({
+        token: (await fetchPartyConnectToken(options.partyToken)).connectToken,
+      }),
     })
 
     this.socket.addEventListener('open', () => this.setStatus('connected'))

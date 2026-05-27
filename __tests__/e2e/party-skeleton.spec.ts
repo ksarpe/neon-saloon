@@ -66,18 +66,36 @@ async function createPlayerTicket(pin: string, playerName: string): Promise<Play
   return (await res.json()) as PlayerTicket;
 }
 
+async function createConnectToken(partyToken: string): Promise<string> {
+  const res = await fetch(`${BASE_URL}/api/party/connect-token`, {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-forwarded-for": uniqueIp() },
+    body: JSON.stringify({ partyToken }),
+  });
+  if (res.status !== 200) {
+    throw new Error(`createConnectToken failed (${res.status}): ${await res.text()}`);
+  }
+  const data = (await res.json()) as { connectToken: string };
+  return data.connectToken;
+}
+
 type SocketHandle = {
   ws: WebSocket;
   messages: Array<Record<string, unknown>>;
 };
 
-function openSocket(pin: string, token: string, role: "host" | "player"): Promise<SocketHandle> {
+async function openSocket(
+  pin: string,
+  partyToken: string,
+  _role: "host" | "player",
+): Promise<SocketHandle> {
+  const connectToken = await createConnectToken(partyToken);
   return new Promise((resolve, reject) => {
-    const url = `ws://${PARTYKIT_HOST}/parties/main/${pin}?token=${encodeURIComponent(token)}&role=${role}`;
+    const url = `ws://${PARTYKIT_HOST}/parties/main/${pin}?token=${encodeURIComponent(connectToken)}`;
     const ws = new WebSocket(url);
     const messages: Array<Record<string, unknown>> = [];
 
-    const timer = setTimeout(() => reject(new Error("WS connect timeout")), 5000);
+    const timer = setTimeout(() => reject(new Error(`WS connect timeout (${_role})`)), 5000);
 
     ws.onmessage = (event) => {
       try {
@@ -97,9 +115,10 @@ function openSocket(pin: string, token: string, role: "host" | "player"): Promis
   });
 }
 
-function expectHostSocketRejected(pin: string, token: string): Promise<void> {
+async function expectHostSocketRejected(pin: string, partyToken: string): Promise<void> {
+  const connectToken = await createConnectToken(partyToken);
   return new Promise((resolve, reject) => {
-    const url = `ws://${PARTYKIT_HOST}/parties/main/${pin}?token=${encodeURIComponent(token)}&role=host`;
+    const url = `ws://${PARTYKIT_HOST}/parties/main/${pin}?token=${encodeURIComponent(connectToken)}`;
     const ws = new WebSocket(url);
     let sawSnapshot = false;
     let done = false;
@@ -130,6 +149,16 @@ function expectHostSocketRejected(pin: string, token: string): Promise<void> {
     ws.onerror = () => finish(true, "upgrade rejected");
     ws.onclose = () => finish(!sawSnapshot, "intruder host received a state snapshot");
     setTimeout(() => finish(false, "intruder host socket stayed open"), 1500);
+  });
+}
+
+function waitForClose(ws: WebSocket, timeoutMs = 3000): Promise<CloseEvent> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error("WS close timeout")), timeoutMs);
+    ws.onclose = (event) => {
+      clearTimeout(timer);
+      resolve(event);
+    };
   });
 }
 
@@ -260,6 +289,7 @@ test.describe("PartyKit skeleton @party", () => {
         {
           pin,
           role: "host",
+          tokenKind: "party",
           hostId: `host_intruder_${now}`,
           hostName: "Intruder",
           gameMode: "classic",
@@ -297,6 +327,20 @@ test.describe("PartyKit skeleton @party", () => {
       )) as { requestId: string; ok: boolean; error?: string };
       expect(ack.ok).toBe(false);
       expect(ack.error).toContain("Only players");
+    } finally {
+      ws.close();
+    }
+  });
+
+  test("zbyt duzy WebSocket frame zamyka polaczenie", async () => {
+    const { pin, partyToken } = await createHostTicket();
+    const { ws, messages } = await openSocket(pin, partyToken, "host");
+    try {
+      await waitFor(messages, (m) => m.type === "state-snapshot");
+      const closed = waitForClose(ws);
+      ws.send("x".repeat(70 * 1024));
+      const event = await closed;
+      expect(event.code).toBe(1009);
     } finally {
       ws.close();
     }

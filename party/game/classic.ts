@@ -22,6 +22,7 @@ export type ReducerOk<TExtra = undefined> = {
   extra?: TExtra
 }
 export type ReducerResult<TExtra = undefined> = ReducerOk<TExtra> | ReducerError
+export const MAX_PLAYERS_PER_ROOM = 40
 
 // ─── Lobby actions ───────────────────────────────────────────────────────────
 
@@ -39,6 +40,9 @@ export function applyJoin(
 
   if (state.status === "active") return { ok: false, error: "Game already started", code: 409 }
   if (state.status === "finished") return { ok: false, error: "Game already finished", code: 409 }
+  if (state.players.length >= MAX_PLAYERS_PER_ROOM) {
+    return { ok: false, error: "Room is full", code: 409 }
+  }
   // Classic + battle-royale don't use teams.
   if (state.gameMode !== "highlow" && input.teamId) {
     return { ok: false, error: "Teams are only available in Mniej więcej", code: 400 }

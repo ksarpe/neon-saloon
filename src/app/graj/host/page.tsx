@@ -107,7 +107,7 @@ export default function HostSetupPage() {
       if (!stored) return
 
       try {
-        const room = await fetchPartyRoomLookup(stored.pin)
+        const room = await fetchPartyRoomLookup(stored.pin, { hostToken: stored.partyToken })
         if (!room || room.status === 'finished') {
           clearHostCredentials()
           return

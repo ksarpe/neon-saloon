@@ -1,7 +1,5 @@
-// Issues short-lived signed tokens used to authenticate WebSocket connections
-// to the PartyKit room. The token IS the auth — the PartyKit room verifies it
-// in onBeforeConnect. The same PARTY_AUTH_SECRET must be configured on both
-// sides (.env.local for Next.js, .dev.vars / partykit secret for the room).
+// Issues signed party credentials. WebSocket handshakes exchange these for
+// short-lived connect tokens before reaching the PartyKit room.
 //
 // Two flows:
 //   create-host → caller becomes the host of a new room (premium-gated for
@@ -24,7 +22,7 @@ import {
 import { SESSION_PIN_LENGTH } from '@/lib/session-pin'
 
 const PREMIUM_GAME_MODES = new Set(['highlow', 'battle-royale'])
-const TOKEN_TTL_HOURS = 24
+const TOKEN_TTL_MINUTES = 90
 
 // Per-IP and global limits are applied per action so issuing a host ticket is throttled.
 const GLOBAL_CREATE_LIMITS = [
@@ -87,7 +85,7 @@ export async function POST(request: Request) {
     }
 
     const now = Date.now()
-    const exp = now + TOKEN_TTL_HOURS * 60 * 60 * 1000
+    const exp = now + TOKEN_TTL_MINUTES * 60 * 1000
 
     if (action === 'create-host') {
       for (const rl of GLOBAL_CREATE_LIMITS) {
@@ -139,7 +137,7 @@ export async function POST(request: Request) {
       const pin = generatePin()
       const hostId = generateHostId()
       const partyToken = await signPartyToken(
-        { pin, role: 'host', hostId, hostName, gameMode, iat: now, exp },
+        { pin, role: 'host', tokenKind: 'party', hostId, hostName, gameMode, iat: now, exp },
         secret
       )
 
@@ -189,7 +187,7 @@ export async function POST(request: Request) {
 
       const playerId = generatePlayerId()
       const partyToken = await signPartyToken(
-        { pin, role: 'player', playerId, playerName, avatar, teamId, iat: now, exp },
+        { pin, role: 'player', tokenKind: 'party', playerId, playerName, avatar, teamId, iat: now, exp },
         secret
       )
 

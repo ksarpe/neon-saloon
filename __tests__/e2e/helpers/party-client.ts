@@ -51,32 +51,49 @@ function randomClientIp(): string {
   return `10.${octet()}.${octet()}.${octet()}`
 }
 
+async function createConnectToken(baseUrl: string, partyToken: string): Promise<string> {
+  const res = await fetch(`${baseUrl}/api/party/connect-token`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-forwarded-for': randomClientIp() },
+    body: JSON.stringify({ partyToken }),
+  })
+  if (res.status !== 200) {
+    throw new Error(`connect token failed (${res.status}): ${await res.text()}`)
+  }
+  const data = (await res.json()) as { connectToken: string }
+  return data.connectToken
+}
+
 function openWebSocket(
+  baseUrl: string,
   partyKitHost: string,
   pin: string,
-  token: string,
-  role: 'host' | 'player',
+  partyToken: string,
+  _role: 'host' | 'player',
 ): Promise<WebSocket> {
-  return new Promise((resolve, reject) => {
-    const url = `ws://${partyKitHost}/parties/main/${pin}?token=${encodeURIComponent(token)}&role=${role}`
-    const ws = new WebSocket(url)
-    const timer = setTimeout(() => {
-      reject(new Error(`WS connect timeout (${pin}, ${role})`))
-      try {
-        ws.close()
-      } catch {
-        // ignore
-      }
-    }, 5000)
-    ws.onopen = () => {
-      clearTimeout(timer)
-      resolve(ws)
-    }
-    ws.onerror = () => {
-      clearTimeout(timer)
-      reject(new Error(`WS error before open (${pin}, ${role})`))
-    }
-  })
+  return createConnectToken(baseUrl, partyToken).then(
+    (connectToken) =>
+      new Promise((resolve, reject) => {
+        const url = `ws://${partyKitHost}/parties/main/${pin}?token=${encodeURIComponent(connectToken)}`
+        const ws = new WebSocket(url)
+        const timer = setTimeout(() => {
+          reject(new Error(`WS connect timeout (${pin}, ${_role})`))
+          try {
+            ws.close()
+          } catch {
+            // ignore
+          }
+        }, 5000)
+        ws.onopen = () => {
+          clearTimeout(timer)
+          resolve(ws)
+        }
+        ws.onerror = () => {
+          clearTimeout(timer)
+          reject(new Error(`WS error before open (${pin}, ${_role})`))
+        }
+      }),
+  )
 }
 
 abstract class BaseHandle {
@@ -226,11 +243,12 @@ export class HostHandle extends BaseHandle {
   readonly partyToken: string
 
   static async connect(
+    baseUrl: string,
     partyKitHost: string,
     pin: string,
     partyToken: string,
   ): Promise<HostHandle> {
-    const ws = await openWebSocket(partyKitHost, pin, partyToken, 'host')
+    const ws = await openWebSocket(baseUrl, partyKitHost, pin, partyToken, 'host')
     const handle = new HostHandle(pin, partyToken, ws)
     await handle.waitForFirstSnapshot()
     return handle
@@ -343,12 +361,13 @@ export class PlayerHandle extends BaseHandle {
   readonly partyToken: string
 
   static async connect(
+    baseUrl: string,
     partyKitHost: string,
     pin: string,
     partyToken: string,
     playerId: string,
   ): Promise<PlayerHandle> {
-    const ws = await openWebSocket(partyKitHost, pin, partyToken, 'player')
+    const ws = await openWebSocket(baseUrl, partyKitHost, pin, partyToken, 'player')
     const handle = new PlayerHandle(pin, playerId, partyToken, ws)
     await handle.waitForFirstSnapshot()
     return handle
@@ -435,7 +454,7 @@ export class PartyClient {
       throw new Error(`createHost ticket failed (${res.status}): ${await res.text()}`)
     }
     const data = (await res.json()) as { pin: string; partyToken: string }
-    return HostHandle.connect(this.partyKitHost, data.pin, data.partyToken)
+    return HostHandle.connect(this.baseUrl, this.partyKitHost, data.pin, data.partyToken)
   }
 
   async joinPlayer(
@@ -457,7 +476,7 @@ export class PartyClient {
       throw new Error(`joinPlayer ticket failed (${res.status}): ${await res.text()}`)
     }
     const data = (await res.json()) as { playerId: string; partyToken: string }
-    return PlayerHandle.connect(this.partyKitHost, pin, data.partyToken, data.playerId)
+    return PlayerHandle.connect(this.baseUrl, this.partyKitHost, pin, data.partyToken, data.playerId)
   }
 }
 

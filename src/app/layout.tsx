@@ -23,7 +23,7 @@ const logoFont = Anton({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://lastrodeoandzeliki.pl'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://lastrodeoandzeliki.pl'),
   title: {
     default: 'Last Rodeo – Gra na wieczór panieński',
     template: '%s – Last Rodeo',

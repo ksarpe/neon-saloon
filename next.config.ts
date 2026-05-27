@@ -19,15 +19,15 @@ function partykitCspSources(): string {
     return `https://${bare} wss://${bare}`
   }
 
-  // Last-resort wildcard — valid CSP syntax, covers one subdomain level of
-  // partykit.dev.  Works when PartyKit deploys to {name}.partykit.dev.
-  // If your URL is {name}.{account}.partykit.dev you MUST set
-  // NEXT_PUBLIC_PARTYKIT_HOST in your Vercel environment variables.
-  console.warn(
-    '[next.config] NEXT_PUBLIC_PARTYKIT_HOST is not set — using wildcard CSP fallback. ' +
-      'WebSocket connections to multi-level PartyKit subdomains will be blocked.',
-  )
-  return 'https://*.partykit.dev wss://*.partykit.dev'
+  if (process.env.NODE_ENV === 'production') {
+    console.warn(
+      '[next.config] NEXT_PUBLIC_PARTYKIT_HOST is not set — PartyKit connections ' +
+        'will be blocked by CSP until an explicit host is configured.',
+    )
+    return ''
+  }
+
+  return 'http://127.0.0.1:1999 ws://127.0.0.1:1999 http://localhost:1999 ws://localhost:1999'
 }
 
 const contentSecurityPolicy = [
@@ -54,7 +54,6 @@ const productionSecurityHeaders =
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
-  allowedDevOrigins: ['192.168.100.27'],
   async headers() {
     return [
       {

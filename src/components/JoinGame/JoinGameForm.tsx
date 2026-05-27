@@ -94,7 +94,9 @@ export default function JoinGameForm() {
       if (!stored || stored.pin !== submittedPin) return false
 
       try {
-        const partyRoom = await fetchPartyRoomLookup(submittedPin)
+        const partyRoom = await fetchPartyRoomLookup(submittedPin, {
+          authToken: stored.partyToken,
+        })
         if (!partyRoom || partyRoom.status === 'finished') return false
 
         setPin(submittedPin)
