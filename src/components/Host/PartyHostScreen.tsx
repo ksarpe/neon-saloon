@@ -68,6 +68,7 @@ export default function PartyHostScreen({ pin, initialCards, partyToken }: Props
   // per-connection meta stays fresh after WS restarts.
   const [hostPlayerId, setHostPlayerId] = useState<string | null>(null)
   const [hostHasVoted, setHostHasVoted] = useState(false)
+  const [hostCardFlipped, setHostCardFlipped] = useState(false)
   const [hostLoading, setHostLoading] = useState(false)
   const prevStatusRef = useRef<ConnectionStatus>('connecting')
 
@@ -126,6 +127,7 @@ export default function PartyHostScreen({ pin, initialCards, partyToken }: Props
         setIsRevealed(false)
         setRevealedVotes([])
         setHostHasVoted(false)
+        setHostCardFlipped(false)
       },
       onGameStarted: () => {
         setPhase('active')
@@ -148,9 +150,9 @@ export default function PartyHostScreen({ pin, initialCards, partyToken }: Props
   useEffect(() => {
     const prev = prevStatusRef.current
     prevStatusRef.current = status
-    if (status !== 'connected' || prev === 'connected' || !hostAvatar || !send) return
+    if (status !== 'connected' || prev === 'connected' || !hostAvatar || !hostName.trim() || !send) return
 
-    send({ type: 'host:register-player', avatar: hostAvatar })
+    send({ type: 'host:register-player', playerName: hostName.trim(), avatar: hostAvatar })
       .then((result) => {
         if (result.ok) setHostPlayerId(`host-${pin}`)
       })
@@ -200,7 +202,7 @@ export default function PartyHostScreen({ pin, initialCards, partyToken }: Props
     // If we're already connected (WS was ready before setup finished), register
     // immediately. Otherwise the status-change effect above handles it.
     if (status === 'connected' && send) {
-      send({ type: 'host:register-player', avatar: hostAvatar })
+      send({ type: 'host:register-player', playerName: hostName.trim(), avatar: hostAvatar })
         .then((result) => {
           if (result.ok) setHostPlayerId(`host-${pin}`)
         })
@@ -500,8 +502,8 @@ export default function PartyHostScreen({ pin, initialCards, partyToken }: Props
                   scores={scores}
                   answerCountdown={answerCountdown}
                   countdown={countdown}
-                  hostCardFlipped={true}
-                  onHostCardFlip={() => {}}
+                  hostCardFlipped={hostCardFlipped}
+                  onHostCardFlip={() => setHostCardFlipped(true)}
                   hostPlayerId={hostPlayerId}
                   hostHasVoted={hostHasVoted}
                   onHostVote={handleHostVote}

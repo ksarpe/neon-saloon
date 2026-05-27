@@ -290,7 +290,8 @@ export default class GameServer implements Party.Server {
 
           const joinResult = applyJoin(this.state!, {
             playerId,
-            playerName: (meta as HostMeta).hostName,
+            // Use the name the host chose in SetupView, not the token default ('Host').
+            playerName: msg.playerName || (meta as HostMeta).hostName,
             avatar: msg.avatar,
           })
           if (!joinResult.ok) {

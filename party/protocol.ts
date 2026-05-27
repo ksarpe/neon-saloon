@@ -76,6 +76,8 @@ export type ClientPlayerLeave = {
 export type ClientHostRegisterAsPlayer = {
   type: 'host:register-player'
   requestId: string
+  /** The host's chosen display name (entered in SetupView, not the token default). */
+  playerName: string
   /** The host's chosen avatar identifier. */
   avatar: string
 }
