@@ -108,7 +108,14 @@ export default function HostSetupPage() {
 
       try {
         const room = await fetchPartyRoomLookup(stored.pin, { hostToken: stored.partyToken })
-        if (!room || room.status === 'finished') {
+        // Clear stale credentials when the room is gone, finished, or is an
+        // empty waiting room that was never actually started — the host left
+        // before anyone joined, so there is nothing meaningful to resume.
+        if (
+          !room ||
+          room.status === 'finished' ||
+          (room.status === 'waiting' && room.playersCount === 0)
+        ) {
           clearHostCredentials()
           return
         }
