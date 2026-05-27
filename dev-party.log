@@ -45,9 +45,8 @@ Loading environment variables from .env
 
 [2K[1A[2K[G[pk:inf] Updated and ready on http://0.0.0.0:63021
 
-itching Protocols (10ms)
-
-[2K[1A[2K[G[pk:inf] GET /parties/main/957003 101 Switching Protocols (8ms)
+error: script "dev:party" exited with code 4
+inf] GET /parties/main/957003 101 Switching Protocols (8ms)
 
 [2K[1A[2K[G[pk:inf] GET /parties/main/656586 101 Switching Protocols (3ms)
 

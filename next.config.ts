@@ -10,7 +10,7 @@ const contentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline'",
   "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
   "frame-src 'self' https://challenges.cloudflare.com",
-  "connect-src 'self' https://api.stripe.com https://*.stripe.com https://challenges.cloudflare.com",
+  "connect-src 'self' https://api.stripe.com https://*.stripe.com https://challenges.cloudflare.com https://*.partykit.dev wss://*.partykit.dev",
   'upgrade-insecure-requests',
 ].join('; ')
 const productionSecurityHeaders =

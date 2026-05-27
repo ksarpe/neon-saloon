@@ -79,7 +79,9 @@
       "Bash(E2E_BASE_URL=http://localhost:3001 npx playwright test party-classic --reporter=list)",
       "Bash(E2E_BASE_URL=http://localhost:3001 npx playwright test --grep @party --reporter=list)",
       "Bash(netstat -ano)",
-      "Bash(pkill -f \"partykit\")"
+      "Bash(pkill -f \"partykit\")",
+      "Bash(bunx tsc *)",
+      "Bash(bun run *)"
     ]
   }
 }
