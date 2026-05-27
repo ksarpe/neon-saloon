@@ -18,8 +18,7 @@ import type {
   ServerMessage,
   SessionEvent,
 } from '../../party/protocol'
-
-const PARTYKIT_HOST = process.env.NEXT_PUBLIC_PARTYKIT_HOST ?? '127.0.0.1:1999'
+import { getPartyKitHost } from './party-host'
 
 export type ConnectionStatus = 'connecting' | 'connected' | 'closed' | 'error'
 
@@ -55,7 +54,7 @@ export class PartyConnection {
 
   constructor(options: PartyConnectionOptions) {
     this.socket = new PartySocket({
-      host: options.host ?? PARTYKIT_HOST,
+      host: options.host ?? getPartyKitHost(),
       room: options.pin,
       party: 'main',
       query: { token: options.partyToken, role: options.role },

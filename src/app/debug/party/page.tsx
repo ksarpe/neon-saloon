@@ -8,7 +8,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-const PARTYKIT_HOST = process.env.NEXT_PUBLIC_PARTYKIT_HOST ?? '127.0.0.1:1999'
+import { getPartyKitHost } from '@/lib/party-host'
+
 const BOT_TOKEN = 'XXXX.DUMMY.TOKEN.XXXX'
 const SAMPLE_DECK = [
   {
@@ -153,7 +154,8 @@ function useDebugSocket() {
     (pin: string, token: string, role: 'host' | 'player') => {
       close()
       setStatus('connecting')
-      const url = `ws://${PARTYKIT_HOST}/parties/main/${pin}?token=${encodeURIComponent(token)}&role=${role}`
+      const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws'
+      const url = `${protocol}://${getPartyKitHost()}/parties/main/${pin}?token=${encodeURIComponent(token)}&role=${role}`
       const ws = new WebSocket(url)
       wsRef.current = ws
 
@@ -528,7 +530,7 @@ export default function PartyDebugPage() {
           </p>
           <p className="mt-1 text-xs text-zinc-500">
             PartyKit:{' '}
-            <code className="rounded bg-zinc-800 px-1.5 py-0.5">{PARTYKIT_HOST}</code>
+            <code className="rounded bg-zinc-800 px-1.5 py-0.5">{getPartyKitHost()}</code>
             {' • '}Ticket endpoint: <code className="rounded bg-zinc-800 px-1.5 py-0.5">/api/party/ticket</code>
           </p>
         </header>
