@@ -81,7 +81,12 @@
       "Bash(netstat -ano)",
       "Bash(pkill -f \"partykit\")",
       "Bash(bunx tsc *)",
-      "Bash(bun run *)"
+      "Bash(bun run *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(bunx eslint *)",
+      "Bash(git rm *)"
     ]
   }
 }
