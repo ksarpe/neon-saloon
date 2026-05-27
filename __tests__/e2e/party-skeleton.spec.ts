@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
 
+import { applyJoin, MAX_PLAYERS_PER_ROOM } from "../../party/game/classic";
+import { initialRoomState } from "../../party/state";
+import { signPartyToken } from "../../src/lib/party-token";
+
 // End-to-end sanity check of the Phase 0+1 PartyKit scaffold:
 //   POST /api/party/ticket  →  open WebSocket  →  state-snapshot + ping/pong
 //
@@ -13,6 +17,8 @@ import { expect, test } from "@playwright/test";
 const BASE_URL = process.env.E2E_BASE_URL ?? "http://localhost:3001";
 const PARTYKIT_HOST = process.env.E2E_PARTYKIT_HOST ?? "127.0.0.1:1999";
 const BOT_TOKEN = process.env.E2E_BOT_PROTECTION_TOKEN ?? "XXXX.DUMMY.TOKEN.XXXX";
+const PARTY_AUTH_SECRET =
+  process.env.PARTY_AUTH_SECRET ?? "dev-only-local-secret-please-rotate-in-prod-32chars";
 
 function uniqueIp(): string {
   const octet = () => 1 + Math.floor(Math.random() * 254);
@@ -91,6 +97,42 @@ function openSocket(pin: string, token: string, role: "host" | "player"): Promis
   });
 }
 
+function expectHostSocketRejected(pin: string, token: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const url = `ws://${PARTYKIT_HOST}/parties/main/${pin}?token=${encodeURIComponent(token)}&role=host`;
+    const ws = new WebSocket(url);
+    let sawSnapshot = false;
+    let done = false;
+
+    const finish = (ok: boolean, reason: string) => {
+      if (done) return;
+      done = true;
+      try {
+        ws.close();
+      } catch {
+        // ignore
+      }
+      if (ok) {
+        resolve();
+      } else {
+        reject(new Error(reason));
+      }
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const message = JSON.parse(String(event.data)) as { type?: string };
+        if (message.type === "state-snapshot") sawSnapshot = true;
+      } catch {
+        // ignore
+      }
+    };
+    ws.onerror = () => finish(true, "upgrade rejected");
+    ws.onclose = () => finish(!sawSnapshot, "intruder host received a state snapshot");
+    setTimeout(() => finish(false, "intruder host socket stayed open"), 1500);
+  });
+}
+
 async function waitFor<T extends Record<string, unknown>>(
   messages: T[],
   predicate: (m: T) => boolean,
@@ -112,6 +154,31 @@ test.describe("PartyKit skeleton @party", () => {
       !up,
       `PartyKit dev nie odpowiada pod http://${PARTYKIT_HOST}. Odpal w drugim terminalu: bun run dev:party`,
     );
+  });
+
+  test("reducer odrzuca nowych graczy po wypelnieniu salonu", () => {
+    let state = initialRoomState({
+      pin: "123456",
+      hostId: "host_test",
+      hostName: "Host",
+      gameMode: "classic",
+    });
+
+    for (let i = 0; i < MAX_PLAYERS_PER_ROOM; i++) {
+      const result = applyJoin(state, {
+        playerId: `player_${i}`,
+        playerName: `Player ${i}`,
+      });
+      expect(result.ok).toBe(true);
+      if (result.ok) state = result.state;
+    }
+
+    const overflow = applyJoin(state, {
+      playerId: "player_overflow",
+      playerName: "Overflow",
+    });
+    expect(overflow.ok).toBe(false);
+    if (!overflow.ok) expect(overflow.error).toBe("Room is full");
   });
 
   test("host łączy się tokenem i dostaje state-snapshot", async () => {
@@ -140,6 +207,69 @@ test.describe("PartyKit skeleton @party", () => {
         requestId: string;
       };
       expect(pong.requestId).toBe("r-ping-1");
+    } finally {
+      ws.close();
+    }
+  });
+
+  test("publiczny lookup nie ujawnia aktywnego salonu", async () => {
+    const { pin, partyToken } = await createHostTicket();
+    const { ws, messages } = await openSocket(pin, partyToken, "host");
+    try {
+      await waitFor(messages, (m) => m.type === "state-snapshot");
+      ws.send(
+        JSON.stringify({
+          type: "host:start",
+          requestId: "r-start-lookup",
+          card: {
+            id: "lookup-card",
+            type: "QUIZ",
+            description: "Pytanie testowe",
+            options: ["A", "B"],
+          },
+        }),
+      );
+      const ack = (await waitFor(
+        messages,
+        (m) => m.type === "ack" && m.requestId === "r-start-lookup",
+      )) as { ok: boolean };
+      expect(ack.ok).toBe(true);
+
+      const publicLookup = await fetch(`${BASE_URL}/api/party/lookup?pin=${pin}`);
+      expect(publicLookup.status).toBe(404);
+
+      const hostLookup = await fetch(`${BASE_URL}/api/party/lookup?pin=${pin}`, {
+        headers: { "x-party-token": partyToken },
+      });
+      expect(hostLookup.status).toBe(200);
+      const room = (await hostLookup.json()) as { status: string; playersCount: number };
+      expect(room.status).toBe("active");
+    } finally {
+      ws.close();
+    }
+  });
+
+  test("drugi host-token z tym samym PIN-em jest odrzucany", async () => {
+    const { pin, partyToken } = await createHostTicket();
+    const { ws, messages } = await openSocket(pin, partyToken, "host");
+    try {
+      await waitFor(messages, (m) => m.type === "state-snapshot");
+
+      const now = Date.now();
+      const intruderToken = await signPartyToken(
+        {
+          pin,
+          role: "host",
+          hostId: `host_intruder_${now}`,
+          hostName: "Intruder",
+          gameMode: "classic",
+          iat: now,
+          exp: now + 60_000,
+        },
+        PARTY_AUTH_SECRET,
+      );
+
+      await expectHostSocketRejected(pin, intruderToken);
     } finally {
       ws.close();
     }

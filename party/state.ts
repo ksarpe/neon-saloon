@@ -101,6 +101,7 @@ export type BattleRoyaleData = {
 
 export type RoomState = {
   pin: string
+  hostId: string
   hostName: string
   gameMode: GameMode
   status: SessionStatus
@@ -122,11 +123,13 @@ export type RoomState = {
 
 export function initialRoomState(args: {
   pin: string
+  hostId: string
   hostName: string
   gameMode: GameMode
 }): RoomState {
   return {
     pin: args.pin,
+    hostId: args.hostId,
     hostName: args.hostName,
     gameMode: args.gameMode,
     status: "waiting",

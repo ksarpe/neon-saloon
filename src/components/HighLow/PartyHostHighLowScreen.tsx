@@ -34,7 +34,7 @@ export function PartyHostHighLowScreen({ pin, partyToken, questionLimit = QUESTI
     return () => setBackHidden(false)
   }, [setBackHidden])
 
-  // Host identity
+  // ── Host identity ────────────────────────────────────────────────────────────
   const [hostName, setHostName] = useState('')
   const [hostAvatar, setHostAvatar] = useState<string | null>(null)
 
@@ -44,7 +44,15 @@ export function PartyHostHighLowScreen({ pin, partyToken, questionLimit = QUESTI
     if (stored?.hostAvatar) setHostAvatar(stored.hostAvatar)
   }, [pin])
 
-  // Game state
+  // ── Host-as-player state ─────────────────────────────────────────────────────
+  const [hostPlayerId, setHostPlayerId] = useState<string | null>(null)
+  const [hostTeamChoice, setHostTeamChoice] = useState<'team1' | 'team2' | null>(null)
+  const [hostNumberInput, setHostNumberInput] = useState('')
+  const [hostVoted, setHostVoted] = useState(false)
+  const [hostVotedChoice, setHostVotedChoice] = useState<'mniej' | 'wiecej' | null>(null)
+  const [hostSubmitting, setHostSubmitting] = useState(false)
+
+  // ── Game state ───────────────────────────────────────────────────────────────
   const [phase, setPhase] = useState<HLPhase>('setup')
   const [players, setPlayers] = useState<SessionPlayer[]>([])
   const [team1, setTeam1] = useState<SessionTeam | null>(null)
@@ -56,9 +64,6 @@ export function PartyHostHighLowScreen({ pin, partyToken, questionLimit = QUESTI
   const [resultData, setResultData] = useState<HighLowRoundResultPayload | null>(null)
   const [scores, setScores] = useState<ScoreEntry[]>([])
   const [menuOpen, setMenuOpen] = useState(false)
-  // Tracks how many team-created events have been received so far (team1 = 1st, team2 = 2nd).
-  // Using a ref avoids stale-closure issues inside the memoised handlers object.
-  const teamCreatedCountRef = useRef(0)
 
   // Team setup form
   const [team1Name, setTeam1Name] = useState('')
@@ -66,10 +71,23 @@ export function PartyHostHighLowScreen({ pin, partyToken, questionLimit = QUESTI
   const [teamSetupLoading, setTeamSetupLoading] = useState(false)
 
   // Action loading
-  const [hostActionLoading, setHostActionLoading] = useState<
-    'start' | 'next' | 'finish' | null
-  >(null)
+  const [hostActionLoading, setHostActionLoading] = useState<'start' | 'next' | 'finish' | null>(null)
 
+  // ── Refs ─────────────────────────────────────────────────────────────────────
+  // Counts team-created events so the first always maps to team1, second to team2.
+  const teamCreatedCountRef = useRef(0)
+  // Captures team objects synchronously — available before React re-renders.
+  const createdTeamsRef = useRef<SessionTeam[]>([])
+  // Guards against re-registering as player more than once per WS connection.
+  const registeredOnThisConnectionRef = useRef(false)
+  // Stable refs to avoid stale closures in snapshot effect.
+  const sendRef = useRef<((body: Parameters<ReturnType<typeof usePartyConnection>['send'] & object>[0]) => Promise<unknown>) | null>(null)
+  const hostNameRef = useRef(hostName)
+  const hostAvatarRef = useRef(hostAvatar)
+  useEffect(() => { hostNameRef.current = hostName }, [hostName])
+  useEffect(() => { hostAvatarRef.current = hostAvatar }, [hostAvatar])
+
+  // ── Derived values ───────────────────────────────────────────────────────────
   const highLowQuestions = useMemo(
     () => seededShuffleAndLimitQuestions(HIGHLOW_QUESTIONS, pin, questionLimit),
     [pin, questionLimit],
@@ -114,12 +132,15 @@ export function PartyHostHighLowScreen({ pin, partyToken, questionLimit = QUESTI
 
   const guessingCaptain = guessingTeamId ? currentCaptain(guessingTeamId) : null
   const votingCaptain = votingTeamId ? currentCaptain(votingTeamId) : null
+  const isHostGuessingCaptain = Boolean(hostPlayerId && guessingCaptain?.playerId === hostPlayerId)
+  const isHostVotingCaptain = Boolean(hostPlayerId && votingCaptain?.playerId === hostPlayerId)
 
   const currentQuestion = useMemo(
     () => highLowQuestions[roundIndex % highLowQuestions.length],
     [highLowQuestions, roundIndex],
   )
 
+  // ── Event handlers (memoised, fed to usePartyConnection) ────────────────────
   const applyNumberSubmitted = useCallback((number: string) => {
     setSubmittedNumber(number)
     setPhase('voting')
@@ -141,8 +162,11 @@ export function PartyHostHighLowScreen({ pin, partyToken, questionLimit = QUESTI
         )
       },
       onTeamCreated: (d: TeamCreatedPayload) => {
-        // First event → team1, second event → team2. The counter is held in a
-        // ref so the memoised handler always reads the current value.
+        // First event → team1, second event → team2.
+        // Both ref (synchronous) and state (async) are updated so that:
+        //  - createdTeamsRef is readable immediately in handleTeamSetup after await
+        //  - team1/team2 state drives the render
+        createdTeamsRef.current = [...createdTeamsRef.current, d]
         teamCreatedCountRef.current += 1
         if (teamCreatedCountRef.current === 1) {
           setTeam1(d)
@@ -157,9 +181,22 @@ export function PartyHostHighLowScreen({ pin, partyToken, questionLimit = QUESTI
     [applyNumberSubmitted, applyRoundResult],
   )
 
-  const { send, snapshot } = usePartyConnection({ pin, partyToken, role: 'host', handlers })
+  const { send, snapshot, status } = usePartyConnection({ pin, partyToken, role: 'host', handlers })
 
-  // Snapshot hydration on (re)connect
+  // Keep sendRef in sync so snapshot effect can call send without it as a dep.
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    sendRef.current = send as any
+  }, [send])
+
+  // Reset registration guard whenever the WS drops so we re-register on next connect.
+  useEffect(() => {
+    if (status === 'connecting' || status === 'closed') {
+      registeredOnThisConnectionRef.current = false
+    }
+  }, [status])
+
+  // ── Snapshot hydration on (re)connect ────────────────────────────────────────
   useEffect(() => {
     if (!snapshot) return
 
@@ -194,18 +231,36 @@ export function PartyHostHighLowScreen({ pin, partyToken, questionLimit = QUESTI
       } else {
         setPhase(hl.currentNumber ? 'voting' : 'guessing')
       }
-      return
+    } else if (snapshot.teams.length >= 2) {
+      setPhase((p) => (p === 'setup' || p === 'team-setup' ? 'lobby' : p))
+      setGuessingTeamId(snapshot.teams[0].teamId)
     }
 
-    if (snapshot.teams.length >= 2) {
-      setPhase((p) => (p === 'setup' || p === 'team-setup' ? 'lobby' : p))
-      if (snapshot.teams.length >= 2) {
-        setGuessingTeamId(snapshot.teams[0].teamId)
+    // ── Host-as-player: restore state from snapshot on reconnect ─────────────
+    const hostPlayer = snapshot.players.find((p) => p.playerId === `host-${pin}`)
+    if (hostPlayer?.teamId) {
+      setHostPlayerId(`host-${pin}`)
+      // Re-register once per connection to restore connectionMeta.playerId on the server.
+      if (!registeredOnThisConnectionRef.current) {
+        const currentSend = sendRef.current
+        const name = hostNameRef.current.trim()
+        const avatar = hostAvatarRef.current
+        if (currentSend && name && avatar) {
+          registeredOnThisConnectionRef.current = true
+          void currentSend({
+            type: 'host:register-player',
+            playerName: name,
+            avatar,
+            teamId: hostPlayer.teamId,
+          } as Parameters<NonNullable<typeof send>>[0]).catch(console.error)
+        }
       }
     }
+  // snapshot is the only reactive dep; stable refs are used for everything else.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [snapshot])
 
-  // ── Actions ─────────────────────────────────────────────────────────────────
+  // ── Actions ──────────────────────────────────────────────────────────────────
 
   const handleSetupComplete = useCallback(() => {
     if (!hostName.trim() || !hostAvatar) return
@@ -216,19 +271,41 @@ export function PartyHostHighLowScreen({ pin, partyToken, questionLimit = QUESTI
   const handleTeamSetup = useCallback(async () => {
     const t1 = team1Name.trim()
     const t2 = team2Name.trim()
-    if (!t1 || !t2 || teamSetupLoading || !send) return
+    if (!t1 || !t2 || !hostTeamChoice || teamSetupLoading || !send) return
     setTeamSetupLoading(true)
     try {
+      // 1. Create the teams on the server.
       const result = await send({ type: 'host:highlow-setup', team1Name: t1, team2Name: t2 })
       if (!result.ok) {
         console.error('[host:highlow-setup] rejected:', result.error)
         return
       }
+
+      // 2. By the time the ack arrives, both team-created events have already been
+      //    processed (server broadcasts events before sending the ack), so
+      //    createdTeamsRef has both teams available synchronously.
+      const teams = createdTeamsRef.current
+      const chosenTeamId =
+        hostTeamChoice === 'team1' ? teams[0]?.teamId : teams[1]?.teamId
+
+      if (chosenTeamId && hostAvatar && hostName.trim()) {
+        const regResult = await send({
+          type: 'host:register-player',
+          playerName: hostName.trim(),
+          avatar: hostAvatar,
+          teamId: chosenTeamId,
+        })
+        if (regResult.ok) {
+          registeredOnThisConnectionRef.current = true
+          setHostPlayerId(`host-${pin}`)
+        }
+      }
+
       setPhase('lobby')
     } finally {
       setTeamSetupLoading(false)
     }
-  }, [team1Name, team2Name, teamSetupLoading, send])
+  }, [team1Name, team2Name, hostTeamChoice, teamSetupLoading, send, pin, hostAvatar, hostName])
 
   const startRound = useCallback(
     async (
@@ -263,9 +340,14 @@ export function PartyHostHighLowScreen({ pin, partyToken, questionLimit = QUESTI
         votingCaptainId: vCaptain.playerId,
       })
 
+      // Reset per-round host state.
       setSubmittedNumber(null)
       setResultData(null)
       setPhase('guessing')
+      setHostVoted(false)
+      setHostVotedChoice(null)
+      setHostNumberInput('')
+      setHostSubmitting(false)
     },
     [team1, team2, players, highLowQuestions, send],
   )
@@ -342,6 +424,28 @@ export function PartyHostHighLowScreen({ pin, partyToken, questionLimit = QUESTI
       setHostActionLoading(null)
     }
   }, [hostActionLoading, scores, teamScores, send])
+
+  const handleHostSubmitNumber = useCallback(async () => {
+    if (!hostNumberInput.trim() || hostSubmitting || !send) return
+    setHostSubmitting(true)
+    try {
+      await send({ type: 'player:highlow-number', number: hostNumberInput.trim() })
+    } finally {
+      setHostSubmitting(false)
+    }
+  }, [hostNumberInput, hostSubmitting, send])
+
+  const handleHostVote = useCallback(async (vote: 'mniej' | 'wiecej') => {
+    if (hostVoted || hostSubmitting || !send) return
+    setHostSubmitting(true)
+    setHostVotedChoice(vote)
+    try {
+      const result = await send({ type: 'player:highlow-vote', vote })
+      if (result.ok) setHostVoted(true)
+    } finally {
+      setHostSubmitting(false)
+    }
+  }, [hostVoted, hostSubmitting, send])
 
   // ── Render ───────────────────────────────────────────────────────────────────
 
@@ -476,9 +580,11 @@ export function PartyHostHighLowScreen({ pin, partyToken, questionLimit = QUESTI
                       Drużyny
                     </h2>
                     <p className="text-text-muted mt-1 text-sm">
-                      Nadaj nazwy dwóm bandom przed startem.
+                      Nadaj nazwy dwóm bandom i wybierz swoją.
                     </p>
                   </div>
+
+                  {/* Team name inputs */}
                   <div className="flex flex-col gap-4">
                     <div>
                       <label className="text-text-muted mb-1.5 block text-xs font-semibold uppercase">
@@ -512,14 +618,45 @@ export function PartyHostHighLowScreen({ pin, partyToken, questionLimit = QUESTI
                           backgroundColor: 'var(--saloon-surface)',
                           color: 'var(--text-primary)',
                         }}
-                        onKeyDown={(e) => e.key === 'Enter' && handleTeamSetup()}
+                        onKeyDown={(e) => e.key === 'Enter' && void handleTeamSetup()}
                       />
                     </div>
                   </div>
+
+                  {/* Host team picker */}
+                  <div className="flex flex-col gap-2">
+                    <label className="text-text-muted block text-xs font-semibold uppercase">
+                      Dołączasz do…
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {(['team1', 'team2'] as const).map((key, i) => {
+                        const label = (i === 0 ? team1Name : team2Name).trim() || `Drużyna ${i + 1}`
+                        const selected = hostTeamChoice === key
+                        return (
+                          <motion.button
+                            key={key}
+                            whileTap={{ scale: 0.97 }}
+                            onClick={() => setHostTeamChoice(key)}
+                            className="rounded-2xl border-2 px-4 py-4 text-sm font-bold transition-all"
+                            style={{
+                              borderColor: selected ? 'var(--neon-pink)' : 'rgba(255,220,180,0.18)',
+                              backgroundColor: selected
+                                ? 'rgba(255,16,240,0.12)'
+                                : 'rgba(255,220,180,0.04)',
+                              color: selected ? 'var(--neon-pink)' : 'rgba(255,220,180,0.65)',
+                            }}
+                          >
+                            {label}
+                          </motion.button>
+                        )
+                      })}
+                    </div>
+                  </div>
+
                   <Button
                     type="primary"
                     onClick={handleTeamSetup}
-                    disabled={!team1Name.trim() || !team2Name.trim() || teamSetupLoading}
+                    disabled={!team1Name.trim() || !team2Name.trim() || !hostTeamChoice || teamSetupLoading}
                     className="w-full"
                   >
                     {teamSetupLoading ? (
@@ -565,15 +702,15 @@ export function PartyHostHighLowScreen({ pin, partyToken, questionLimit = QUESTI
                   guessingCaptain={guessingCaptain}
                   votingCaptain={votingCaptain}
                   submittedNumber={submittedNumber}
-                  isHostGuessingCaptain={false}
-                  isHostVotingCaptain={false}
-                  numberInput=""
-                  onNumberInputChange={() => {}}
-                  onHostSubmitNumber={async () => {}}
-                  hostSubmitting={false}
-                  hostVoted={false}
-                  hostVotedChoice={null}
-                  onHostVote={async () => {}}
+                  isHostGuessingCaptain={isHostGuessingCaptain}
+                  isHostVotingCaptain={isHostVotingCaptain}
+                  numberInput={hostNumberInput}
+                  onNumberInputChange={setHostNumberInput}
+                  onHostSubmitNumber={handleHostSubmitNumber}
+                  hostSubmitting={hostSubmitting}
+                  hostVoted={hostVoted}
+                  hostVotedChoice={hostVotedChoice}
+                  onHostVote={handleHostVote}
                 />
               </motion.div>
             )}

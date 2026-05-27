@@ -80,6 +80,8 @@ export type ClientHostRegisterAsPlayer = {
   playerName: string
   /** The host's chosen avatar identifier. */
   avatar: string
+  /** HighLow only: the team the host wants to join. */
+  teamId?: string
 }
 
 export type ClientPing = {

@@ -53,6 +53,10 @@ function generatePlayerId(): string {
   return `player_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
 }
 
+function generateHostId(): string {
+  return `host_${crypto.randomUUID()}`
+}
+
 function getAuthSecret(): string | null {
   const secret = process.env.PARTY_AUTH_SECRET
   if (!secret || secret.length < 16) return null
@@ -130,11 +134,12 @@ export async function POST(request: Request) {
         }
       }
 
-      // PIN collision avoidance moves into the PartyKit room (Phase 2): the
-      // room rejects a host token if its DO already has an initialised session.
+      // PIN collision avoidance moves into the PartyKit room: an initialised
+      // room accepts only the original hostId embedded in the host token.
       const pin = generatePin()
+      const hostId = generateHostId()
       const partyToken = await signPartyToken(
-        { pin, role: 'host', hostName, gameMode, iat: now, exp },
+        { pin, role: 'host', hostId, hostName, gameMode, iat: now, exp },
         secret
       )
 
@@ -163,6 +168,21 @@ export async function POST(request: Request) {
       }
 
       const pin = requiredString(body.pin, 'pin', SESSION_PIN_LENGTH + 4)
+      if (!/^\d{6}$/.test(pin)) {
+        return NextResponse.json({ error: 'Invalid PIN' }, { status: 400 })
+      }
+
+      const pinLimit = await consumeRateLimit(`party-ticket-join:pin:${pin}`, {
+        limit: 80,
+        windowMs: 60_000,
+      })
+      if (!pinLimit.allowed) {
+        return NextResponse.json(
+          { error: 'Za dużo prób dołączenia do tego salonu. Spróbuj ponownie później.' },
+          { status: 429, headers: rateLimitHeaders(pinLimit) }
+        )
+      }
+
       const playerName = requiredString(body.playerName, 'playerName', INPUT_LIMITS.playerName)
       const avatar = optionalString(body.avatar, 'avatar', INPUT_LIMITS.avatar) ?? undefined
       const teamId = optionalString(body.teamId, 'teamId', 80) ?? undefined

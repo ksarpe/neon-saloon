@@ -54,6 +54,7 @@ import {
 type HostMeta = {
   role: 'host'
   pin: string
+  hostId: string
   hostName: string
   /** Set once the host registers themselves as a player via host:register-player. */
   playerId?: string
@@ -124,14 +125,19 @@ export default class GameServer implements Party.Server {
       if (!this.state) {
         this.state = initialRoomState({
           pin: this.room.id,
+          hostId: payload.hostId,
           hostName: payload.hostName,
           gameMode: payload.gameMode as RoomState['gameMode'],
         })
         await this.persist()
+      } else if (this.state.hostId !== payload.hostId) {
+        connection.close(1008, 'Host token does not own this room')
+        return
       }
       this.connectionMeta.set(connection.id, {
         role: 'host',
         pin: payload.pin,
+        hostId: payload.hostId,
         hostName: payload.hostName,
       })
     } else {
@@ -293,6 +299,7 @@ export default class GameServer implements Party.Server {
             // Use the name the host chose in SetupView, not the token default ('Host').
             playerName: msg.playerName || (meta as HostMeta).hostName,
             avatar: msg.avatar,
+            teamId: msg.teamId,
           })
           if (!joinResult.ok) {
             // Shouldn't happen after we moved idempotency check first in applyJoin,
@@ -372,23 +379,37 @@ export default class GameServer implements Party.Server {
           return
 
         case 'player:highlow-number': {
-          if (meta.role !== 'player') {
+          // Both regular players and hosts-who-registered-as-player can submit.
+          const hlNumberPlayerId =
+            meta.role === 'player'
+              ? meta.playerId
+              : meta.role === 'host' && (meta as HostMeta).playerId
+                ? (meta as HostMeta).playerId
+                : undefined
+          if (!hlNumberPlayerId) {
             throw new ValidationError(`Only players can send ${msg.type}`, 403)
           }
           this.requireState()
           await this.runReducer(sender, msg.requestId, () =>
-            applyHighLowNumber(this.state!, { playerId: meta.playerId, number: msg.number }),
+            applyHighLowNumber(this.state!, { playerId: hlNumberPlayerId, number: msg.number }),
           )
           return
         }
 
         case 'player:highlow-vote': {
-          if (meta.role !== 'player') {
+          // Both regular players and hosts-who-registered-as-player can vote.
+          const hlVotePlayerId =
+            meta.role === 'player'
+              ? meta.playerId
+              : meta.role === 'host' && (meta as HostMeta).playerId
+                ? (meta as HostMeta).playerId
+                : undefined
+          if (!hlVotePlayerId) {
             throw new ValidationError(`Only players can send ${msg.type}`, 403)
           }
           this.requireState()
           await this.runReducer(sender, msg.requestId, () =>
-            applyHighLowVote(this.state!, { playerId: meta.playerId, vote: msg.vote }),
+            applyHighLowVote(this.state!, { playerId: hlVotePlayerId, vote: msg.vote }),
           )
           return
         }

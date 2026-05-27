@@ -10,6 +10,7 @@
 export type HostTokenPayload = {
   pin: string;
   role: "host";
+  hostId: string;
   hostName: string;
   gameMode: string;
   iat: number;
@@ -113,7 +114,11 @@ function isPartyTokenPayload(value: unknown): value is PartyTokenPayload {
     return false;
   }
   if (v.role === "host") {
-    return typeof v.hostName === "string" && typeof v.gameMode === "string";
+    return (
+      typeof v.hostId === "string" &&
+      typeof v.hostName === "string" &&
+      typeof v.gameMode === "string"
+    );
   }
   if (v.role === "player") {
     return typeof v.playerId === "string" && typeof v.playerName === "string";
