@@ -1,14 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import {
-  Check,
-  ChevronRight,
-  Minus,
-  MonitorPlay,
-  PartyPopper,
-  Smartphone,
-} from 'lucide-react'
+import { Check, ChevronRight, Minus, MonitorPlay, PartyPopper, Smartphone } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
@@ -119,7 +112,7 @@ export default function LandingPage() {
   // Deterministyczny porządek na pierwszy render (SSR), tasowany po zamontowaniu —
   // dzięki temu unikamy niezgodności hydratacji, a gracz i tak dostaje losową talię.
   const [order, setOrder] = useState<number[]>(() =>
-    Array.from({ length: LANDING_SAMPLE_CARDS.length }, (_, i) => i),
+    Array.from({ length: LANDING_SAMPLE_CARDS.length }, (_, i) => i)
   )
   const [position, setPosition] = useState(0)
   const [isSampleFlipped, setIsSampleFlipped] = useState(false)
@@ -165,7 +158,8 @@ export default function LandingPage() {
           className="shimmer-text pt-2 pb-1 text-[clamp(4rem,22vw,10rem)] leading-[0.95] tracking-wide uppercase"
           style={{ fontFamily: 'var(--font-logo)' }}
         >
-          Last <br className="md:hidden" />Rodeo
+          Last <br className="md:hidden" />
+          Rodeo
         </motion.h1>
 
         {/* Tagline */}
@@ -210,6 +204,37 @@ export default function LandingPage() {
           >
             <ChevronRight size={14} className="rotate-90" />
           </motion.div>
+        </motion.div>
+      </section>
+
+      {/* ── GAME SAMPLE ───────────────────────────────────────────────────── */}
+      <section className="relative z-10 mx-auto flex w-full max-w-7xl flex-col px-4 py-24 sm:px-6 md:py-32">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.55 }}
+          className="mx-auto flex w-full max-w-[760px] flex-col items-center gap-5"
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={sample.id}
+              initial={{ opacity: 0, y: 34, scale: 0.94, rotate: 3 }}
+              animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
+              exit={{ opacity: 0, y: -42, scale: 0.9, rotate: -5 }}
+              transition={{ type: 'spring', stiffness: 360, damping: 28 }}
+            >
+              <GameCardStack
+                card={sample}
+                cardsLeft={order.length - position}
+                isFlipped={isSampleFlipped}
+                maxWidth={760}
+                textScale={1.45}
+                onFlip={() => setIsSampleFlipped(true)}
+                onFlippedClick={drawRandomSample}
+              />
+            </motion.div>
+          </AnimatePresence>
         </motion.div>
       </section>
 
@@ -305,37 +330,6 @@ export default function LandingPage() {
             )
           })}
         </div>
-      </section>
-
-      {/* ── GAME SAMPLE ───────────────────────────────────────────────────── */}
-      <section className="relative z-10 mx-auto flex w-full max-w-7xl flex-col px-4 py-24 sm:px-6 md:py-32">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.55 }}
-          className="mx-auto flex w-full max-w-[760px] flex-col items-center gap-5"
-        >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={sample.id}
-              initial={{ opacity: 0, y: 34, scale: 0.94, rotate: 3 }}
-              animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
-              exit={{ opacity: 0, y: -42, scale: 0.9, rotate: -5 }}
-              transition={{ type: 'spring', stiffness: 360, damping: 28 }}
-            >
-              <GameCardStack
-                card={sample}
-                cardsLeft={order.length - position}
-                isFlipped={isSampleFlipped}
-                maxWidth={760}
-                textScale={1.45}
-                onFlip={() => setIsSampleFlipped(true)}
-                onFlippedClick={drawRandomSample}
-              />
-            </motion.div>
-          </AnimatePresence>
-        </motion.div>
       </section>
 
       {/* ── PRICING ───────────────────────────────────────────────────────── */}

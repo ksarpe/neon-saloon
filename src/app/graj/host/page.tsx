@@ -90,6 +90,8 @@ export default function HostSetupPage() {
   const [activeHostSession, setActiveHostSession] = useState<ActiveHostSession | null>(null)
   const access = useContentAccess()
   const botProtectionEnabled = isBotProtectionConfigured()
+  const waitingForBotProtection =
+    Boolean(selectedMode) && botProtectionEnabled && !botProtectionToken && !creating
 
   const resetBotProtection = useCallback(() => {
     setBotProtectionToken(null)
@@ -279,6 +281,10 @@ export default function HostSetupPage() {
             {creating ? (
               <>
                 <Loader2 size={18} className="animate-spin" /> Tworze salon...
+              </>
+            ) : waitingForBotProtection ? (
+              <>
+                <Loader2 size={18} className="animate-spin" /> Weryfikuje dostepnosc...
               </>
             ) : (
               <>Otworz salon na dzikim zachodzie</>

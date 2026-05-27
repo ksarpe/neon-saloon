@@ -2,13 +2,15 @@
 
 import { AnimatePresence, motion } from 'framer-motion'
 import { Flag, Loader2, Menu, X, Zap } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { GameSummary } from '@/components/GameSummary'
+import { SetupView } from '@/components/Host/SetupView'
+import { Button } from '@/components/ui/button'
 import { HIGHLOW_QUESTIONS } from '@/config/games/highlow'
 import { usePartyConnection } from '@/hooks/usePartyConnection'
 import { useBackButton } from '@/lib/back-button-context'
-import type { HighLowRoundResultPayload, PlayerJoinedPayload, ScoreEntry } from '@/lib/game-types'
+import type { HighLowRoundResultPayload, PlayerJoinedPayload, ScoreEntry, TeamCreatedPayload } from '@/lib/game-types'
 import { QUESTIONS_PER_GAME, seededShuffleAndLimitQuestions } from '@/lib/games/question-limit'
 import { readHostProfile, updateHostProfile } from '@/lib/party-ticket-client'
 import type { SessionPlayer, SessionTeam } from '@/lib/session-types'
@@ -54,6 +56,9 @@ export function PartyHostHighLowScreen({ pin, partyToken, questionLimit = QUESTI
   const [resultData, setResultData] = useState<HighLowRoundResultPayload | null>(null)
   const [scores, setScores] = useState<ScoreEntry[]>([])
   const [menuOpen, setMenuOpen] = useState(false)
+  // Tracks how many team-created events have been received so far (team1 = 1st, team2 = 2nd).
+  // Using a ref avoids stale-closure issues inside the memoised handlers object.
+  const teamCreatedCountRef = useRef(0)
 
   // Team setup form
   const [team1Name, setTeam1Name] = useState('')
@@ -135,6 +140,16 @@ export function PartyHostHighLowScreen({ pin, partyToken, questionLimit = QUESTI
             : [...p, { ...d, teamName: d.teamName ?? null }],
         )
       },
+      onTeamCreated: (d: TeamCreatedPayload) => {
+        // First event → team1, second event → team2. The counter is held in a
+        // ref so the memoised handler always reads the current value.
+        teamCreatedCountRef.current += 1
+        if (teamCreatedCountRef.current === 1) {
+          setTeam1(d)
+        } else {
+          setTeam2(d)
+        }
+      },
       onHighLowNumberSubmitted: (d: { number: string }) => applyNumberSubmitted(d.number),
       onHighLowRoundResult: (d: HighLowRoundResultPayload) => applyRoundResult(d),
       onGameFinished: () => setPhase('finished'),
@@ -193,8 +208,8 @@ export function PartyHostHighLowScreen({ pin, partyToken, questionLimit = QUESTI
   // ── Actions ─────────────────────────────────────────────────────────────────
 
   const handleSetupComplete = useCallback(() => {
-    if (!hostName.trim()) return
-    updateHostProfile(pin, { hostName: hostName.trim(), hostAvatar: hostAvatar ?? undefined })
+    if (!hostName.trim() || !hostAvatar) return
+    updateHostProfile(pin, { hostName: hostName.trim(), hostAvatar })
     setPhase('team-setup')
   }, [pin, hostName, hostAvatar])
 
@@ -433,44 +448,14 @@ export function PartyHostHighLowScreen({ pin, partyToken, questionLimit = QUESTI
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
               >
-                <div className="flex flex-col gap-6">
-                  <div>
-                    <h2
-                      className="text-3xl font-black"
-                      style={{ fontFamily: 'var(--font-app)', color: 'var(--neon-pink)' }}
-                    >
-                      Mniej czy więcej
-                    </h2>
-                    <p className="text-text-muted mt-1 text-sm">Jak masz na imię, szefie?</p>
-                  </div>
-                  <input
-                    value={hostName}
-                    onChange={(e) => setHostName(e.target.value)}
-                    placeholder="Twoje imię"
-                    maxLength={24}
-                    className="w-full rounded-xl border px-4 py-3 text-sm font-bold outline-none"
-                    style={{
-                      borderColor: 'var(--saloon-border)',
-                      backgroundColor: 'var(--saloon-surface)',
-                      color: 'var(--text-primary)',
-                    }}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSetupComplete()}
-                  />
-                  <button
-                    onClick={handleSetupComplete}
-                    disabled={!hostName.trim()}
-                    className="w-full rounded-2xl py-4 text-sm font-black uppercase tracking-wider disabled:opacity-40"
-                    style={{ backgroundColor: 'var(--neon-pink)', color: '#fff' }}
-                  >
-                    Dalej
-                  </button>
-                  <button
-                    onClick={() => { window.location.href = '/graj/host' }}
-                    className="text-text-muted text-xs hover:underline"
-                  >
-                    ← Zmień tryb gry
-                  </button>
-                </div>
+                <SetupView
+                  name={hostName}
+                  onNameChange={setHostName}
+                  avatar={hostAvatar}
+                  onAvatarChange={setHostAvatar}
+                  onContinue={handleSetupComplete}
+                  onBack={() => { window.location.href = '/graj/host' }}
+                />
               </motion.div>
             )}
 
@@ -531,18 +516,18 @@ export function PartyHostHighLowScreen({ pin, partyToken, questionLimit = QUESTI
                       />
                     </div>
                   </div>
-                  <button
+                  <Button
+                    type="primary"
                     onClick={handleTeamSetup}
                     disabled={!team1Name.trim() || !team2Name.trim() || teamSetupLoading}
-                    className="flex w-full items-center justify-center gap-2 rounded-2xl py-4 text-sm font-black uppercase tracking-wider disabled:opacity-40"
-                    style={{ backgroundColor: 'var(--neon-pink)', color: '#fff' }}
+                    className="w-full"
                   >
                     {teamSetupLoading ? (
                       <Loader2 size={18} className="animate-spin" />
                     ) : (
                       'Utwórz drużyny'
                     )}
-                  </button>
+                  </Button>
                 </div>
               </motion.div>
             )}
