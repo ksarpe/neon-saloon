@@ -1,20 +1,33 @@
 import type { NextConfig } from 'next'
 
-// Build a CSP-safe host source pair for PartyKit from the env var.
-// The var can be bare hostname (foo.bar.partykit.dev) or include a protocol.
-// We output both https:// and wss:// so the CSP covers both fetch and WebSocket.
+// Build a CSP-safe host source pair for the PartyKit WebSocket.
+// next.config is evaluated at build time, so we read the env var here.
+// We check both the public var (baked into the browser bundle) and the
+// server-only var (PARTYKIT_HOST) as a fallback, since some setups only
+// expose the non-public form to the build process.
 function partykitCspSources(): string {
-  const raw = process.env.NEXT_PUBLIC_PARTYKIT_HOST ?? ''
-  if (!raw) {
-    // Fallback: wildcard covers the common single-account pattern. The two-level
-    // wildcard (*.*.partykit.dev) is not universally supported in old browsers,
-    // but it is the safest broad fallback. In practice this path runs only when
-    // the env var is missing (misconfigured), which should not happen in prod.
-    return 'https://*.partykit.dev wss://*.partykit.dev https://*.*.partykit.dev wss://*.*.partykit.dev'
+  const raw =
+    process.env.NEXT_PUBLIC_PARTYKIT_HOST ?? process.env.PARTYKIT_HOST ?? ''
+
+  if (raw) {
+    // Strip any protocol prefix the operator may have included.
+    const bare = raw
+      .replace(/^https?:\/\//, '')
+      .replace(/^wss?:\/\//, '')
+      .replace(/\/$/, '')
+    // Emit both https:// (for HTTP fetch) and wss:// (for WebSocket upgrade).
+    return `https://${bare} wss://${bare}`
   }
-  // Strip any protocol prefix the user might have included.
-  const bare = raw.replace(/^https?:\/\//, '').replace(/^wss?:\/\//, '').replace(/\/$/, '')
-  return `https://${bare} wss://${bare}`
+
+  // Last-resort wildcard — valid CSP syntax, covers one subdomain level of
+  // partykit.dev.  Works when PartyKit deploys to {name}.partykit.dev.
+  // If your URL is {name}.{account}.partykit.dev you MUST set
+  // NEXT_PUBLIC_PARTYKIT_HOST in your Vercel environment variables.
+  console.warn(
+    '[next.config] NEXT_PUBLIC_PARTYKIT_HOST is not set — using wildcard CSP fallback. ' +
+      'WebSocket connections to multi-level PartyKit subdomains will be blocked.',
+  )
+  return 'https://*.partykit.dev wss://*.partykit.dev'
 }
 
 const contentSecurityPolicy = [
