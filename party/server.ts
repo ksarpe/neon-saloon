@@ -55,6 +55,8 @@ type HostMeta = {
   role: 'host'
   pin: string
   hostName: string
+  /** Set once the host registers themselves as a player via host:register-player. */
+  playerId?: string
 }
 type PlayerMeta = {
   role: 'player'
@@ -275,14 +277,50 @@ export default class GameServer implements Party.Server {
           )
           return
 
+        case 'host:register-player': {
+          // Allows the host to also participate as a player. Idempotent — safe
+          // to send on every (re)connect. The playerId is fixed as `host-<pin>`
+          // so it survives reconnects and storage round-trips.
+          this.requireHost(meta, msg.type)
+          this.requireState()
+          const playerId = `host-${this.room.id}`
+
+          // Always refresh the playerId in connectionMeta so host can vote after reconnect.
+          this.connectionMeta.set(sender.id, { ...(meta as HostMeta), playerId })
+
+          const joinResult = applyJoin(this.state!, {
+            playerId,
+            playerName: (meta as HostMeta).hostName,
+            avatar: msg.avatar,
+          })
+          if (!joinResult.ok) {
+            // Shouldn't happen after we moved idempotency check first in applyJoin,
+            // but handle gracefully (game started before host registered).
+            this.send(sender, { type: 'ack', requestId: msg.requestId, ok: true })
+            return
+          }
+          this.state = joinResult.state
+          await this.persist()
+          this.broadcastEvents(joinResult.events)
+          this.send(sender, { type: 'ack', requestId: msg.requestId, ok: true })
+          return
+        }
+
         case 'player:vote': {
-          if (meta.role !== 'player') {
+          // Both regular players and hosts-who-registered-as-player can vote.
+          const playerId =
+            meta.role === 'player'
+              ? meta.playerId
+              : meta.role === 'host' && (meta as HostMeta).playerId
+                ? (meta as HostMeta).playerId
+                : undefined
+          if (!playerId) {
             throw new ValidationError(`Only players can send ${msg.type}`, 403)
           }
           this.requireState()
           await this.runReducer(sender, msg.requestId, () =>
             applyVote(this.state!, {
-              playerId: meta.playerId,
+              playerId,
               cardIndex: msg.cardIndex,
               answerIndex: msg.answerIndex,
               answerText: msg.answerText ?? '',

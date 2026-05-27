@@ -9,8 +9,8 @@ export interface PlayerGameScreenProps {
   teamId: string | null
   teamName: string | null
   avatar: string
-  initialCard: WireCard
-  initialCardIndex: number
+  initialCard?: WireCard
+  initialCardIndex?: number
   initialCardStartedAt?: number | null
   // Set on resume when the player has already voted for the current card
   initialHasVoted?: boolean

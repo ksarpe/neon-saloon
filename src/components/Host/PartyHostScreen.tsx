@@ -24,6 +24,7 @@ import type {
   VotesRevealedPayload,
 } from '@/lib/game-types'
 import { readHostProfile, updateHostProfile } from '@/lib/party-ticket-client'
+import type { ConnectionStatus } from '@/lib/party-ws'
 import type { GameCard } from '@/lib/store'
 
 import { ActiveCardView } from './ActiveCardView'
@@ -60,6 +61,15 @@ export default function PartyHostScreen({ pin, initialCards, partyToken }: Props
   const [hostActionLoading, setHostActionLoading] = useState<
     'start' | 'reveal' | 'next' | 'finish' | null
   >(null)
+
+  // ─── Host-as-player state ────────────────────────────────────────────────────
+  // The host participates as a player. playerId is fixed as `host-<pin>` so it
+  // survives reconnects. We re-register on every connect so the server's
+  // per-connection meta stays fresh after WS restarts.
+  const [hostPlayerId, setHostPlayerId] = useState<string | null>(null)
+  const [hostHasVoted, setHostHasVoted] = useState(false)
+  const [hostLoading, setHostLoading] = useState(false)
+  const prevStatusRef = useRef<ConnectionStatus>('connecting')
 
   useEffect(() => {
     const stored = readHostProfile(pin)
@@ -115,6 +125,7 @@ export default function PartyHostScreen({ pin, initialCards, partyToken }: Props
         setCurrentVotes([])
         setIsRevealed(false)
         setRevealedVotes([])
+        setHostHasVoted(false)
       },
       onGameStarted: () => {
         setPhase('active')
@@ -130,6 +141,42 @@ export default function PartyHostScreen({ pin, initialCards, partyToken }: Props
     role: 'host',
     handlers,
   })
+
+  // ─── Host-as-player registration ─────────────────────────────────────────────
+  // Re-register on every (re)connect so the server connectionMeta has the
+  // host's playerId. applyJoin is idempotent — no duplicate player-joined events.
+  useEffect(() => {
+    const prev = prevStatusRef.current
+    prevStatusRef.current = status
+    if (status !== 'connected' || prev === 'connected' || !hostAvatar || !send) return
+
+    send({ type: 'host:register-player', avatar: hostAvatar })
+      .then((result) => {
+        if (result.ok) setHostPlayerId(`host-${pin}`)
+      })
+      .catch((err) => console.error('[host:register-player]', err))
+  // We intentionally only track status changes; other deps are stable refs.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status])
+
+  const handleHostVote = useCallback(
+    async (answerIndex: number, answerText: string) => {
+      if (!send || !hostPlayerId || hostHasVoted || hostLoading) return
+      setHostLoading(true)
+      try {
+        const result = await send({
+          type: 'player:vote',
+          cardIndex,
+          answerIndex,
+          answerText,
+        })
+        if (result.ok) setHostHasVoted(true)
+      } finally {
+        setHostLoading(false)
+      }
+    },
+    [send, hostPlayerId, hostHasVoted, hostLoading, cardIndex],
+  )
 
   // Snapshot is the authoritative state on connect + every reconnect. It only
   // carries non-mode-specific fields today — votes/scores hydrate from the
@@ -150,7 +197,16 @@ export default function PartyHostScreen({ pin, initialCards, partyToken }: Props
     if (!hostName.trim() || !hostAvatar) return
     updateHostProfile(pin, { hostName: hostName.trim(), hostAvatar })
     setPhase('lobby')
-  }, [pin, hostName, hostAvatar])
+    // If we're already connected (WS was ready before setup finished), register
+    // immediately. Otherwise the status-change effect above handles it.
+    if (status === 'connected' && send) {
+      send({ type: 'host:register-player', avatar: hostAvatar })
+        .then((result) => {
+          if (result.ok) setHostPlayerId(`host-${pin}`)
+        })
+        .catch((err) => console.error('[host:register-player setup]', err))
+    }
+  }, [pin, hostName, hostAvatar, status, send])
 
   const handleStart = useCallback(async () => {
     const firstCard = cards[0]
@@ -446,10 +502,10 @@ export default function PartyHostScreen({ pin, initialCards, partyToken }: Props
                   countdown={countdown}
                   hostCardFlipped={true}
                   onHostCardFlip={() => {}}
-                  hostPlayerId={null}
-                  hostHasVoted={false}
-                  onHostVote={async () => {}}
-                  hostLoading={false}
+                  hostPlayerId={hostPlayerId}
+                  hostHasVoted={hostHasVoted}
+                  onHostVote={handleHostVote}
+                  hostLoading={hostLoading}
                 />
               </motion.div>
             )}

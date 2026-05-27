@@ -8,7 +8,6 @@ import BattleRoyalePlayer from '@/components/BattleRoyale/BattleRoyalePlayer'
 import PlayerHighLowScreen from '@/components/HighLow/PlayerHighLowScreen'
 import PlayerGameScreen from '@/components/PlayerGame'
 import { useBackButton } from '@/lib/back-button-context'
-import type { WireCard } from '@/lib/game-types'
 import {
   fetchJoinTicket,
   fetchPartyRoomLookup,
@@ -23,11 +22,6 @@ import { TeamPicker } from './TeamPicker'
 import type { LiveTeam, PlayerInfo, Step } from './types'
 import { slide } from './types'
 
-const WAITING_CARD: WireCard = {
-  id: 'placeholder',
-  type: 'QUIZ',
-  description: 'Waiting for host...',
-}
 
 export default function JoinGameForm() {
   const searchParams = useSearchParams()
@@ -264,8 +258,6 @@ export default function JoinGameForm() {
         teamId={playerInfo.teamId}
         teamName={playerInfo.teamName}
         avatar={playerInfo.avatar}
-        initialCard={WAITING_CARD}
-        initialCardIndex={0}
         partyToken={partyToken}
       />
     )

@@ -29,17 +29,19 @@ export function applyJoin(
   state: RoomState,
   input: { playerId: string; playerName: string; avatar?: string; teamId?: string },
 ): ReducerResult<{ player: RoomPlayer }> {
+  // Idempotency FIRST: a player that already exists is always accepted, even
+  // mid-game. This lets the host register-as-player idempotently on reconnect,
+  // and lets regular players reconnect without a new join event.
+  const existing = state.players.find((p) => p.playerId === input.playerId)
+  if (existing) {
+    return { ok: true, state, events: [], extra: { player: existing } }
+  }
+
   if (state.status === "active") return { ok: false, error: "Game already started", code: 409 }
   if (state.status === "finished") return { ok: false, error: "Game already finished", code: 409 }
   // Classic + battle-royale don't use teams.
   if (state.gameMode !== "highlow" && input.teamId) {
     return { ok: false, error: "Teams are only available in Mniej więcej", code: 400 }
-  }
-  // Idempotency: if a player with the same id is already in the lobby, treat
-  // this as a reconnect — no second event, just hand back the existing player.
-  const existing = state.players.find((p) => p.playerId === input.playerId)
-  if (existing) {
-    return { ok: true, state, events: [], extra: { player: existing } }
   }
 
   // HighLow players belong to a team; resolve the name from the teams array

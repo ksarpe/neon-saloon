@@ -73,6 +73,13 @@ export type ClientPlayerLeave = {
   requestId: string
 }
 
+export type ClientHostRegisterAsPlayer = {
+  type: 'host:register-player'
+  requestId: string
+  /** The host's chosen avatar identifier. */
+  avatar: string
+}
+
 export type ClientPing = {
   type: 'ping'
   requestId: string
@@ -152,6 +159,7 @@ export type ClientMessage =
   | ClientHostFinish
   | ClientPlayerVote
   | ClientPlayerLeave
+  | ClientHostRegisterAsPlayer
   | ClientHostHighLowSetup
   | ClientHostHighLowRound
   | ClientPlayerHighLowNumber
