@@ -4,10 +4,10 @@ import { AnimatePresence } from 'framer-motion'
 import { Star } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { GameSummary } from '@/components/GameSummary'
 import { usePartyConnection } from '@/hooks/usePartyConnection'
 import type { HighLowRoundResultPayload, HighLowRoundStartPayload, ScoreEntry } from '@/lib/game-types'
 
-import { PlayerFinished } from './PlayerFinished'
 import { PlayerGuessing } from './PlayerGuessing'
 import { PlayerResult } from './PlayerResult'
 import { PlayerVoting } from './PlayerVoting'
@@ -233,14 +233,19 @@ export function PartyPlayerHighLowScreen({
           )}
 
           {phase === 'finished' && (
-            <PlayerFinished
+            <GameSummary
               key="finished"
-              avatar={avatar}
-              playerName={playerName}
-              teamName={teamName}
-              playerId={playerId}
-              myScore={myScore}
-              scores={scores}
+              scores={[]}
+              teamScores={Array.from(
+                scores.reduce((map, s) => {
+                  const id = s.playerTeamId ?? s.playerTeamName ?? s.playerId
+                  const name = s.playerTeamName ?? s.playerName
+                  const existing = map.get(id)
+                  map.set(id, { id, name, score: Math.max(existing?.score ?? 0, s.score) })
+                  return map
+                }, new Map<string, { id: string; name: string; score: number }>()),
+              ).map(([, v]) => v)}
+              currentPlayerId={playerId}
             />
           )}
         </AnimatePresence>

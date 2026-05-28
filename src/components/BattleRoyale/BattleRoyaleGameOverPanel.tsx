@@ -185,7 +185,12 @@ export function BattleRoyaleGameOverPanel({
                   </div>
                   <PlayerAvatar avatar={player.avatar} size={30} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-black text-[#ffe6c7]">{player.name}</p>
+                    <p className="truncate text-sm font-black text-[#ffe6c7]">
+                      {player.name}
+                      {player.id === currentPlayerId && (
+                        <span className="ml-1 whitespace-nowrap text-xs font-black tracking-normal">(TY)</span>
+                      )}
+                    </p>
                     <p className="text-[10px] font-bold text-[#f0dfc0]/40 uppercase">
                       {isWinner ? 'zwycięzca' : survived ? 'ocalały' : 'duch'}
                       {player.isHost ? ' · host' : ''}

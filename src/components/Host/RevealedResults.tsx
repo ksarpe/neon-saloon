@@ -96,6 +96,9 @@ export function RevealedResults({ card, revealedVotes, scores, hostPlayerId, cou
               <div key={s.playerId} className="flex items-center gap-2 text-sm">
                 <span className="text-text-primary flex-1 truncate text-xs font-semibold">
                   {s.playerName}
+                  {s.playerId === hostPlayerId && (
+                    <span className="text-text-muted ml-1 text-[10px]">(ty)</span>
+                  )}
                 </span>
                 <div className="flex items-center gap-1">
                   <Beer size={10} style={{ color: '#ffd700' }} />
@@ -125,6 +128,9 @@ export function RevealedResults({ card, revealedVotes, scores, hostPlayerId, cou
               </span>
               <span className="text-text-primary flex-1 truncate text-xs font-semibold">
                 {s.playerName}
+                {s.playerId === hostPlayerId && (
+                  <span className="text-text-muted ml-1 text-[10px]">(ty)</span>
+                )}
               </span>
               <div className="flex items-center gap-1">
                 <Star

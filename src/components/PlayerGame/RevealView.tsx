@@ -12,9 +12,10 @@ interface Props {
   data: VotesRevealedPayload
   card: CardLike
   countdown: number | null
+  currentPlayerId?: string
 }
 
-export function RevealView({ data, card, countdown }: Props) {
+export function RevealView({ data, card, countdown, currentPlayerId }: Props) {
   const correctAnswer = data.correctAnswer?.trim()
   const isNeverCard = !correctAnswer
   const revealedCard = { ...card, answer: correctAnswer }
@@ -55,6 +56,9 @@ export function RevealView({ data, card, countdown }: Props) {
           >
             <span className="text-text-primary flex-1 text-sm font-semibold">
               {v.teamName ?? v.playerName}
+              {v.playerId === currentPlayerId && (
+                <span className="ml-1 whitespace-nowrap text-xs font-black tracking-normal">(TY)</span>
+              )}
             </span>
             <span
               className="rounded-full px-2 py-0.5 text-xs font-bold"
@@ -94,7 +98,12 @@ export function RevealView({ data, card, countdown }: Props) {
                   key={s.playerId}
                   className="bg-saloon-card border-saloon-border flex items-center gap-3 rounded-xl border p-3 shadow-lg"
                 >
-                  <span className="text-text-primary flex-1 text-sm font-bold">{s.playerName}</span>
+                  <span className="text-text-primary flex-1 text-sm font-bold">
+                    {s.playerName}
+                    {s.playerId === currentPlayerId && (
+                      <span className="ml-1 whitespace-nowrap text-xs font-black tracking-normal">(TY)</span>
+                    )}
+                  </span>
                   <div className="flex items-center gap-1 rounded-lg bg-black/30 px-2 py-1">
                     <Beer size={12} style={{ color: '#ffd700' }} />
                     <span className="text-sm font-black" style={{ color: '#ffd700' }}>
@@ -127,7 +136,12 @@ export function RevealView({ data, card, countdown }: Props) {
                 <span className="flex w-7 shrink-0 justify-center">
                   <PlaceIcon rank={i + 1} size={22} />
                 </span>
-                <span className="text-text-primary flex-1 text-sm font-bold">{s.playerName}</span>
+                <span className="text-text-primary flex-1 text-sm font-bold">
+                  {s.playerName}
+                  {s.playerId === currentPlayerId && (
+                    <span className="ml-1 whitespace-nowrap text-xs font-black tracking-normal">(TY)</span>
+                  )}
+                </span>
                 <div className="flex items-center gap-1 rounded-lg bg-black/30 px-2 py-1">
                   <Star
                     size={12}

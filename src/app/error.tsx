@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { AlertTriangle, Home, RefreshCw } from 'lucide-react'
+import { Home, RefreshCw } from 'lucide-react'
 import { useEffect } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -25,21 +25,10 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
         transition={{ duration: 0.4 }}
         className="flex w-full max-w-sm flex-col items-center gap-6 text-center"
       >
-        {/* Icon */}
-        <div
-          className="flex h-16 w-16 items-center justify-center rounded-2xl border-2"
-          style={{
-            borderColor: 'rgba(239,68,68,0.4)',
-            backgroundColor: 'rgba(239,68,68,0.08)',
-          }}
-        >
-          <AlertTriangle size={28} style={{ color: '#ef4444' }} />
-        </div>
-
         {/* Heading */}
         <div className="flex flex-col gap-2">
           <h1
-            className="text-3xl font-black uppercase tracking-wide"
+            className="text-3xl font-black tracking-wide uppercase"
             style={{ fontFamily: 'var(--font-app)', color: 'var(--neon-pink)' }}
           >
             Coś poszło nie tak

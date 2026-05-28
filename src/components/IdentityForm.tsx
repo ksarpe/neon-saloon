@@ -73,7 +73,6 @@ export function IdentityForm({ name, onNameChange, avatar, onAvatarChange, onEnt
             if (e.key === 'Enter' && canSubmit && onEnter) onEnter()
           }}
           maxLength={24}
-          autoFocus
           placeholder={placeholder}
           className="bg-saloon-surface text-text-primary placeholder:text-text-muted h-14 min-w-0 rounded-xl border-2 px-4 py-0 text-center text-lg font-bold transition-colors focus:outline-none"
           style={{ borderColor: name.trim() ? 'var(--neon-pink)' : 'var(--saloon-border)' }}

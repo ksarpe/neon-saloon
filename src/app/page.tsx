@@ -183,10 +183,6 @@ export default function LandingPage() {
           <Button onClick={() => router.push('/graj')} type="primary" className="flex-1">
             Zagraj teraz
           </Button>
-
-          <Button onClick={() => router.push('/graj/join')} type="outline">
-            Dołącz z kodem
-          </Button>
         </motion.div>
 
         {/* Scroll hint */}

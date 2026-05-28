@@ -256,7 +256,7 @@ export default function PartyPlayerGameScreen({
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <RevealView data={revealData} card={currentCard} countdown={countdown} />
+                <RevealView data={revealData} card={currentCard} countdown={countdown} currentPlayerId={playerId} />
               </motion.div>
             )}
 
