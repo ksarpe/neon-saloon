@@ -304,7 +304,11 @@ export function AccountTab() {
 
         {!isLifetime && (
           <div className="mt-5">
-            <PurchaseConsent checked={consent} onChange={setConsent} id="account-purchase-consent" />
+            <PurchaseConsent
+              checked={consent}
+              onChange={setConsent}
+              id="account-purchase-consent"
+            />
           </div>
         )}
 
@@ -534,8 +538,8 @@ export function AccountTab() {
             <div>
               <p className="text-text-primary text-sm font-black">Usuń konto</p>
               <p className="text-text-muted mt-1 text-sm leading-snug">
-                Usuniemy konto, zapisane pytania, ustawienia i dane profilu. Tej operacji nie da
-                się cofnąć.
+                Usuniemy konto, zapisane pytania, ustawienia i dane profilu. Tej operacji nie da się
+                cofnąć.
               </p>
             </div>
           </div>
@@ -749,7 +753,13 @@ function clearLocalGameStorage() {
   }
 }
 
-export function PaymentStatusBanner({ checkoutState }: { checkoutState: CheckoutState }) {
+export function PaymentStatusBanner({
+  checkoutState,
+  checkoutSessionId,
+}: {
+  checkoutState: CheckoutState
+  checkoutSessionId?: string | null
+}) {
   const router = useRouter()
   const { update } = useSession()
   const sessionUpdatedRef = useRef(false)
@@ -768,7 +778,14 @@ export function PaymentStatusBanner({ checkoutState }: { checkoutState: Checkout
       attempts += 1
 
       try {
-        const response = await fetch('/api/stripe/status', { cache: 'no-store' })
+        const response =
+          checkoutSessionId && attempts === 1
+            ? await fetch('/api/stripe/confirm', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId: checkoutSessionId }),
+              })
+            : await fetch('/api/stripe/status', { cache: 'no-store' })
         const payload = await response.json().catch(() => ({}))
 
         if (cancelled) return
@@ -815,7 +832,7 @@ export function PaymentStatusBanner({ checkoutState }: { checkoutState: Checkout
       cancelled = true
       if (timer) clearInterval(timer)
     }
-  }, [checkoutState])
+  }, [checkoutSessionId, checkoutState])
 
   useEffect(() => {
     if (paymentStatus.kind !== 'active' || sessionUpdatedRef.current) return

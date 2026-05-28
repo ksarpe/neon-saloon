@@ -3,8 +3,7 @@ import { getServerSession } from 'next-auth'
 
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-
-const INACTIVE_SUBSCRIPTION_STATUSES = new Set(['canceled', 'incomplete_expired', 'unpaid'])
+import { isInactiveSubscriptionStatus } from '@/lib/subscription-status'
 
 export async function GET() {
   const session = await getServerSession(authOptions)
@@ -30,7 +29,7 @@ export async function GET() {
   const subscriptionStatus = user.stripeSubscriptionStatus
   const status = user.isPremium
     ? 'active'
-    : subscriptionStatus && INACTIVE_SUBSCRIPTION_STATUSES.has(subscriptionStatus)
+    : isInactiveSubscriptionStatus(subscriptionStatus)
       ? 'failed'
       : 'pending'
 

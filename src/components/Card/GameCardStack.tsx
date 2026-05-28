@@ -100,7 +100,6 @@ export function GameCardStack({
                 style={{
                   color: 'var(--neon-pink)',
                   fontSize: `clamp(${backLabelFontSize}, 3vw, ${backLabelFontSizeSm})`,
-                  textShadow: '0 0 12px var(--neon-pink), 0 0 30px rgba(221,84,162,0.5)',
                 }}
               >
                 odsłoń dziką kartę
@@ -124,8 +123,6 @@ export function GameCardStack({
                         color: 'var(--neon-pink)',
                         fontFamily: 'var(--font-logo)',
                         fontSize: `clamp(${brandFontSize}, 7vw, ${brandFontSizeSm})`,
-                        textShadow:
-                          '0 0 12px var(--neon-pink), 0 0 30px rgba(221,84,162,0.55)',
                       }
                 }
               >

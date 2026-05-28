@@ -34,10 +34,27 @@ export function getClientIpFromHeaders(
     return Array.isArray(value) ? value[0] : value
   }
 
-  const forwardedFor = readHeader('x-forwarded-for')?.split(',')[0]?.trim()
-  const realIp = readHeader('x-real-ip')?.trim()
+  // Prefer headers that are written by the edge platform itself (and therefore
+  // cannot be spoofed by the client) before falling back to the generic
+  // x-forwarded-for. Order:
+  //   1. cf-connecting-ip          — Cloudflare
+  //   2. x-vercel-forwarded-for    — Vercel (single client IP, no comma list)
+  //   3. x-real-ip                 — Nginx-style proxies / some Vercel paths
+  //   4. x-forwarded-for           — generic, split on ',' to drop downstream
+  //                                   hops; client-controllable on bare hosts
+  const cfConnectingIp = readHeader('cf-connecting-ip')?.trim()
+  if (cfConnectingIp) return cfConnectingIp
 
-  return forwardedFor || realIp || 'unknown'
+  const vercelForwarded = readHeader('x-vercel-forwarded-for')?.split(',')[0]?.trim()
+  if (vercelForwarded) return vercelForwarded
+
+  const realIp = readHeader('x-real-ip')?.trim()
+  if (realIp) return realIp
+
+  const forwardedFor = readHeader('x-forwarded-for')?.split(',')[0]?.trim()
+  if (forwardedFor) return forwardedFor
+
+  return 'unknown'
 }
 
 export async function consumeRateLimit(

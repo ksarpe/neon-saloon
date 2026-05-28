@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 
 import { getQuestionQuota } from '@/config/usage-limits'
 import { authOptions } from '@/lib/auth'
+import { getFreshPremiumAccess } from '@/lib/premium-access'
 import { prisma } from '@/lib/prisma'
 import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
 import {
@@ -18,6 +19,7 @@ export async function GET(request: Request) {
 
   const userId = (session.user as { id: string }).id
   const pagination = getQuestionPagination(request)
+  const hasPremium = await getFreshPremiumAccess(userId)
   const [questions, total] = await prisma.$transaction([
     prisma.neverQuestion.findMany({
       where: { userId },
@@ -31,7 +33,7 @@ export async function GET(request: Request) {
   return NextResponse.json(questions, {
     headers: {
       ...pagination.headers,
-      ...questionQuotaHeaders(total, getQuestionQuota('never', Boolean(session.user.isPremium))),
+      ...questionQuotaHeaders(total, getQuestionQuota('never', hasPremium)),
     },
   })
 }
@@ -42,7 +44,7 @@ export async function POST(request: Request) {
     if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const userId = (session.user as { id: string }).id
-    const quota = getQuestionQuota('never', Boolean(session.user.isPremium))
+    const quota = getQuestionQuota('never', await getFreshPremiumAccess(userId))
     if (quota <= 0) {
       return NextResponse.json(
         {

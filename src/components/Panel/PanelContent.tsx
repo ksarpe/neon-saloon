@@ -18,6 +18,7 @@ export function PanelContent() {
   const checkoutState = ['success', 'cancelled'].includes(searchParams.get('checkout') ?? '')
     ? (searchParams.get('checkout') as CheckoutState)
     : null
+  const checkoutSessionId = searchParams.get('session_id')
   const openTab = (tab: PanelTab) => {
     setActiveTab(tab)
     setVisitedTabs((prev) => (prev.includes(tab) ? prev : [...prev, tab]))
@@ -95,7 +96,7 @@ export function PanelContent() {
       </div>
 
       <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col gap-7 px-6 py-9">
-        <PaymentStatusBanner checkoutState={checkoutState} />
+        <PaymentStatusBanner checkoutState={checkoutState} checkoutSessionId={checkoutSessionId} />
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {tabs.map((tab) => {

@@ -3,10 +3,14 @@ import { createHmac, timingSafeEqual } from 'node:crypto'
 export type StripePlanId = 'monthly' | 'lifetime'
 export type StripeCheckoutMode = 'payment' | 'subscription'
 
+export const STRIPE_API_VERSION = process.env.STRIPE_API_VERSION ?? '2026-04-22.dahlia'
+
 export interface StripeCheckoutSession {
   id: string
   url: string | null
+  status?: string
   mode?: StripeCheckoutMode
+  client_reference_id?: string | null
   customer?: string | { id: string } | null
   subscription?: string | { id: string } | null
   metadata?: Record<string, string> | null
@@ -73,6 +77,7 @@ export async function stripeApiRequest<T>(
 
   const headers = new Headers(init.headers)
   headers.set('Authorization', `Bearer ${secretKey}`)
+  headers.set('Stripe-Version', STRIPE_API_VERSION)
 
   const response = await fetch(`https://api.stripe.com/v1${path}`, {
     ...init,
@@ -124,7 +129,7 @@ export async function createStripeCheckoutSession(input: {
   body.set('line_items[0][price]', input.priceId)
   body.set('line_items[0][quantity]', '1')
   body.set('allow_promotion_codes', 'true')
-  body.set('success_url', `${input.appUrl}/panel?checkout=success`)
+  body.set('success_url', `${input.appUrl}/panel?checkout=success&session_id={CHECKOUT_SESSION_ID}`)
   body.set('cancel_url', `${input.appUrl}/panel?checkout=cancelled`)
   body.set('metadata[userId]', input.userId)
   body.set('metadata[plan]', input.plan)
@@ -144,13 +149,24 @@ export async function createStripeCheckoutSession(input: {
 }
 
 export async function retrieveStripeSubscription(subscriptionId: string) {
-  return stripeApiRequest<StripeSubscription>(`/subscriptions/${subscriptionId}`)
+  return stripeApiRequest<StripeSubscription>(
+    `/subscriptions/${encodeURIComponent(subscriptionId)}`
+  )
+}
+
+export async function retrieveStripeCheckoutSession(sessionId: string) {
+  return stripeApiRequest<StripeCheckoutSession>(
+    `/checkout/sessions/${encodeURIComponent(sessionId)}`
+  )
 }
 
 export async function cancelStripeSubscription(subscriptionId: string) {
-  return stripeApiRequest<StripeSubscription>(`/subscriptions/${subscriptionId}`, {
-    method: 'DELETE',
-  })
+  return stripeApiRequest<StripeSubscription>(
+    `/subscriptions/${encodeURIComponent(subscriptionId)}`,
+    {
+      method: 'DELETE',
+    }
+  )
 }
 
 export async function createStripeBillingPortalSession(input: {

@@ -86,7 +86,20 @@
       "Bash(git commit -m ' *)",
       "Bash(git push *)",
       "Bash(bunx eslint *)",
-      "Bash(git rm *)"
+      "Bash(git rm *)",
+      "Bash(Get-ChildItem -Path \"F:\\\\ProjektyAKNSoftware\\\\neon-saloon\" -Recurse -Force)",
+      "Bash(Select-Object -First 50)",
+      "Bash(git check-ignore *)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(npx partykit *)",
+      "Bash(tee /tmp/partykit.log)",
+      "Bash(PORT=3001 npx next dev -p 3001)",
+      "Bash(tee /tmp/next.log)",
+      "Bash(curl -sf http://127.0.0.1:1999/)",
+      "Bash(curl -sf http://localhost:3001/)",
+      "Bash(cat /tmp/partykit.log 2>&1 | tail -20)",
+      "Bash(cat /tmp/next.log 2>&1 | tail -30)",
+      "Bash(pkill -f \"next dev\")"
     ]
   }
 }

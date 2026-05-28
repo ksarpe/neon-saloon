@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 
 import { getQuestionQuota } from '@/config/usage-limits'
 import { authOptions } from '@/lib/auth'
+import { getFreshPremiumAccess } from '@/lib/premium-access'
 import { prisma } from '@/lib/prisma'
 import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
 import {
@@ -19,6 +20,7 @@ export async function GET(request: Request) {
 
   const userId = (session.user as { id: string }).id
   const pagination = getQuestionPagination(request)
+  const hasPremium = await getFreshPremiumAccess(userId)
   const [questions, total] = await prisma.$transaction([
     prisma.quizQuestion.findMany({
       where: { userId },
@@ -32,7 +34,7 @@ export async function GET(request: Request) {
   return NextResponse.json(questions, {
     headers: {
       ...pagination.headers,
-      ...questionQuotaHeaders(total, getQuestionQuota('quiz', Boolean(session.user.isPremium))),
+      ...questionQuotaHeaders(total, getQuestionQuota('quiz', hasPremium)),
     },
   })
 }
@@ -46,12 +48,13 @@ export async function POST(request: Request) {
     const rateLimitResponse = await enforceQuestionCreateLimit(request, 'quiz', userId)
     if (rateLimitResponse) return rateLimitResponse
 
-    const quota = getQuestionQuota('quiz', Boolean(session.user.isPremium))
+    const hasPremium = await getFreshPremiumAccess(userId)
+    const quota = getQuestionQuota('quiz', hasPremium)
     const total = await prisma.quizQuestion.count({ where: { userId } })
     if (total >= quota) {
       return NextResponse.json(
         {
-          error: session.user.isPremium
+          error: hasPremium
             ? `Osiągnięto limit ${quota} pytań quizowych.`
             : `Na darmowym koncie możesz dodać maksymalnie ${quota} pytań quizowych. Odblokuj PRO, żeby dodać więcej.`,
           limit: quota,

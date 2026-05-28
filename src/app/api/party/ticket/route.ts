@@ -11,6 +11,8 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { readBotProtectionToken, verifyBotProtection } from '@/lib/bot-protection'
 import { signPartyToken } from '@/lib/party-token'
+import { getPartyKitServerUrl } from '@/lib/partykit-server-url'
+import { getFreshPremiumAccess } from '@/lib/premium-access'
 import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
 import {
   INPUT_LIMITS,
@@ -38,21 +40,56 @@ const GLOBAL_JOIN_LIMITS = [
   { suffix: 'sustained', limit: 3_000, windowMs: 15 * 60_000 },
 ]
 
+// Cryptographically uniform 6-digit PIN. Rejection sampling against the largest
+// 10^N-multiple below 2^32 keeps the distribution flat (the naive `random % 10`
+// biases the lowest digits). 2^32 is divisible by 10^6 65 times so the reject
+// rate is ~0.4 %.
+const PIN_MAX = 10 ** SESSION_PIN_LENGTH
+const PIN_REJECT_THRESHOLD = Math.floor(0x1_0000_0000 / PIN_MAX) * PIN_MAX
+
 function generatePin(): string {
-  const chars = '0123456789'
-  let pin = ''
-  for (let i = 0; i < SESSION_PIN_LENGTH; i++) {
-    pin += chars[Math.floor(Math.random() * chars.length)]
-  }
-  return pin
+  const buf = new Uint32Array(1)
+  // crypto.getRandomValues is available on Node 22+ and Edge runtime alike.
+  let n: number
+  do {
+    crypto.getRandomValues(buf)
+    n = buf[0]
+  } while (n >= PIN_REJECT_THRESHOLD)
+  return String(n % PIN_MAX).padStart(SESSION_PIN_LENGTH, '0')
 }
 
 function generatePlayerId(): string {
-  return `player_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
+  return `player_${Date.now()}_${crypto.randomUUID().slice(0, 8)}`
 }
 
 function generateHostId(): string {
   return `host_${crypto.randomUUID()}`
+}
+
+// Probe PartyKit to see whether the PIN is already claimed by an initialised
+// room. We reuse the room's GET endpoint (returns 404 when `state` is null).
+// This DOES spawn an idle DO at the probed PIN, but PartyKit garbage-collects
+// uninitialised durable objects cheaply, and the probe runs at most a handful
+// of times per ticket issuance.
+const PIN_ALLOCATION_ATTEMPTS = 6
+
+async function allocateAvailablePin(): Promise<string | null> {
+  const baseUrl = getPartyKitServerUrl()
+  for (let i = 0; i < PIN_ALLOCATION_ATTEMPTS; i++) {
+    const candidate = generatePin()
+    try {
+      const probe = await fetch(`${baseUrl}/parties/main/${candidate}`, {
+        cache: 'no-store',
+      })
+      if (probe.status === 404) return candidate
+      // 2xx means the room is already initialised — collision, try again.
+      // Any other status (5xx, network) we treat as transient and fall through
+      // to the next attempt rather than handing out a potentially-taken PIN.
+    } catch (err) {
+      console.warn('[party/ticket] PIN probe failed, retrying', err)
+    }
+  }
+  return null
 }
 
 function getAuthSecret(): string | null {
@@ -122,19 +159,26 @@ export async function POST(request: Request) {
         // Dev-only escape hatch so E2E tests can drive HL + BR without seeding a
         // premium user. Gated by NODE_ENV so it can NEVER be set in production.
         const devBypass =
-          process.env.NODE_ENV !== 'production' &&
-          process.env.DISABLE_PREMIUM_GATE === 'true'
+          process.env.NODE_ENV !== 'production' && process.env.DISABLE_PREMIUM_GATE === 'true'
         if (!devBypass) {
           const session = await getServerSession(authOptions)
-          if (!session?.user?.isPremium) {
+          if (!session?.user?.id || !(await getFreshPremiumAccess(session.user.id))) {
             return NextResponse.json({ error: 'Premium access required' }, { status: 403 })
           }
         }
       }
 
-      // PIN collision avoidance moves into the PartyKit room: an initialised
-      // room accepts only the original hostId embedded in the host token.
-      const pin = generatePin()
+      // Probe PartyKit until we get a PIN that isn't already claimed. The room
+      // itself still enforces hostId ownership on connect (so a stale ghost DO
+      // can't be hijacked), but probing avoids handing a host a PIN that will
+      // immediately bounce them.
+      const pin = await allocateAvailablePin()
+      if (!pin) {
+        return NextResponse.json(
+          { error: 'Nie udało się zarezerwować PIN-u salonu. Spróbuj ponownie za chwilę.' },
+          { status: 503 }
+        )
+      }
       const hostId = generateHostId()
       const partyToken = await signPartyToken(
         { pin, role: 'host', tokenKind: 'party', hostId, hostName, gameMode, iat: now, exp },
@@ -187,14 +231,21 @@ export async function POST(request: Request) {
 
       const playerId = generatePlayerId()
       const partyToken = await signPartyToken(
-        { pin, role: 'player', tokenKind: 'party', playerId, playerName, avatar, teamId, iat: now, exp },
+        {
+          pin,
+          role: 'player',
+          tokenKind: 'party',
+          playerId,
+          playerName,
+          avatar,
+          teamId,
+          iat: now,
+          exp,
+        },
         secret
       )
 
-      return NextResponse.json(
-        { playerId, role: 'player' as const, partyToken },
-        { status: 200 }
-      )
+      return NextResponse.json({ playerId, role: 'player' as const, partyToken }, { status: 200 })
     }
 
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 })

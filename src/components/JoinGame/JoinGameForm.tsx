@@ -51,7 +51,7 @@ export default function JoinGameForm() {
   const { setHidden: setBackHidden } = useBackButton()
 
   useEffect(() => {
-    setBackHidden(step === 'playing')
+    setBackHidden(step !== 'pin')
   }, [step, setBackHidden])
 
   const applyPartyTeams = useCallback((teams: Array<LiveTeam>) => {

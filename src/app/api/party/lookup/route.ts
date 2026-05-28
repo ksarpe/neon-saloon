@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { verifyPartyToken } from '@/lib/party-token'
+import { getPartyKitServerUrl } from '@/lib/partykit-server-url'
 import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
 import { SESSION_PIN_LENGTH } from '@/lib/session-pin'
 
@@ -16,21 +17,6 @@ type PartyRoomLookup = {
     emoji: string
     memberCount: number
   }>
-}
-
-function getPartyKitBaseUrl(): string {
-  const configured =
-    process.env.PARTYKIT_HOST ?? process.env.NEXT_PUBLIC_PARTYKIT_HOST ?? '127.0.0.1:1999'
-
-  if (configured.startsWith('http://') || configured.startsWith('https://')) {
-    return configured.replace(/\/$/, '')
-  }
-
-  // Jeśli to localhost lub 127.0.0.1, użyj http. W przeciwnym razie wymuś https.
-  const isLocal = configured.includes('localhost') || configured.includes('127.0.0.1')
-  const protocol = isLocal ? 'http://' : 'https://'
-
-  return `${protocol}${configured.replace(/\/$/, '')}`
 }
 
 function cleanPin(value: string | null): string | null {
@@ -86,9 +72,20 @@ export async function GET(request: Request) {
   }
 
   try {
+    // Forward the party token (if present) so the PartyKit room can decide
+    // whether to return the full snapshot or the public bare-minimum one. The
+    // PartyKit room enforces the same authorization rules independently, so
+    // hitting `*.partykit.dev/parties/main/{pin}` directly cannot leak more
+    // than this endpoint would.
+    const forwardedToken =
+      request.headers.get('x-party-token') ?? request.headers.get('x-party-host-token')
+    const fetchHeaders: Record<string, string> = {}
+    if (forwardedToken) fetchHeaders['x-party-token'] = forwardedToken
+
     const authorizedLookup = await isAuthorizedLookup(request, pin)
-    const response = await fetch(`${getPartyKitBaseUrl()}/parties/main/${pin}`, {
+    const response = await fetch(`${getPartyKitServerUrl()}/parties/main/${pin}`, {
       cache: 'no-store',
+      headers: fetchHeaders,
     })
     if (response.status === 404) {
       return NextResponse.json({ error: 'Room not found' }, { status: 404 })

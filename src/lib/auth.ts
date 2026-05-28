@@ -44,7 +44,7 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id
         token.isPremium = user.isPremium ?? false
@@ -56,6 +56,7 @@ export const authOptions: NextAuthOptions = {
 
       if (!token.id || token.sessionInvalid) return token
       if (
+        trigger !== 'update' &&
         typeof token.userCheckedAt === 'number' &&
         Date.now() - token.userCheckedAt < USER_REFRESH_INTERVAL_MS
       ) {

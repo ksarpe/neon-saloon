@@ -70,7 +70,20 @@ type PlayerMeta = {
 type ConnectionMeta = HostMeta | PlayerMeta
 
 const STORAGE_KEY = 'state'
-const MAX_CLIENT_MESSAGE_CHARS = 64 * 1024
+// Single client messages are tiny JSON envelopes — vote, ack, ping etc. The
+// previous 64KB ceiling existed before sanitisers gated everything; with
+// sanitizeWireCard/sanitizeStoredDeck capping fields, 16KB is more than enough
+// for the largest legitimate payload (host:start with a full deck) and shrinks
+// the DoS surface 4x.
+const MAX_CLIENT_MESSAGE_CHARS = 16 * 1024
+
+// Per-connection token bucket. A single actor (the room) processes every
+// message serially, so a flood of player:vote/player:br-answer from one
+// connection can starve the others. 60 messages / 10s is well above normal
+// gameplay (host cycle is ~1 msg/sec, a player votes once per card) but kills
+// scripted spam.
+const CONNECTION_MESSAGE_LIMIT = 60
+const CONNECTION_MESSAGE_WINDOW_MS = 10_000
 
 function getAuthSecret(env: unknown): string | null {
   if (!env || typeof env !== 'object') return null
@@ -89,6 +102,7 @@ export default class GameServer implements Party.Server {
   // Loaded from storage in onStart, or initialised by the first host's connect.
   private state: RoomState | null = null
   private connectionMeta = new Map<string, ConnectionMeta>()
+  private messageBuckets = new Map<string, { count: number; resetAt: number }>()
 
   constructor(room: Party.Room) {
     this.room = room
@@ -187,6 +201,7 @@ export default class GameServer implements Party.Server {
 
   async onClose(connection: Party.Connection) {
     this.connectionMeta.delete(connection.id)
+    this.messageBuckets.delete(connection.id)
     // We intentionally do NOT remove the player from state on close: tab refresh
     // and flaky mobile networks would look like leaves. Explicit player:leave
     // (or session finish) is what removes a player from the lobby.
@@ -200,7 +215,31 @@ export default class GameServer implements Party.Server {
       return Response.json({ error: 'Room not found' }, { status: 404 })
     }
 
+    // Authorize the lookup: only callers that present a valid party token bound
+    // to THIS pin see the full snapshot. Unauthenticated callers (a player who
+    // is about to join via PIN) get the bare minimum so the lobby UI can render
+    // — and only while the room is still 'waiting'. Active/finished rooms are
+    // hidden from the public to prevent enumeration of in-flight sessions.
+    const authorized = await this.authorizeLookup(request)
     const snapshot = this.snapshot()
+
+    if (!authorized && snapshot.status !== 'waiting') {
+      return Response.json({ error: 'Room not found' }, { status: 404 })
+    }
+
+    if (!authorized) {
+      return Response.json({
+        pin: snapshot.pin,
+        gameMode: snapshot.gameMode,
+        status: snapshot.status,
+        playersCount: snapshot.players.length,
+        teams: snapshot.teams.map((team) => ({
+          ...team,
+          memberCount: snapshot.players.filter((player) => player.teamId === team.teamId).length,
+        })),
+      })
+    }
+
     return Response.json({
       pin: snapshot.pin,
       gameMode: snapshot.gameMode,
@@ -213,11 +252,31 @@ export default class GameServer implements Party.Server {
     })
   }
 
+  private async authorizeLookup(request: Party.Request): Promise<boolean> {
+    const token =
+      request.headers.get('x-party-token') ?? request.headers.get('x-party-host-token')
+    if (!token) return false
+
+    const secret = getAuthSecret(this.room.env)
+    if (!secret) return false
+
+    const result = await verifyPartyToken(token, secret)
+    return result.ok && result.payload.tokenKind === 'party' && result.payload.pin === this.room.id
+  }
+
   // ─── Message dispatch ───────────────────────────────────────────────────────
 
   async onMessage(rawMessage: string, sender: Party.Connection) {
     if (rawMessage.length > MAX_CLIENT_MESSAGE_CHARS) {
       sender.close(1009, 'Message too large')
+      return
+    }
+
+    if (!this.allowConnectionMessage(sender.id)) {
+      this.send(sender, {
+        type: 'error',
+        message: 'Rate limit exceeded — slow down.',
+      })
       return
     }
 
@@ -535,6 +594,24 @@ export default class GameServer implements Party.Server {
     if (meta.role !== 'host') {
       throw new ValidationError(`Only the host can send ${action}`, 403)
     }
+  }
+
+  private allowConnectionMessage(connectionId: string): boolean {
+    const now = Date.now()
+    const bucket = this.messageBuckets.get(connectionId)
+
+    if (!bucket || bucket.resetAt <= now) {
+      this.messageBuckets.set(connectionId, {
+        count: 1,
+        resetAt: now + CONNECTION_MESSAGE_WINDOW_MS,
+      })
+      return true
+    }
+
+    if (bucket.count >= CONNECTION_MESSAGE_LIMIT) return false
+
+    bucket.count += 1
+    return true
   }
 
   private requireState(): void {

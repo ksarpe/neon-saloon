@@ -13,7 +13,6 @@ import {
   NeverSourcePicker,
   TriviaDeckState,
 } from '@/components/HostSetup/HostPickers'
-import { Button } from '@/components/ui/button'
 import { QUESTION_CATEGORIES } from '@/config/games/categories'
 import { ALL_CATEGORIES_ID, PREMIUM_CATEGORY_IDS } from '@/config/games/category-selection'
 import { QUESTIONS_PER_GAME, shuffleAndLimitQuestions } from '@/lib/games/question-limit'
@@ -155,20 +154,11 @@ export default function HostPage() {
     return []
   }, [mode, neverSource, appNeverCards, quizCards, categoryCards, customCards])
 
-  if (!partyToken) {
-    return (
-      <div className="flex min-h-dvh w-full flex-col items-center justify-center gap-4 px-6 text-center">
-        <h1 className="text-text-primary text-2xl font-black">Brak tokenu hosta</h1>
-        <p className="text-text-muted max-w-md text-sm">
-          Ten salon dziala na PartyKit. Utworz go ponownie z tego urzadzenia albo wroc do aktywnej
-          sesji z ekranu tworzenia salonu.
-        </p>
-        <Button type="primary" onClick={() => router.push('/graj/host')}>
-          Wroc do tworzenia salonu
-        </Button>
-      </div>
-    )
-  }
+  useEffect(() => {
+    if (!partyToken) router.replace('/graj')
+  }, [partyToken, router])
+
+  if (!partyToken) return null
 
   if (mode === 'battle-royale') {
     return <BattleRoyaleHost pin={pin} partyToken={partyToken} />

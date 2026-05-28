@@ -12,9 +12,7 @@ import {
   validationErrorResponse,
 } from '@/lib/request-validation'
 import { cancelStripeSubscription, getStripeSecretKey } from '@/lib/stripe'
-
-const ACTIVE_SUBSCRIPTION_STATUSES = new Set(['active', 'trialing'])
-const INACTIVE_SUBSCRIPTION_STATUSES = new Set(['canceled', 'incomplete_expired', 'unpaid'])
+import { isActiveSubscriptionStatus, isInactiveSubscriptionStatus } from '@/lib/subscription-status'
 
 export async function GET() {
   const session = await getServerSession(authOptions)
@@ -45,7 +43,7 @@ export async function GET() {
   const subscriptionStatus = user.stripeSubscriptionStatus
   const premiumStatus = user.isPremium
     ? 'active'
-    : subscriptionStatus && INACTIVE_SUBSCRIPTION_STATUSES.has(subscriptionStatus)
+    : isInactiveSubscriptionStatus(subscriptionStatus)
       ? 'failed'
       : user.stripeCustomerId
         ? 'pending'
@@ -54,7 +52,7 @@ export async function GET() {
   const plan =
     subscriptionStatus === 'lifetime'
       ? 'lifetime'
-      : user.stripeSubscriptionId || ACTIVE_SUBSCRIPTION_STATUSES.has(subscriptionStatus ?? '')
+      : user.stripeSubscriptionId || isActiveSubscriptionStatus(subscriptionStatus)
         ? 'monthly'
         : 'free'
 
@@ -152,10 +150,7 @@ export async function DELETE(request: Request) {
       }
     }
 
-    if (
-      user.stripeSubscriptionId &&
-      ACTIVE_SUBSCRIPTION_STATUSES.has(user.stripeSubscriptionStatus ?? '')
-    ) {
+    if (user.stripeSubscriptionId && isActiveSubscriptionStatus(user.stripeSubscriptionStatus)) {
       if (!getStripeSecretKey()) {
         return NextResponse.json(
           {

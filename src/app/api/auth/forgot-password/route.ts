@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { after, NextResponse } from 'next/server'
 
 import { getAppUrl } from '@/lib/app-url'
 import { sendPasswordResetEmail } from '@/lib/email'
@@ -10,6 +10,11 @@ import {
 import { prisma } from '@/lib/prisma'
 import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
 import { normalizeEmail, readLimitedJson, validationErrorResponse } from '@/lib/request-validation'
+
+const GENERIC_FORGOT_PASSWORD_RESPONSE = {
+  ok: true as const,
+  message: 'Jeśli konto istnieje, wysłaliśmy link do resetu hasła.',
+}
 
 const GLOBAL_FORGOT_PASSWORD_LIMITS = [
   { suffix: 'burst', limit: 30, windowMs: 60_000 },
@@ -61,19 +66,34 @@ export async function POST(request: Request) {
       )
     }
 
-    const genericResponse = {
-      ok: true,
-      message: 'Jeśli konto istnieje, wysłaliśmy link do resetu hasła.',
-    }
+    // Defer the user lookup + token write + email delivery to `after()` so the
+    // response timing is identical whether or not the email is registered.
+    // Otherwise an attacker can enumerate accounts by measuring how long the
+    // request takes (registered = 3 DB queries + Resend round-trip; unknown =
+    // single SELECT). The generic 200 below is also the only thing the client
+    // ever sees — no `devResetUrl` field, no error specifics — so misconfigured
+    // production deployments cannot accidentally leak the reset link in JSON.
+    after(() => processForgotPasswordRequest(email))
 
+    return NextResponse.json(GENERIC_FORGOT_PASSWORD_RESPONSE)
+  } catch (error) {
+    const validationResponse = validationErrorResponse(error)
+    if (validationResponse) return validationResponse
+
+    console.error('[POST /api/auth/forgot-password]', error)
+    // Even on a hard failure we keep the response generic so we don't reveal
+    // anything to a probe. The error has already been logged for us.
+    return NextResponse.json(GENERIC_FORGOT_PASSWORD_RESPONSE)
+  }
+}
+
+async function processForgotPasswordRequest(email: string) {
+  try {
     const user = await prisma.user.findUnique({
       where: { email },
       select: { id: true, email: true },
     })
-
-    if (!user) {
-      return NextResponse.json(genericResponse)
-    }
+    if (!user) return
 
     const token = createPasswordResetToken()
     const tokenHash = hashPasswordResetToken(token)
@@ -105,23 +125,14 @@ export async function POST(request: Request) {
       }),
     ])
 
-    const result = await sendPasswordResetEmail({
+    await sendPasswordResetEmail({
       to: user.email,
       resetUrl,
     })
-
-    return NextResponse.json({
-      ...genericResponse,
-      devResetUrl: result.devUrl,
-    })
   } catch (error) {
-    const validationResponse = validationErrorResponse(error)
-    if (validationResponse) return validationResponse
-
-    console.error('[POST /api/auth/forgot-password]', error)
-    return NextResponse.json(
-      { error: 'Nie udało się wysłać maila resetującego hasło.' },
-      { status: 500 }
-    )
+    // Background task — we cannot surface this to the caller. Log loudly so a
+    // broken email pipeline shows up in dashboards instead of silently dropping
+    // password resets.
+    console.error('[forgot-password background]', error)
   }
 }
