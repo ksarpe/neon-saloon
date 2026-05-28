@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import { GameCardStack } from '@/components/Card'
 import { Button } from '@/components/ui/button'
 import { LANDING_SAMPLE_CARDS } from '@/config/landing-sample-cards'
+import { PRICING } from '@/config/pricing'
 
 const shuffleIndices = (length: number): number[] => {
   const order = Array.from({ length }, (_, i) => i)
@@ -43,8 +44,8 @@ const PRICING_PLANS = [
   {
     id: 'monthly',
     name: 'PRO',
-    price: '19,99 zł',
-    period: '/ mies.',
+    price: PRICING.monthly.amount,
+    period: PRICING.monthly.period,
     badge: null,
     accent: 'var(--neon-pink)',
     borderColor: 'rgba(255,16,240,0.22)',
@@ -63,8 +64,8 @@ const PRICING_PLANS = [
   {
     id: 'lifetime',
     name: 'PRO Dożywotni',
-    price: '69 zł',
-    period: 'jednorazowo',
+    price: PRICING.lifetime.amount,
+    period: PRICING.lifetime.period,
     badge: 'Najlepsza wartość',
     accent: 'var(--sheriff-gold)',
     borderColor: 'rgba(255,180,0,0.28)',

@@ -17,12 +17,33 @@ export interface StripeCheckoutSession {
   payment_status?: string
 }
 
+export interface StripeSubscriptionItem {
+  current_period_end?: number
+}
+
 export interface StripeSubscription {
   id: string
   customer?: string | { id: string } | null
   status?: string
+  // W starszych wersjach API pole jest na poziomie subskrypcji; od 2025+ przeniesione
+  // na pozycje (items.data[].current_period_end). Czytamy z obu — patrz getSubscriptionPeriodEnd.
   current_period_end?: number
+  items?: { data?: StripeSubscriptionItem[] }
   metadata?: Record<string, string> | null
+}
+
+export interface StripeCharge {
+  id: string
+  customer?: string | { id: string } | null
+  payment_intent?: string | { id: string } | null
+  refunded?: boolean
+  metadata?: Record<string, string> | null
+}
+
+export interface StripeDispute {
+  id: string
+  charge?: string | { id: string } | null
+  payment_intent?: string | { id: string } | null
 }
 
 export interface StripeBillingPortalSession {
@@ -64,6 +85,21 @@ export function getStripeObjectId(value: string | { id: string } | null | undefi
 
 export function stripeTimestampToDate(timestamp: number | null | undefined) {
   return timestamp ? new Date(timestamp * 1000) : null
+}
+
+// Od nowszych wersji API (np. 2026-04-22.dahlia) current_period_end jest na pozycjach
+// subskrypcji, a nie na jej poziomie. Bierzemy pole top-level, a w razie jego braku —
+// najpóźniejszy current_period_end z pozycji.
+export function getSubscriptionPeriodEnd(subscription: StripeSubscription) {
+  if (typeof subscription.current_period_end === 'number') {
+    return subscription.current_period_end
+  }
+
+  const itemEnds = (subscription.items?.data ?? [])
+    .map((item) => item.current_period_end)
+    .filter((value): value is number => typeof value === 'number')
+
+  return itemEnds.length > 0 ? Math.max(...itemEnds) : null
 }
 
 export async function stripeApiRequest<T>(
@@ -158,6 +194,10 @@ export async function retrieveStripeCheckoutSession(sessionId: string) {
   return stripeApiRequest<StripeCheckoutSession>(
     `/checkout/sessions/${encodeURIComponent(sessionId)}`
   )
+}
+
+export async function retrieveStripeCharge(chargeId: string) {
+  return stripeApiRequest<StripeCharge>(`/charges/${encodeURIComponent(chargeId)}`)
 }
 
 export async function cancelStripeSubscription(subscriptionId: string) {

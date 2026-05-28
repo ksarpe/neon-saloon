@@ -17,6 +17,8 @@ import { signOut, useSession } from 'next-auth/react'
 import { useEffect, useRef, useState } from 'react'
 
 import { PurchaseConsent } from '@/components/ui/PurchaseConsent'
+import { COMPANY } from '@/config/company'
+import { PRICE_VAT_NOTE, PRICING } from '@/config/pricing'
 import { getPasswordPolicyError } from '@/lib/password-policy'
 
 import {
@@ -317,7 +319,7 @@ export function AccountTab() {
             type="button"
             disabled={checkoutPlan !== null || isLifetime || !consent}
             onClick={() => startCheckout('monthly')}
-            className="flex min-h-12 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-xs font-black tracking-normal uppercase disabled:opacity-35"
+            className="flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-xl border px-4 py-3 text-xs font-black tracking-normal uppercase disabled:opacity-35"
             {...panelButtonHover(
               {
                 borderColor: 'rgba(255,215,0,0.38)',
@@ -331,18 +333,23 @@ export function AccountTab() {
               }
             )}
           >
-            {checkoutPlan === 'monthly' ? (
-              <Loader2 size={15} className="animate-spin" />
-            ) : (
-              <CreditCard size={15} />
-            )}
-            Kup miesięczny
+            <span className="flex items-center gap-2">
+              {checkoutPlan === 'monthly' ? (
+                <Loader2 size={15} className="animate-spin" />
+              ) : (
+                <CreditCard size={15} />
+              )}
+              Kup miesięczny
+            </span>
+            <span className="text-[11px] font-bold normal-case opacity-90">
+              {PRICING.monthly.amount} {PRICING.monthly.period}
+            </span>
           </button>
           <button
             type="button"
             disabled={checkoutPlan !== null || isLifetime || !consent}
             onClick={() => startCheckout('lifetime')}
-            className="flex min-h-12 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-xs font-black tracking-normal uppercase disabled:opacity-35"
+            className="flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-xl border px-4 py-3 text-xs font-black tracking-normal uppercase disabled:opacity-35"
             {...panelButtonHover(
               {
                 borderColor: 'rgba(255,16,240,0.35)',
@@ -356,39 +363,48 @@ export function AccountTab() {
               }
             )}
           >
-            {checkoutPlan === 'lifetime' ? (
-              <Loader2 size={15} className="animate-spin" />
-            ) : (
-              <Crown size={15} />
-            )}
-            Kup dożywotni
+            <span className="flex items-center gap-2">
+              {checkoutPlan === 'lifetime' ? (
+                <Loader2 size={15} className="animate-spin" />
+              ) : (
+                <Crown size={15} />
+              )}
+              Kup dożywotni
+            </span>
+            <span className="text-[11px] font-bold normal-case opacity-90">
+              {PRICING.lifetime.amount} {PRICING.lifetime.period}
+            </span>
           </button>
-          <button
-            type="button"
-            disabled={portalLoading || !premium?.canManageBilling}
-            onClick={openBillingPortal}
-            className="flex min-h-12 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-xs font-black tracking-normal uppercase disabled:opacity-35"
-            {...panelButtonHover(
-              {
-                borderColor: 'rgba(255,220,180,0.18)',
-                color: 'rgba(255,220,180,0.82)',
-                backgroundColor: 'transparent',
-              },
-              {
-                borderColor: 'rgba(255,220,180,0.3)',
-                color: 'rgba(255,220,180,0.96)',
-                backgroundColor: 'rgba(255,220,180,0.07)',
-              }
-            )}
-          >
-            {portalLoading ? (
-              <Loader2 size={15} className="animate-spin" />
-            ) : (
-              <Settings size={15} />
-            )}
-            Zarządzaj Subskrypcją
-          </button>
+          {!isLifetime && (
+            <button
+              type="button"
+              disabled={portalLoading || !premium?.canManageBilling}
+              onClick={openBillingPortal}
+              className="flex min-h-12 items-center justify-center gap-2 rounded-xl border px-4 py-3 text-xs font-black tracking-normal uppercase disabled:opacity-35"
+              {...panelButtonHover(
+                {
+                  borderColor: 'rgba(255,220,180,0.18)',
+                  color: 'rgba(255,220,180,0.82)',
+                  backgroundColor: 'transparent',
+                },
+                {
+                  borderColor: 'rgba(255,220,180,0.3)',
+                  color: 'rgba(255,220,180,0.96)',
+                  backgroundColor: 'rgba(255,220,180,0.07)',
+                }
+              )}
+            >
+              {portalLoading ? (
+                <Loader2 size={15} className="animate-spin" />
+              ) : (
+                <Settings size={15} />
+              )}
+              Zarządzaj Subskrypcją
+            </button>
+          )}
         </div>
+
+        {!isLifetime && <p className="text-text-muted mt-3 text-xs">{PRICE_VAT_NOTE}</p>}
 
         {billingError && (
           <p className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
@@ -481,7 +497,7 @@ export function AccountTab() {
               type="password"
               value={newPassword}
               onChange={(event) => setNewPassword(event.target.value)}
-              placeholder="Nowe haslo: min. 10, Aa1!"
+              placeholder="Nowe hasło: min. 10, Aa1!"
               className="bg-saloon-surface text-text-primary placeholder:text-text-muted rounded-xl border-2 px-4 py-3 text-sm transition-colors focus:outline-none"
               style={{ borderColor: newPassword ? 'var(--sheriff-pink)' : 'var(--saloon-border)' }}
             />
@@ -869,7 +885,7 @@ export function PaymentStatusBanner({
     : isCancelled
       ? 'Checkout został przerwany. Możesz wrócić do wyboru planu, kiedy będziesz gotowa.'
       : isFailed
-        ? 'Nie widzimy aktywnego dostępu PRO. Jeśli płatność została pobrana, sprawdź log webhooka Stripe.'
+        ? `Nie widzimy aktywnego dostępu PRO. Jeśli płatność została pobrana, napisz do nas na ${COMPANY.email} — sprawdzimy to.`
         : 'Płatność wróciła ze Stripe. Dostęp pojawi się automatycznie, gdy webhook zapisze status w bazie.'
 
   return (

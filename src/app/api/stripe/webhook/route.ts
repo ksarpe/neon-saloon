@@ -3,14 +3,20 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { INPUT_LIMITS, readLimitedText, validationErrorResponse } from '@/lib/request-validation'
 import {
+  getStripeObjectId,
+  getStripeSecretKey,
   getStripeWebhookSecret,
+  retrieveStripeCharge,
+  type StripeCharge,
   type StripeCheckoutSession,
+  type StripeDispute,
   type StripeSubscription,
   verifyStripeWebhookSignature,
 } from '@/lib/stripe'
 import {
   fulfillLifetimeCheckout,
   markLifetimeCheckoutFailed,
+  revokeLifetimeAccess,
   syncStripeSubscription,
 } from '@/lib/stripe-fulfillment'
 
@@ -72,7 +78,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ received: true, duplicate: true })
     }
     if (reservation === 'processing') {
-      return NextResponse.json({ error: 'Webhook Stripe jest juz przetwarzany.' }, { status: 409 })
+      // Inny worker trzyma to zdarzenie. Zwracamy 200, żeby Stripe nie traktował tego
+      // jak błąd i nie wpadał w pętlę ponowień — zdarzenie i tak domknie aktywny worker.
+      return NextResponse.json({ received: true, processing: true })
     }
 
     try {
@@ -106,6 +114,35 @@ async function dispatchStripeWebhookEvent(event: Required<StripeWebhookEvent>) {
   ) {
     await syncStripeSubscription(event.data.object as StripeSubscription)
   }
+
+  if (event.type === 'charge.refunded') {
+    await handleChargeRefunded(event.data.object as StripeCharge)
+  }
+
+  if (event.type === 'charge.dispute.created') {
+    await handleChargeDispute(event.data.object as StripeDispute)
+  }
+}
+
+// Pełny zwrot lifetime → zdejmujemy dożywotni grant. Częściowe zwroty zostawiamy
+// (refunded=false), bo dostęp pozostaje opłacony.
+async function handleChargeRefunded(charge: StripeCharge) {
+  if (!charge.refunded) return
+  await revokeLifetimeAccess(getStripeObjectId(charge.customer), 'refunded')
+}
+
+// Chargeback. Dispute nie niesie wprost klienta — dociągamy charge po API, żeby
+// poznać customerId i zdjąć grant lifetime.
+async function handleChargeDispute(dispute: StripeDispute) {
+  let customerId: string | null = null
+
+  const chargeId = getStripeObjectId(dispute.charge)
+  if (chargeId && getStripeSecretKey()) {
+    const charge = await retrieveStripeCharge(chargeId)
+    customerId = getStripeObjectId(charge.customer)
+  }
+
+  await revokeLifetimeAccess(customerId, 'disputed')
 }
 
 async function handleCheckoutSessionEvent(eventType: string, session: StripeCheckoutSession) {

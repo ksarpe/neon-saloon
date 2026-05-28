@@ -8,6 +8,8 @@ export const INACTIVE_SUBSCRIPTION_STATUSES = new Set([
   'paused',
   'payment_failed',
   'unpaid',
+  'refunded',
+  'disputed',
 ])
 
 export function isActiveSubscriptionStatus(status: string | null | undefined) {

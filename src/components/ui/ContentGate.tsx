@@ -4,6 +4,7 @@ import { Check, Crown, Loader2, Lock, X } from 'lucide-react'
 import { signIn, useSession } from 'next-auth/react'
 import { useState } from 'react'
 
+import { PRICE_VAT_NOTE, PRICING } from '@/config/pricing'
 import { useContentAccess } from '@/hooks/useContentAccess'
 import { checkAccess, type ContentGate as Gate } from '@/lib/content-access'
 
@@ -229,6 +230,8 @@ export function ProModal({ onClose }: { onClose: () => void }) {
           })}
         </div>
 
+        <p className="text-text-muted mt-3 text-center text-xs">{PRICE_VAT_NOTE}</p>
+
         <div
           className="mt-5 rounded-2xl border p-4"
           style={{ borderColor: 'var(--saloon-border)', background: 'rgba(13,8,24,0.42)' }}
@@ -289,8 +292,8 @@ const PLANS: Array<{
     id: 'monthly',
     name: 'Subskrypcja miesięczna',
     description: 'Elastyczny dostęp PRO z płatnością co miesiąc.',
-    priceLabel: '19,99 zł',
-    billingLabel: 'za miesięczną subskrypcję',
+    priceLabel: PRICING.monthly.amount,
+    billingLabel: PRICING.monthly.billingLabel,
     cta: 'Wybierz miesięczny',
     features: [
       'Mniej czy więcej, Dead or alive i kolejne tryby premium',
@@ -303,8 +306,8 @@ const PLANS: Array<{
     id: 'lifetime',
     name: 'Plan dożywotni',
     description: 'Jedna płatność i stały dostęp do PRO na koncie.',
-    priceLabel: '69 zł',
-    billingLabel: 'jednorazowo za lifetime dostęp',
+    priceLabel: PRICING.lifetime.amount,
+    billingLabel: PRICING.lifetime.billingLabel,
     badge: 'Najprościej',
     featured: true,
     cta: 'Wybierz dożywotni',

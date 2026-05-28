@@ -1,5 +1,11 @@
 import { prisma } from './prisma'
-import { getStripeObjectId, type StripeCheckoutSession, type StripeSubscription } from './stripe'
+import {
+  getStripeObjectId,
+  getSubscriptionPeriodEnd,
+  type StripeCheckoutSession,
+  type StripeSubscription,
+  stripeTimestampToDate,
+} from './stripe'
 import { isActiveSubscriptionStatus } from './subscription-status'
 
 export async function fulfillLifetimeCheckout(userId: string) {
@@ -41,7 +47,7 @@ export async function syncStripeSubscription(subscription: StripeSubscription) {
     isPremium,
     stripeSubscriptionId: subscriptionId,
     stripeSubscriptionStatus: subscription.status ?? null,
-    stripeCurrentPeriodEnd: stripeTimestampToDate(subscription.current_period_end),
+    stripeCurrentPeriodEnd: stripeTimestampToDate(getSubscriptionPeriodEnd(subscription)),
   }
 
   if (userId) {
@@ -66,6 +72,23 @@ export async function syncStripeSubscription(subscription: StripeSubscription) {
   }
 }
 
-function stripeTimestampToDate(timestamp: number | null | undefined) {
-  return timestamp ? new Date(timestamp * 1000) : null
+// Odbiera dostęp lifetime po zwrocie / chargebacku. Status 'lifetime' jest permanentną
+// podłogą (blokuje syncStripeSubscription/markLifetimeCheckoutFailed), więc to JEDYNA
+// ścieżka, która potrafi go zdjąć. Scope = tylko grant lifetime danego klienta —
+// dostęp z subskrypcji miesięcznej jest sterowany osobno przez status subskrypcji.
+export async function revokeLifetimeAccess(customerId: string | null, status: 'refunded' | 'disputed') {
+  if (!customerId) return
+
+  await prisma.user.updateMany({
+    where: {
+      stripeCustomerId: customerId,
+      stripeSubscriptionStatus: 'lifetime',
+    },
+    data: {
+      isPremium: false,
+      stripeSubscriptionId: null,
+      stripeCurrentPeriodEnd: null,
+      stripeSubscriptionStatus: status,
+    },
+  })
 }

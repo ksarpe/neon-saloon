@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limit'
 import {
   INPUT_LIMITS,
   readLimitedJson,
@@ -27,6 +28,9 @@ export async function POST(request: Request) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    const rateLimitResponse = await enforceStripeConfirmLimit(request, session.user.id)
+    if (rateLimitResponse) return rateLimitResponse
 
     if (!getStripeSecretKey()) {
       return NextResponse.json({ error: 'Brakuje STRIPE_SECRET_KEY.' }, { status: 500 })
@@ -93,6 +97,57 @@ export async function POST(request: Request) {
     console.error('[POST /api/stripe/confirm]', error)
     return NextResponse.json({ error: 'Nie udalo sie potwierdzic sesji Stripe.' }, { status: 500 })
   }
+}
+
+const GLOBAL_STRIPE_CONFIRM_LIMITS = [
+  { suffix: 'burst', limit: 120, windowMs: 60_000 },
+  { suffix: 'sustained', limit: 600, windowMs: 15 * 60_000 },
+]
+
+// Każde /confirm to retrieve do Stripe API — limitujemy jak checkout/portal.
+async function enforceStripeConfirmLimit(request: Request, userId: string) {
+  for (const rateLimit of GLOBAL_STRIPE_CONFIRM_LIMITS) {
+    const result = await consumeRateLimit(`stripe:confirm:global:${rateLimit.suffix}`, rateLimit)
+    if (!result.allowed) {
+      return NextResponse.json(
+        {
+          error: 'Chwilowo zbyt dużo prób potwierdzenia płatności. Spróbuj ponownie później.',
+          retryAfter: result.retryAfter,
+        },
+        { status: 429, headers: rateLimitHeaders(result) }
+      )
+    }
+  }
+
+  const ipLimit = await consumeRateLimit(`stripe:confirm:ip:${getClientIp(request)}`, {
+    limit: 30,
+    windowMs: 60_000,
+  })
+  if (!ipLimit.allowed) {
+    return NextResponse.json(
+      {
+        error: 'Za dużo prób potwierdzenia płatności. Spróbuj ponownie później.',
+        retryAfter: ipLimit.retryAfter,
+      },
+      { status: 429, headers: rateLimitHeaders(ipLimit) }
+    )
+  }
+
+  const userLimit = await consumeRateLimit(`stripe:confirm:user:${userId}`, {
+    limit: 15,
+    windowMs: 60_000,
+  })
+  if (!userLimit.allowed) {
+    return NextResponse.json(
+      {
+        error: 'Za dużo prób potwierdzenia płatności. Spróbuj ponownie później.',
+        retryAfter: userLimit.retryAfter,
+      },
+      { status: 429, headers: rateLimitHeaders(userLimit) }
+    )
+  }
+
+  return null
 }
 
 async function buildStatusResponse(
