@@ -31,6 +31,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name ?? user.email,
           isPremium: user.isPremium ?? false,
+          isAdmin: user.isAdmin ?? false,
           sessionVersion: user.sessionVersion,
         }
       },
@@ -48,6 +49,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id
         token.isPremium = user.isPremium ?? false
+        token.isAdmin = user.isAdmin ?? false
         token.sessionVersion = user.sessionVersion ?? 0
         token.userCheckedAt = Date.now()
         delete token.sessionInvalid
@@ -65,7 +67,7 @@ export const authOptions: NextAuthOptions = {
 
       const freshUser = await prisma.user.findUnique({
         where: { id: token.id },
-        select: { email: true, isPremium: true, name: true, sessionVersion: true },
+        select: { email: true, isPremium: true, isAdmin: true, name: true, sessionVersion: true },
       })
 
       if (!freshUser || freshUser.sessionVersion !== (token.sessionVersion ?? 0)) {
@@ -73,6 +75,7 @@ export const authOptions: NextAuthOptions = {
         delete token.email
         delete token.name
         delete token.isPremium
+        delete token.isAdmin
         delete token.sessionVersion
         delete token.userCheckedAt
         token.sessionInvalid = true
@@ -81,6 +84,7 @@ export const authOptions: NextAuthOptions = {
 
       token.email = freshUser.email
       token.isPremium = freshUser.isPremium
+      token.isAdmin = freshUser.isAdmin
       token.name = freshUser.name ?? freshUser.email
       token.userCheckedAt = Date.now()
 
@@ -96,6 +100,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id
         session.user.email = token.email ?? session.user.email
         session.user.isPremium = token.isPremium ?? false
+        session.user.isAdmin = token.isAdmin ?? false
         session.user.name = token.name ?? session.user.name
       }
       return session

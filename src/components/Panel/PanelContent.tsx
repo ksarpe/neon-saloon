@@ -1,6 +1,7 @@
 'use client'
 
-import { BookOpen, Brain, LogOut, Settings, SlidersHorizontal } from 'lucide-react'
+import { BookOpen, Brain, LogOut, Megaphone, Settings, SlidersHorizontal } from 'lucide-react'
+import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
 import { useState } from 'react'
@@ -71,6 +72,30 @@ export function PanelContent() {
           <div className="flex flex-1 items-center justify-end gap-2">
             {session?.user?.name && (
               <span className="text-text-muted hidden text-sm sm:block">{session.user.name}</span>
+            )}
+            {session?.user?.isAdmin && (
+              <Link
+                href="/admin/mailing"
+                className="flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition-colors"
+                style={{
+                  borderColor: 'rgba(255,220,180,0.15)',
+                  color: 'rgba(255,220,180,0.55)',
+                  backgroundColor: 'transparent',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--neon-pink)'
+                  e.currentTarget.style.color = '#fff'
+                  e.currentTarget.style.backgroundColor = 'rgba(255,16,240,0.08)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(255,220,180,0.15)'
+                  e.currentTarget.style.color = 'rgba(255,220,180,0.55)'
+                  e.currentTarget.style.backgroundColor = 'transparent'
+                }}
+              >
+                <Megaphone size={15} />
+                Mailing
+              </Link>
             )}
             <button
               onClick={() => signOut({ callbackUrl: '/' })}

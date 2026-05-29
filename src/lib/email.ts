@@ -388,3 +388,128 @@ function buildMarketingText(campaign: MarketingCampaign, unsubscribeUrl: string)
     .filter((line) => line !== undefined)
     .join('\n')
 }
+
+// ── Powiadomienia serwisowe (nie-marketingowe) ─────────────────────────────────
+
+// Treść powiadomienia serwisowego ma identyczny kształt jak kampania marketingowa,
+// ale wysyłka rządzi się innymi regułami (patrz sendServiceBatch).
+export type ServiceCampaign = MarketingCampaign
+
+/**
+ * Wysyłka powiadomienia serwisowego (np. zmiana regulaminu, polityki prywatności,
+ * istotna zmiana usługi) do listy odbiorców.
+ *
+ * W odróżnieniu od marketingu: NIE wymaga zgody marketingowej i NIE zawiera linku ani
+ * nagłówków wypisania — to komunikacja związana z wykonaniem umowy / obowiązkiem
+ * informacyjnym (art. 6 ust. 1 lit. b oraz f RODO), z której użytkownik nie może się
+ * „wypisać", dopóki ma konto. Dlatego treść MUSI być czysto serwisowa — nie wolno
+ * przemycać tu przekazu promocyjnego.
+ *
+ * Dzieli odbiorców na paczki po 100 i korzysta z Resend /emails/batch. Błąd paczki jest
+ * logowany i liczony jako nieudany, ale nie przerywa wysyłki pozostałych paczek.
+ */
+export async function sendServiceBatch(
+  campaign: ServiceCampaign,
+  emails: string[]
+): Promise<MarketingSendResult> {
+  const result: MarketingSendResult = { total: emails.length, sent: 0, failed: 0 }
+
+  if (emails.length === 0) return result
+
+  if (!isEmailConfigured()) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.info(
+        `[service-email] (dev) pominięto wysyłkę „${campaign.subject}" do ${emails.length} odb.`
+      )
+      return result
+    }
+    throw new Error('Email provider is not configured')
+  }
+
+  const html = buildServiceEmail(campaign)
+  const text = buildServiceText(campaign)
+
+  for (let offset = 0; offset < emails.length; offset += MARKETING_BATCH_SIZE) {
+    const chunk = emails.slice(offset, offset + MARKETING_BATCH_SIZE)
+    const payload = chunk.map((email) => ({
+      from: process.env.EMAIL_FROM,
+      to: email,
+      subject: campaign.subject,
+      html,
+      text,
+    }))
+
+    try {
+      const response = await fetch('https://api.resend.com/emails/batch', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+
+      if (!response.ok) {
+        const body = (await response.json().catch(() => ({}))) as ResendEmailResponse
+        throw new Error(body.error?.message ?? body.message ?? `Resend batch failed (${response.status})`)
+      }
+
+      result.sent += chunk.length
+    } catch (error) {
+      result.failed += chunk.length
+      console.error('[sendServiceBatch] chunk failed', error)
+    }
+  }
+
+  return result
+}
+
+function buildServiceEmail(campaign: ServiceCampaign) {
+  const appUrl = getAppUrl()
+  const paragraphs = campaign.paragraphs
+    .map(
+      (paragraph) =>
+        `<p style="line-height:1.6;color:#d8c9e8;font-size:14px;margin:0 0 14px">${escapeHtml(paragraph)}</p>`
+    )
+    .join('')
+
+  const cta = campaign.cta
+    ? `<p style="margin:24px 0"><a href="${escapeHtml(campaign.cta.url)}" style="display:inline-block;background:#f94aff;color:#fff;text-decoration:none;font-weight:700;border-radius:12px;padding:14px 22px">${escapeHtml(campaign.cta.label)}</a></p>`
+    : ''
+
+  return `
+    <div style="font-family:Arial,sans-serif;background:#0d0818;color:#fff;padding:32px">
+      <div style="max-width:560px;margin:0 auto;border:1px solid rgba(255,220,180,.18);border-radius:16px;padding:28px;background:#160d25">
+        <h1 style="margin:0 0 16px;color:#f94aff">${escapeHtml(campaign.heading)}</h1>
+        ${paragraphs}
+        ${cta}
+        <hr style="border:none;border-top:1px solid rgba(255,220,180,.14);margin:24px 0" />
+        <p style="font-size:11px;line-height:1.6;color:#9d8faf;margin:0">
+          Otrzymujesz tę wiadomość, ponieważ dotyczy ona Twojego konta lub umowy w serwisie
+          <a href="${appUrl}" style="color:#9d8faf">Last Rodeo</a>.
+          To wiadomość serwisowa (nie marketingowa) — wysyłamy ją niezależnie od zgód marketingowych.
+        </p>
+        <p style="font-size:11px;line-height:1.5;color:#6f6480;margin:12px 0 0">
+          ${escapeHtml(COMPANY.legalName)}${COMPANY_ADDRESS_LINE ? ` • ${escapeHtml(COMPANY_ADDRESS_LINE)}` : ''} • NIP: ${escapeHtml(COMPANY.nip)}
+        </p>
+      </div>
+    </div>
+  `
+}
+
+function buildServiceText(campaign: ServiceCampaign) {
+  return [
+    campaign.heading,
+    '',
+    ...campaign.paragraphs,
+    ...(campaign.cta ? ['', `${campaign.cta.label}: ${campaign.cta.url}`] : []),
+    '',
+    '—',
+    'To wiadomość serwisowa (nie marketingowa) dotycząca Twojego konta lub umowy w Last Rodeo.',
+    'Otrzymujesz ją niezależnie od zgód marketingowych.',
+    '',
+    [COMPANY.legalName, COMPANY_ADDRESS_LINE, `NIP: ${COMPANY.nip}`].filter(Boolean).join(' • '),
+  ]
+    .filter((line) => line !== undefined)
+    .join('\n')
+}

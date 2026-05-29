@@ -17,6 +17,10 @@ model User {
 
   isPremium                Boolean   @default(false)
 
+  // Rola administratora — nadawana wyłącznie ręcznie w bazie (brak UI do nadawania).
+  // Bramkuje panel mailingowy i administracyjne endpointy.
+  isAdmin                  Boolean   @default(false)
+
   // Dobrowolna zgoda na marketing e-mail (art. 6 ust. 1 lit. a RODO + art. 10 u.ś.u.d.e.).
   // marketingConsentAt = znacznik czasu udzielenia/odświeżenia zgody (rozliczalność).
   marketingConsent         Boolean   @default(false)

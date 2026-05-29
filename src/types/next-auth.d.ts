@@ -8,11 +8,13 @@ declare module 'next-auth' {
     user?: {
       id: string
       isPremium: boolean
+      isAdmin: boolean
     } & DefaultSession['user']
   }
 
   interface User {
     isPremium?: boolean
+    isAdmin?: boolean
     sessionVersion?: number
   }
 }
@@ -21,6 +23,7 @@ declare module 'next-auth/jwt' {
   interface JWT {
     id?: string
     isPremium?: boolean
+    isAdmin?: boolean
     sessionVersion?: number
     sessionInvalid?: boolean
     userCheckedAt?: number

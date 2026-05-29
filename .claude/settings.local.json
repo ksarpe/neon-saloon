@@ -111,7 +111,8 @@
       "Bash(git merge *)",
       "mcp__Claude_Preview__preview_start",
       "PowerShell(npx tsc --noEmit)",
-      "Bash(node -e \"console.log\\('MARKETING_ADMIN_SECRET=' + require\\('crypto'\\).randomBytes\\(32\\).toString\\('base64url'\\)\\); console.log\\('MARKETING_UNSUBSCRIBE_SECRET=' + require\\('crypto'\\).randomBytes\\(32\\).toString\\('base64url'\\)\\)\")"
+      "Bash(node -e \"console.log\\('MARKETING_ADMIN_SECRET=' + require\\('crypto'\\).randomBytes\\(32\\).toString\\('base64url'\\)\\); console.log\\('MARKETING_UNSUBSCRIBE_SECRET=' + require\\('crypto'\\).randomBytes\\(32\\).toString\\('base64url'\\)\\)\")",
+      "Bash(tee /tmp/tsc.txt)"
     ]
   }
 }
