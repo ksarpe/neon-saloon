@@ -16,6 +16,12 @@ model User {
   updatedAt      DateTime @updatedAt
 
   isPremium                Boolean   @default(false)
+
+  // Dobrowolna zgoda na marketing e-mail (art. 6 ust. 1 lit. a RODO + art. 10 u.ś.u.d.e.).
+  // marketingConsentAt = znacznik czasu udzielenia/odświeżenia zgody (rozliczalność).
+  marketingConsent         Boolean   @default(false)
+  marketingConsentAt       DateTime?
+
   //STRIPE
   stripeCustomerId         String?   @unique
   stripeSubscriptionId     String?   @unique

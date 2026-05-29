@@ -21,6 +21,7 @@ export async function POST(req: Request) {
       email?: unknown
       password?: unknown
       name?: unknown
+      marketingConsent?: unknown
       botProtectionToken?: unknown
     }>(req)
     const botProtectionToken = readBotProtectionToken(body.botProtectionToken)
@@ -34,6 +35,7 @@ export async function POST(req: Request) {
     const normalizedEmail = normalizeEmail(body.email)
     const password = requiredString(body.password, 'password', INPUT_LIMITS.password)
     const name = optionalString(body.name, 'name', INPUT_LIMITS.accountName)
+    const marketingConsent = body.marketingConsent === true
     const passwordError = getPasswordPolicyError(password)
     if (passwordError) throw new RequestValidationError(passwordError)
 
@@ -74,6 +76,8 @@ export async function POST(req: Request) {
         email: normalizedEmail,
         password: hash,
         name: name ?? normalizedEmail.split('@')[0].slice(0, INPUT_LIMITS.accountName),
+        marketingConsent,
+        marketingConsentAt: marketingConsent ? new Date() : null,
       },
     })
 

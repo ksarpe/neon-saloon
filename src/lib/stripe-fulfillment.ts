@@ -1,12 +1,46 @@
+import { sendPurchaseConfirmationEmail } from './email'
 import { prisma } from './prisma'
 import {
   getStripeObjectId,
   getSubscriptionPeriodEnd,
   type StripeCheckoutSession,
+  type StripePlanId,
   type StripeSubscription,
   stripeTimestampToDate,
 } from './stripe'
 import { isActiveSubscriptionStatus } from './subscription-status'
+
+// Potwierdzenie zawarcia umowy na trwałym nośniku (art. 21 u.p.k.) wysyłane raz na
+// opłaconą sesję checkout. Best-effort: błąd wysyłki logujemy, ale NIE wywracamy webhooka
+// (inaczej Stripe ponawiałby zdarzenie i ponownie realizował dostęp). Treść zgody bierzemy
+// z utrwalonego rejestru PurchaseConsent, żeby potwierdzenie odpowiadało dokładnie temu,
+// na co zgodził się użytkownik.
+export async function sendPurchaseConfirmation(userId: string, plan: StripePlanId) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { email: true },
+    })
+    if (!user?.email) return
+
+    const consent = await prisma.purchaseConsent.findFirst({
+      where: { userId, plan },
+      orderBy: { createdAt: 'desc' },
+      select: { text: true, version: true, createdAt: true },
+    })
+    if (!consent) return
+
+    await sendPurchaseConfirmationEmail({
+      to: user.email,
+      plan,
+      consentText: consent.text,
+      consentVersion: consent.version,
+      purchasedAt: consent.createdAt,
+    })
+  } catch (error) {
+    console.error('[sendPurchaseConfirmation]', error)
+  }
+}
 
 export async function fulfillLifetimeCheckout(userId: string) {
   await prisma.user.update({

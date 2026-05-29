@@ -8,6 +8,7 @@ import { consumeRateLimit, getClientIp, rateLimitHeaders } from '@/lib/rate-limi
 import {
   INPUT_LIMITS,
   readLimitedJson,
+  RequestValidationError,
   requiredString,
   validationErrorResponse,
 } from '@/lib/request-validation'
@@ -28,6 +29,7 @@ export async function GET() {
       name: true,
       createdAt: true,
       updatedAt: true,
+      marketingConsent: true,
       isPremium: true,
       stripeCustomerId: true,
       stripeSubscriptionId: true,
@@ -62,6 +64,7 @@ export async function GET() {
     name: user.name,
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
+    marketingConsent: user.marketingConsent,
     premium: {
       isPremium: user.isPremium,
       status: premiumStatus,
@@ -82,16 +85,38 @@ export async function PATCH(request: Request) {
     const rateLimitResponse = await enforceAccountPatchLimit(request, session.user.id)
     if (rateLimitResponse) return rateLimitResponse
 
-    const body = await readLimitedJson<{ name?: unknown }>(request)
-    const name = requiredString(body.name, 'name', INPUT_LIMITS.accountName)
+    const body = await readLimitedJson<{ name?: unknown; marketingConsent?: unknown }>(request)
+
+    const data: {
+      name?: string
+      marketingConsent?: boolean
+      marketingConsentAt?: Date | null
+    } = {}
+
+    if (body.name !== undefined) {
+      data.name = requiredString(body.name, 'name', INPUT_LIMITS.accountName)
+    }
+
+    if (body.marketingConsent !== undefined) {
+      if (typeof body.marketingConsent !== 'boolean') {
+        throw new RequestValidationError('Nieprawidłowa wartość zgody marketingowej.')
+      }
+      data.marketingConsent = body.marketingConsent
+      data.marketingConsentAt = body.marketingConsent ? new Date() : null
+    }
+
+    if (Object.keys(data).length === 0) {
+      throw new RequestValidationError('Brak danych do zaktualizowania.')
+    }
 
     const user = await prisma.user.update({
       where: { id: session.user.id },
-      data: { name },
+      data,
       select: {
         id: true,
         email: true,
         name: true,
+        marketingConsent: true,
         updatedAt: true,
       },
     })
@@ -100,6 +125,7 @@ export async function PATCH(request: Request) {
       id: user.id,
       email: user.email,
       name: user.name,
+      marketingConsent: user.marketingConsent,
       updatedAt: user.updatedAt.toISOString(),
     })
   } catch (error) {

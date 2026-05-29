@@ -6,6 +6,7 @@ import {
   getStripeObjectId,
   getStripeSecretKey,
   getStripeWebhookSecret,
+  isStripePlanId,
   retrieveStripeCharge,
   type StripeCharge,
   type StripeCheckoutSession,
@@ -17,6 +18,7 @@ import {
   fulfillLifetimeCheckout,
   markLifetimeCheckoutFailed,
   revokeLifetimeAccess,
+  sendPurchaseConfirmation,
   syncStripeSubscription,
 } from '@/lib/stripe-fulfillment'
 
@@ -154,15 +156,18 @@ async function handleCheckoutSessionEvent(eventType: string, session: StripeChec
   const plan = session.metadata?.plan
   const userId = session.metadata?.userId
 
+  // Dopiero opłacona sesja oznacza zawartą i realizowaną umowę.
+  if (session.payment_status !== 'paid' || !userId || !isStripePlanId(plan)) return
+
   if (plan === 'lifetime') {
-    if (!userId || session.payment_status !== 'paid') return
-
     await fulfillLifetimeCheckout(userId)
-    return
   }
+  // Dostęp z subskrypcji realizują zdarzenia customer.subscription.* — tu domykamy
+  // jedynie potwierdzenie umowy.
 
-  // Subscription checkout fulfillment is handled by customer.subscription.* events.
-  // Keeping this path local avoids a Stripe API roundtrip before returning 2xx.
+  // Potwierdzenie zawarcia umowy na trwałym nośniku (art. 21 u.p.k.) — best effort,
+  // raz na opłaconą sesję checkout (każde zdarzenie webhooka przetwarzamy idempotentnie).
+  await sendPurchaseConfirmation(userId, plan)
 }
 
 async function reserveStripeWebhookEvent(eventId: string, eventType: string) {

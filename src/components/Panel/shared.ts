@@ -30,6 +30,7 @@ export interface AccountPayload {
   name: string | null
   createdAt: string
   updatedAt: string
+  marketingConsent: boolean
   premium: {
     isPremium: boolean
     status: 'active' | 'pending' | 'failed' | 'free'

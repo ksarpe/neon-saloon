@@ -31,8 +31,8 @@ export function PurchaseConsent({ checked, onChange, id = 'purchase-consent' }: 
       />
       <span>
         Wyrażam zgodę na rozpoczęcie świadczenia (dostępu PRO) natychmiast po zakupie, przed upływem
-        14-dniowego terminu odstąpienia, i przyjmuję do wiadomości, że w związku z tym{' '}
-        <strong>tracę prawo odstąpienia</strong> od umowy po jej pełnym wykonaniu. Akceptuję{' '}
+        14-dniowego terminu odstąpienia, i przyjmuję do wiadomości, że z chwilą rozpoczęcia
+        świadczenia <strong>tracę prawo odstąpienia</strong> od umowy. Akceptuję{' '}
         <a
           href="/regulamin"
           target="_blank"

@@ -75,7 +75,7 @@ const sections: LegalSection[] = [
               'Dane bezpieczeństwa',
               'informacje z mechanizmu ochrony przed botami (Cloudflare Turnstile) oraz dane wykorzystywane do limitowania liczby zapytań',
             ],
-            ['Cookies', 'szczegóły w sekcji „Pliki cookies"'],
+            ['Cookies', 'szczegóły w sekcji „Pliki cookies”'],
           ].map(([term, def]) => (
             <li key={term} className="flex gap-2">
               <span className="shrink-0 font-bold" style={{ color: 'var(--sheriff-pink)' }}>
@@ -123,8 +123,11 @@ const sections: LegalSection[] = [
           <li>
             <strong>Marketing bezpośredni</strong> — wysyłanie informacji o nowościach w Serwisie,
             nowych taliach kart lub promocjach. Działania te prowadzimy wyłącznie, jeśli wyrazisz na
-            to wyraźną, opcjonalną zgodę, którą możesz w każdej chwili wycofać (podstawa: zgoda —
-            art. 6 ust. 1 lit. a RODO).
+            to dobrowolną, opcjonalną zgodę (np. przy rejestracji konta). Zgodę możesz w każdej
+            chwili wycofać — w ustawieniach konta, klikając link rezygnacji w wiadomości lub pisząc
+            na nasz adres e-mail — bez wpływu na zgodność z prawem wysyłek sprzed wycofania
+            (podstawa: zgoda — art. 6 ust. 1 lit. a RODO oraz art. 10 ustawy o świadczeniu usług
+            drogą elektroniczną).
           </li>
         </ul>
       </div>
@@ -179,6 +182,11 @@ const sections: LegalSection[] = [
               'Neon',
               'hostowana baza danych PostgreSQL (dane konta, treści użytkownika)',
               'https://neon.tech/privacy-policy',
+            ],
+            [
+              'PartyKit (infrastruktura Cloudflare)',
+              'serwery rozgrywki w czasie rzeczywistym — przetwarzanie danych sesji (pseudonim, awatar, odpowiedzi w trakcie gry oraz adres IP połączenia)',
+              'https://www.cloudflare.com/privacypolicy/',
             ],
             ['Stripe', 'obsługa płatności i subskrypcji', 'https://stripe.com/privacy'],
             [
@@ -251,14 +259,16 @@ const sections: LegalSection[] = [
     content: (
       <div className="space-y-3">
         <p>
-          Tam, gdzie to możliwe, wybraliśmy przetwarzanie danych w Unii Europejskiej — sesje
-          limitowanie zapytań (Upstash, Frankfurt) oraz wysyłka
-          e-maili (Resend, Irlandia) odbywają się w EOG.
+          Tam, gdzie to możliwe, wybraliśmy przetwarzanie danych w Unii Europejskiej —
+          limitowanie liczby zapytań (Upstash, Frankfurt) oraz wysyłka e-maili (Resend, Irlandia)
+          odbywają się w EOG.
         </p>
         <p>
           Część dostawców to jednak podmioty z USA lub korzystające z globalnej infrastruktury
-          (m.in. Stripe, Cloudflare, Vercel, Neon), co może wiązać się z przekazaniem danych poza
-          EOG. W takich przypadkach przekazanie odbywa się na podstawie odpowiednich zabezpieczeń
+          (m.in. Stripe, Cloudflare, PartyKit, Vercel, Neon), co może wiązać się z przekazaniem
+          danych poza EOG. Dotyczy to w szczególności serwerów rozgrywki w czasie rzeczywistym
+          (PartyKit, działający na infrastrukturze Cloudflare), na które trafiają dane sesji.
+          W takich przypadkach przekazanie odbywa się na podstawie odpowiednich zabezpieczeń
           przewidzianych w RODO, w szczególności:
         </p>
         <ul className="list-inside list-disc space-y-1 pl-2">

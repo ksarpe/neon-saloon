@@ -193,6 +193,15 @@ const sections: LegalSection[] = [
           Hasła przechowywane są w postaci zahaszowanej. Operator nie ma dostępu do hasła
           Użytkownika w postaci jawnej.
         </p>
+        <p>
+          Przy zakładaniu Konta Użytkownik może — dobrowolnie i niezależnie od założenia Konta —
+          wyrazić zgodę na otrzymywanie informacji marketingowych (handlowych) drogą elektroniczną
+          na podany adres e-mail. Zgoda nie jest warunkiem korzystania z Serwisu i można ją w każdej
+          chwili wycofać, bez podawania przyczyny — w ustawieniach Konta, klikając link rezygnacji w
+          wiadomości lub pisząc na <strong>{COMPANY.email}</strong>. Wycofanie zgody nie wpływa na
+          zgodność z prawem przesyłek wysłanych przed jej wycofaniem. Szczegóły przetwarzania danych
+          w celach marketingowych opisuje Polityka prywatności.
+        </p>
       </div>
     ),
   },
@@ -261,8 +270,10 @@ const sections: LegalSection[] = [
           </li>
         </ul>
         <p>
-          Ceny podawane w Serwisie są cenami brutto (zawierają należne podatki) i wyrażone w walucie
-          wskazanej w cenniku. Wiążąca jest cena prezentowana w chwili złożenia zamówienia.
+          Ceny podawane w Serwisie są cenami końcowymi do zapłaty, wyrażonymi w walucie wskazanej w
+          cenniku. Wiążąca jest cena prezentowana w chwili złożenia zamówienia. Sprzedawca korzysta
+          ze zwolnienia z podatku od towarów i usług (VAT), w związku z czym do podanych cen nie jest
+          doliczany podatek VAT.
         </p>
         <p>
           Płatności obsługuje zewnętrzny dostawca usług płatniczych <strong>Stripe</strong>. Dane
@@ -287,8 +298,9 @@ const sections: LegalSection[] = [
           opłaconego.
         </p>
         <p>
-          Na żądanie Użytkownika Operator wystawia fakturę. W tym celu należy podać dane do faktury
-          przy zakupie lub skontaktować się pod adresem <strong>{COMPANY.email}</strong>.
+          Na żądanie Użytkownika Operator wystawia fakturę (bez podatku VAT — w związku ze
+          zwolnieniem, o którym mowa powyżej). W tym celu należy podać dane do faktury przy zakupie
+          lub skontaktować się pod adresem <strong>{COMPANY.email}</strong>.
         </p>
       </div>
     ),
@@ -313,8 +325,8 @@ const sections: LegalSection[] = [
             oraz
           </li>
           <li>
-            przyjęcie do wiadomości, że w związku z tym utraci prawo odstąpienia po pełnym wykonaniu
-            usługi.
+            przyjęcie do wiadomości, że w związku z tym — z chwilą rozpoczęcia świadczenia — utraci
+            prawo odstąpienia od umowy.
           </li>
         </ul>
         <p>
@@ -499,20 +511,24 @@ const sections: LegalSection[] = [
           <li>powiatowego (miejskiego) rzecznika konsumentów lub organizacje konsumenckie,</li>
           <li>wojewódzkie inspektoraty Inspekcji Handlowej,</li>
           <li>
-            unijną platformę ODR dostępną pod adresem{' '}
-            <a
-              href="https://ec.europa.eu/consumers/odr"
-              className="underline"
-              style={{ color: 'var(--neon-pink)' }}
-            >
-              ec.europa.eu/consumers/odr
-            </a>
-            .
+            stałe polubowne sądy konsumenckie oraz mediację prowadzoną przez właściwe podmioty
+            uprawnione do pozasądowego rozwiązywania sporów konsumenckich (ADR).
           </li>
         </ul>
         <p>
-          Skorzystanie z metod pozasądowych jest dobrowolne i wymaga zgody obu stron. Szczegółowe
-          informacje dostępne są m.in. na stronach Urzędu Ochrony Konkurencji i Konsumentów (UOKiK).
+          Skorzystanie z metod pozasądowych jest dobrowolne i wymaga zgody obu stron. Wykaz
+          podmiotów uprawnionych oraz szczegółowe informacje dostępne są na stronach Urzędu Ochrony
+          Konkurencji i Konsumentów (UOKiK):{' '}
+          <a
+            href="https://www.uokik.gov.pl"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+            style={{ color: 'var(--neon-pink)' }}
+          >
+            uokik.gov.pl
+          </a>
+          .
         </p>
       </div>
     ),

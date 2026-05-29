@@ -8,6 +8,7 @@ import { Suspense, useCallback, useState } from 'react'
 
 import { BotProtection, isBotProtectionConfigured } from '@/components/ui/BotProtection'
 import { Button } from '@/components/ui/button'
+import { MARKETING_CONSENT_TEXT } from '@/config/consent'
 import { getPasswordPolicyError } from '@/lib/password-policy'
 
 type Tab = 'login' | 'register' | 'forgot'
@@ -434,6 +435,7 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
+  const [marketingConsent, setMarketingConsent] = useState(false)
   const [botProtectionToken, setBotProtectionToken] = useState<string | null>(null)
   const [botProtectionKey, setBotProtectionKey] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -470,7 +472,7 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, name, botProtectionToken }),
+        body: JSON.stringify({ email, password, name, marketingConsent, botProtectionToken }),
       })
 
       const data = await res.json()
@@ -534,6 +536,25 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
         placeholder="••••••••"
         autoComplete="new-password"
       />
+
+      <label
+        htmlFor="marketing-consent"
+        className="flex cursor-pointer items-start gap-2.5 rounded-xl border p-3 text-left text-xs leading-relaxed transition-colors"
+        style={{
+          borderColor: marketingConsent ? 'rgba(255,16,240,0.4)' : 'rgba(255,220,180,0.18)',
+          background: marketingConsent ? 'rgba(255,16,240,0.06)' : 'rgba(13,8,24,0.35)',
+          color: 'rgba(240,223,192,0.78)',
+        }}
+      >
+        <input
+          id="marketing-consent"
+          type="checkbox"
+          checked={marketingConsent}
+          onChange={(event) => setMarketingConsent(event.target.checked)}
+          className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--neon-pink)]"
+        />
+        <span>{MARKETING_CONSENT_TEXT}</span>
+      </label>
 
       <BotProtection
         key={botProtectionKey}

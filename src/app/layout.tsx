@@ -5,6 +5,7 @@ import { Anton, Sora } from 'next/font/google'
 
 import { AppFooter } from '@/components/AppFooter'
 import { BackgroundMusic } from '@/components/BackgroundMusic'
+import { CookieBanner } from '@/components/CookieBanner'
 import PageTransition from '@/components/PageTransition'
 import { Providers } from '@/components/Providers'
 import { BackButtonProvider } from '@/lib/back-button-context'
@@ -82,6 +83,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         </Providers>
 
         <AppFooter />
+        <CookieBanner />
       </body>
     </html>
   )

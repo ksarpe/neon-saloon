@@ -38,6 +38,8 @@ export function AccountTab() {
   const [profileSaving, setProfileSaving] = useState(false)
   const [profileMessage, setProfileMessage] = useState<string | null>(null)
   const [profileError, setProfileError] = useState<string | null>(null)
+  const [marketingConsent, setMarketingConsent] = useState(false)
+  const [marketingSaving, setMarketingSaving] = useState(false)
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [passwordSaving, setPasswordSaving] = useState(false)
@@ -62,6 +64,7 @@ export function AccountTab() {
       if (!response.ok) throw new Error(payload.error ?? 'Nie udało się pobrać konta.')
       setAccount(payload)
       setName(payload.name ?? '')
+      setMarketingConsent(Boolean(payload.marketingConsent))
     } catch (error) {
       setBillingError(error instanceof Error ? error.message : 'Nie udało się pobrać konta.')
     } finally {
@@ -82,6 +85,7 @@ export function AccountTab() {
         if (cancelled) return
         setAccount(payload)
         setName(payload.name ?? '')
+        setMarketingConsent(Boolean(payload.marketingConsent))
       })
       .catch((error) => {
         if (!cancelled) {
@@ -119,6 +123,29 @@ export function AccountTab() {
       setProfileError(error instanceof Error ? error.message : 'Nie udało się zapisać danych.')
     } finally {
       setProfileSaving(false)
+    }
+  }
+
+  const updateMarketingConsent = async (next: boolean) => {
+    if (marketingSaving) return
+    const previous = marketingConsent
+    setMarketingConsent(next)
+    setMarketingSaving(true)
+    setProfileError(null)
+    try {
+      const response = await fetch('/api/account', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ marketingConsent: next }),
+      })
+      const payload = await response.json().catch(() => ({}))
+      if (!response.ok) throw new Error(payload.error ?? 'Nie udało się zapisać zgody.')
+      setAccount((prev) => (prev ? { ...prev, marketingConsent: payload.marketingConsent } : prev))
+    } catch (error) {
+      setMarketingConsent(previous)
+      setProfileError(error instanceof Error ? error.message : 'Nie udało się zapisać zgody.')
+    } finally {
+      setMarketingSaving(false)
     }
   }
 
@@ -468,6 +495,30 @@ export function AccountTab() {
             </button>
             {profileMessage && <p className="text-xs text-emerald-300">{profileMessage}</p>}
             {profileError && <p className="text-xs text-red-300">{profileError}</p>}
+
+            <div
+              className="mt-2 border-t pt-3"
+              style={{ borderColor: 'rgba(255,220,180,0.1)' }}
+            >
+              <label
+                htmlFor="account-marketing-consent"
+                className="flex cursor-pointer items-start gap-2.5 text-left text-xs leading-relaxed"
+                style={{ color: 'rgba(240,223,192,0.78)' }}
+              >
+                <input
+                  id="account-marketing-consent"
+                  type="checkbox"
+                  checked={marketingConsent}
+                  disabled={marketingSaving}
+                  onChange={(event) => updateMarketingConsent(event.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--neon-pink)]"
+                />
+                <span>
+                  Zgoda na wiadomości marketingowe (nowości, talie kart, promocje). Dobrowolna —
+                  możesz ją włączyć lub wyłączyć w każdej chwili.
+                </span>
+              </label>
+            </div>
           </div>
         </div>
 

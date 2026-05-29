@@ -35,7 +35,7 @@ export const COMPANY = {
   phone: '',
 
   /** Data ostatniej aktualizacji dokumentów. */
-  lastUpdated: '22 maja 2026',
+  lastUpdated: '29 maja 2026',
 } as const
 
 /** Jednolinijkowy adres pocztowy „ul. X, 00-000 Miasto" — pusty, gdy brak danych. */

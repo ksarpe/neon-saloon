@@ -30,4 +30,6 @@ export const PRICING: Record<StripePlanId, PlanPricing> = {
 }
 
 /** Informacja o charakterze ceny pokazywana przed zakupem (transparentność dla konsumenta). */
-export const PRICE_VAT_NOTE = 'Cena końcowa brutto, w PLN. Bez ukrytych ani cyklicznych opłat poza wybranym planem.'
+export const PRICE_VAT_NOTE =
+  'Cena końcowa do zapłaty, w PLN. Sprzedawca korzysta ze zwolnienia z VAT (do ceny nie jest ' +
+  'doliczany podatek VAT). Bez ukrytych ani cyklicznych opłat poza wybranym planem.'
