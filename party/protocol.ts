@@ -183,6 +183,8 @@ export type GameStateSnapshot = {
   pin: string
   gameMode: GameMode
   status: SessionStatus
+  /** Room participant cap resolved from the host's premium tier. */
+  maxPlayers?: number
   cardIndex: number
   players: Array<{
     playerId: string

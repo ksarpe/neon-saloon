@@ -14,6 +14,9 @@ export type HostTokenPayload = {
   hostId: string;
   hostName: string;
   gameMode: string;
+  /** Resolved participant cap for this room, baked in from the host's premium
+   * tier at create-host time. The PartyKit room enforces it on join. */
+  maxPlayers: number;
   iat: number;
   exp: number;
 };
@@ -122,7 +125,8 @@ function isPartyTokenPayload(value: unknown): value is PartyTokenPayload {
     return (
       typeof v.hostId === "string" &&
       typeof v.hostName === "string" &&
-      typeof v.gameMode === "string"
+      typeof v.gameMode === "string" &&
+      typeof v.maxPlayers === "number"
     );
   }
   if (v.role === "player") {

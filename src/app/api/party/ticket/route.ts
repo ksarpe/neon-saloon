@@ -8,6 +8,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 
+import { getRoomPlayerLimit } from '@/config/usage-limits'
 import { authOptions } from '@/lib/auth'
 import { readBotProtectionToken, verifyBotProtection } from '@/lib/bot-protection'
 import { signPartyToken } from '@/lib/party-token'
@@ -92,6 +93,27 @@ async function allocateAvailablePin(): Promise<string | null> {
   return null
 }
 
+// Reads the room's public lookup (no token needed) to learn how many players
+// are already in and the room's cap. Returns null on any failure so the caller
+// falls through and lets the authoritative room-side check decide.
+async function probeRoomCapacity(
+  pin: string
+): Promise<{ playersCount: number; maxPlayers: number } | null> {
+  try {
+    const res = await fetch(`${getPartyKitServerUrl()}/parties/main/${pin}`, {
+      cache: 'no-store',
+    })
+    if (!res.ok) return null
+    const room = (await res.json()) as { playersCount?: unknown; maxPlayers?: unknown }
+    if (typeof room.playersCount !== 'number' || typeof room.maxPlayers !== 'number') {
+      return null
+    }
+    return { playersCount: room.playersCount, maxPlayers: room.maxPlayers }
+  } catch {
+    return null
+  }
+}
+
 function getAuthSecret(): string | null {
   const secret = process.env.PARTY_AUTH_SECRET
   if (!secret || secret.length < 16) return null
@@ -155,18 +177,21 @@ export async function POST(request: Request) {
       const hostName = optionalString(body.hostName, 'hostName', 24) ?? 'Host'
       const gameMode = optionalString(body.gameMode, 'gameMode', 32) ?? 'classic'
 
-      if (PREMIUM_GAME_MODES.has(gameMode)) {
-        // Dev-only escape hatch so E2E tests can drive HL + BR without seeding a
-        // premium user. Gated by NODE_ENV so it can NEVER be set in production.
-        const devBypass =
-          process.env.NODE_ENV !== 'production' && process.env.DISABLE_PREMIUM_GATE === 'true'
-        if (!devBypass) {
-          const session = await getServerSession(authOptions)
-          if (!session?.user?.id || !(await getFreshPremiumAccess(session.user.id))) {
-            return NextResponse.json({ error: 'Premium access required' }, { status: 403 })
-          }
-        }
+      // Resolve the host's premium tier once: it gates premium-only game modes
+      // AND sets the room's participant cap (free vs premium) baked into the token.
+      const devBypass =
+        process.env.NODE_ENV !== 'production' && process.env.DISABLE_PREMIUM_GATE === 'true'
+      let isPremium = devBypass
+      if (!devBypass) {
+        const session = await getServerSession(authOptions)
+        isPremium = Boolean(session?.user?.id && (await getFreshPremiumAccess(session.user.id)))
       }
+
+      if (PREMIUM_GAME_MODES.has(gameMode) && !isPremium) {
+        return NextResponse.json({ error: 'Premium access required' }, { status: 403 })
+      }
+
+      const maxPlayers = getRoomPlayerLimit(isPremium)
 
       // Probe PartyKit until we get a PIN that isn't already claimed. The room
       // itself still enforces hostId ownership on connect (so a stale ghost DO
@@ -181,11 +206,24 @@ export async function POST(request: Request) {
       }
       const hostId = generateHostId()
       const partyToken = await signPartyToken(
-        { pin, role: 'host', tokenKind: 'party', hostId, hostName, gameMode, iat: now, exp },
+        {
+          pin,
+          role: 'host',
+          tokenKind: 'party',
+          hostId,
+          hostName,
+          gameMode,
+          maxPlayers,
+          iat: now,
+          exp,
+        },
         secret
       )
 
-      return NextResponse.json({ pin, role: 'host' as const, partyToken }, { status: 201 })
+      return NextResponse.json(
+        { pin, role: 'host' as const, partyToken, maxPlayers },
+        { status: 201 }
+      )
     }
 
     if (action === 'join') {
@@ -228,6 +266,21 @@ export async function POST(request: Request) {
       const playerName = requiredString(body.playerName, 'playerName', INPUT_LIMITS.playerName)
       const avatar = optionalString(body.avatar, 'avatar', INPUT_LIMITS.avatar) ?? undefined
       const teamId = optionalString(body.teamId, 'teamId', 80) ?? undefined
+
+      // Best-effort early rejection so a full room never even opens a WebSocket
+      // to the Durable Object. The PartyKit room re-checks the cap on connect
+      // (authoritative), so a race here just means the room bounces the join.
+      const capacity = await probeRoomCapacity(pin)
+      if (capacity && capacity.playersCount >= capacity.maxPlayers) {
+        return NextResponse.json(
+          {
+            error: `Salon jest pełny (limit ${capacity.maxPlayers} osób).`,
+            code: 'ROOM_FULL',
+            maxPlayers: capacity.maxPlayers,
+          },
+          { status: 409 }
+        )
+      }
 
       const playerId = generatePlayerId()
       const partyToken = await signPartyToken(

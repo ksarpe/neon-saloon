@@ -478,6 +478,7 @@ export default function PartyHostScreen({ pin, initialCards, partyToken }: Props
                   hostName={hostName}
                   onStart={handleStart}
                   starting={hostActionLoading === 'start'}
+                  maxPlayers={snapshot?.maxPlayers}
                 />
               </motion.div>
             )}

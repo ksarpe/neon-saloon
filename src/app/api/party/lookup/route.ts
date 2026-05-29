@@ -9,6 +9,7 @@ type PartyRoomLookup = {
   pin: string
   gameMode: 'classic' | 'highlow' | 'battle-royale'
   status: 'waiting' | 'active' | 'finished'
+  maxPlayers?: number
   playersCount: number
   teams: Array<{
     teamId: string

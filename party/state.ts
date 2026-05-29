@@ -104,6 +104,9 @@ export type RoomState = {
   hostId: string
   hostName: string
   gameMode: GameMode
+  /** Participant cap resolved from the host's premium tier (free vs premium).
+   * Optional for backward-compat with rooms persisted before this field existed. */
+  maxPlayers?: number
   status: SessionStatus
   createdAt: number
   players: RoomPlayer[]
@@ -126,12 +129,14 @@ export function initialRoomState(args: {
   hostId: string
   hostName: string
   gameMode: GameMode
+  maxPlayers: number
 }): RoomState {
   return {
     pin: args.pin,
     hostId: args.hostId,
     hostName: args.hostName,
     gameMode: args.gameMode,
+    maxPlayers: args.maxPlayers,
     status: "waiting",
     createdAt: Date.now(),
     players: [],

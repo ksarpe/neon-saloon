@@ -185,15 +185,17 @@ test.describe("PartyKit skeleton @party", () => {
     );
   });
 
-  test("reducer odrzuca nowych graczy po wypelnieniu salonu", () => {
+  test("reducer egzekwuje premium-zalezny limit graczy (free = 6)", () => {
+    const freeCap = 6;
     let state = initialRoomState({
       pin: "123456",
       hostId: "host_test",
       hostName: "Host",
       gameMode: "classic",
+      maxPlayers: freeCap,
     });
 
-    for (let i = 0; i < MAX_PLAYERS_PER_ROOM; i++) {
+    for (let i = 0; i < freeCap; i++) {
       const result = applyJoin(state, {
         playerId: `player_${i}`,
         playerName: `Player ${i}`,
@@ -207,7 +209,27 @@ test.describe("PartyKit skeleton @party", () => {
       playerName: "Overflow",
     });
     expect(overflow.ok).toBe(false);
-    if (!overflow.ok) expect(overflow.error).toBe("Room is full");
+    if (!overflow.ok) expect(overflow.error).toBe(`Salon jest pełny (limit ${freeCap} osób).`);
+  });
+
+  test("limit graczy nie przekracza twardego bezpiecznika MAX_PLAYERS_PER_ROOM", () => {
+    // A tampered/over-large maxPlayers must never let a room exceed the ceiling.
+    let state = initialRoomState({
+      pin: "123456",
+      hostId: "host_test",
+      hostName: "Host",
+      gameMode: "classic",
+      maxPlayers: 9999,
+    });
+
+    for (let i = 0; i < MAX_PLAYERS_PER_ROOM; i++) {
+      const result = applyJoin(state, { playerId: `player_${i}`, playerName: `Player ${i}` });
+      expect(result.ok).toBe(true);
+      if (result.ok) state = result.state;
+    }
+
+    const overflow = applyJoin(state, { playerId: "player_overflow", playerName: "Overflow" });
+    expect(overflow.ok).toBe(false);
   });
 
   test("host łączy się tokenem i dostaje state-snapshot", async () => {
@@ -293,6 +315,7 @@ test.describe("PartyKit skeleton @party", () => {
           hostId: `host_intruder_${now}`,
           hostName: "Intruder",
           gameMode: "classic",
+          maxPlayers: 6,
           iat: now,
           exp: now + 60_000,
         },

@@ -40,8 +40,12 @@ export function applyJoin(
 
   if (state.status === "active") return { ok: false, error: "Game already started", code: 409 }
   if (state.status === "finished") return { ok: false, error: "Game already finished", code: 409 }
-  if (state.players.length >= MAX_PLAYERS_PER_ROOM) {
-    return { ok: false, error: "Room is full", code: 409 }
+  // Effective cap = the room's premium-resolved limit, hard-bounded by the
+  // absolute ceiling. `?? MAX_PLAYERS_PER_ROOM` keeps rooms persisted before
+  // maxPlayers existed working at the old flat limit.
+  const cap = Math.min(state.maxPlayers ?? MAX_PLAYERS_PER_ROOM, MAX_PLAYERS_PER_ROOM)
+  if (state.players.length >= cap) {
+    return { ok: false, error: `Salon jest pełny (limit ${cap} osób).`, code: 409 }
   }
   // Classic + battle-royale don't use teams.
   if (state.gameMode !== "highlow" && input.teamId) {

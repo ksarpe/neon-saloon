@@ -134,6 +134,13 @@ export default function JoinGameForm() {
           setError('Ta gra juz trwa. Nie mozesz teraz dolaczyc.')
           return
         }
+        if (
+          typeof partyRoom.maxPlayers === 'number' &&
+          partyRoom.playersCount >= partyRoom.maxPlayers
+        ) {
+          setError(`Salon jest pełny (limit ${partyRoom.maxPlayers} osób).`)
+          return
+        }
 
         setPartyToken(null)
         setGameMode(partyRoom.gameMode)
@@ -215,8 +222,15 @@ export default function JoinGameForm() {
           teamName: selectedTeam?.teamName ?? null,
         })
         setStep('playing')
-      } catch {
-        setError('Nie udalo sie dolaczyc. Sprobuj ponownie.')
+      } catch (err) {
+        // Surface the room-full message from the ticket route; keep the generic
+        // fallback for everything else.
+        const message = err instanceof Error ? err.message : ''
+        setError(
+          message && /pełny/i.test(message)
+            ? message
+            : 'Nie udalo sie dolaczyc. Sprobuj ponownie.'
+        )
       } finally {
         setLoading(false)
         joiningRef.current = false

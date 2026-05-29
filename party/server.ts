@@ -150,6 +150,7 @@ export default class GameServer implements Party.Server {
           hostId: payload.hostId,
           hostName: payload.hostName,
           gameMode: payload.gameMode as RoomState['gameMode'],
+          maxPlayers: payload.maxPlayers,
         })
         await this.persist()
       } else if (this.state.hostId !== payload.hostId) {
@@ -232,6 +233,7 @@ export default class GameServer implements Party.Server {
         pin: snapshot.pin,
         gameMode: snapshot.gameMode,
         status: snapshot.status,
+        maxPlayers: snapshot.maxPlayers,
         playersCount: snapshot.players.length,
         teams: snapshot.teams.map((team) => ({
           ...team,
@@ -678,6 +680,7 @@ export default class GameServer implements Party.Server {
       pin: this.state.pin,
       gameMode: this.state.gameMode,
       status: this.state.status,
+      maxPlayers: this.state.maxPlayers,
       cardIndex: this.state.cardIndex,
       players: this.state.players.map((p) => ({
         playerId: p.playerId,

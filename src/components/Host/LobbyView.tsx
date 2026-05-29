@@ -1,11 +1,13 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { Loader2, Play, Users } from 'lucide-react'
+import { Loader2, Play, Sparkles, Users } from 'lucide-react'
+import Link from 'next/link'
 
 import { JoinQrCode } from '@/components/JoinQrCode'
 import { PlayerAvatar } from '@/components/PlayerAvatar'
 import { Button } from '@/components/ui/button'
+import { ROOM_PLAYER_LIMITS } from '@/config/usage-limits'
 
 import type { LivePlayer } from './types'
 
@@ -16,9 +18,15 @@ interface Props {
   hostName: string
   onStart: () => void
   starting?: boolean
+  /** Participant cap for this room (resolved from the host's premium tier). */
+  maxPlayers?: number
 }
 
-export function LobbyView({ pin, players, onStart, starting = false }: Props) {
+export function LobbyView({ pin, players, onStart, starting = false, maxPlayers }: Props) {
+  const cap = maxPlayers ?? ROOM_PLAYER_LIMITS.free
+  const isFull = players.length >= cap
+  // Show the upsell only to free-tier hosts (those below the premium cap).
+  const showUpsell = cap < ROOM_PLAYER_LIMITS.premium
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-8">
       <div className="flex flex-col items-center gap-3">
@@ -53,14 +61,28 @@ export function LobbyView({ pin, players, onStart, starting = false }: Props) {
       </div>
 
       <div className="w-full">
-        <div className="mb-3 flex items-center justify-center gap-2">
-          <Users size={14} style={{ color: 'var(--sheriff-pink)' }} />
-          <span
-            className="text-xs font-semibold tracking-normal uppercase"
-            style={{ color: 'var(--sheriff-pink)' }}
-          >
-            {players.length} {players.length === 1 ? 'cowgirl' : 'cowgirls'} w salonie
-          </span>
+        <div className="mb-3 flex flex-col items-center justify-center gap-1.5">
+          <div className="flex items-center justify-center gap-2">
+            <Users size={14} style={{ color: 'var(--sheriff-pink)' }} />
+            <span
+              className="text-xs font-semibold tracking-normal uppercase"
+              style={{ color: 'var(--sheriff-pink)' }}
+            >
+              {players.length} / {cap} {players.length === 1 ? 'cowgirl' : 'cowgirls'} w salonie
+            </span>
+          </div>
+          {showUpsell && (
+            <Link
+              href="/panel"
+              className="inline-flex items-center gap-1.5 text-[11px] font-medium transition-opacity hover:opacity-80"
+              style={{ color: isFull ? 'var(--neon-pink)' : 'var(--text-muted)' }}
+            >
+              <Sparkles size={12} style={{ color: 'var(--neon-gold, #ffd700)' }} />
+              {isFull
+                ? `Salon pełny — przejdź na premium, aby zaprosić do ${ROOM_PLAYER_LIMITS.premium} osób`
+                : `Darmowy limit ${cap} osób · premium do ${ROOM_PLAYER_LIMITS.premium}`}
+            </Link>
+          )}
         </div>
         <div className="flex flex-wrap justify-center gap-3">
           <AnimatePresence>
