@@ -107,7 +107,11 @@
       "Bash(node -e \"fetch\\('http://127.0.0.1:3000/api/party/ticket',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify\\({action:'create-host',hostName:'T',gameMode:'classic',botProtectionToken:'x'}\\)}\\).then\\(r=>console.log\\('127',r.status\\)\\).catch\\(e=>console.log\\('127 ERR',e.cause?.code||e.message\\)\\)\")",
       "Bash(E2E_BASE_URL=http://localhost:3000 npx playwright test party-skeleton --workers=1 --reporter=list)",
       "Bash(E2E_BASE_URL=http://localhost:3000 npx playwright test --grep @party --workers=1 --reporter=list)",
-      "Bash(git --no-pager diff --stat)"
+      "Bash(git --no-pager diff --stat)",
+      "Bash(git merge *)",
+      "mcp__Claude_Preview__preview_start",
+      "PowerShell(npx tsc --noEmit)",
+      "Bash(node -e \"console.log\\('MARKETING_ADMIN_SECRET=' + require\\('crypto'\\).randomBytes\\(32\\).toString\\('base64url'\\)\\); console.log\\('MARKETING_UNSUBSCRIBE_SECRET=' + require\\('crypto'\\).randomBytes\\(32\\).toString\\('base64url'\\)\\)\")"
     ]
   }
 }

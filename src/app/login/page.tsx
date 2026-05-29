@@ -435,6 +435,7 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
+  const [termsConsent, setTermsConsent] = useState(false)
   const [marketingConsent, setMarketingConsent] = useState(false)
   const [botProtectionToken, setBotProtectionToken] = useState<string | null>(null)
   const [botProtectionKey, setBotProtectionKey] = useState(0)
@@ -458,6 +459,10 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
     const passwordError = getPasswordPolicyError(password)
     if (passwordError) {
       setError(passwordError)
+      return
+    }
+    if (!termsConsent) {
+      setError('Zaakceptuj Regulamin i Politykę prywatności, aby założyć konto.')
       return
     }
     if (botProtectionEnabled && !botProtectionToken) {
@@ -538,6 +543,48 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
       />
 
       <label
+        htmlFor="terms-consent"
+        className="flex cursor-pointer items-start gap-2.5 rounded-xl border p-3 text-left text-xs leading-relaxed transition-colors"
+        style={{
+          borderColor: termsConsent ? 'rgba(255,16,240,0.4)' : 'rgba(255,220,180,0.18)',
+          background: termsConsent ? 'rgba(255,16,240,0.06)' : 'rgba(13,8,24,0.35)',
+          color: 'rgba(240,223,192,0.78)',
+        }}
+      >
+        <input
+          id="terms-consent"
+          type="checkbox"
+          checked={termsConsent}
+          onChange={(event) => setTermsConsent(event.target.checked)}
+          className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--neon-pink)]"
+        />
+        <span>
+          Akceptuję{' '}
+          <a
+            href="/regulamin"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+            style={{ color: 'var(--neon-pink)' }}
+          >
+            Regulamin
+          </a>{' '}
+          i{' '}
+          <a
+            href="/polityka-prywatnosci"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+            style={{ color: 'var(--neon-pink)' }}
+          >
+            Politykę prywatności
+          </a>{' '}
+          oraz potwierdzam, że mam ukończone 18 lat.{' '}
+          <span style={{ color: 'var(--sheriff-pink)' }}>* obowiązkowe</span>
+        </span>
+      </label>
+
+      <label
         htmlFor="marketing-consent"
         className="flex cursor-pointer items-start gap-2.5 rounded-xl border p-3 text-left text-xs leading-relaxed transition-colors"
         style={{
@@ -574,6 +621,7 @@ function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
           !email ||
           !password ||
           !confirm ||
+          !termsConsent ||
           (botProtectionEnabled && !botProtectionToken)
         }
         className="mt-1 w-full"

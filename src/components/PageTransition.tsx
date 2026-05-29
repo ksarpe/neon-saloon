@@ -93,7 +93,12 @@ export default function PageTransition({ children }: { children: React.ReactNode
       )}
 
       {/* ── Page content ────────────────────────────────────────────────── */}
-      <AnimatePresence mode="popLayout" initial={false}>
+      {/* mode="wait": exiting page fully unmounts before the next mounts. Pages are
+          in-flow (relative min-h-dvh), so popLayout would position the exiting page
+          absolute and leave it overlapping the new one — an invisible click-blocker
+          over the new page if its exit animation never completes (e.g. tab loses
+          focus mid-transition). "wait" guarantees no overlap. */}
+      <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={pathname}
           initial={{ opacity: pathname === '/graj' ? 1 : 0 }}

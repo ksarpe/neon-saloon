@@ -16,6 +16,5 @@ export const PURCHASE_CONSENT_TEXT =
 // Dobrowolna (opt-in) zgoda marketingowa — pokazywana przy rejestracji i w ustawieniach konta.
 // Domyślnie NIEZAZNACZONA; brak zgody nie blokuje założenia konta.
 export const MARKETING_CONSENT_TEXT =
-  'Chcę otrzymywać na podany adres e-mail informacje marketingowe o nowościach, nowych ' +
-  'taliach kart i promocjach w Last Rodeo. Zgoda jest dobrowolna i mogę ją w każdej chwili ' +
-  'wycofać (np. w ustawieniach konta lub klikając link w wiadomości).'
+  'Chcę otrzymywać e-mailem informacje o nowościach i promocjach w Last Rodeo. ' +
+  'Zgoda jest dobrowolna — mogę ją wycofać w każdej chwili.'

@@ -80,11 +80,12 @@ export function GameCardStack({
           width: `calc(100% - ${stackPadding}px)`,
           height: `calc(100% - ${stackPadding}px)`,
           transformStyle: 'preserve-3d',
+          transformOrigin: 'center center',
         }}
         animate={{
           rotateY: isRevealed ? 360 : isFlipped ? 180 : 0,
           rotate: isFlipped || isRevealed ? -5 : 0,
-          x: isFlipped || isRevealed ? 20 : 0,
+          x: 0,
           y: isFlipped || isRevealed ? 8 : 0,
         }}
         transition={{ type: 'spring', stiffness: 180, damping: 22 }}
